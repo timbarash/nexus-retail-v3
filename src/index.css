@@ -1,0 +1,223 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   Nexus Retail v3 — Warm Connect Palette
+   Matching dutchie-connect.pages.dev warmth
+   ======================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #141210;
+  color: #F0EDE8;
+}
+
+/* ---- Scrollbar (warm dark) ---- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #38332B; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #6B6359; }
+* { scrollbar-width: thin; scrollbar-color: #38332B transparent; }
+
+/* ---- Card hover ---- */
+@layer components {
+  .card-hover {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  .card-hover:hover {
+    background-color: #282724;
+    transform: translateY(-1px);
+  }
+}
+
+/* ---- Smooth transitions ---- */
+button, a, input, select, [role="button"] {
+  transition: all 0.15s ease-in-out;
+}
+
+/* ---- Gradient text ---- */
+@layer utilities {
+  .text-gradient-green {
+    background: linear-gradient(90deg, #00C27C, #00E08E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-brand {
+    background: linear-gradient(135deg, #00C27C, #64A8E0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* ---- Animations ---- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes thinking-shimmer {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.thinking-shimmer { animation: thinking-shimmer 2s ease-in-out infinite; }
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(0, 194, 124, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(0, 194, 124, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 194, 124, 0); }
+}
+
+@keyframes fab-spring-in {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  80% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bar-fill {
+  from { width: 0%; }
+}
+
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@layer utilities {
+  .animate-fade-in { animation: fadeIn 0.3s ease-out both; }
+  .animate-fade-up { animation: fadeUp 0.4s ease-out both; }
+  .animate-slide-in-left { animation: slideInLeft 0.3s ease-out both; }
+  .animate-pulse-subtle { animation: pulse-subtle 2s ease-in-out infinite; }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+  .animate-fab-spring { animation: fab-spring-in 0.5s ease-out 0.5s both; }
+  .animate-bar-fill { animation: bar-fill 0.7s ease-out both; }
+  .animate-ticker { animation: ticker-scroll 30s linear infinite; }
+}
+
+/* Staggered card entrance — use animate-fade-up on children for cascade */
+.stagger-grid > * { opacity: 0; animation: fadeUp 0.4s ease-out both; }
+.stagger-grid > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-grid > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-grid > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-grid > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-grid > *:nth-child(5) { animation-delay: 240ms; }
+.stagger-grid > *:nth-child(6) { animation-delay: 300ms; }
+.stagger-grid > *:nth-child(7) { animation-delay: 360ms; }
+.stagger-grid > *:nth-child(8) { animation-delay: 420ms; }
+.stagger-grid > *:nth-child(9) { animation-delay: 480ms; }
+.stagger-grid > *:nth-child(10) { animation-delay: 540ms; }
+.stagger-grid > *:nth-child(11) { animation-delay: 600ms; }
+.stagger-grid > *:nth-child(12) { animation-delay: 660ms; }
+
+/* Legacy compat */
+.animate-fade-in:nth-child(1) { animation-delay: 0ms; }
+.animate-fade-in:nth-child(2) { animation-delay: 60ms; }
+.animate-fade-in:nth-child(3) { animation-delay: 120ms; }
+.animate-fade-in:nth-child(4) { animation-delay: 180ms; }
+.animate-fade-in:nth-child(5) { animation-delay: 240ms; }
+.animate-fade-in:nth-child(6) { animation-delay: 300ms; }
+
+/* ---- Sentiment badges (warm dark) ---- */
+@layer components {
+  .badge-positive {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    background-color: rgba(0,194,124,0.12);
+    color: #00C27C;
+  }
+  .badge-neutral {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    background-color: rgba(212,160,58,0.12);
+    color: #D4A03A;
+  }
+  .badge-negative {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    background-color: rgba(232,112,104,0.12);
+    color: #E87068;
+  }
+}
+
+/* ---- Chart container (warm dark) ---- */
+@layer components {
+  .chart-container {
+    background-color: #1C1B1A;
+    border: 1px solid #38332B;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    @apply rounded-xl p-6;
+    @apply transition-all duration-200;
+  }
+  .chart-container:hover {
+    filter: brightness(1.1);
+  }
+}
+
+/* ---- Source colors ---- */
+@layer utilities {
+  .source-reddit { color: #ff4500; }
+  .source-google { color: #64A8E0; }
+  .source-leafly { color: #00C27C; }
+  .source-weedmaps { color: #D4A03A; }
+}
+
+/* ---- Loading skeleton (warm dark) ---- */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@layer components {
+  .skeleton {
+    background: linear-gradient(90deg, #1C1B1A 25%, #282724 50%, #1C1B1A 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+  }
+}
+
+/* ---- DTCH sidebar scrollbar ---- */
+.dtch-sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.dtch-sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+.dtch-sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(173,165,153,0.2); border-radius: 2px; }
+.dtch-sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(173,165,153,0.4); }
+.dtch-sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(173,165,153,0.2) transparent; }
+
+/* ---- Line clamp ---- */
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* ---- Input placeholder (warm) ---- */
+.nexus-input::placeholder {
+  color: #7A746B;
+  opacity: 1;
+}
