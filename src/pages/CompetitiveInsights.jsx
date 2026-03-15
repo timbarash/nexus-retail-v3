@@ -334,7 +334,7 @@ export default function CompetitiveInsights({ reviews }) {
           <h3 className="text-base font-semibold text-[#F0EDE8] mb-4">Sentiment Comparison</h3>
           <ResponsiveContainer width="100%" height={320}>
             <BarChart data={sentimentChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#38332B" vertical={false} />
               <XAxis
                 dataKey="name"
                 axisLine={false}
@@ -367,7 +367,7 @@ export default function CompetitiveInsights({ reviews }) {
           <p className="text-xs text-[#6B6359] mb-4">Ascend vs {bestCompetitorName}</p>
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData}>
-              <PolarGrid stroke="#e5e7eb" />
+              <PolarGrid stroke="#38332B" />
               <PolarAngleAxis
                 dataKey="category"
                 tick={{ fontSize: 11, fill: '#6B6359' }}

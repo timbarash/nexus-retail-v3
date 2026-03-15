@@ -306,7 +306,7 @@ export default function BrandAnalysis({ reviews }) {
             margin={{ top: 10, right: 20, left: -10, bottom: 5 }}
             barGap={4}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#38332B" vertical={false} />
             <XAxis
               dataKey="name"
               axisLine={false}
@@ -344,7 +344,7 @@ export default function BrandAnalysis({ reviews }) {
               data={trendData}
               margin={{ top: 10, right: 20, left: -10, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#38332B" vertical={false} />
               <XAxis
                 dataKey="month"
                 axisLine={false}

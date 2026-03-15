@@ -488,7 +488,7 @@ export default function LocationInsights({ reviews }) {
               layout="vertical"
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#38332B" horizontal={false} />
               <XAxis
                 type="number"
                 domain={[-0.5, 1]}

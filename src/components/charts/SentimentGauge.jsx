@@ -60,7 +60,7 @@ export default function SentimentGauge({ score, size = 'lg' }) {
         <path
           d={bgPath}
           fill="none"
-          stroke="#e5e7eb"
+          stroke="#38332B"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
         />

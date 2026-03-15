@@ -1725,7 +1725,7 @@ function SentimentSnippet({ data }) {
                   <stop offset="100%" stopColor="#00C27C" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#38332B" vertical={false} />
               <XAxis dataKey="month" tick={{ fill: '#484F58', fontSize: 9 }} axisLine={false} tickLine={false} tickFormatter={v => v.split(' ')[0]} />
               <YAxis domain={[-1, 1]} tick={{ fill: '#484F58', fontSize: 9 }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
@@ -2074,7 +2074,7 @@ function ReportSnippet({ data }) {
                   <stop offset="100%" stopColor="#8B949E" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#38332B" vertical={false} />
               <XAxis dataKey="label" tick={{ fill: '#484F58', fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#484F58', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => formatCurrency(v)} />
               <Tooltip content={<CustomTooltip />} />

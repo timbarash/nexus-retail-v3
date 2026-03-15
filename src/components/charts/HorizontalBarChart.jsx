@@ -107,7 +107,7 @@ export default function HorizontalBarChart({ data, height = 300 }) {
         barGap={0}
         barSize={20}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#38332B" horizontal={false} />
         <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B6359' }} />
         <YAxis
           type="category"

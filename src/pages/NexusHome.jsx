@@ -1297,7 +1297,7 @@ function PricingTile() {
         >
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 8, right: 12, bottom: 16, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#21262D" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#38332B" />
               <XAxis
                 type="number" dataKey="x" name="Market Avg"
                 domain={[MINI_PRICE_MIN, MINI_PRICE_MAX]}
@@ -1588,7 +1588,7 @@ function SalesReportingTile() {
                         <stop offset="95%" stopColor={activeCM.color} stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#21262D" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#38332B" vertical={false} />
                     <XAxis dataKey="time" tick={{ fill: '#ADA599', fontSize: 10 }} stroke="#38332B" />
                     <YAxis
                       tick={{ fill: '#ADA599', fontSize: 10 }} stroke="#38332B"
@@ -1596,7 +1596,7 @@ function SalesReportingTile() {
                       width={52}
                     />
                     <RechartsTooltip
-                      contentStyle={{ background: '#1C1B1A', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 11 }}
+                      contentStyle={{ background: '#1C1B1A', border: '1px solid #38332B', borderRadius: 8, fontSize: 11 }}
                       labelStyle={{ color: '#8B949E', marginBottom: 4 }}
                       formatter={(value, name) => {
                         const m = CHART_METRICS.find(cm => cm.key === name) || (name === 'marketRevenue' ? { format: v => v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}K` } : null);
@@ -1708,7 +1708,7 @@ function SalesReportingTile() {
               <div className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={CATEGORY_BAR_DATA} margin={{ top: 4, right: 4, bottom: 4, left: 4 }} barGap={2}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#21262D" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#38332B" vertical={false} />
                     <XAxis dataKey="name" tick={{ fill: '#6B6359', fontSize: 10 }} stroke="#38332B" />
                     <YAxis tick={{ fill: '#ADA599', fontSize: 10 }} stroke="#38332B" tickFormatter={v => `${v}%`} />
                     <RechartsTooltip content={<CatTooltip />} cursor={{ fill: 'rgba(100,168,224,0.06)' }} />
@@ -1734,7 +1734,7 @@ function SalesReportingTile() {
                 </thead>
                 <tbody>
                   {SALES_DATA.categories.map(c => (
-                    <tr key={c.name} className="border-b border-[#21262D] hover:bg-[#1C1B1A] transition-colors">
+                    <tr key={c.name} className="border-b border-[#38332B] hover:bg-[#1C1B1A] transition-colors">
                       <td className="px-4 py-2.5 flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full" style={{ background: c.color }} />
                         <span className="text-[#F0EDE8] font-medium">{c.name}</span>
@@ -1772,7 +1772,7 @@ function SalesReportingTile() {
                 </thead>
                 <tbody>
                   {SALES_DATA.brands.map(b => (
-                    <tr key={b.name} className="border-b border-[#21262D] hover:bg-[#1C1B1A] transition-colors">
+                    <tr key={b.name} className="border-b border-[#38332B] hover:bg-[#1C1B1A] transition-colors">
                       <td className="px-4 py-2.5">
                         <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${b.rank <= 3 ? 'bg-[rgba(212,160,58,0.15)] text-[#D4A03A]' : 'bg-[#282724] text-[#6B6359]'}`}>
                           {b.rank}
@@ -1835,7 +1835,7 @@ function SalesReportingTile() {
                 </thead>
                 <tbody>
                   {displayStores.map(s => (
-                    <tr key={s.name} className="border-b border-[#21262D] hover:bg-[#1C1B1A] transition-colors">
+                    <tr key={s.name} className="border-b border-[#38332B] hover:bg-[#1C1B1A] transition-colors">
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-2">
                           <MapPin size={12} className="text-[#6B6359]" />
@@ -2038,40 +2038,6 @@ function NexusCommandBar({ onAction }) {
   );
 }
 
-// ─── LIVE PULSE STRIP ─── //
-
-const PULSE_METRICS = [
-  { label: 'REVENUE', value: '$47,230', trend: '+12%', up: true, pct: 72 },
-  { label: 'TRANSACTIONS', value: '312', trend: '+8%', up: true, pct: 58 },
-  { label: 'AVG BASKET', value: '$151.38', trend: '+3%', up: true, pct: 85 },
-  { label: 'MARGIN', value: '51.2%', trend: '+0.4%', up: true, pct: 90 },
-  { label: 'STOCKOUTS', value: '3', trend: '', up: false, pct: 15, alert: true },
-];
-
-function LivePulseStrip() {
-  return (
-    <div className="rounded-2xl border border-[#38332B] bg-[#1C1B1A] px-5 py-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
-      <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
-        {PULSE_METRICS.map(m => (
-          <div key={m.label} className="flex items-center gap-2.5">
-            <div>
-              <p className="text-[9px] font-semibold uppercase tracking-[1px] text-[#6B6359]">{m.label}</p>
-              <div className="flex items-baseline gap-1.5">
-                <span className={`text-lg font-extrabold ${m.alert ? 'text-[#E87068]' : 'text-[#F0EDE8]'}`} style={{ fontVariantNumeric: 'tabular-nums' }}>{m.value}</span>
-                {m.trend && <span className={`text-[11px] font-semibold ${m.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{m.trend}</span>}
-                {m.alert && <AlertTriangle className="w-3 h-3 text-[#E87068]" />}
-              </div>
-            </div>
-            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `conic-gradient(${m.alert ? '#E87068' : '#00C27C'} ${m.pct * 3.6}deg, #38332B 0deg)` }}>
-              <div className="w-7 h-7 rounded-full bg-[#1C1B1A] flex items-center justify-center text-[10px] font-bold text-[#ADA599]">{m.pct}%</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── SMART ALERTS & ACTIONS FEED ─── //
 
 const SMART_ALERTS = [
@@ -2197,10 +2163,7 @@ export default function NexusHome({ onOpenNexus }) {
       {/* 3. Nexus Command Bar */}
       <NexusCommandBar onAction={onOpenNexus} />
 
-      {/* 4. Live Pulse Strip */}
-      <LivePulseStrip />
-
-      {/* 5. Smart Alerts */}
+      {/* 4. Smart Alerts */}
       <SmartAlertsFeed onAction={(q) => onOpenNexus && onOpenNexus(q)} />
 
       {/* 6. Store Health Matrix */}

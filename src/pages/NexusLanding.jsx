@@ -178,7 +178,7 @@ function PricingPreview({ color }) {
         <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-[#6B6359]">Your Price</span>
         <span className="absolute left-2 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] text-[#6B6359]">Market</span>
         <svg className="absolute inset-3" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <line x1="5" y1="90" x2="95" y2="5" stroke="#e5e7eb" strokeWidth="1.5" strokeDasharray="4 3" />
+          <line x1="5" y1="90" x2="95" y2="5" stroke="#38332B" strokeWidth="1.5" strokeDasharray="4 3" />
           {dots.map((d, j) => (
             <circle key={j} cx={d.x} cy={d.y} r="3.5" fill={dotColors[d.status]} opacity="0.85" />
           ))}

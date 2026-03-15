@@ -959,7 +959,7 @@ function PricingDashboard() {
                 tick={{ fill: '#6B6359', fontSize: 11 }}
                 tickFormatter={v => `$${v}`}
                 label={{ value: 'Market Avg Price', position: 'bottom', offset: 0, fill: '#ADA599', fontSize: 11 }}
-                stroke="#e5e7eb"
+                stroke="#38332B"
               />
               <YAxis
                 type="number" dataKey="y" name="Your Price"
@@ -967,7 +967,7 @@ function PricingDashboard() {
                 tick={{ fill: '#6B6359', fontSize: 11 }}
                 tickFormatter={v => `$${v}`}
                 label={{ value: 'Your Price', angle: -90, position: 'insideLeft', offset: 10, fill: '#ADA599', fontSize: 11 }}
-                stroke="#e5e7eb"
+                stroke="#38332B"
               />
               <ZAxis type="number" dataKey="z" range={[80, 400]} name="Weekly Units" />
               <RechartsTooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3', stroke: '#484F58' }} />

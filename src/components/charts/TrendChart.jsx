@@ -76,7 +76,7 @@ export default function TrendChart({ data, height = 300 }) {
             <stop offset="95%" stopColor="#00C27C" stopOpacity={0.02} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#38332B" vertical={false} />
         <XAxis
           dataKey="month"
           axisLine={false}
