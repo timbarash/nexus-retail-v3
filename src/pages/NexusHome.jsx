@@ -2050,35 +2050,25 @@ const PULSE_METRICS = [
 
 function LivePulseStrip() {
   return (
-    <NexusTile className="animate-fade-up" style={{ animationDelay: '300ms' }}>
-      <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
-        <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-[#D4A03A]" />
-          <span className="text-xs font-semibold text-[#F0EDE8]">Live Pulse</span>
-        </div>
-        <span className="text-[10px] text-[#6B6359]">{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
-      </div>
-      <div className="px-5 py-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="rounded-2xl border border-[#38332B] bg-[#1C1B1A] px-5 py-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
         {PULSE_METRICS.map(m => (
-          <div key={m.label}>
-            <p className="text-[9px] font-semibold uppercase tracking-[1px] text-[#6B6359] mb-1.5">{m.label}</p>
-            <div className="flex items-baseline gap-1.5 mb-1">
-              <span className={`text-xl font-extrabold ${m.alert ? 'text-[#E87068]' : 'text-[#F0EDE8]'}`} style={{ fontVariantNumeric: 'tabular-nums' }}>{m.value}</span>
-              {m.trend && <span className={`text-[11px] font-semibold ${m.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{m.trend}</span>}
-              {m.alert && <AlertTriangle className="w-3 h-3 text-[#E87068]" />}
+          <div key={m.label} className="flex items-center gap-2.5">
+            <div>
+              <p className="text-[9px] font-semibold uppercase tracking-[1px] text-[#6B6359]">{m.label}</p>
+              <div className="flex items-baseline gap-1.5">
+                <span className={`text-lg font-extrabold ${m.alert ? 'text-[#E87068]' : 'text-[#F0EDE8]'}`} style={{ fontVariantNumeric: 'tabular-nums' }}>{m.value}</span>
+                {m.trend && <span className={`text-[11px] font-semibold ${m.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{m.trend}</span>}
+                {m.alert && <AlertTriangle className="w-3 h-3 text-[#E87068]" />}
+              </div>
             </div>
-            <div className="h-1 rounded-full bg-[#38332B]">
-              <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${m.pct}%`, background: m.alert ? '#E87068' : '#00C27C' }} />
+            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `conic-gradient(${m.alert ? '#E87068' : '#00C27C'} ${m.pct * 3.6}deg, #38332B 0deg)` }}>
+              <div className="w-7 h-7 rounded-full bg-[#1C1B1A] flex items-center justify-center text-[10px] font-bold text-[#ADA599]">{m.pct}%</div>
             </div>
-            <p className="text-[9px] text-[#6B6359] mt-1">{m.pct}% of target</p>
           </div>
         ))}
       </div>
-      <div className="px-5 pb-3 flex justify-between text-[11px]">
-        <span className="text-[#ADA599]">\uD83C\uDFC6 Top: <span className="text-[#F0EDE8] font-semibold">Springfield IL</span> — $8.2K</span>
-        <span className="text-[#ADA599]">\uD83D\uDCC9 Watch: <span className="text-[#E87068] font-semibold">Detroit MI</span> — basket -15%</span>
-      </div>
-    </NexusTile>
+    </div>
   );
 }
 
@@ -2207,15 +2197,11 @@ export default function NexusHome({ onOpenNexus }) {
       {/* 3. Nexus Command Bar */}
       <NexusCommandBar onAction={onOpenNexus} />
 
-      {/* 4 + 5. Pulse Strip & Smart Alerts — side by side */}
-      <div className="grid gap-5 lg:grid-cols-5">
-        <div className="lg:col-span-2">
-          <LivePulseStrip />
-        </div>
-        <div className="lg:col-span-3">
-          <SmartAlertsFeed onAction={(q) => onOpenNexus && onOpenNexus(q)} />
-        </div>
-      </div>
+      {/* 4. Live Pulse Strip */}
+      <LivePulseStrip />
+
+      {/* 5. Smart Alerts */}
+      <SmartAlertsFeed onAction={(q) => onOpenNexus && onOpenNexus(q)} />
 
       {/* 6. Store Health Matrix */}
       <StoreHealthMatrix />
