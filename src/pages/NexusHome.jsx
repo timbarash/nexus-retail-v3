@@ -2054,15 +2054,11 @@ function LivePulseStrip() {
       <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-[#D4A03A]" />
-          <span className="text-xs font-semibold text-[#F0EDE8]">\u25B8 TODAY</span>
+          <span className="text-xs font-semibold text-[#F0EDE8]">Live Pulse</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="relative flex h-1.5 w-1.5"><span className="absolute h-full w-full animate-ping rounded-full bg-[#00C27C] opacity-40" /><span className="h-1.5 w-1.5 rounded-full bg-[#00C27C]" /></span>
-          <span className="text-[10px] text-[#C8C3BA]">Live</span>
-          <span className="text-[10px] text-[#6B6359] ml-1">{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
-        </div>
+        <span className="text-[10px] text-[#6B6359]">{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
       </div>
-      <div className="px-5 py-4 grid grid-cols-5 gap-4">
+      <div className="px-5 py-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {PULSE_METRICS.map(m => (
           <div key={m.label}>
             <p className="text-[9px] font-semibold uppercase tracking-[1px] text-[#6B6359] mb-1.5">{m.label}</p>
@@ -2160,10 +2156,10 @@ function StoreHealthMatrix() {
   }, []);
 
   return (
-    <NexusTile className="animate-fade-up lg:col-span-2" style={{ animationDelay: '400ms' }}>
+    <NexusTile className="animate-fade-up" style={{ animationDelay: '400ms' }}>
       <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
         <div className="flex items-center gap-2">
-          <Store className="w-4 h-4 text-[#00C27C]" />
+          <Store className="w-4 h-4 text-[#D4A03A]" />
           <span className="text-xs font-semibold text-[#F0EDE8]">Store Health Matrix</span>
         </div>
         <div className="flex gap-3 text-[10px]">
@@ -2222,9 +2218,7 @@ export default function NexusHome({ onOpenNexus }) {
       </div>
 
       {/* 6. Store Health Matrix */}
-      <div className="grid gap-5 lg:grid-cols-2">
-        <StoreHealthMatrix />
-      </div>
+      <StoreHealthMatrix />
 
       {/* 7. Sales Reporting — kept from v2 */}
       <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mt-1">Performance</p>
