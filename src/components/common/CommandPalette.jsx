@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, ArrowRight, Hash, LayoutDashboard, BarChart3, MapPin, Star, Zap, ShoppingCart, DollarSign, Megaphone, Users, Bot } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Search, ArrowRight, Hash, LayoutDashboard, BarChart3, MapPin, Star, Zap, ShoppingCart, DollarSign, Megaphone, Users } from 'lucide-react';
 import { DTCH_SPACES } from '../../data/dtchMockData';
 
 const PAGES = [
@@ -137,13 +137,13 @@ export default function CommandPalette({ isOpen, onClose, navigate, onOpenSpace 
                     onMouseEnter={() => setSelectedIndex(idx)}
                     className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
                       idx === selectedIndex
-                        ? 'bg-[#00C27C]/10 text-[#F0EDE8]'
+                        ? 'bg-[#D4A03A]/10 text-[#F0EDE8]'
                         : 'text-[#F0EDE8] hover:bg-[#282724]'
                     }`}
                   >
                     <Icon className="w-4 h-4 text-[#ADA599] flex-shrink-0" />
                     <span className="flex-1 text-left truncate">{item.label}</span>
-                    <ArrowRight className={`w-3 h-3 transition-opacity ${idx === selectedIndex ? 'opacity-100 text-[#00C27C]' : 'opacity-0'}`} />
+                    <ArrowRight className={`w-3 h-3 transition-opacity ${idx === selectedIndex ? 'opacity-100 text-[#D4A03A]' : 'opacity-0'}`} />
                   </button>
                 );
               })}

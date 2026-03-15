@@ -284,7 +284,7 @@ function detectIntent(text) {
 let ticketCounter = 5200;
 function generateTicketId() {
   ticketCounter += Math.floor(Math.random() * 10) + 1;
-  return `CB-${ticketCounter}`;
+  return `NC-${ticketCounter}`;
 }
 
 /* ─── Report Data Generator (ported from CustomerBridge.jsx) ─── */
@@ -531,7 +531,7 @@ function generateSupportResponse(userText) {
     articles = ['Compliance Dashboard', 'State Reporting', 'Label Requirements'];
   } else if (/\b(hi|hello|hey|thanks|thank you|good morning|good afternoon)\b/.test(lower)) {
     return {
-      text: `Hey there! I'm Customer Bridge, your AI assistant. I can help with campaigns, inventory, reports, reviews, sentiment analysis, and more. Just ask me anything!`,
+      text: `Hey there! I'm Nexus Chat, your AI assistant. I can help with campaigns, inventory, reports, reviews, sentiment analysis, and more. Just ask me anything!`,
       component: null,
       data: null,
     };

@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePortal } from '../contexts/PortalContext';
 import {
-  Bot, Sparkles, Send, ArrowLeft, ChevronRight, Zap, TrendingUp,
+  Sparkles, Send, ChevronRight, Zap, TrendingUp,
   CheckCircle2, Clock, DollarSign, BarChart3, Star,
   ChevronDown, ChevronUp, Check, X, Search,
-  ShoppingCart, Award, Percent, Eye, Phone, Mail, Globe,
-  ArrowRight, Package, AlertTriangle, MessageSquare,
-  BookOpen, Wrench, Rocket, Factory, Shield, CreditCard,
-  Smartphone, Monitor, ToggleLeft, ToggleRight, ExternalLink,
-  FileText, Tag, Ticket, Bug, Lightbulb, HelpCircle, Settings,
-  Layers, PanelRight, ChevronLeft, Power, Lock, Unlock, Megaphone,
+  ShoppingCart, Eye,
+  Package, AlertTriangle, MessageSquare,
+  BookOpen, Rocket, Factory, Shield, CreditCard,
+  Smartphone, Monitor, ExternalLink,
+  FileText, Tag, Ticket, Bug, Lightbulb, Settings,
+  Layers, PanelRight, Megaphone,
   Upload, Image, Info, MapPin, User, Hash
 } from 'lucide-react';
-import { AreaChart, Area, BarChart, Bar, PieChart, Pie, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
+import { AreaChart, Area, PieChart, Pie, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
 import { generateBridgeResponse, generateMarketingCampaignPlan, generateConnectAnalysis, generatePricingAnalysis, isGeminiAvailable } from '../utils/gemini';
 import { CampaignPlan, CAMPAIGNS } from './MarketingCampaigns';
 import { ReorderView, ExploreView, RecommendationsView } from './ConnectAgent';

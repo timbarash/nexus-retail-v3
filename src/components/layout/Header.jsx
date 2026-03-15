@@ -1,4 +1,3 @@
-import React from 'react';
 import { Menu, Search } from 'lucide-react';
 import StoreSelector from './StoreSelector';
 import DateRangeSelector from './DateRangeSelector';

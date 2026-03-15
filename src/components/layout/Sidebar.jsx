@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { BarChart3, Tag, MapPin, MessageSquare, Trophy, X, Zap, Bot, Megaphone, ShoppingCart, CircleDollarSign, Waypoints, Hash, Globe, Briefcase } from 'lucide-react';
 import { CHANNELS } from '../../data/slackMockData';
@@ -81,7 +80,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
                   <>
                     <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-colors duration-150 ${isActive ? 'text-white/90' : 'text-white/40 group-hover:text-white/70'}`} strokeWidth={isActive ? 2.2 : 1.8} />
                     <span>{label}</span>
-                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00C27C]" />}
+                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#D4A03A]" />}
                   </>
                 )}
               </NavLink>
@@ -109,11 +108,11 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
         </button>
         <button
           onClick={() => { if (onDtchOpen) onDtchOpen(); if (onClose) onClose(); }}
-          className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-white/60 hover:bg-[#00C27C]/[0.08] hover:text-white/90 transition-all duration-150"
+          className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium text-white/60 hover:bg-[#D4A03A]/[0.08] hover:text-white/90 transition-all duration-150"
         >
           <MessageSquare className="w-[18px] h-[18px] flex-shrink-0 text-white/40 group-hover:text-white/70" />
           <span>DTCH Team Chat</span>
-          <span className="ml-auto text-[9px] font-bold text-[#00C27C] bg-[#00C27C]/10 rounded px-1.5 py-0.5" style={{ boxShadow: '0 0 8px rgba(0,194,124,0.15)' }}>NEW</span>
+          <span className="ml-auto text-[9px] font-bold text-[#D4A03A] bg-[#D4A03A]/10 rounded px-1.5 py-0.5" style={{ boxShadow: '0 0 8px rgba(212,160,58,0.15)' }}>NEW</span>
         </button>
       </div>
 
@@ -160,7 +159,7 @@ export default function Sidebar({ open, onClose, onSlackOpen, onDtchOpen }) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-[#042017] border-r border-white/[0.08] z-30">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-[#141210] border-r border-white/[0.08] z-30">
         <SidebarContent onSlackOpen={onSlackOpen} onDtchOpen={onDtchOpen} />
       </aside>
       <div className="hidden lg:block lg:w-64 lg:flex-shrink-0" />
@@ -169,7 +168,7 @@ export default function Sidebar({ open, onClose, onSlackOpen, onDtchOpen }) {
       {open && (
         <>
           <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden" onClick={onClose} aria-hidden="true" />
-          <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-[#042017] shadow-2xl lg:hidden animate-slide-in">
+          <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-[#141210] shadow-2xl lg:hidden animate-slide-in">
             <SidebarContent onClose={onClose} onSlackOpen={onSlackOpen} onDtchOpen={onDtchOpen} />
           </aside>
         </>

@@ -83,7 +83,7 @@ const CATCH_UP_SUMMARIES = {
     `**Vendor Alley** recap (${count} messages):\n\n• PO #4892 submitted to GreenLeaf — Blue Dream + Sour Diesel, ETA Thursday\n• Vendor scorecard: GreenLeaf 94% on-time, Kiva 88% on-time (higher quality)\n• New vendor application from Pacific Roots — samples arriving next week\n\nSofia is asking Rachel about scheduling a tasting.`,
 
   'ai-alerts': (count, names) =>
-    `**AI Alerts** digest (${count} messages):\n\n• Weekly sales: $62,800 revenue (+8.2% WoW), 1,080 orders\n• Weekly sentiment: **4.3/5.0** (+0.2), 78% positive reviews\n• Bug ticket CB-5201 filed for POS sync delay\n• 🔴 1-star review flagged — 45-min wait time, root cause: POS sync delay\n• Positive trend: "Delivery speed" mentions up **34%**\n• I recommended increasing Kiva Camino Gummies order by 25%\n\nLisa is drafting a response to the negative review.`,
+    `**AI Alerts** digest (${count} messages):\n\n• Weekly sales: $62,800 revenue (+8.2% WoW), 1,080 orders\n• Weekly sentiment: **4.3/5.0** (+0.2), 78% positive reviews\n• Bug ticket NC-5201 filed for POS sync delay\n• 🔴 1-star review flagged — 45-min wait time, root cause: POS sync delay\n• Positive trend: "Delivery speed" mentions up **34%**\n• I recommended increasing Kiva Camino Gummies order by 25%\n\nLisa is drafting a response to the negative review.`,
 };
 
 // Build initial messages-by-space from seeded data

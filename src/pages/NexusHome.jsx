@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import CustomerBridge from './CustomerBridge';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStores } from '../contexts/StoreContext';
 import { useDateRange } from '../contexts/DateRangeContext';
 import { locations } from '../data/mockData';
@@ -11,13 +10,12 @@ import {
   PieChart, Pie,
 } from 'recharts';
 import {
-  TrendingUp, TrendingDown, AlertTriangle, ShoppingBag, PhoneCall,
-  Users, Package, DollarSign, Zap, ArrowRight, Star, MessageSquare,
-  BarChart3, Target, Send, Sparkles, ChevronRight, MapPin, ThumbsUp,
-  ThumbsDown, Clock, Bot, Mic, AlertCircle, ExternalLink, ArrowUpRight,
-  ArrowDownRight, Minus, CheckCircle2, Eye, Smartphone, QrCode, Monitor,
-  Layers, Hash, Radio, Wifi, Activity, Percent, Receipt, Store,
-  Megaphone, ShoppingCart, ChevronDown, Shield, Lock, Heart, Rocket,
+  TrendingUp, AlertTriangle, ShoppingBag, Package, DollarSign,
+  Star, MessageSquare, BarChart3, Send, Sparkles, ChevronRight,
+  MapPin, ThumbsUp, ThumbsDown, Mic, AlertCircle, ArrowUpRight,
+  ArrowDownRight, Minus, CheckCircle2, Smartphone, QrCode, Monitor,
+  Layers, Radio, Activity, Percent, Receipt, Store,
+  Megaphone, ShoppingCart, ChevronDown, Rocket,
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
 
@@ -510,261 +508,8 @@ function StatRow({ label, value, sub, trend, color }) {
 }
 
 // ---------------------------------------------------------------------------
-// Account Health + Integration + Feature Adoption + Peer Benchmark Tiles
-// ---------------------------------------------------------------------------
-
-function AccountHealthTile() {
-  const score = 82;
-  const color = score >= 80 ? '#00C27C' : score >= 60 ? '#D4A03A' : '#E87068';
-  const gaugeData = [
-    { name: 'score', value: score },
-    { name: 'rest', value: 100 - score },
-  ];
-  const subMetrics = [
-    { label: 'POS Uptime', value: '99.7%', color: '#00C27C' },
-    { label: 'Ecomm Conv.', value: '3.2%', color: '#64A8E0' },
-    { label: 'Payment Vol.', value: '$142K', color: '#B598E8' },
-    { label: 'Support Vel.', value: '4.2h', color: '#D4A03A' },
-  ];
-  return (
-    <NexusTile>
-      <TileHeader icon={Heart} title="Account Health" subtitle="Overall Score" />
-      <div className="flex items-center gap-4 mt-3">
-        <div className="relative w-24 h-24 flex-shrink-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie data={gaugeData} innerRadius={30} outerRadius={42} startAngle={90} endAngle={-270} dataKey="value" stroke="none">
-                <Cell fill={color} />
-                <Cell fill="#21262D" />
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xl font-bold" style={{ color }}>{score}</span>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-2 flex-1">
-          {subMetrics.map(m => (
-            <div key={m.label} className="bg-[#1C1B1A] rounded-lg p-2 text-center border border-[#21262D]">
-              <p className="text-sm font-bold text-[#F0EDE8]">{m.value}</p>
-              <p className="text-[10px] text-[#ADA599] uppercase">{m.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </NexusTile>
-  );
-}
-
-function IntegrationStatusTile() {
-  const integrations = [
-    { name: 'POS System', detail: '3 registers', status: 'partial', sub: '1 offline', icon: Monitor },
-    { name: 'Ecommerce Sync', detail: 'Healthy', status: 'ok', sub: 'Last sync 2m ago', icon: ShoppingCart },
-    { name: 'Payments', detail: '2 terminals', status: 'ok', sub: 'All online', icon: Receipt },
-    { name: 'METRC', detail: 'Connected', status: 'warn', sub: '3 pending manifests', icon: Shield },
-  ];
-  const statusDot = { ok: 'bg-[#00C27C]', partial: 'bg-[#E87068]', warn: 'bg-[#D4A03A]' };
-  return (
-    <NexusTile>
-      <TileHeader icon={Wifi} title="Integration Status" subtitle="System Health" />
-      <div className="space-y-2.5 mt-3">
-        {integrations.map(i => {
-          const Icon = i.icon;
-          return (
-            <div key={i.name} className={`flex items-center gap-3 p-2.5 rounded-lg border ${i.status === 'partial' ? 'border-[#E87068]/30 bg-[#E87068]/[0.04]' : 'border-[#21262D] bg-[#1C1B1A]'}`}>
-              <Icon className="w-4 h-4 text-[#ADA599] flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-[#F0EDE8]">{i.name} — {i.detail}</p>
-                <p className="text-[10px] text-[#ADA599]">{i.sub}</p>
-              </div>
-              <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${statusDot[i.status]}`} />
-            </div>
-          );
-        })}
-      </div>
-    </NexusTile>
-  );
-}
-
-function FeatureAdoptionTile() {
-  const features = [
-    { name: 'POS', pct: 92, color: '#00C27C' },
-    { name: 'Ecommerce', pct: 78, color: '#00C27C' },
-    { name: 'Payments', pct: 45, color: '#D4A03A' },
-    { name: 'Analytics', pct: 31, color: '#D4A03A' },
-    { name: 'White Label', pct: 0, color: '#484F58' },
-    { name: 'Menu Boards', pct: 0, color: '#484F58' },
-  ];
-  return (
-    <NexusTile>
-      <TileHeader icon={Layers} title="Feature Adoption" subtitle="Product Utilization" />
-      <div className="space-y-2 mt-3">
-        {features.map(f => (
-          <div key={f.name} className="flex items-center gap-2 text-xs">
-            <span className="text-[#ADA599] w-20 text-right truncate">{f.name}</span>
-            <div className="flex-1 bg-[#282724] rounded-full h-2 overflow-hidden">
-              <div className="h-full rounded-full transition-all" style={{ width: `${f.pct}%`, backgroundColor: f.color }} />
-            </div>
-            <span className="text-[#F0EDE8] w-8 text-right font-medium">{f.pct > 0 ? `${f.pct}%` : 'Off'}</span>
-          </div>
-        ))}
-      </div>
-    </NexusTile>
-  );
-}
-
-function PeerBenchmarkTile() {
-  const benchmarks = [
-    { metric: 'Avg Basket', yours: '$83', peers: '$78', pctile: 72 },
-    { metric: 'Conversion', yours: '3.2%', peers: '2.8%', pctile: 81 },
-    { metric: 'Google Rating', yours: '4.3', peers: '4.1', pctile: 68 },
-  ];
-  const badgeColor = p => p >= 75 ? 'bg-[#00C27C]/15 text-[#00C27C]' : p >= 50 ? 'bg-[#D4A03A]/15 text-[#D4A03A]' : 'bg-[#E87068]/15 text-[#E87068]';
-  return (
-    <NexusTile>
-      <TileHeader icon={Users} title="Peer Benchmarks" subtitle="Stores Like Yours" />
-      <div className="space-y-3 mt-3">
-        {benchmarks.map(b => (
-          <div key={b.metric} className="flex items-center justify-between p-2.5 rounded-lg bg-[#1C1B1A] border border-[#21262D]">
-            <div>
-              <p className="text-xs font-medium text-[#F0EDE8]">{b.metric}</p>
-              <p className="text-[10px] text-[#ADA599]">You: {b.yours} vs Peers: {b.peers}</p>
-            </div>
-            <span className={`text-xs font-bold px-2 py-0.5 rounded ${badgeColor(b.pctile)}`}>
-              P{b.pctile}
-            </span>
-          </div>
-        ))}
-      </div>
-    </NexusTile>
-  );
-}
-
-function LockedTile({ icon: Icon, title, desc }) {
-  return (
-    <div className="relative rounded-2xl border border-[#38332B] bg-[#141210] p-4 opacity-50">
-      <div className="absolute top-3 right-3">
-        <Lock className="w-3.5 h-3.5 text-[#6B6359]" />
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-[#1C1B1A] flex items-center justify-center flex-shrink-0">
-          <Icon className="w-4 h-4 text-[#6B6359]" />
-        </div>
-        <div>
-          <p className="text-sm font-medium text-[#ADA599]">{title}</p>
-          <p className="text-[10px] text-[#6B6359]">{desc}</p>
-        </div>
-      </div>
-      <span className="mt-2 inline-block text-[9px] uppercase font-bold tracking-wider text-[#6B6359] bg-[#1C1B1A] rounded px-1.5 py-0.5">Phase 3</span>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Individual Tiles
 // ---------------------------------------------------------------------------
-
-function SalesTodayTile() {
-  const { selectedStoreNames, isAllSelected, selectionLabel } = useStores();
-  const { dateMultiplier, periodLabel, rangeLabel } = useDateRange();
-
-  const ctx = useMemo(() => {
-    const active = STORE_METRICS.filter(s => selectedStoreNames.has(s.name));
-    const totalAllRev = STORE_METRICS.reduce((sum, s) => sum + s.revenue, 0);
-    const selRev = active.reduce((sum, s) => sum + s.revenue, 0);
-    const ratio = totalAllRev > 0 ? selRev / totalAllRev : 0;
-
-    const sorted = [...active].sort((a, b) => b.revenue - a.revenue);
-    const top = sorted[0];
-    const bottom = sorted[sorted.length - 1];
-
-    const todaySales = Math.round(NEXUS_DATA.todaySales * ratio * dateMultiplier);
-    const salesGoal = Math.round(NEXUS_DATA.salesGoal * ratio * dateMultiplier);
-
-    return {
-      todaySales,
-      salesGoal,
-      topStore: top ? `${top.name}, ${top.state}` : '—',
-      topStoreRevenue: top && selRev > 0 ? Math.round(todaySales * (top.revenue / selRev)) : 0,
-      underperformer: bottom && sorted.length > 1 ? `${bottom.name}, ${bottom.state}` : '—',
-      underperformerDelta: bottom ? Math.round(bottom.vsBenchmark) : 0,
-      trafficToday: Math.round(NEXUS_DATA.traffic.today * ratio * dateMultiplier),
-      trafficYesterday: Math.round(NEXUS_DATA.traffic.yesterday * ratio * dateMultiplier),
-    };
-  }, [selectedStoreNames, isAllSelected, dateMultiplier]);
-
-  const pct = ctx.salesGoal > 0 ? Math.round((ctx.todaySales / ctx.salesGoal) * 100) : 0;
-
-  return (
-    <NexusTile span={2}>
-      <TileHeader
-        icon={BarChart3}
-        title="Contextualized Insights"
-        subtitle={`${rangeLabel} — ${selectionLabel}`}
-        iconBg="bg-[#00C27C]/10 text-[#00C27C]"
-      />
-      <div className="grid gap-6 p-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-[#6B6359]">Sales</p>
-          <p className="mt-1 text-3xl font-bold text-[#F0EDE8]">{fmtDollar(ctx.todaySales)}</p>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#1C1B1A]">
-            <div className="h-full rounded-full bg-[#00C27C] transition-all" style={{ width: `${pct}%` }} />
-          </div>
-          <p className="mt-1 text-xs text-[#6B6359]">{pct}% of {fmtDollar(ctx.salesGoal)} goal</p>
-        </div>
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-[#6B6359]">Top Store</p>
-          <p className="mt-1 text-lg font-bold text-[#F0EDE8]">{ctx.topStore}</p>
-          <p className="text-sm text-[#00C27C]">{fmtDollar(ctx.topStoreRevenue)}</p>
-        </div>
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-[#6B6359]">Traffic</p>
-          <p className="mt-1 text-3xl font-bold text-[#F0EDE8]">{ctx.trafficToday}</p>
-          <p className="text-xs text-[#00C27C]">
-            <TrendingUp size={12} className="inline mr-0.5" />
-            +{ctx.trafficToday - ctx.trafficYesterday} {periodLabel}
-          </p>
-        </div>
-        <div className="rounded-xl bg-[rgba(232,112,104,0.12)] p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-[#E87068]">Needs Attention</p>
-          <p className="mt-1 text-lg font-bold text-[#E87068]">{ctx.underperformer}</p>
-          <p className="text-sm text-[#E87068]">{ctx.underperformerDelta}% below avg</p>
-          <button className="mt-2 rounded-lg bg-[rgba(232,112,104,0.12)] px-3 py-1 text-xs font-semibold text-[#E87068] hover:bg-[#38332B] transition-colors">
-            Investigate
-          </button>
-        </div>
-      </div>
-    </NexusTile>
-  );
-}
-
-function VoiceAITile() {
-  return (
-    <NexusTile>
-      <TileHeader
-        icon={PhoneCall}
-        title="Voice AI Ordering"
-        subtitle="Dutchie Voice AI performance"
-        iconBg="bg-[#00C27C]/10 text-[#00C27C]"
-        action={() => {}}
-        actionLabel="Deep Dive"
-      />
-      <div className="p-6 space-y-1">
-        <StatRow label="Total Calls" value={NEXUS_DATA.voiceCalls} />
-        <StatRow label="Orders Placed" value={NEXUS_DATA.voiceOrders} sub={`${Math.round((NEXUS_DATA.voiceOrders / NEXUS_DATA.voiceCalls) * 100)}% conversion`} />
-        <StatRow label="Voice Revenue" value={`$${NEXUS_DATA.voiceRevenue.toLocaleString()}`} color="text-[#00C27C]" />
-        <StatRow label="Avg Order" value={`$${NEXUS_DATA.voiceAvgOrder}`} />
-        <StatRow label="Resolution" value={`${NEXUS_DATA.voiceResolution}%`} />
-        <div className="mt-3 flex items-center gap-2 rounded-xl bg-[#00C27C]/5 p-3">
-          <Bot size={16} className="text-[#00C27C]" />
-          <p className="text-xs text-[#F0EDE8]">
-            <span className="font-semibold">AI Insight:</span> Voice orders have 18% higher AOV than online orders. Consider promoting phone ordering during peak hours.
-          </p>
-        </div>
-      </div>
-    </NexusTile>
-  );
-}
 
 function SentimentTile() {
   const { selectedStoreNames } = useStores();
@@ -819,7 +564,7 @@ function SentimentTile() {
           <div className="flex items-center gap-5">
             <div className="relative flex h-24 w-24 flex-shrink-0 items-center justify-center">
               <svg className="h-24 w-24 -rotate-90" viewBox="0 0 96 96">
-                <circle cx="48" cy="48" r="40" fill="none" stroke="#e5e7eb" strokeWidth="8" />
+                <circle cx="48" cy="48" r="40" fill="none" stroke="#38332B" strokeWidth="8" />
                 <circle cx="48" cy="48" r="40" fill="none" stroke="#00E08E" strokeWidth="8"
                   strokeDasharray={`${(NEXUS_DATA.overallSentiment / 100) * 251.3} 251.3`}
                   strokeLinecap="round"
@@ -1346,7 +1091,7 @@ function UnifiedPipelineTile() {
           <div className="flex flex-col items-center justify-center">
             <div className="relative flex h-28 w-28 items-center justify-center mb-3">
               <svg className="h-28 w-28 -rotate-90" viewBox="0 0 112 112">
-                <circle cx="56" cy="56" r="48" fill="none" stroke="#e5e7eb" strokeWidth="10" />
+                <circle cx="56" cy="56" r="48" fill="none" stroke="#38332B" strokeWidth="10" />
                 <circle cx="56" cy="56" r="48" fill="none" stroke="#00E08E" strokeWidth="10"
                   strokeDasharray={`${(d.unifiedScore / 100) * 301.6} 301.6`}
                   strokeLinecap="round"
@@ -1499,37 +1244,6 @@ function InventoryTile() {
   );
 }
 
-function LoyaltyTile() {
-  return (
-    <NexusTile>
-      <TileHeader
-        icon={Users}
-        title="Loyalty Score"
-        subtitle="Customer retention health"
-        iconBg="bg-[rgba(163,113,247,0.12)] text-[#B598E8]"
-        action={() => {}}
-        actionLabel="Win-back Campaign"
-        badge={{ count: '!', color: 'bg-[#D4A03A]' }}
-      />
-      <div className="p-6 space-y-1">
-        <StatRow label="Active Members" value={NEXUS_DATA.activeMembers.toLocaleString()} />
-        <StatRow label="Loyalty Score" value={NEXUS_DATA.loyaltyScore} trend={NEXUS_DATA.loyaltyTrend} />
-        <StatRow label="Avg Visit Freq" value={`${NEXUS_DATA.avgVisitFreq}x/mo`} />
-        <div className="mt-3 rounded-xl border border-[#38332B] bg-[rgba(232,112,104,0.12)]/50 p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertTriangle size={14} className="text-[#E87068]" />
-              <span className="text-sm font-semibold text-[#E87068]">At-risk customers</span>
-            </div>
-            <span className="text-lg font-bold text-[#E87068]">{NEXUS_DATA.atRiskCustomers.toLocaleString()}</span>
-          </div>
-          <p className="mt-1 text-xs text-[#E87068]">Haven't visited in 30+ days</p>
-        </div>
-      </div>
-    </NexusTile>
-  );
-}
-
 function PricingTile() {
   const navigate = useNavigate();
 
@@ -1590,7 +1304,7 @@ function PricingTile() {
                 tick={{ fill: '#ADA599', fontSize: 9 }}
                 tickFormatter={v => `$${v}`}
                 label={{ value: 'Market', position: 'bottom', offset: 0, fill: '#ADA599', fontSize: 9 }}
-                stroke="#e5e7eb"
+                stroke="#38332B"
               />
               <YAxis
                 type="number" dataKey="y" name="Your Price"
@@ -1598,7 +1312,7 @@ function PricingTile() {
                 tick={{ fill: '#ADA599', fontSize: 9 }}
                 tickFormatter={v => `$${v}`}
                 label={{ value: 'You', angle: -90, position: 'insideLeft', offset: 8, fill: '#ADA599', fontSize: 9 }}
-                stroke="#e5e7eb"
+                stroke="#38332B"
                 width={32}
               />
               <ZAxis type="number" dataKey="z" range={[40, 200]} name="Weekly Units" />
@@ -1634,31 +1348,6 @@ function PricingTile() {
             <span className="text-[#ADA599]">Wasted:</span>
             <span className="text-[#E87068] font-semibold">{fmtDollar(NEXUS_DATA.discountWaste)}</span>
           </div>
-        </div>
-      </div>
-    </NexusTile>
-  );
-}
-
-function BrandTile() {
-  return (
-    <NexusTile>
-      <TileHeader
-        icon={Star}
-        title="Brand Awareness"
-        subtitle="Partner performance"
-        iconBg="bg-[rgba(100,168,224,0.12)] text-[#64A8E0]"
-        action={() => {}}
-        actionLabel="View Brands"
-      />
-      <div className="p-6 space-y-1">
-        <StatRow label="Top Brand" value={NEXUS_DATA.topBrand} sub={`Score: ${NEXUS_DATA.topBrandScore}/100`} />
-        <StatRow label="Brand Funding" value={`$${NEXUS_DATA.brandFundingAvailable.toLocaleString()}`} color="text-[#00C27C]" sub="Available credits" />
-        <div className="mt-3 flex items-center gap-2 rounded-xl bg-[rgba(100,168,224,0.08)] p-3">
-          <Sparkles size={16} className="text-[#64A8E0]" />
-          <p className="text-xs text-[#64A8E0]/80">
-            <span className="font-semibold">Opportunity:</span> Ozone has $1,200 in unused brand-funded credits. Apply to top SKUs to boost margin.
-          </p>
         </div>
       </div>
     </NexusTile>
@@ -1745,7 +1434,6 @@ function SalesReportingTile() {
 
   const activeCM = CHART_METRICS.find(m => m.key === chartMetric);
 
-  const periodLabels = {}; // period selection now driven by global date range
   const tabs = [
     { key: 'overview', label: 'Overview' },
     { key: 'categories', label: 'Categories' },
@@ -1901,9 +1589,9 @@ function SalesReportingTile() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#21262D" vertical={false} />
-                    <XAxis dataKey="time" tick={{ fill: '#ADA599', fontSize: 10 }} stroke="#e5e7eb" />
+                    <XAxis dataKey="time" tick={{ fill: '#ADA599', fontSize: 10 }} stroke="#38332B" />
                     <YAxis
-                      tick={{ fill: '#ADA599', fontSize: 10 }} stroke="#e5e7eb"
+                      tick={{ fill: '#ADA599', fontSize: 10 }} stroke="#38332B"
                       tickFormatter={activeCM.format}
                       width={52}
                     />
@@ -2021,8 +1709,8 @@ function SalesReportingTile() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={CATEGORY_BAR_DATA} margin={{ top: 4, right: 4, bottom: 4, left: 4 }} barGap={2}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#21262D" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fill: '#6B6359', fontSize: 10 }} stroke="#e5e7eb" />
-                    <YAxis tick={{ fill: '#ADA599', fontSize: 10 }} stroke="#e5e7eb" tickFormatter={v => `${v}%`} />
+                    <XAxis dataKey="name" tick={{ fill: '#6B6359', fontSize: 10 }} stroke="#38332B" />
+                    <YAxis tick={{ fill: '#ADA599', fontSize: 10 }} stroke="#38332B" tickFormatter={v => `${v}%`} />
                     <RechartsTooltip content={<CatTooltip />} cursor={{ fill: 'rgba(100,168,224,0.06)' }} />
                     <Bar dataKey="yourShare" name="Your Share" fill="#64A8E0" radius={[3, 3, 0, 0]} maxBarSize={28} />
                     <Bar dataKey="marketShare" name="Market Share" fill="#484F58" radius={[3, 3, 0, 0]} maxBarSize={28} />

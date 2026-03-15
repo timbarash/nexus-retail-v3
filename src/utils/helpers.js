@@ -229,18 +229,6 @@ export function getTopWords(reviews, limit = 40) {
 }
 
 /**
- * Format an ISO date string for display.
- * @param {string} dateStr - ISO date string (YYYY-MM-DD)
- * @returns {string} Formatted date like "Jun 15, 2025"
- */
-export function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const date = new Date(dateStr + 'T00:00:00');
-  const options = { month: 'short', day: 'numeric', year: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
-}
-
-/**
  * Get sentiment color for charts and badges.
  * @param {string} sentiment - 'positive' | 'neutral' | 'negative'
  * @returns {string} Hex color code

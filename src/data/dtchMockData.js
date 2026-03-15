@@ -26,8 +26,6 @@ export const DTCH_SPACES = [
   { id: 'ai-alerts',        name: 'AI Alerts',        emoji: '🤖', section: 'AI',  description: 'AI-powered insights, reports, sentiment, and automated alerts' },
 ];
 
-export const DTCH_SECTIONS = ['Hub', 'Ops', 'AI'];
-
 /* ─── Routing Config — Intent → Target Space ─── */
 
 export const INTENT_ROUTING = {

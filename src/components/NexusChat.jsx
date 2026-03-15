@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { X, RotateCcw } from 'lucide-react';
 import CustomerBridge from '../pages/CustomerBridge';
 import NexusIcon from './NexusIcon';

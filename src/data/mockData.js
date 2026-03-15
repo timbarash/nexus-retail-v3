@@ -59,8 +59,6 @@ export const locations = [
   { name: 'Ascend Whitehall (Outlet)', state: 'PA', city: 'Whitehall' },
 ];
 
-export const competitors = ['Curaleaf', 'Cresco Labs', 'Green Thumb', 'Trulieve', 'Verano'];
-
 // Subreddits per state
 const subredditsByState = {
   IL: ['r/ILTrees', 'r/chicagotrees', 'r/trees', 'r/cannabis'],

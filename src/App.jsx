@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import NexusChat from './components/NexusChat';
 import NexusIcon from './components/NexusIcon';
@@ -20,12 +20,10 @@ import CustomerBridge from './pages/CustomerBridge';
 import PricingAgent from './pages/PricingAgent';
 import CustomerPortal from './pages/CustomerPortal';
 import NexusLanding from './pages/NexusLanding';
-import { reviews as allReviews, sources, brands, locations, categories } from './data/mockData';
+import { reviews as allReviews } from './data/mockData';
 import { filterReviews } from './utils/helpers';
 import { useStores } from './contexts/StoreContext';
 import { useDateRange } from './contexts/DateRangeContext';
-import DesignReview from './pages/DesignReview';
-import NexusRedesignReview from './pages/NexusRedesignReview';
 import NexusMobileApp from './pages/NexusMobileApp';
 import SlackPanel from './components/slack/SlackPanel';
 import DtchPanel from './components/dtch/DtchPanel';
@@ -84,8 +82,6 @@ export default function App() {
   );
 
   // Standalone pages rendered outside the app shell (no sidebar, header, footer, banner)
-  if (location.pathname === '/design-review') return <DesignReview />;
-  if (location.pathname === '/nexus-redesign') return <NexusRedesignReview />;
   if (location.pathname === '/nexus-landing') return <NexusLanding />;
   if (location.pathname === '/nexus-mobile') return <NexusMobileApp />;
 
@@ -112,8 +108,6 @@ export default function App() {
             <Route path="/agents/connect" element={<ConnectAgent />} />
             <Route path="/agents/bridge" element={<CustomerBridge />} />
             <Route path="/portal" element={<CustomerPortal />} />
-            <Route path="/nexus-landing" element={<NexusLanding />} />
-            <Route path="/pricing" element={<PricingAgent mode="agent" />} />
             <Route path="/agents/pricing" element={<PricingAgent mode="agent" />} />
             <Route path="/overview" element={<Overview reviews={filteredReviews} allReviews={allReviews} filters={filters} onFilterChange={setFilters} />} />
             <Route path="/brands" element={<BrandAnalysis reviews={filteredReviews} />} />

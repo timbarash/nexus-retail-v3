@@ -241,7 +241,7 @@ export default function DtchMessageList({
         {typingIndicator && (
           <div className="flex items-center gap-3 px-4 py-2">
             <div className="w-9 h-9 rounded-lg bg-[#00C27C] flex items-center justify-center flex-shrink-0">
-              <span className="text-[11px] font-bold text-white">{typingUser ? typingUser.split(' ').map(n => n[0]).join('') : 'CB'}</span>
+              <span className="text-[11px] font-bold text-white">{typingUser ? typingUser.split(' ').map(n => n[0]).join('') : 'NC'}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="flex gap-1">

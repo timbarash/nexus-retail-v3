@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════
 //  SLACK BRIDGE ENGINE — Intent Detection & Response Generation
-//  Ports the Customer Bridge logic into Slack-formatted messages
+//  Ports the Nexus Chat logic into Slack-formatted messages
 // ═══════════════════════════════════════════════════════════════════
 
 import { TEAM_MEMBERS, WORKFLOW_ROUTING } from '../../data/slackMockData';
@@ -127,7 +127,7 @@ function generateMarketingResponse(userText) {
         { label: 'Launch Window', value: launchWindow },
         { label: 'Projected Revenue', value: projectedRevenue },
       ],
-      footer: 'Customer Bridge • Campaign Engine v2.4',
+      footer: 'Nexus Chat • Campaign Engine v2.4',
     },
     deepLink: {
       type: 'campaign',
@@ -182,7 +182,7 @@ function generateReportingResponse(userText) {
         { label: 'Top Seller', value: topProduct },
         { label: 'Customer Satisfaction', value: '4.3 / 5.0 (NPS: +42)' },
       ],
-      footer: 'Customer Bridge • Analytics Engine',
+      footer: 'Nexus Chat • Analytics Engine',
     },
     deepLink: {
       type: 'report',
@@ -235,7 +235,7 @@ function generateReviewsResponse(userText) {
         { label: 'Sample', value: sampleReview },
         { label: 'Sources', value: 'Google (52%), Leafly (28%), Weedmaps (20%)' },
       ],
-      footer: 'Customer Bridge • Review Monitor',
+      footer: 'Nexus Chat • Review Monitor',
     },
     deepLink: {
       type: 'reviews',
@@ -278,7 +278,7 @@ function generateSentimentResponse(userText) {
         { label: 'Top Concern', value: topConcern },
         { label: 'Recommendation', value: 'Address wait time complaints — consider Saturday afternoon staffing' },
       ],
-      footer: 'Customer Bridge • Sentiment Analyzer',
+      footer: 'Nexus Chat • Sentiment Analyzer',
     },
     deepLink: {
       type: 'sentiment',
@@ -330,7 +330,7 @@ function generateConnectResponse(userText) {
       color: '#D29922',
       title: `📋 ${title}`,
       fields,
-      footer: 'Customer Bridge • Connect Agent',
+      footer: 'Nexus Chat • Connect Agent',
     },
     deepLink: {
       type: 'reorder',
@@ -357,7 +357,7 @@ function generateBugResponse(userText) {
         { label: 'Priority', value: 'P2 — Estimated response within 4 hours' },
         { label: 'Tracking', value: 'You\'ll receive updates here as the issue progresses' },
       ],
-      footer: 'Customer Bridge • Support Escalation Engine',
+      footer: 'Nexus Chat • Support Escalation Engine',
     },
     deepLink: {
       type: 'bug',
@@ -383,7 +383,7 @@ function generateFeatureResponse(userText) {
         { label: 'Status', value: 'Submitted — Product team notified' },
         { label: 'Next Steps', value: 'Product team will review in next sprint planning' },
       ],
-      footer: 'Customer Bridge • Product Feedback',
+      footer: 'Nexus Chat • Product Feedback',
     },
     deepLink: {
       type: 'feature',
@@ -428,7 +428,7 @@ function generateSupportResponse(userText) {
     kbArticles = 'Compliance Dashboard, State Reporting, Label Requirements';
   } else if (/\b(hi|hello|hey|thanks|thank you|good morning|good afternoon)\b/.test(lower)) {
     return {
-      text: `Hey there! 👋 I'm Customer Bridge, your AI assistant. I can help with campaigns, inventory, reports, reviews, sentiment analysis, and more. Just ask me anything!`,
+      text: `Hey there! 👋 I'm Nexus Chat, your AI assistant. I can help with campaigns, inventory, reports, reviews, sentiment analysis, and more. Just ask me anything!`,
       targetChannel: null, // stay in current channel
     };
   }
@@ -442,7 +442,7 @@ function generateSupportResponse(userText) {
         { label: 'Related Articles', value: kbArticles },
         { label: 'Quick Tip', value: relatedArticle },
       ],
-      footer: 'Customer Bridge • Knowledge Base',
+      footer: 'Nexus Chat • Knowledge Base',
     },
     targetChannel: null,
   };

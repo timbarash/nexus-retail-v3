@@ -193,7 +193,7 @@ function PricingPreview({ color }) {
   );
 }
 
-function CustomerBridgePreview({ color }) {
+function NexusChatPreview({ color }) {
   return (
     <div className="min-h-[12rem] flex flex-col gap-2 text-xs">
       <div className="flex items-center justify-between mb-1">
@@ -230,7 +230,7 @@ function CustomerBridgePreview({ color }) {
   );
 }
 
-const AGENT_PREVIEWS = [MarketingPreview, ConnectPreview, PricingPreview, CustomerBridgePreview];
+const AGENT_PREVIEWS = [MarketingPreview, ConnectPreview, PricingPreview, NexusChatPreview];
 
 /* ─── Agent block with individual scroll trigger ───────────── */
 function AgentBlock({ agent, i }) {
@@ -329,7 +329,7 @@ const INTEGRATION_LOGOS = [
 ];
 
 /* ─── AI prompt ─────────────────────────────────────────────── */
-const SYSTEM_PROMPT = `You are an expert vertical SaaS copywriter for Dutchie Nexus — an AI-powered command center for multi-location cannabis retail operations. Platform: sentiment analysis, 4 AI agents (Marketing, Purchasing, Pricing, Customer Bridge), inventory intelligence, dynamic pricing, and marketing automation. Dutchie platform scale: $20B+ cannabis sales processed annually, 6,500+ retail and brand partners, 40+ markets. Pilot customer: Ascend Wellness Holdings (39+ locations, 7 states). Tone rules: (1) Anti-hype — use "practical," "proven," "trusted," never "revolutionary" or "game-changing." (2) Cannabis-specific language — mention strains, compliance, state regulations, seed-to-sale, METRC where relevant. (3) Human-in-the-loop — always convey "AI recommends, you decide." (4) Compliance-as-feature — compliance is a selling point, not a footnote. (5) Follow the UNDERSTAND > AUTOMATE > GROW value framework. Use concrete numbers and operational outcomes.`;
+const SYSTEM_PROMPT = `You are an expert vertical SaaS copywriter for Dutchie Nexus — an AI-powered command center for multi-location cannabis retail operations. Platform: sentiment analysis, 4 AI agents (Marketing, Purchasing, Pricing, Nexus Chat), inventory intelligence, dynamic pricing, and marketing automation. Dutchie platform scale: $20B+ cannabis sales processed annually, 6,500+ retail and brand partners, 40+ markets. Pilot customer: Ascend Wellness Holdings (39+ locations, 7 states). Tone rules: (1) Anti-hype — use "practical," "proven," "trusted," never "revolutionary" or "game-changing." (2) Cannabis-specific language — mention strains, compliance, state regulations, seed-to-sale, METRC where relevant. (3) Human-in-the-loop — always convey "AI recommends, you decide." (4) Compliance-as-feature — compliance is a selling point, not a footnote. (5) Follow the UNDERSTAND > AUTOMATE > GROW value framework. Use concrete numbers and operational outcomes.`;
 
 const USER_PROMPT = `Generate fresh marketing copy for the Dutchie Nexus landing page. Follow the UNDERSTAND > AUTOMATE > GROW framework. Use anti-hype tone (Veeva-style: "practical," "proven," "trusted"). Include human-in-the-loop messaging ("AI recommends, you decide"). Use cannabis-specific language (strains, compliance, state regulations). Return JSON matching this exact schema:
 {
