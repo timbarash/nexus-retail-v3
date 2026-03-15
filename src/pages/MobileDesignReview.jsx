@@ -1,54 +1,59 @@
 import { useState } from 'react';
 import {
   Smartphone, Monitor, ArrowLeft, Bell, Store, BarChart3, MessageSquare,
-  TrendingUp, TrendingDown, AlertTriangle, Package, DollarSign, Star,
-  ChevronRight, ChevronDown, Check, X, RefreshCw, Zap, Shield, Wifi,
-  WifiOff, Clock, MapPin, ShoppingCart, Megaphone, Send, Activity,
+  TrendingUp, AlertTriangle, Package, DollarSign, Star,
+  ChevronRight, Check, Zap, Shield, Wifi, Mic,
+  WifiOff, Clock, MapPin, ShoppingCart, Send, Activity,
   ArrowUpRight, ArrowDownRight, Layers, Globe, Download, Sparkles,
-  Menu, Home, Search, User, Settings,
+  Home, User, RefreshCw,
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
 
-// ─── PHONE FRAME ─── //
-function PhoneFrame({ children, label, scale = 1, className = '' }) {
+/* ═══════════════════════════════════════════════════════════════════
+   PHONE FRAME — realistic iPhone with dynamic island
+   ═══════════════════════════════════════════════════════════════════ */
+function Phone({ children, label, tilt, className = '' }) {
+  const style = tilt === 'left'
+    ? { transform: 'perspective(900px) rotateY(8deg) rotateX(2deg) scale(0.98)' }
+    : tilt === 'right'
+    ? { transform: 'perspective(900px) rotateY(-8deg) rotateX(2deg) scale(0.98)' }
+    : {};
   return (
-    <div className={`flex flex-col items-center gap-3 ${className}`}>
-      <div
-        className="relative rounded-[40px] border-[3px] border-[#38332B] bg-[#0D0C0A] overflow-hidden flex-shrink-0"
-        style={{
-          width: 280 * scale,
-          height: 580 * scale,
-          boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,160,58,0.08)',
-          transform: `scale(${scale > 1 ? 1 : 1})`,
-        }}
-      >
+    <div className={`flex flex-col items-center gap-4 ${className}`}>
+      <div className="relative rounded-[44px] border-[4px] border-[#2A2722] bg-[#0A0908] overflow-hidden" style={{ width: 300, height: 620, boxShadow: '0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,160,58,0.06), inset 0 0 30px rgba(0,0,0,0.3)', ...style }}>
         {/* Dynamic Island */}
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 w-[90px] h-[26px] rounded-full bg-black" />
+        <div className="absolute top-[10px] left-1/2 -translate-x-1/2 z-30 w-[100px] h-[28px] rounded-full bg-black" style={{ boxShadow: '0 0 0 2px #1A1918' }} />
         {/* Status bar */}
-        <div className="relative z-20 flex items-center justify-between px-6 pt-[14px] pb-1 text-[9px] font-semibold text-[#F0EDE8]">
+        <div className="relative z-20 flex items-center justify-between px-7 pt-4 pb-1 text-[9px] font-semibold text-white/80">
           <span>9:41</span>
-          <div className="flex items-center gap-1">
-            <Wifi className="w-2.5 h-2.5" />
-            <span>5G</span>
-            <div className="w-5 h-2 rounded-sm border border-[#F0EDE8] relative">
-              <div className="absolute inset-[1px] right-[3px] rounded-[1px] bg-[#00C27C]" />
+          <div className="flex items-center gap-1.5">
+            <svg width="14" height="10" viewBox="0 0 14 10"><path d="M1 7h1.5v3H1zM4 5h1.5v5H4zM7 3h1.5v7H7zM10 0h1.5v10H10z" fill="currentColor" opacity="0.8"/></svg>
+            <span className="text-[8px]">5G</span>
+            <div className="w-[22px] h-[9px] rounded-[2px] border border-white/40 relative ml-0.5">
+              <div className="absolute inset-[1.5px] right-[4px] rounded-[1px] bg-[#00C27C]" />
             </div>
           </div>
         </div>
-        {/* Screen content */}
-        <div className="h-full overflow-y-auto pb-20 scrollbar-hide" style={{ fontSize: 10 * scale }}>
+        {/* Content */}
+        <div className="h-full overflow-y-auto pb-24" style={{ scrollbarWidth: 'none' }}>
           {children}
         </div>
         {/* Home indicator */}
-        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-[100px] h-[4px] rounded-full bg-[#F0EDE8]/30 z-30" />
+        <div className="absolute bottom-[6px] left-1/2 -translate-x-1/2 w-[110px] h-[4px] rounded-full bg-white/25 z-30" />
       </div>
-      {label && <p className="text-xs font-semibold text-[#ADA599] tracking-wide uppercase">{label}</p>}
+      {label && (
+        <div className="text-center">
+          <p className="text-sm font-bold text-[#F0EDE8]">{label}</p>
+        </div>
+      )}
     </div>
   );
 }
 
-// ─── BOTTOM NAV (inside phone) ─── //
-function MobileBottomNav({ active = 'home' }) {
+/* ═══════════════════════════════════════════════════════════════════
+   BOTTOM NAV — inside phone frames
+   ═══════════════════════════════════════════════════════════════════ */
+function BottomNav({ active = 'home' }) {
   const tabs = [
     { id: 'home', icon: Home, label: 'Home' },
     { id: 'alerts', icon: Bell, label: 'Alerts' },
@@ -57,66 +62,37 @@ function MobileBottomNav({ active = 'home' }) {
     { id: 'reports', icon: BarChart3, label: 'Reports' },
   ];
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-20 flex items-end justify-around px-2 pb-6 pt-2" style={{ background: 'linear-gradient(transparent, rgba(13,12,10,0.97) 30%)' }}>
-      {tabs.map(t => {
-        const Icon = t.icon;
-        const isActive = t.id === active;
-        return (
-          <div key={t.id} className="flex flex-col items-center gap-0.5">
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isActive ? 'bg-[#D4A03A]/15' : ''}`}>
-              <Icon className={`w-[14px] h-[14px] ${isActive ? 'text-[#D4A03A]' : 'text-[#6B6359]'}`} />
+    <div className="absolute bottom-0 left-0 right-0 z-20 px-3 pb-7 pt-3" style={{ background: 'linear-gradient(transparent 0%, rgba(10,9,8,0.95) 40%)' }}>
+      <div className="flex items-center justify-around">
+        {tabs.map(t => {
+          const Icon = t.icon;
+          const on = t.id === active;
+          return (
+            <div key={t.id} className="flex flex-col items-center gap-[2px]">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${on ? 'bg-[#D4A03A]/15' : ''}`}>
+                <Icon className={`w-[16px] h-[16px] ${on ? 'text-[#D4A03A]' : 'text-[#6B6359]'}`} />
+              </div>
+              <span className={`text-[8px] font-semibold ${on ? 'text-[#D4A03A]' : 'text-[#6B6359]'}`}>{t.label}</span>
             </div>
-            <span className={`text-[8px] font-semibold ${isActive ? 'text-[#D4A03A]' : 'text-[#6B6359]'}`}>{t.label}</span>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-// ─── MINI SPARKLINE ─── //
-function Sparkline({ data = [3,5,4,7,6,8,9], color = '#00C27C', w = 40, h = 14 }) {
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
-  const points = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(' ');
-  return (
-    <svg width={w} height={h} className="flex-shrink-0">
-      <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+/* ═══════════════════════════════════════════════════════════════════
+   SPARKLINE — tiny inline chart
+   ═══════════════════════════════════════════════════════════════════ */
+function Spark({ data = [3,5,4,7,6,8,9], color = '#00C27C', w = 36, h = 12 }) {
+  const max = Math.max(...data), min = Math.min(...data), r = max - min || 1;
+  const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / r) * h}`).join(' ');
+  return <svg width={w} height={h}><polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 
-// ─── SECTION WRAPPER ─── //
-function Section({ id, label, title, children, dark = false }) {
-  return (
-    <section id={id} className={`py-20 px-6 ${dark ? 'bg-[#0D0C0A]' : ''}`}>
-      <div className="max-w-6xl mx-auto">
-        <p className="text-[10px] font-bold uppercase tracking-[3px] text-[#D4A03A] mb-2">{label}</p>
-        <h2 className="text-3xl lg:text-4xl font-extrabold text-[#F0EDE8] mb-10 leading-tight">{title}</h2>
-        {children}
-      </div>
-    </section>
-  );
-}
-
-// ─── FEATURE CARD ─── //
-function FeatureCard({ icon: Icon, title, description, color = '#D4A03A' }) {
-  return (
-    <div className="rounded-2xl border border-[#38332B] bg-[#1C1B1A] p-5 hover:border-[rgba(212,160,58,0.2)] transition-all">
-      <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: `${color}14` }}>
-        <Icon className="w-5 h-5" style={{ color }} />
-      </div>
-      <h4 className="text-sm font-bold text-[#F0EDE8] mb-1">{title}</h4>
-      <p className="text-xs text-[#ADA599] leading-relaxed">{description}</p>
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// SCREEN MOCKUPS — realistic mobile UI inside phone frames
-// ═══════════════════════════════════════════════════════════════════════════
-
+/* ═══════════════════════════════════════════════════════════════════
+   SCREEN: HOME — Portfolio health
+   ═══════════════════════════════════════════════════════════════════ */
 function ScreenHome() {
   const stores = [
     { name: 'Logan Square', state: 'IL', score: 87, rev: '$48.2K', delta: '+12%', up: true, alerts: 0, spark: [5,6,7,6,8,9,9] },
@@ -126,144 +102,111 @@ function ScreenHome() {
     { name: 'Morenci', state: 'MI', score: 48, rev: '$12.4K', delta: '-23%', up: false, alerts: 3, spark: [7,6,5,4,3,3,2] },
   ];
   return (
-    <div className="px-3 pt-1">
-      {/* Top bar */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-1.5">
-          <NexusIcon size={14} />
-          <span className="text-[11px] font-bold text-[#F0EDE8]">Nexus</span>
-        </div>
+    <div className="px-4 pt-2">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="relative">
-            <Bell className="w-3.5 h-3.5 text-[#ADA599]" />
-            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#E87068] border border-[#0D0C0A]" />
-          </div>
-          <div className="w-5 h-5 rounded-full bg-[#D4A03A]/20 flex items-center justify-center">
-            <User className="w-2.5 h-2.5 text-[#D4A03A]" />
-          </div>
+          <NexusIcon size={16} />
+          <span className="text-[12px] font-bold text-white">Nexus</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative"><Bell className="w-4 h-4 text-[#ADA599]" /><div className="absolute -top-0.5 -right-0.5 w-[7px] h-[7px] rounded-full bg-[#E87068] border border-[#0A0908]" /></div>
+          <div className="w-6 h-6 rounded-full bg-[#D4A03A]/20 flex items-center justify-center"><User className="w-3 h-3 text-[#D4A03A]" /></div>
         </div>
       </div>
-
-      {/* AI Briefing Card */}
-      <div className="rounded-xl p-3 mb-3" style={{ background: 'linear-gradient(135deg, rgba(212,160,58,0.08), rgba(212,160,58,0.02))', border: '1px solid rgba(212,160,58,0.15)' }}>
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <Sparkles className="w-2.5 h-2.5 text-[#D4A03A]" />
-          <span className="text-[8px] font-bold text-[#D4A03A] uppercase tracking-wider">Morning Briefing</span>
+      {/* AI Briefing */}
+      <div className="rounded-2xl p-3.5 mb-4" style={{ background: 'linear-gradient(135deg, rgba(212,160,58,0.10), rgba(212,160,58,0.03))', border: '1px solid rgba(212,160,58,0.18)' }}>
+        <div className="flex items-center gap-1.5 mb-2">
+          <Sparkles className="w-3 h-3 text-[#D4A03A]" />
+          <span className="text-[8px] font-bold text-[#D4A03A] uppercase tracking-[1.5px]">AI Briefing</span>
         </div>
-        <p className="text-[9px] text-[#C8C3BA] leading-[1.6] italic">
-          "Best Friday this quarter. Springfield drove 34% of revenue. 3 items need reordering."
-        </p>
-        <div className="flex gap-3 mt-2">
-          {[
-            { l: 'Revenue', v: '$47.2K', t: '+12%', up: true },
-            { l: 'Traffic', v: '2,140', t: '+8%', up: true },
-            { l: 'Alerts', v: '5', t: '2 critical', up: false },
-          ].map(m => (
+        <p className="text-[10px] text-[#C8C3BA] leading-[1.6] italic mb-2.5">"Best Friday this quarter. Springfield drove 34% of revenue. 3 items need reordering."</p>
+        <div className="flex gap-4">
+          {[{ l: 'Revenue', v: '$47.2K', t: '+12%', up: true }, { l: 'Traffic', v: '2,140', t: '+8%', up: true }, { l: 'Alerts', v: '5', t: '2 critical', up: false }].map(m => (
             <div key={m.l}>
-              <p className="text-[7px] uppercase tracking-wider text-[#6B6359] font-semibold">{m.l}</p>
+              <p className="text-[7px] uppercase tracking-[1px] text-[#6B6359] font-bold">{m.l}</p>
               <div className="flex items-baseline gap-1">
-                <span className="text-[11px] font-extrabold text-[#F0EDE8]">{m.v}</span>
-                <span className={`text-[7px] font-semibold ${m.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{m.t}</span>
+                <span className="text-[13px] font-extrabold text-white" style={{ fontVariantNumeric: 'tabular-nums' }}>{m.v}</span>
+                <span className={`text-[8px] font-bold ${m.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{m.t}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
-
-      {/* Portfolio Status */}
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[9px] font-bold text-[#ADA599] uppercase tracking-wider">Portfolio Health</span>
-        <span className="text-[8px] text-[#6B6359]">5 stores</span>
+      {/* Status */}
+      <div className="flex gap-2 mb-3">
+        {[{ n: 3, l: 'Healthy', c: '#00C27C' }, { n: 1, l: 'Watch', c: '#D4A03A' }, { n: 1, l: 'Critical', c: '#E87068' }].map(s => (
+          <div key={s.l} className="flex-1 rounded-xl p-2 text-center" style={{ background: `${s.c}0D`, border: `1px solid ${s.c}25` }}>
+            <p className="text-[14px] font-extrabold" style={{ color: s.c }}>{s.n}</p>
+            <p className="text-[7px] font-semibold" style={{ color: `${s.c}99` }}>{s.l}</p>
+          </div>
+        ))}
       </div>
-      <div className="flex gap-1.5 mb-3">
-        <div className="flex-1 rounded-lg bg-[#00C27C]/10 border border-[#00C27C]/20 p-1.5 text-center">
-          <p className="text-[11px] font-extrabold text-[#00C27C]">3</p>
-          <p className="text-[7px] text-[#00C27C]/70">Healthy</p>
-        </div>
-        <div className="flex-1 rounded-lg bg-[#D4A03A]/10 border border-[#D4A03A]/20 p-1.5 text-center">
-          <p className="text-[11px] font-extrabold text-[#D4A03A]">1</p>
-          <p className="text-[7px] text-[#D4A03A]/70">Watch</p>
-        </div>
-        <div className="flex-1 rounded-lg bg-[#E87068]/10 border border-[#E87068]/20 p-1.5 text-center">
-          <p className="text-[11px] font-extrabold text-[#E87068]">1</p>
-          <p className="text-[7px] text-[#E87068]/70">Critical</p>
-        </div>
-      </div>
-
-      {/* Store List */}
-      <div className="space-y-1.5">
-        {stores.map(s => {
-          const color = s.score >= 75 ? '#00C27C' : s.score >= 55 ? '#D4A03A' : '#E87068';
+      {/* Stores */}
+      <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Stores — worst first</p>
+      <div className="space-y-2">
+        {[...stores].reverse().map(s => {
+          const c = s.score >= 75 ? '#00C27C' : s.score >= 55 ? '#D4A03A' : '#E87068';
           return (
-            <div key={s.name} className="rounded-xl border border-[#38332B] bg-[#1C1B1A] p-2.5 flex items-center gap-2">
-              {/* Score donut */}
-              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `conic-gradient(${color} ${s.score * 3.6}deg, #38332B 0deg)` }}>
-                <div className="w-5.5 h-5.5 rounded-full bg-[#1C1B1A] flex items-center justify-center text-[8px] font-bold" style={{ color, width: 22, height: 22 }}>{s.score}</div>
+            <div key={s.name} className="rounded-xl border border-[#2A2722] bg-[#161514] p-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `conic-gradient(${c} ${s.score * 3.6}deg, #2A2722 0deg)` }}>
+                <div className="w-7 h-7 rounded-full bg-[#161514] flex items-center justify-center text-[10px] font-bold" style={{ color: c }}>{s.score}</div>
               </div>
-              {/* Info */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-semibold text-[#F0EDE8] truncate">{s.name}</span>
-                  <span className="text-[8px] text-[#6B6359]">{s.state}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-semibold text-white truncate">{s.name}</span>
+                  <span className="text-[9px] text-[#6B6359]">{s.state}</span>
+                  {s.alerts > 0 && <span className="ml-auto w-[18px] h-[18px] rounded-full bg-[#E87068] flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0">{s.alerts}</span>}
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-bold text-[#F0EDE8]">{s.rev}</span>
-                  <span className={`text-[8px] font-semibold ${s.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{s.delta}</span>
-                  <Sparkline data={s.spark} color={s.up ? '#00C27C' : '#E87068'} w={30} h={10} />
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[10px] font-bold text-white">{s.rev}</span>
+                  <span className={`text-[9px] font-semibold ${s.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{s.delta}</span>
+                  <Spark data={s.spark} color={s.up ? '#00C27C' : '#E87068'} />
                 </div>
               </div>
-              {/* Alert badge */}
-              {s.alerts > 0 && (
-                <div className="w-4 h-4 rounded-full bg-[#E87068] flex items-center justify-center flex-shrink-0">
-                  <span className="text-[7px] font-bold text-white">{s.alerts}</span>
-                </div>
-              )}
-              <ChevronRight className="w-3 h-3 text-[#6B6359] flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-[#38332B] flex-shrink-0" />
             </div>
           );
         })}
       </div>
-      <MobileBottomNav active="home" />
+      <BottomNav active="home" />
     </div>
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   SCREEN: ALERTS
+   ═══════════════════════════════════════════════════════════════════ */
 function ScreenAlerts() {
   const alerts = [
-    { sev: 'CRITICAL', color: '#E87068', time: '2m', title: 'Blue Dream 3.5g out at 4 stores', ai: 'Reorder 200 units for $2,840. Est. 2 days.', actions: ['Approve', 'Modify'] },
-    { sev: 'WARNING', color: '#D4A03A', time: '15m', title: 'Stiiizy Pod 18% above market avg', ai: 'Suggest $44.99 (currently $52).', actions: ['Apply', 'View'] },
-    { sev: 'OPPORTUNITY', color: '#00C27C', time: '1h', title: 'Jeeter sentiment spike +34%', ai: '2 stores don\'t stock it. Trending.', actions: ['Draft PO'] },
-    { sev: 'INSIGHT', color: '#64A8E0', time: '3h', title: '62% of Tue sales after 4pm', ai: 'Shift staff to match peak window.', actions: ['View'] },
+    { sev: 'CRITICAL', color: '#E87068', time: '2m', title: 'Blue Dream 3.5g out at 4 stores', ai: 'Reorder 200 units for $2,840. Est. delivery: 2 days.', actions: ['Approve Reorder', 'Modify'] },
+    { sev: 'WARNING', color: '#D4A03A', time: '15m', title: 'Stiiizy Pod 18% above market avg', ai: 'Suggest $44.99 (currently $52). Projected +23% velocity.', actions: ['Apply Price', 'View Comps'] },
+    { sev: 'OPPORTUNITY', color: '#00C27C', time: '1h', title: 'Jeeter brand sentiment spike +34%', ai: '2 stores don\'t stock it. Trending on social.', actions: ['Draft PO', 'View Data'] },
   ];
   return (
-    <div className="px-3 pt-1">
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <span className="text-[12px] font-bold text-[#F0EDE8]">Smart Alerts</span>
-          <span className="text-[8px] text-[#E87068] ml-1.5 bg-[#E87068]/10 px-1.5 py-0.5 rounded-full font-semibold">4 active</span>
-        </div>
-        <span className="text-[8px] text-[#6B6359]">Swipe to act</span>
+    <div className="px-4 pt-2">
+      <div className="flex items-center justify-between mb-4">
+        <div><p className="text-[14px] font-bold text-white">Smart Alerts</p><p className="text-[9px] text-[#6B6359]">Swipe left for quick actions</p></div>
+        <span className="text-[9px] font-bold text-[#E87068] bg-[#E87068]/10 px-2.5 py-1 rounded-full">4 active</span>
       </div>
-      {/* Swipe hint */}
-      <div className="flex items-center gap-1.5 mb-2 px-2 py-1.5 rounded-lg bg-[#D4A03A]/5 border border-[#D4A03A]/10">
-        <ArrowLeft className="w-2.5 h-2.5 text-[#D4A03A] animate-pulse" />
-        <span className="text-[8px] text-[#D4A03A]">Swipe left for quick actions</span>
-      </div>
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {alerts.map((a, i) => (
-          <div key={i} className="rounded-xl border border-[#38332B] bg-[#1C1B1A] overflow-hidden" style={i === 0 ? { borderLeftWidth: 3, borderLeftColor: a.color } : {}}>
-            <div className="p-2.5">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-[7px] font-bold px-1.5 py-0.5 rounded-full" style={{ color: a.color, background: `${a.color}18`, border: `1px solid ${a.color}30` }}>{a.sev}</span>
-                <span className="text-[7px] text-[#6B6359]">{a.time} ago</span>
+          <div key={i} className="rounded-2xl border overflow-hidden" style={{ borderColor: i === 0 ? `${a.color}50` : '#2A2722', background: i === 0 ? `${a.color}08` : '#161514' }}>
+            <div className="p-3.5">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[8px] font-bold px-2 py-[3px] rounded-full" style={{ color: a.color, background: `${a.color}18`, border: `1px solid ${a.color}30` }}>{a.sev}</span>
+                <span className="text-[8px] text-[#6B6359]">{a.time} ago</span>
               </div>
-              <p className="text-[10px] font-semibold text-[#F0EDE8] mb-1">{a.title}</p>
-              <div className="rounded-lg px-2 py-1.5 mb-2" style={{ background: `${a.color}08`, border: `1px solid ${a.color}15` }}>
-                <p className="text-[8px] text-[#C8C3BA] italic">AI: "{a.ai}"</p>
+              <p className="text-[11px] font-semibold text-white mb-2">{a.title}</p>
+              <div className="rounded-xl px-3 py-2 mb-3" style={{ background: `${a.color}08`, border: `1px solid ${a.color}12` }}>
+                <div className="flex items-start gap-1.5">
+                  <Sparkles className="w-2.5 h-2.5 mt-0.5 flex-shrink-0" style={{ color: a.color }} />
+                  <p className="text-[9px] text-[#C8C3BA] italic leading-[1.5]">{a.ai}</p>
+                </div>
               </div>
-              <div className="flex gap-1.5">
+              <div className="flex gap-2">
                 {a.actions.map((act, j) => (
-                  <button key={j} className={`px-2.5 py-1 rounded-md text-[8px] font-semibold ${j === 0 ? 'text-white' : 'text-[#ADA599] border border-[#38332B]'}`} style={j === 0 ? { background: a.color } : undefined}>{act}</button>
+                  <button key={j} className={`flex-1 py-2 rounded-xl text-[10px] font-bold transition-all ${j === 0 ? 'text-white' : 'text-[#ADA599] border border-[#38332B]'}`} style={j === 0 ? { background: a.color } : undefined}>{act}</button>
                 ))}
               </div>
             </div>
@@ -271,711 +214,574 @@ function ScreenAlerts() {
         ))}
       </div>
       {/* Auto-resolved */}
-      <div className="mt-3 rounded-xl border border-[#38332B] bg-[#1C1B1A] p-2.5">
-        <p className="text-[7px] font-bold text-[#6B6359] uppercase tracking-wider mb-1.5">Auto-Resolved Today</p>
-        {['Register sync issue fixed', 'March campaign launched', 'Stiiizy Pods reordered'].map((r, i) => (
-          <div key={i} className="flex items-center gap-1 text-[8px] text-[#ADA599] mb-0.5">
-            <Check className="w-2.5 h-2.5 text-[#00C27C]" /> {r}
+      <div className="mt-3 rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5">
+        <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Auto-Resolved</p>
+        {['Register sync — fixed', 'March campaign — launched', 'Stiiizy Pods — auto-reordered'].map(r => (
+          <div key={r} className="flex items-center gap-2 text-[9px] text-[#ADA599] mb-1 last:mb-0">
+            <Check className="w-3 h-3 text-[#00C27C] flex-shrink-0" /> {r}
           </div>
         ))}
       </div>
-      <MobileBottomNav active="alerts" />
+      <BottomNav active="alerts" />
     </div>
   );
 }
 
-function ScreenStoreDetail() {
+/* ═══════════════════════════════════════════════════════════════════
+   SCREEN: STORE DETAIL
+   ═══════════════════════════════════════════════════════════════════ */
+function ScreenStore() {
   return (
-    <div className="px-3 pt-1">
-      {/* Store header */}
-      <div className="flex items-center gap-2 mb-3">
-        <ArrowLeft className="w-3.5 h-3.5 text-[#ADA599]" />
+    <div className="px-4 pt-2">
+      <div className="flex items-center gap-3 mb-4">
+        <ArrowLeft className="w-4 h-4 text-[#ADA599]" />
         <div className="flex-1">
-          <span className="text-[12px] font-bold text-[#F0EDE8]">Logan Square</span>
-          <span className="text-[9px] text-[#6B6359] ml-1">Chicago, IL</span>
+          <p className="text-[13px] font-bold text-white">Logan Square</p>
+          <p className="text-[9px] text-[#6B6359]">Chicago, IL</p>
         </div>
-        <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'conic-gradient(#00C27C 313deg, #38332B 0deg)' }}>
-          <div className="w-6 h-6 rounded-full bg-[#0D0C0A] flex items-center justify-center text-[9px] font-bold text-[#00C27C]">87</div>
+        <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: 'conic-gradient(#00C27C 313deg, #2A2722 0deg)' }}>
+          <div className="w-7.5 h-7.5 rounded-full bg-[#0A0908] flex items-center justify-center text-[11px] font-bold text-[#00C27C]" style={{ width: 30, height: 30 }}>87</div>
         </div>
       </div>
-
-      {/* KPI row */}
-      <div className="grid grid-cols-2 gap-1.5 mb-3">
+      {/* KPIs */}
+      <div className="grid grid-cols-2 gap-2 mb-4">
         {[
-          { l: 'Today Revenue', v: '$48,230', d: '+12%', up: true, spark: [4,5,5,6,7,8,9] },
-          { l: 'Transactions', v: '312', d: '+8%', up: true, spark: [3,4,4,5,5,6,6] },
-          { l: 'Avg Basket', v: '$154.58', d: '+3%', up: true, spark: [5,5,5,5,6,6,6] },
+          { l: 'Revenue', v: '$48.2K', d: '+12%', up: true, spark: [4,5,6,6,7,8,9] },
+          { l: 'Transactions', v: '312', d: '+8%', up: true, spark: [3,4,4,5,5,6,7] },
+          { l: 'Avg Basket', v: '$154', d: '+3%', up: true, spark: [5,5,5,5,6,6,6] },
           { l: 'Margin', v: '52.1%', d: '+0.4%', up: true, spark: [5,5,5,5,5,5,5] },
         ].map(k => (
-          <div key={k.l} className="rounded-lg border border-[#38332B] bg-[#1C1B1A] p-2">
-            <p className="text-[7px] text-[#6B6359] uppercase tracking-wider font-semibold mb-0.5">{k.l}</p>
-            <div className="flex items-center justify-between">
-              <div className="flex items-baseline gap-1">
-                <span className="text-[12px] font-extrabold text-[#F0EDE8]">{k.v}</span>
-                <span className={`text-[7px] font-semibold ${k.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{k.d}</span>
+          <div key={k.l} className="rounded-xl border border-[#2A2722] bg-[#161514] p-3">
+            <p className="text-[8px] text-[#6B6359] uppercase tracking-[1px] font-bold mb-1">{k.l}</p>
+            <div className="flex items-end justify-between">
+              <div>
+                <span className="text-[15px] font-extrabold text-white">{k.v}</span>
+                <span className={`text-[9px] font-bold ml-1 ${k.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{k.d}</span>
               </div>
-              <Sparkline data={k.spark} color={k.up ? '#00C27C' : '#E87068'} w={28} h={10} />
+              <Spark data={k.spark} color={k.up ? '#00C27C' : '#E87068'} w={32} h={14} />
             </div>
           </div>
         ))}
       </div>
-
-      {/* Hourly traffic */}
-      <div className="rounded-xl border border-[#38332B] bg-[#1C1B1A] p-2.5 mb-3">
-        <p className="text-[8px] font-semibold text-[#ADA599] uppercase tracking-wider mb-2">Transactions / Hour</p>
-        <div className="flex items-end gap-[3px] h-[40px]">
+      {/* Hourly chart */}
+      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5 mb-4">
+        <p className="text-[9px] font-bold text-[#ADA599] uppercase tracking-[1px] mb-3">Hourly Transactions</p>
+        <div className="flex items-end gap-[4px] h-[50px]">
           {[2,5,12,18,24,31,28,35,42,38,29,22,15,8].map((v, i) => (
-            <div key={i} className="flex-1 rounded-t" style={{ height: `${(v / 42) * 100}%`, background: i === 8 ? '#D4A03A' : v > 30 ? '#00C27C' : '#38332B' }} />
+            <div key={i} className="flex-1 rounded-t-sm transition-all" style={{ height: `${(v / 42) * 100}%`, background: i === 8 ? '#D4A03A' : v > 30 ? '#00C27C' : '#2A2722' }} />
           ))}
         </div>
-        <div className="flex justify-between mt-1 text-[6px] text-[#6B6359]">
+        <div className="flex justify-between mt-1.5 text-[7px] text-[#6B6359]">
           <span>8am</span><span>12pm</span><span>4pm</span><span>9pm</span>
         </div>
       </div>
-
-      {/* Top products */}
-      <div className="rounded-xl border border-[#38332B] bg-[#1C1B1A] p-2.5 mb-3">
-        <p className="text-[8px] font-semibold text-[#ADA599] uppercase tracking-wider mb-2">Top 5 Products Today</p>
+      {/* Top Products */}
+      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5 mb-4">
+        <p className="text-[9px] font-bold text-[#ADA599] uppercase tracking-[1px] mb-2">Top Products Today</p>
         {[
-          { name: 'Ozone Cake Mints 3.5g', units: 47, rev: '$2,115' },
-          { name: 'Baby Jeeter Churros', units: 38, rev: '$1,330' },
-          { name: 'Stiiizy OG Kush Pod', units: 31, rev: '$1,395' },
-          { name: 'Camino Gummies', units: 28, rev: '$616' },
-          { name: 'Simply Herb Pre-Roll', units: 24, rev: '$360' },
+          { name: 'Ozone Cake Mints', u: 47, rev: '$2,115' },
+          { name: 'Baby Jeeter Churros', u: 38, rev: '$1,330' },
+          { name: 'Stiiizy OG Kush', u: 31, rev: '$1,395' },
+          { name: 'Camino Gummies', u: 28, rev: '$616' },
+          { name: 'Simply Herb Pre-Roll', u: 24, rev: '$360' },
         ].map((p, i) => (
-          <div key={i} className="flex items-center justify-between py-1 border-b border-[#38332B]/50 last:border-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[8px] font-bold text-[#6B6359] w-3">{i + 1}</span>
-              <span className="text-[9px] text-[#F0EDE8]">{p.name}</span>
-            </div>
-            <div className="text-right">
-              <span className="text-[8px] font-bold text-[#F0EDE8]">{p.rev}</span>
-              <span className="text-[7px] text-[#6B6359] ml-1">{p.units}u</span>
-            </div>
+          <div key={i} className="flex items-center py-1.5 border-b border-[#2A2722]/60 last:border-0">
+            <span className="w-4 text-[9px] font-bold text-[#6B6359]">{i + 1}</span>
+            <span className="text-[10px] text-white flex-1">{p.name}</span>
+            <span className="text-[9px] font-bold text-white">{p.rev}</span>
+            <span className="text-[8px] text-[#6B6359] ml-2 w-5 text-right">{p.u}u</span>
           </div>
         ))}
       </div>
-
-      {/* Store alerts */}
-      <div className="rounded-xl border border-[#E87068]/20 bg-[#E87068]/5 p-2.5">
-        <p className="text-[8px] font-semibold text-[#E87068] uppercase tracking-wider mb-1.5">Active Alerts</p>
-        <div className="text-[9px] text-[#F0EDE8]">No active alerts for this store</div>
-        <div className="flex items-center gap-1 mt-1">
-          <Check className="w-2.5 h-2.5 text-[#00C27C]" />
-          <span className="text-[8px] text-[#00C27C]">All clear</span>
+      {/* Sentiment */}
+      <div className="rounded-2xl border border-[#00C27C]/15 bg-[#00C27C]/5 p-3.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Star className="w-3.5 h-3.5 text-[#00C27C]" />
+            <span className="text-[10px] font-bold text-white">Sentiment: 78</span>
+          </div>
+          <span className="text-[9px] font-semibold text-[#00C27C]">+6 pts</span>
         </div>
+        <p className="text-[9px] text-[#ADA599] mt-1">"Staff Friendliness" trending up 12%</p>
       </div>
-      <MobileBottomNav active="stores" />
+      <BottomNav active="stores" />
     </div>
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   SCREEN: AI CHAT
+   ═══════════════════════════════════════════════════════════════════ */
 function ScreenChat() {
   return (
-    <div className="px-3 pt-1 flex flex-col" style={{ height: 500 }}>
-      <div className="flex items-center gap-2 mb-3">
-        <NexusIcon size={16} />
+    <div className="px-4 pt-2 flex flex-col" style={{ minHeight: 540 }}>
+      <div className="flex items-center gap-2.5 mb-4">
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1A1710, #2A2318)', border: '1px solid rgba(212,160,58,0.2)' }}>
+          <NexusIcon size={16} />
+        </div>
         <div>
-          <span className="text-[11px] font-bold text-[#F0EDE8]">Nexus AI</span>
-          <div className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" />
-            <span className="text-[7px] text-[#00C27C]">Online</span>
-          </div>
+          <span className="text-[12px] font-bold text-white">Nexus AI</span>
+          <div className="flex items-center gap-1"><span className="w-[5px] h-[5px] rounded-full bg-[#00C27C]" /><span className="text-[8px] text-[#00C27C] font-medium">Online</span></div>
         </div>
       </div>
-
-      {/* Suggested prompts */}
-      <div className="flex flex-wrap gap-1 mb-3">
-        {['Reorder inventory', 'Weekly summary', 'Price check'].map(s => (
-          <span key={s} className="px-2 py-1 rounded-full text-[8px] font-medium text-[#D4A03A] border border-[#D4A03A]/20 bg-[#D4A03A]/5">{s}</span>
+      {/* Quick prompts */}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {['Reorder inventory', 'Weekly summary', 'Price check', 'Staff schedule'].map(s => (
+          <span key={s} className="px-2.5 py-1 rounded-full text-[9px] font-medium text-[#D4A03A] border border-[#D4A03A]/25 bg-[#D4A03A]/5">{s}</span>
         ))}
       </div>
-
-      {/* Messages */}
-      <div className="flex-1 space-y-2 overflow-y-auto">
+      {/* Conversation */}
+      <div className="flex-1 space-y-3">
         {/* User */}
         <div className="flex justify-end">
-          <div className="rounded-xl rounded-tr-sm bg-[#D4A03A]/15 border border-[#D4A03A]/20 px-2.5 py-1.5 max-w-[85%]">
-            <p className="text-[9px] text-[#F0EDE8]">Show me stockout risks across all stores</p>
+          <div className="rounded-2xl rounded-br-md bg-[#D4A03A]/12 border border-[#D4A03A]/20 px-3.5 py-2 max-w-[82%]">
+            <p className="text-[10px] text-white">Show me stockout risks across all stores</p>
           </div>
         </div>
         {/* AI */}
-        <div className="flex justify-start gap-1.5">
-          <NexusIcon size={12} className="flex-shrink-0 mt-1" />
-          <div className="rounded-xl rounded-tl-sm bg-[#1C1B1A] border border-[#38332B] px-2.5 py-1.5 max-w-[85%]">
-            <p className="text-[9px] text-[#C8C3BA] leading-[1.5] mb-1.5">I found <span className="font-bold text-[#F0EDE8]">3 products</span> at stockout risk across your stores:</p>
+        <div className="flex gap-2">
+          <div className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 mt-1" style={{ background: 'rgba(212,160,58,0.1)' }}>
+            <NexusIcon size={10} />
+          </div>
+          <div className="rounded-2xl rounded-bl-md bg-[#161514] border border-[#2A2722] px-3.5 py-2.5 max-w-[82%]">
+            <p className="text-[10px] text-[#C8C3BA] leading-[1.6] mb-2">Found <span className="font-bold text-white">3 products</span> at risk:</p>
             {[
-              { name: 'Blue Dream 3.5g', store: '4 stores', days: '0.5d', color: '#E87068' },
-              { name: 'Ozone Gummies 100mg', store: 'Fort Lee', days: '1.5d', color: '#D4A03A' },
-              { name: 'Tunnel Vision 5pk', store: 'Boston', days: '2d', color: '#D4A03A' },
+              { name: 'Blue Dream 3.5g', store: '4 stores', time: '12h', c: '#E87068' },
+              { name: 'Ozone Gummies', store: 'Fort Lee', time: '36h', c: '#D4A03A' },
+              { name: 'Tunnel Vision', store: 'Boston', time: '48h', c: '#D4A03A' },
             ].map(p => (
-              <div key={p.name} className="flex items-center justify-between py-1 border-b border-[#38332B]/50 last:border-0">
-                <div>
-                  <p className="text-[8px] font-semibold text-[#F0EDE8]">{p.name}</p>
-                  <p className="text-[7px] text-[#6B6359]">{p.store}</p>
-                </div>
-                <span className="text-[8px] font-bold" style={{ color: p.color }}>{p.days}</span>
+              <div key={p.name} className="flex items-center justify-between py-1.5 border-b border-[#2A2722]/60 last:border-0">
+                <div><p className="text-[9px] font-semibold text-white">{p.name}</p><p className="text-[8px] text-[#6B6359]">{p.store}</p></div>
+                <span className="text-[9px] font-bold" style={{ color: p.c }}>{p.time}</span>
               </div>
             ))}
-            <button className="mt-1.5 w-full py-1.5 rounded-lg bg-[#00C27C] text-[8px] font-semibold text-white">Approve All Reorders — $4,210</button>
+            <button className="mt-2.5 w-full py-2 rounded-xl bg-[#00C27C] text-[10px] font-bold text-white">Approve All Reorders — $3,935</button>
           </div>
         </div>
       </div>
-
       {/* Input */}
-      <div className="mt-2 flex items-center gap-2 bg-[#1C1B1A] border border-[#38332B] rounded-xl px-2.5 py-2">
-        <NexusIcon size={10} />
-        <span className="text-[9px] text-[#6B6359] flex-1">Ask Nexus anything...</span>
-        <Mic className="w-3 h-3 text-[#6B6359]" />
-        <Send className="w-3 h-3 text-[#D4A03A]" />
+      <div className="mt-3 flex items-center gap-2 bg-[#161514] border border-[#2A2722] rounded-2xl px-3.5 py-2.5">
+        <NexusIcon size={12} />
+        <span className="text-[10px] text-[#6B6359] flex-1">Ask Nexus anything...</span>
+        <Mic className="w-4 h-4 text-[#6B6359]" />
+        <Send className="w-4 h-4 text-[#D4A03A]" />
       </div>
-      <MobileBottomNav active="chat" />
+      <BottomNav active="chat" />
     </div>
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   SCREEN: INVENTORY
+   ═══════════════════════════════════════════════════════════════════ */
 function ScreenInventory() {
   const items = [
-    { name: 'Blue Dream 3.5g', store: '4 stores', hours: 12, qty: 200, cost: '$2,840', sev: 'critical' },
-    { name: 'Ozone Gummies 100mg', store: 'Fort Lee', hours: 36, qty: 50, cost: '$675', sev: 'warning' },
-    { name: 'Tunnel Vision 5-Pack', store: 'Boston', hours: 48, qty: 30, cost: '$420', sev: 'warning' },
-    { name: 'Stiiizy Pod LLR 1g', store: 'Hoboken', hours: 72, qty: 25, cost: '$1,125', sev: 'low' },
-    { name: 'Simply Herb Pre-Roll', store: '2 stores', hours: 96, qty: 100, cost: '$550', sev: 'low' },
+    { name: 'Blue Dream 3.5g', store: '4 stores', hours: 12, cost: '$2,840', sev: 'critical' },
+    { name: 'Ozone Gummies 100mg', store: 'Fort Lee', hours: 36, cost: '$675', sev: 'warning' },
+    { name: 'Tunnel Vision 5-Pack', store: 'Boston', hours: 48, cost: '$420', sev: 'warning' },
+    { name: 'Stiiizy Pod LLR 1g', store: 'Hoboken', hours: 72, cost: '$1,125', sev: 'low' },
   ];
   return (
-    <div className="px-3 pt-1">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[12px] font-bold text-[#F0EDE8]">Low Stock</span>
-        <button className="px-2.5 py-1 rounded-lg bg-[#00C27C] text-[8px] font-semibold text-white">Approve All</button>
+    <div className="px-4 pt-2">
+      <div className="flex items-center justify-between mb-4">
+        <div><p className="text-[14px] font-bold text-white">Low Stock</p><p className="text-[9px] text-[#6B6359]">4 items need attention</p></div>
+        <button className="px-3.5 py-1.5 rounded-xl bg-[#00C27C] text-[10px] font-bold text-white">Approve All</button>
       </div>
-      {/* Filter chips */}
-      <div className="flex gap-1 mb-2.5">
-        {['All (5)', 'Critical (1)', 'Warning (2)', 'Low (2)'].map((c, i) => (
-          <span key={c} className={`px-2 py-0.5 rounded-full text-[7px] font-semibold ${i === 0 ? 'bg-[#D4A03A]/15 text-[#D4A03A] border border-[#D4A03A]/30' : 'text-[#6B6359] border border-[#38332B]'}`}>{c}</span>
-        ))}
-      </div>
-      <div className="space-y-1.5">
+      <div className="space-y-2.5">
         {items.map(it => {
-          const color = it.sev === 'critical' ? '#E87068' : it.sev === 'warning' ? '#D4A03A' : '#64A8E0';
+          const c = it.sev === 'critical' ? '#E87068' : it.sev === 'warning' ? '#D4A03A' : '#64A8E0';
           return (
-            <div key={it.name} className="rounded-xl border bg-[#1C1B1A] p-2.5" style={{ borderColor: it.sev === 'critical' ? `${color}40` : '#38332B', borderLeftWidth: 3, borderLeftColor: color }}>
-              <div className="flex items-start justify-between mb-1">
+            <div key={it.name} className="rounded-2xl border bg-[#161514] p-3.5" style={{ borderColor: it.sev === 'critical' ? `${c}40` : '#2A2722' }}>
+              <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="text-[10px] font-semibold text-[#F0EDE8]">{it.name}</p>
-                  <p className="text-[8px] text-[#6B6359]">{it.store}</p>
+                  <p className="text-[11px] font-semibold text-white">{it.name}</p>
+                  <p className="text-[9px] text-[#6B6359]">{it.store}</p>
                 </div>
-                <span className="text-[8px] font-bold" style={{ color }}>{it.hours}h left</span>
+                <div className="text-right">
+                  <p className="text-[12px] font-extrabold" style={{ color: c }}>{it.hours}h</p>
+                  <p className="text-[8px] text-[#6B6359]">until out</p>
+                </div>
+              </div>
+              {/* Progress */}
+              <div className="h-[6px] rounded-full bg-[#2A2722] overflow-hidden mb-2.5">
+                <div className="h-full rounded-full transition-all" style={{ width: `${Math.max(8, 100 - (it.hours / 96) * 100)}%`, background: c }} />
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex gap-2 text-[8px] text-[#ADA599]">
-                  <span>{it.qty} units</span>
-                  <span>{it.cost}</span>
-                </div>
-                <div className="flex gap-1">
-                  <button className="px-2 py-0.5 rounded text-[7px] font-semibold text-white" style={{ background: color }}>Reorder</button>
-                  <button className="px-2 py-0.5 rounded text-[7px] font-semibold text-[#6B6359] border border-[#38332B]">Edit</button>
-                </div>
-              </div>
-              {/* Progress bar */}
-              <div className="mt-1.5 h-1 rounded-full bg-[#38332B] overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${Math.max(5, (1 - it.hours / 120) * 100)}%`, background: color }} />
+                <span className="text-[9px] text-[#ADA599]">{it.cost}</span>
+                <button className="px-3 py-1.5 rounded-lg text-[9px] font-bold text-white" style={{ background: c }}>Reorder Now</button>
               </div>
             </div>
           );
         })}
       </div>
-      <MobileBottomNav active="alerts" />
+      <BottomNav active="alerts" />
     </div>
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   SCREEN: REPORTS
+   ═══════════════════════════════════════════════════════════════════ */
 function ScreenReports() {
   return (
-    <div className="px-3 pt-1">
-      <span className="text-[12px] font-bold text-[#F0EDE8]">Reports</span>
-      <p className="text-[8px] text-[#6B6359] mb-3">Last 30 Days · All Stores</p>
-
-      {/* Revenue chart area */}
-      <div className="rounded-xl border border-[#38332B] bg-[#1C1B1A] p-2.5 mb-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[8px] font-semibold text-[#ADA599] uppercase tracking-wider">Revenue Trend</span>
-          <div className="flex gap-0.5">
-            {['7D', '30D', 'QTR'].map((r, i) => (
-              <span key={r} className={`px-1.5 py-0.5 rounded text-[7px] font-medium ${i === 1 ? 'bg-[#D4A03A]/15 text-[#D4A03A]' : 'text-[#6B6359]'}`}>{r}</span>
-            ))}
-          </div>
-        </div>
-        {/* Mini area chart */}
-        <svg width="100%" height="60" viewBox="0 0 240 60" preserveAspectRatio="none" className="mb-1">
-          <defs>
-            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#00C27C" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#00C27C" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path d="M0,45 L20,40 L40,42 L60,35 L80,30 L100,32 L120,25 L140,20 L160,22 L180,15 L200,12 L220,10 L240,8 L240,60 L0,60Z" fill="url(#areaGrad)" />
-          <polyline points="0,45 20,40 40,42 60,35 80,30 100,32 120,25 140,20 160,22 180,15 200,12 220,10 240,8" fill="none" stroke="#00C27C" strokeWidth="1.5" />
-        </svg>
-        <div className="flex justify-between text-[7px] text-[#6B6359]">
-          <span>Mar 1</span><span>Mar 8</span><span>Mar 15</span>
-        </div>
+    <div className="px-4 pt-2">
+      <div className="flex items-center justify-between mb-4">
+        <div><p className="text-[14px] font-bold text-white">Reports</p><p className="text-[9px] text-[#6B6359]">Last 30 Days · All Stores</p></div>
+        <div className="flex gap-1">{['7D','30D','QTR'].map((r,i) => (<span key={r} className={`px-2 py-1 rounded-lg text-[8px] font-bold ${i===1?'bg-[#D4A03A]/15 text-[#D4A03A]':'text-[#6B6359]'}`}>{r}</span>))}</div>
       </div>
-
+      {/* Chart */}
+      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5 mb-4">
+        <p className="text-[9px] font-bold text-[#ADA599] uppercase tracking-[1px] mb-2">Revenue</p>
+        <svg width="100%" height="70" viewBox="0 0 250 70" preserveAspectRatio="none">
+          <defs><linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#00C27C" stopOpacity="0.25" /><stop offset="100%" stopColor="#00C27C" stopOpacity="0" /></linearGradient></defs>
+          <path d="M0,55 L25,48 L50,52 L75,40 L100,35 L125,38 L150,28 L175,22 L200,25 L225,15 L250,10 L250,70 L0,70Z" fill="url(#rg)" />
+          <polyline points="0,55 25,48 50,52 75,40 100,35 125,38 150,28 175,22 200,25 225,15 250,10" fill="none" stroke="#00C27C" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </div>
       {/* KPIs */}
-      <div className="grid grid-cols-2 gap-1.5 mb-3">
+      <div className="grid grid-cols-2 gap-2 mb-4">
         {[
-          { l: 'Total Revenue', v: '$1.42M', d: '+8.2%', up: true, icon: DollarSign, color: '#00C27C' },
-          { l: 'Transactions', v: '9,847', d: '+5.1%', up: true, icon: ShoppingCart, color: '#64A8E0' },
-          { l: 'Avg Basket', v: '$144.22', d: '+2.9%', up: true, icon: Package, color: '#B598E8' },
-          { l: 'Gross Margin', v: '50.8%', d: '-0.3%', up: false, icon: TrendingUp, color: '#D4A03A' },
+          { l: 'Revenue', v: '$1.42M', d: '+8.2%', up: true, c: '#00C27C', icon: DollarSign },
+          { l: 'Transactions', v: '9,847', d: '+5.1%', up: true, c: '#64A8E0', icon: ShoppingCart },
+          { l: 'Avg Basket', v: '$144', d: '+2.9%', up: true, c: '#B598E8', icon: Package },
+          { l: 'Margin', v: '50.8%', d: '-0.3%', up: false, c: '#D4A03A', icon: TrendingUp },
         ].map(k => {
           const Icon = k.icon;
           return (
-            <div key={k.l} className="rounded-lg border border-[#38332B] bg-[#1C1B1A] p-2">
-              <div className="flex items-center gap-1 mb-1">
-                <Icon className="w-2.5 h-2.5" style={{ color: k.color }} />
-                <span className="text-[7px] text-[#6B6359] uppercase font-semibold">{k.l}</span>
-              </div>
-              <span className="text-[12px] font-extrabold text-[#F0EDE8]">{k.v}</span>
-              <span className={`text-[7px] font-semibold ml-1 ${k.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{k.d}</span>
+            <div key={k.l} className="rounded-xl border border-[#2A2722] bg-[#161514] p-3" style={{ borderLeftWidth: 3, borderLeftColor: k.c }}>
+              <div className="flex items-center gap-1.5 mb-1"><Icon className="w-3 h-3" style={{ color: k.c }} /><span className="text-[8px] text-[#6B6359] uppercase font-bold">{k.l}</span></div>
+              <span className="text-[14px] font-extrabold text-white">{k.v}</span>
+              <span className={`text-[9px] font-bold ml-1 ${k.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{k.d}</span>
             </div>
           );
         })}
       </div>
-
-      {/* Category breakdown */}
-      <div className="rounded-xl border border-[#38332B] bg-[#1C1B1A] p-2.5 mb-3">
-        <p className="text-[8px] font-semibold text-[#ADA599] uppercase tracking-wider mb-2">Revenue by Category</p>
-        {[
-          { name: 'Flower', pct: 38, color: '#00C27C' },
-          { name: 'Vapes', pct: 28, color: '#64A8E0' },
-          { name: 'Edibles', pct: 18, color: '#B598E8' },
-          { name: 'Pre-Rolls', pct: 11, color: '#D4A03A' },
-          { name: 'Other', pct: 5, color: '#6B6359' },
-        ].map(c => (
-          <div key={c.name} className="flex items-center gap-2 mb-1">
-            <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: c.color }} />
-            <span className="text-[8px] text-[#ADA599] w-12">{c.name}</span>
-            <div className="flex-1 h-1.5 rounded-full bg-[#38332B] overflow-hidden">
-              <div className="h-full rounded-full" style={{ width: `${c.pct}%`, background: c.color }} />
-            </div>
-            <span className="text-[8px] font-bold text-[#F0EDE8] w-6 text-right">{c.pct}%</span>
-          </div>
+      {/* Categories */}
+      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5 mb-4">
+        <p className="text-[9px] font-bold text-[#ADA599] uppercase tracking-[1px] mb-2">By Category</p>
+        {[{ n:'Flower',p:38,c:'#00C27C'},{n:'Vapes',p:28,c:'#64A8E0'},{n:'Edibles',p:18,c:'#B598E8'},{n:'Pre-Rolls',p:11,c:'#D4A03A'},{n:'Other',p:5,c:'#6B6359'}].map(c=>(
+          <div key={c.n} className="flex items-center gap-2 mb-1.5"><div className="w-2 h-2 rounded-full flex-shrink-0" style={{background:c.c}}/><span className="text-[9px] text-[#ADA599] w-14">{c.n}</span><div className="flex-1 h-2 rounded-full bg-[#2A2722] overflow-hidden"><div className="h-full rounded-full" style={{width:`${c.p}%`,background:c.c}}/></div><span className="text-[9px] font-bold text-white w-8 text-right">{c.p}%</span></div>
         ))}
       </div>
-
-      <button className="w-full py-2 rounded-xl border border-[#38332B] bg-[#1C1B1A] text-[9px] text-[#ADA599] font-medium flex items-center justify-center gap-1">
-        <Monitor className="w-3 h-3" /> Open Full Dashboard
-      </button>
-      <MobileBottomNav active="reports" />
+      <button className="w-full py-2.5 rounded-xl border border-[#2A2722] bg-[#161514] text-[10px] text-[#ADA599] font-semibold flex items-center justify-center gap-1.5"><Monitor className="w-3.5 h-3.5" />Open Full Dashboard</button>
+      <BottomNav active="reports" />
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// MAIN DESIGN REVIEW PAGE
-// ═══════════════════════════════════════════════════════════════════════════
-
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAIN DESIGN REVIEW PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
 export default function MobileDesignReview() {
-  const [activeScreen, setActiveScreen] = useState(null);
-
   return (
-    <div className="min-h-screen bg-[#141210] text-[#F0EDE8] overflow-x-hidden">
-      {/* ── HERO ── */}
-      <div className="relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #0D0C0A 0%, #141210 100%)' }}>
-        {/* Gradient orbs */}
-        <div className="absolute top-20 left-1/4 w-[500px] h-[500px] rounded-full opacity-10" style={{ background: 'radial-gradient(circle, #D4A03A 0%, transparent 70%)' }} />
-        <div className="absolute top-40 right-1/4 w-[400px] h-[400px] rounded-full opacity-8" style={{ background: 'radial-gradient(circle, #00C27C 0%, transparent 70%)' }} />
+    <div className="min-h-screen bg-[#0D0C0A] text-[#F0EDE8]">
 
-        <div className="relative max-w-6xl mx-auto px-6 pt-24 pb-16">
-          {/* Back link */}
-          <a href="#/" className="inline-flex items-center gap-1.5 text-sm text-[#ADA599] hover:text-[#D4A03A] transition-colors mb-12">
+      {/* ████ HERO ████ */}
+      <div className="relative overflow-hidden" style={{ minHeight: '100vh' }}>
+        {/* Gradient orbs */}
+        <div className="absolute top-0 left-1/3 w-[700px] h-[700px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(212,160,58,0.12) 0%, transparent 65%)' }} />
+        <div className="absolute top-[200px] right-1/4 w-[500px] h-[500px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,194,124,0.08) 0%, transparent 65%)' }} />
+        <div className="absolute bottom-0 left-0 right-0 h-32" style={{ background: 'linear-gradient(transparent, #0D0C0A)' }} />
+
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-24">
+          <a href="#/" className="inline-flex items-center gap-1.5 text-sm text-[#6B6359] hover:text-[#D4A03A] transition-colors mb-16">
             <ArrowLeft className="w-4 h-4" /> Back to Nexus v3
           </a>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-[1fr_380px] gap-16 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#D4A03A]/20 bg-[#D4A03A]/5 mb-6">
-                <Smartphone className="w-3.5 h-3.5 text-[#D4A03A]" />
-                <span className="text-xs font-semibold text-[#D4A03A]">Design Review — Mobile PWA</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#D4A03A]/20 bg-[#D4A03A]/5 mb-8">
+                <Smartphone className="w-4 h-4 text-[#D4A03A]" />
+                <span className="text-sm font-bold text-[#D4A03A]">Design Review — Mobile PWA</span>
               </div>
-              <h1 className="text-4xl lg:text-6xl font-extrabold leading-[1.1] mb-6">
-                <span className="text-[#F0EDE8]">Nexus </span>
-                <span style={{ background: 'linear-gradient(135deg, #D4A03A, #E8C068)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mobile</span>
+              <h1 className="text-5xl lg:text-7xl font-black leading-[1.05] mb-6">
+                Nexus{' '}
+                <span className="inline-block" style={{ background: 'linear-gradient(135deg, #D4A03A 0%, #E8C068 50%, #D4A03A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mobile</span>
               </h1>
-              <p className="text-lg text-[#ADA599] leading-relaxed mb-8 max-w-md">
-                A companion decision surface for dispensary operators. Not a shrunken desktop — a purpose-built mobile experience for 8-second attention budgets.
+              <p className="text-xl text-[#ADA599] leading-relaxed mb-10 max-w-lg">
+                A companion decision surface for dispensary operators. Not a shrunken desktop — purpose-built for 8-second decisions.
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="grid grid-cols-3 gap-3 mb-10">
                 {[
-                  { icon: Zap, label: 'PWA — No App Store', desc: 'Bypass cannabis restrictions' },
-                  { icon: WifiOff, label: 'Offline-First', desc: 'Works in back rooms' },
-                  { icon: Bell, label: 'Push Notifications', desc: 'Tiered alert system' },
+                  { icon: Globe, n: 'PWA', d: 'No App Store needed' },
+                  { icon: WifiOff, n: 'Offline-First', d: 'Works without signal' },
+                  { icon: Bell, n: 'Push Alerts', d: 'Tiered notifications' },
                 ].map(b => (
-                  <div key={b.label} className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[#38332B] bg-[#1C1B1A]">
-                    <b.icon className="w-4 h-4 text-[#D4A03A]" />
-                    <div>
-                      <p className="text-xs font-semibold text-[#F0EDE8]">{b.label}</p>
-                      <p className="text-[10px] text-[#6B6359]">{b.desc}</p>
-                    </div>
+                  <div key={b.n} className="rounded-xl border border-[#2A2722] bg-[#161514] p-4 text-center">
+                    <b.icon className="w-5 h-5 text-[#D4A03A] mx-auto mb-2" />
+                    <p className="text-sm font-bold text-white">{b.n}</p>
+                    <p className="text-[10px] text-[#6B6359]">{b.d}</p>
                   </div>
                 ))}
               </div>
             </div>
-
             {/* Hero phone */}
-            <div className="flex justify-center">
-              <div style={{ transform: 'perspective(1000px) rotateY(-5deg) rotateX(2deg)' }}>
-                <PhoneFrame>
-                  <ScreenHome />
-                </PhoneFrame>
+            <div className="flex justify-center lg:justify-end">
+              <Phone tilt="left"><ScreenHome /></Phone>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ████ SCREEN SHOWCASE — full-bleed gallery ████ */}
+      <div className="py-24 relative" style={{ background: 'linear-gradient(180deg, #0D0C0A 0%, #12110F 50%, #0D0C0A 100%)' }}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 mb-12">
+          <p className="text-[11px] font-bold uppercase tracking-[4px] text-[#D4A03A] mb-3">Screen Gallery</p>
+          <h2 className="text-4xl lg:text-5xl font-black text-white mb-4">Six screens. Every use case.</h2>
+          <p className="text-lg text-[#ADA599] max-w-xl">Progressive disclosure: glance at the summary, tap for details, act with one button.</p>
+        </div>
+        <div className="flex gap-10 overflow-x-auto px-12 pb-8 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+          <div className="snap-center flex-shrink-0"><Phone label="Portfolio Health"><ScreenHome /></Phone></div>
+          <div className="snap-center flex-shrink-0"><Phone label="Smart Alerts"><ScreenAlerts /></Phone></div>
+          <div className="snap-center flex-shrink-0"><Phone label="Store Detail"><ScreenStore /></Phone></div>
+          <div className="snap-center flex-shrink-0"><Phone label="Nexus AI Chat"><ScreenChat /></Phone></div>
+          <div className="snap-center flex-shrink-0"><Phone label="Low Stock"><ScreenInventory /></Phone></div>
+          <div className="snap-center flex-shrink-0"><Phone label="Reports"><ScreenReports /></Phone></div>
+        </div>
+        <p className="text-center text-sm text-[#6B6359] mt-6">← Scroll to explore all screens →</p>
+      </div>
+
+      {/* ████ SIDE-BY-SIDE: DESKTOP VS MOBILE ████ */}
+      <div className="py-24 max-w-7xl mx-auto px-6 lg:px-12">
+        <p className="text-[11px] font-bold uppercase tracking-[4px] text-[#D4A03A] mb-3">Philosophy</p>
+        <h2 className="text-4xl lg:text-5xl font-black text-white mb-12">Desktop analyzes.<br />Mobile decides.</h2>
+        <div className="grid lg:grid-cols-2 gap-8">
+          <div className="rounded-3xl border border-[#2A2722] bg-[#161514] p-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 rounded-full" style={{ background: 'radial-gradient(circle, rgba(100,168,224,0.1), transparent)' }} />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-[#64A8E0]/10 flex items-center justify-center"><Monitor className="w-6 h-6 text-[#64A8E0]" /></div>
+              <div><p className="text-lg font-bold text-white">Desktop</p><p className="text-sm text-[#6B6359]">Nexus v3</p></div>
+            </div>
+            <div className="space-y-3">
+              {['Deep analysis sessions — 10+ min', 'Full charts, tables, multi-tab views', 'Configure campaigns & surveys', 'All 39 stores side by side', 'Omnichannel pipeline'].map(t => (
+                <div key={t} className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-[#64A8E0] flex-shrink-0" /><span className="text-[15px] text-[#ADA599]">{t}</span></div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-3xl border border-[#D4A03A]/20 p-8 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(212,160,58,0.06), rgba(212,160,58,0.02))' }}>
+            <div className="absolute top-0 right-0 w-32 h-32 rounded-full" style={{ background: 'radial-gradient(circle, rgba(212,160,58,0.1), transparent)' }} />
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-[#D4A03A]/10 flex items-center justify-center"><Smartphone className="w-6 h-6 text-[#D4A03A]" /></div>
+              <div><p className="text-lg font-bold text-white">Mobile</p><p className="text-sm text-[#D4A03A]">Nexus Mobile</p></div>
+            </div>
+            <div className="space-y-3">
+              {['Glance-and-go — 8 seconds', 'Sparklines + summary numbers', 'One-tap: approve, dismiss, act', 'Worst-first store ranking', 'Push notifications for urgency'].map(t => (
+                <div key={t} className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-[#D4A03A] flex-shrink-0" /><span className="text-[15px] text-[#ADA599]">{t}</span></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ████ FEATURE DEEP DIVES — alternating phone + text ████ */}
+      <div className="py-24" style={{ background: 'linear-gradient(180deg, #0D0C0A 0%, #12110F 50%, #0D0C0A 100%)' }}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-32">
+
+          {/* ── Alerts Deep Dive ── */}
+          <div className="grid lg:grid-cols-[380px_1fr] gap-16 items-center">
+            <Phone tilt="right"><ScreenAlerts /></Phone>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[4px] text-[#E87068] mb-3">Smart Alerts</p>
+              <h3 className="text-3xl font-black text-white mb-6">Swipe to act.<br />No screens to navigate.</h3>
+              <div className="space-y-4">
+                {[
+                  { icon: ArrowLeft, title: 'Swipe Left → Quick Actions', desc: 'Approve reorders, apply prices, dismiss alerts — without opening a detail view.', c: '#E87068' },
+                  { icon: Sparkles, title: 'AI Recommendation Inline', desc: 'Every alert includes an AI-generated action with estimated impact.', c: '#D4A03A' },
+                  { icon: Clock, title: '5-Second Undo', desc: 'Every action shows an undo toast. No confirmation dialogs — speed over ceremony.', c: '#64A8E0' },
+                  { icon: Bell, title: 'Tiered Push Notifications', desc: 'Immediate for stockouts. Hourly digest for warnings. Morning summary from AI.', c: '#B598E8' },
+                ].map(f => (
+                  <div key={f.title} className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${f.c}12` }}>
+                      <f.icon className="w-5 h-5" style={{ color: f.c }} />
+                    </div>
+                    <div><p className="text-[15px] font-bold text-white mb-1">{f.title}</p><p className="text-sm text-[#ADA599] leading-relaxed">{f.desc}</p></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Store Detail Deep Dive ── */}
+          <div className="grid lg:grid-cols-[1fr_380px] gap-16 items-center">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[4px] text-[#00C27C] mb-3">Store Detail</p>
+              <h3 className="text-3xl font-black text-white mb-6">Tap any store.<br />Full picture in one scroll.</h3>
+              <div className="space-y-4">
+                {[
+                  { icon: Activity, title: 'Sparkline KPIs', desc: 'Every metric shows a 7-day inline trend. Direction at a glance.', c: '#00C27C' },
+                  { icon: BarChart3, title: 'Hourly Traffic', desc: 'Bar chart of transactions per hour. Golden bar = current peak hour.', c: '#D4A03A' },
+                  { icon: ShoppingCart, title: 'Top Products', desc: 'Top 5 by revenue today. Quick scan of what\'s moving.', c: '#64A8E0' },
+                  { icon: Star, title: 'Live Sentiment', desc: 'Current score + trending topic. One-tap to open full review.', c: '#B598E8' },
+                ].map(f => (
+                  <div key={f.title} className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${f.c}12` }}>
+                      <f.icon className="w-5 h-5" style={{ color: f.c }} />
+                    </div>
+                    <div><p className="text-[15px] font-bold text-white mb-1">{f.title}</p><p className="text-sm text-[#ADA599] leading-relaxed">{f.desc}</p></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Phone tilt="left"><ScreenStore /></Phone>
+          </div>
+
+          {/* ── AI Chat Deep Dive ── */}
+          <div className="grid lg:grid-cols-[380px_1fr] gap-16 items-center">
+            <Phone tilt="right"><ScreenChat /></Phone>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[4px] text-[#D4A03A] mb-3">Nexus AI</p>
+              <h3 className="text-3xl font-black text-white mb-6">Ask anything.<br />Act on the answer.</h3>
+              <div className="space-y-4">
+                {[
+                  { icon: Mic, title: 'Voice-to-Text Input', desc: 'Hands-free queries on the floor. "What\'s low stock at Logan Square?"', c: '#D4A03A' },
+                  { icon: Zap, title: 'Inline Action Cards', desc: 'AI returns structured data with one-tap buttons. Approve a $3,935 reorder right in the chat.', c: '#00C27C' },
+                  { icon: Sparkles, title: 'Context-Aware Prompts', desc: 'Suggested queries based on current alerts, time of day, and your history.', c: '#B598E8' },
+                  { icon: Shield, title: 'Role-Aware Responses', desc: 'HQ sees chain-wide data. Store managers see their store. No config needed.', c: '#64A8E0' },
+                ].map(f => (
+                  <div key={f.title} className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${f.c}12` }}>
+                      <f.icon className="w-5 h-5" style={{ color: f.c }} />
+                    </div>
+                    <div><p className="text-[15px] font-bold text-white mb-1">{f.title}</p><p className="text-sm text-[#ADA599] leading-relaxed">{f.desc}</p></div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── PHILOSOPHY ── */}
-      <Section id="philosophy" label="Philosophy" title="Desktop analyzes. Mobile decides.">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="rounded-2xl border border-[#38332B] bg-[#1C1B1A] p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Monitor className="w-5 h-5 text-[#64A8E0]" />
-              <span className="text-sm font-bold text-[#F0EDE8]">Desktop (Nexus v3)</span>
-            </div>
-            <ul className="space-y-2">
-              {[
-                'Deep analysis sessions — 10+ minutes',
-                'Full charts, tables, multi-tab exploration',
-                'Configure campaigns, pricing, surveys',
-                'All 39 stores side by side',
-                'Omnichannel sentiment pipeline',
-              ].map(t => (
-                <li key={t} className="flex items-start gap-2 text-sm text-[#ADA599]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#64A8E0] mt-1.5 flex-shrink-0" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-2xl border border-[#D4A03A]/20 p-6" style={{ background: 'linear-gradient(135deg, rgba(212,160,58,0.06), rgba(212,160,58,0.02))' }}>
-            <div className="flex items-center gap-2 mb-4">
-              <Smartphone className="w-5 h-5 text-[#D4A03A]" />
-              <span className="text-sm font-bold text-[#F0EDE8]">Mobile (Nexus Mobile)</span>
-            </div>
-            <ul className="space-y-2">
-              {[
-                'Glance-and-go — 8 seconds max',
-                'Sparklines + summary numbers only',
-                'One-tap: approve reorder, apply price, dismiss alert',
-                'Worst-first store ranking',
-                'Push notifications for what needs attention',
-              ].map(t => (
-                <li key={t} className="flex items-start gap-2 text-sm text-[#ADA599]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#D4A03A] mt-1.5 flex-shrink-0" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </Section>
-
-      {/* ── SCREEN GALLERY ── */}
-      <Section id="screens" label="Screen Gallery" title="Every screen, pixel-perfect." dark>
-        <p className="text-sm text-[#ADA599] mb-10 max-w-2xl">Six core screens cover 95% of mobile use cases. Each follows progressive disclosure — summary first, detail on tap.</p>
-        <div className="flex gap-8 overflow-x-auto pb-8 -mx-6 px-6 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
-          <div className="snap-center flex-shrink-0"><PhoneFrame label="Home / Portfolio"><ScreenHome /></PhoneFrame></div>
-          <div className="snap-center flex-shrink-0"><PhoneFrame label="Smart Alerts"><ScreenAlerts /></PhoneFrame></div>
-          <div className="snap-center flex-shrink-0"><PhoneFrame label="Store Detail"><ScreenStoreDetail /></PhoneFrame></div>
-          <div className="snap-center flex-shrink-0"><PhoneFrame label="AI Chat"><ScreenChat /></PhoneFrame></div>
-          <div className="snap-center flex-shrink-0"><PhoneFrame label="Low Stock / Reorder"><ScreenInventory /></PhoneFrame></div>
-          <div className="snap-center flex-shrink-0"><PhoneFrame label="Reports Summary"><ScreenReports /></PhoneFrame></div>
-        </div>
-        <p className="text-center text-xs text-[#6B6359] mt-4">← Scroll horizontally to see all screens →</p>
-      </Section>
-
-      {/* ── NAVIGATION ── */}
-      <Section id="navigation" label="Navigation" title="Bottom tab bar. Always visible.">
-        <div className="grid lg:grid-cols-2 gap-10 items-center">
-          <div>
-            <p className="text-sm text-[#ADA599] leading-relaxed mb-6">
-              Bottom navigation gets <span className="text-[#F0EDE8] font-semibold">65% higher engagement</span> and <span className="text-[#F0EDE8] font-semibold">40% faster task completion</span> vs hamburger menus. Five tabs cover every primary action.
-            </p>
-            <div className="space-y-3">
-              {[
-                { icon: Home, label: 'Home', desc: 'Portfolio health overview, AI briefing, store list sorted worst-first' },
-                { icon: Bell, label: 'Alerts', desc: 'Smart alerts with swipe-to-act. Critical → Warning → Opportunity → Insight.' },
-                { icon: Store, label: 'Stores', desc: 'Store picker + drill-down: KPIs, hourly traffic, top products, local alerts' },
-                { icon: MessageSquare, label: 'Chat', desc: 'Nexus AI with voice input. Context-aware prompts. Inline reorder approval.' },
-                { icon: BarChart3, label: 'Reports', desc: 'Sparkline summaries. Tap any KPI to expand. "Open Full Dashboard" escape hatch.' },
-              ].map(t => (
-                <div key={t.label} className="flex items-start gap-3 rounded-xl border border-[#38332B] bg-[#1C1B1A] p-3">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#D4A03A]/10 flex-shrink-0">
-                    <t.icon className="w-4 h-4 text-[#D4A03A]" />
-                  </div>
-                  <div>
-                    <span className="text-sm font-semibold text-[#F0EDE8]">{t.label}</span>
-                    <p className="text-xs text-[#ADA599] mt-0.5">{t.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <PhoneFrame label="Bottom Tab Bar">
-              <ScreenHome />
-            </PhoneFrame>
-          </div>
-        </div>
-      </Section>
-
-      {/* ── INTERACTIONS ── */}
-      <Section id="interactions" label="Interaction Patterns" title="Gesture-driven. Zero friction." dark>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            { icon: ArrowLeft, title: 'Swipe Left → Act', desc: 'Reveal contextual actions on alerts and inventory items. Approve, dismiss, escalate — without opening a detail view.', color: '#D4A03A' },
-            { icon: RefreshCw, title: 'Pull to Refresh', desc: 'Pull down on any list to refresh data from server. Shows "Last updated" timestamp on completion.', color: '#00C27C' },
-            { icon: ArrowUpRight, title: 'Tap Card → Drill Down', desc: 'Every store card expands to a full store detail view. Progressive disclosure: summary → detail → SKU.', color: '#64A8E0' },
-            { icon: Sparkles, title: 'AI Inline Actions', desc: 'Nexus Chat returns actionable cards with one-tap buttons: "Approve Reorder $2,840" directly in the conversation.', color: '#B598E8' },
-            { icon: Clock, title: 'Undo Toast (5s)', desc: 'Every action shows a 5-second undo toast. No confirmation dialogs for routine operations — speed over safety theater.', color: '#E87068' },
-            { icon: MapPin, title: 'Geofenced Arrival', desc: 'Auto-switch to store context when you arrive. Morning briefing for that store appears as a push notification.', color: '#00C27C' },
-          ].map(f => <FeatureCard key={f.title} {...f} />)}
-        </div>
-      </Section>
-
-      {/* ── PROGRESSIVE DISCLOSURE ── */}
-      <Section id="disclosure" label="Information Architecture" title="Three layers. Never overwhelming.">
+      {/* ████ THREE LAYERS ████ */}
+      <div className="py-24 max-w-7xl mx-auto px-6 lg:px-12">
+        <p className="text-[11px] font-bold uppercase tracking-[4px] text-[#D4A03A] mb-3">Information Architecture</p>
+        <h2 className="text-4xl lg:text-5xl font-black text-white mb-12">Three layers. Never overwhelming.</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { num: '01', title: 'Portfolio View', desc: 'Chain-level KPIs. Store health list sorted worst-first. 3 status buckets: healthy, watch, critical. This is Layer 1 — the "is everything okay?" glance.', color: '#00C27C', items: ['AI briefing card', 'Revenue + Traffic + Alerts', 'Store list with health scores', 'Colored status indicators'] },
-            { num: '02', title: 'Store Detail', desc: 'Single-store deep dive. Today\'s numbers, hourly traffic chart, top products, active alerts. This is Layer 2 — the "what happened here?" view.', color: '#D4A03A', items: ['4 KPIs with sparklines', 'Hourly transaction bars', 'Top 5 products today', 'Store-specific alerts'] },
-            { num: '03', title: 'SKU / Action', desc: 'Product-level detail, reorder forms, price adjustments. This is Layer 3 — the "let me fix this" action. Accessible via alert tap, product tap, or AI chat.', color: '#64A8E0', items: ['Stock levels per location', 'Reorder form (qty, vendor)', 'Price comparison vs market', 'Compliance & test results'] },
-          ].map(layer => (
-            <div key={layer.num} className="rounded-2xl border border-[#38332B] bg-[#1C1B1A] p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-2xl font-extrabold" style={{ color: layer.color }}>{layer.num}</span>
-                <div className="flex-1 h-px" style={{ background: layer.color, opacity: 0.2 }} />
-              </div>
-              <h3 className="text-lg font-bold text-[#F0EDE8] mb-2">{layer.title}</h3>
-              <p className="text-sm text-[#ADA599] leading-relaxed mb-4">{layer.desc}</p>
-              <div className="space-y-1.5">
-                {layer.items.map(item => (
-                  <div key={item} className="flex items-center gap-2 text-xs text-[#ADA599]">
-                    <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: layer.color }} />
-                    {item}
-                  </div>
-                ))}
+            { n: '01', title: 'Portfolio', desc: 'Chain-level KPIs. Store list sorted worst-first. Is everything okay?', c: '#00C27C', items: ['AI briefing card', 'Health status buckets', 'Store list + sparklines', 'Alert count badges'] },
+            { n: '02', title: 'Store', desc: 'Single-store deep dive. What happened here?', c: '#D4A03A', items: ['4 KPIs with sparklines', 'Hourly transaction chart', 'Top 5 products today', 'Local alerts + sentiment'] },
+            { n: '03', title: 'Action', desc: 'Product-level detail. Let me fix this.', c: '#64A8E0', items: ['Stock levels per location', 'One-tap reorder', 'Price comparison', 'Compliance status'] },
+          ].map(l => (
+            <div key={l.n} className="rounded-3xl border border-[#2A2722] bg-[#161514] p-8 relative overflow-hidden">
+              <div className="absolute -top-4 -right-2 text-[80px] font-black leading-none" style={{ color: `${l.c}08` }}>{l.n}</div>
+              <div className="relative">
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style={{ background: `${l.c}12` }}>
+                  <span className="text-xl font-black" style={{ color: l.c }}>{l.n}</span>
+                </div>
+                <h3 className="text-xl font-black text-white mb-2">{l.title}</h3>
+                <p className="text-sm text-[#ADA599] mb-5">{l.desc}</p>
+                <div className="space-y-2">
+                  {l.items.map(item => (
+                    <div key={item} className="flex items-center gap-2">
+                      <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: l.c }} />
+                      <span className="text-sm text-[#ADA599]">{item}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
         </div>
-      </Section>
+      </div>
 
-      {/* ── FEATURES ── */}
-      <Section id="features" label="Core Features" title="Built for the floor, not the desk." dark>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { icon: Bell, title: 'Tiered Push Notifications', desc: 'Immediate for stockouts & POS down. Hourly digest for low-stock. Morning summary from AI.', color: '#E87068' },
-            { icon: ShoppingCart, title: 'One-Tap Reorder', desc: 'AI suggests qty and vendor. Single tap to approve. Undo within 5 seconds.', color: '#00C27C' },
-            { icon: Store, title: 'Store Switcher', desc: 'Persistent top-bar icon. Recent stores first. Context persists across all tabs.', color: '#64A8E0' },
-            { icon: Activity, title: 'Sparkline KPIs', desc: 'Every metric shows a 7-day trend inline. Direction at a glance without opening a chart.', color: '#D4A03A' },
-            { icon: MessageSquare, title: 'Voice-to-Text Chat', desc: 'Ask Nexus AI anything hands-free. Mic input with context-aware suggestions.', color: '#B598E8' },
-            { icon: Shield, title: 'Role-Aware Defaults', desc: 'HQ sees chain-wide. Store managers see their store only. No configuration needed.', color: '#D4A03A' },
-            { icon: Globe, title: 'PWA Install', desc: 'Add to home screen from browser. Full-screen, no browser chrome. Instant updates.', color: '#00C27C' },
-            { icon: WifiOff, title: 'Offline Caching', desc: 'Last-known data with timestamp. Queue actions offline, sync when connected.', color: '#6B6359' },
-          ].map(f => <FeatureCard key={f.title} {...f} />)}
-        </div>
-      </Section>
-
-      {/* ── DESIGN TOKENS ── */}
-      <Section id="tokens" label="Design System" title="Warm dark palette. Consistent everywhere.">
-        <div className="grid lg:grid-cols-2 gap-10">
-          {/* Colors */}
-          <div>
-            <h3 className="text-sm font-bold text-[#F0EDE8] mb-4">Color Tokens</h3>
-            <div className="grid grid-cols-2 gap-2">
+      {/* ████ BOTTOM NAV RATIONALE ████ */}
+      <div className="py-24" style={{ background: 'linear-gradient(180deg, #0D0C0A 0%, #12110F 50%, #0D0C0A 100%)' }}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <p className="text-[11px] font-bold uppercase tracking-[4px] text-[#D4A03A] mb-3">Navigation</p>
+          <h2 className="text-4xl lg:text-5xl font-black text-white mb-4">Bottom tab bar. Always visible.</h2>
+          <p className="text-lg text-[#ADA599] mb-12 max-w-xl">65% higher engagement vs hamburger menus. 40% faster task completion.</p>
+          <div className="grid lg:grid-cols-[1fr_1fr] gap-12">
+            <div className="space-y-4">
               {[
-                { name: 'Background', hex: '#0D0C0A', text: '#F0EDE8' },
-                { name: 'Surface', hex: '#1C1B1A', text: '#F0EDE8' },
-                { name: 'Border', hex: '#38332B', text: '#F0EDE8' },
-                { name: 'Text Primary', hex: '#F0EDE8', text: '#141210' },
-                { name: 'Text Secondary', hex: '#ADA599', text: '#141210' },
-                { name: 'Text Muted', hex: '#6B6359', text: '#F0EDE8' },
-                { name: 'Gold Accent', hex: '#D4A03A', text: '#141210' },
-                { name: 'Green / Success', hex: '#00C27C', text: '#141210' },
-                { name: 'Red / Alert', hex: '#E87068', text: '#141210' },
-                { name: 'Blue / Info', hex: '#64A8E0', text: '#141210' },
-                { name: 'Purple', hex: '#B598E8', text: '#141210' },
-                { name: 'Orange / Warning', hex: '#FFA657', text: '#141210' },
-              ].map(c => (
-                <div key={c.name} className="flex items-center gap-2 rounded-lg border border-[#38332B] p-2">
-                  <div className="w-8 h-8 rounded-lg flex-shrink-0" style={{ background: c.hex, border: '1px solid rgba(255,255,255,0.06)' }} />
-                  <div>
-                    <p className="text-xs font-semibold text-[#F0EDE8]">{c.name}</p>
-                    <p className="text-[10px] text-[#6B6359] font-mono">{c.hex}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Typography & spacing */}
-          <div>
-            <h3 className="text-sm font-bold text-[#F0EDE8] mb-4">Typography Scale</h3>
-            <div className="space-y-3 mb-8">
-              {[
-                { size: '24px', weight: '800', label: 'Hero Number', sample: '$47,230' },
-                { size: '16px', weight: '700', label: 'Section Title', sample: 'Smart Alerts' },
-                { size: '13px', weight: '600', label: 'Card Title', sample: 'Logan Square, IL' },
-                { size: '11px', weight: '500', label: 'Body', sample: 'Revenue vs market benchmarks' },
-                { size: '9px', weight: '600', label: 'Label / Caption', sample: 'TRANSACTIONS' },
-                { size: '8px', weight: '500', label: 'Micro', sample: '+12% vs yesterday' },
+                { icon: Home, tab: 'Home', desc: 'Portfolio health, AI briefing, store list ranked worst-first', c: '#D4A03A' },
+                { icon: Bell, tab: 'Alerts', desc: 'Swipeable alert cards. Critical → Warning → Opportunity → Insight.', c: '#E87068' },
+                { icon: Store, tab: 'Stores', desc: 'Store picker + drill-down: KPIs, hourly traffic, top products', c: '#00C27C' },
+                { icon: MessageSquare, tab: 'Chat', desc: 'Nexus AI with voice input and inline action cards', c: '#B598E8' },
+                { icon: BarChart3, tab: 'Reports', desc: 'Sparkline summaries with "Open Full Dashboard" escape hatch', c: '#64A8E0' },
               ].map(t => (
-                <div key={t.label} className="flex items-center gap-4 border-b border-[#38332B]/50 pb-2">
-                  <div className="w-16">
-                    <p className="text-[10px] text-[#6B6359] font-mono">{t.size}</p>
-                    <p className="text-[10px] text-[#6B6359]">w{t.weight}</p>
+                <div key={t.tab} className="flex items-start gap-4 rounded-2xl border border-[#2A2722] bg-[#161514] p-5">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${t.c}12` }}>
+                    <t.icon className="w-5 h-5" style={{ color: t.c }} />
                   </div>
-                  <div>
-                    <p className="text-[10px] text-[#ADA599] mb-0.5">{t.label}</p>
-                    <p style={{ fontSize: t.size, fontWeight: t.weight }} className="text-[#F0EDE8]">{t.sample}</p>
-                  </div>
+                  <div><p className="text-[15px] font-bold text-white">{t.tab}</p><p className="text-sm text-[#ADA599] leading-relaxed">{t.desc}</p></div>
                 </div>
               ))}
             </div>
-
-            <h3 className="text-sm font-bold text-[#F0EDE8] mb-4">Key Principles</h3>
-            <div className="space-y-2">
-              {[
-                '44px minimum touch target (Apple HIG)',
-                'Bottom 40% = primary actions (thumb zone)',
-                '8px grid for all spacing',
-                'No font size below 8px on mobile',
-                'Tabular numerals for all data',
-                'WCAG AA contrast on all text',
-              ].map(p => (
-                <div key={p} className="flex items-center gap-2 text-sm text-[#ADA599]">
-                  <Check className="w-3.5 h-3.5 text-[#00C27C] flex-shrink-0" />
-                  {p}
-                </div>
-              ))}
+            <div className="flex justify-center items-start">
+              <Phone><ScreenHome /></Phone>
             </div>
           </div>
         </div>
-      </Section>
+      </div>
 
-      {/* ── PWA ARCHITECTURE ── */}
-      <Section id="pwa" label="Technical Architecture" title="Progressive Web App. No app store." dark>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+      {/* ████ PWA + TECH ████ */}
+      <div className="py-24 max-w-7xl mx-auto px-6 lg:px-12">
+        <p className="text-[11px] font-bold uppercase tracking-[4px] text-[#D4A03A] mb-3">Technical</p>
+        <h2 className="text-4xl lg:text-5xl font-black text-white mb-12">Progressive Web App.<br />No app store required.</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {[
-            { icon: Globe, title: 'No App Store Required', desc: 'Cannabis apps face Apple/Google restrictions. A PWA installs directly from the browser — one tap to home screen.', color: '#00C27C' },
-            { icon: WifiOff, title: 'Service Worker Caching', desc: 'Cache the app shell + last fetched data. Managers see yesterday\'s numbers even in a back room with no signal.', color: '#64A8E0' },
-            { icon: Bell, title: 'Web Push Notifications', desc: 'Supported on iOS 17+ and Android. Tiered alerts: immediate for critical, hourly digest for low-priority.', color: '#E87068' },
-            { icon: Download, title: 'Install Prompt', desc: 'Full-screen experience with no browser chrome. Indistinguishable from native. Auto-updates on every visit.', color: '#D4A03A' },
-            { icon: Zap, title: 'Background Sync', desc: 'Queue actions taken offline (approve reorder, dismiss alert). Execute automatically when connectivity resumes.', color: '#B598E8' },
-            { icon: Layers, title: 'One Codebase', desc: 'React + Vite + Tailwind. Same stack as Nexus v3. ~60% lower cost than native iOS + Android.', color: '#ADA599' },
-          ].map(f => <FeatureCard key={f.title} {...f} />)}
+            { icon: Globe, title: 'Bypass App Store', desc: 'Cannabis apps face restrictions. A PWA installs from the browser in one tap.', c: '#00C27C' },
+            { icon: WifiOff, title: 'Offline Caching', desc: 'Service workers cache last data. Review numbers in a back room with no signal.', c: '#64A8E0' },
+            { icon: Bell, title: 'Web Push', desc: 'Supported on iOS 17+ and Android. Tiered alerts for every severity level.', c: '#E87068' },
+            { icon: Download, title: 'Home Screen Install', desc: 'Full-screen, no browser chrome. Indistinguishable from native.', c: '#D4A03A' },
+            { icon: RefreshCw, title: 'Background Sync', desc: 'Queue actions offline. Auto-execute when connectivity resumes.', c: '#B598E8' },
+            { icon: Layers, title: 'One Codebase', desc: 'React + Vite + Tailwind. Same stack as v3. ~60% lower cost than native.', c: '#ADA599' },
+          ].map(f => (
+            <div key={f.title} className="rounded-2xl border border-[#2A2722] bg-[#161514] p-6">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ background: `${f.c}12` }}>
+                <f.icon className="w-5 h-5" style={{ color: f.c }} />
+              </div>
+              <p className="text-[15px] font-bold text-white mb-1">{f.title}</p>
+              <p className="text-sm text-[#ADA599] leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
         </div>
-
-        {/* Tech stack */}
-        <div className="rounded-2xl border border-[#38332B] bg-[#1C1B1A] p-6">
-          <h3 className="text-sm font-bold text-[#F0EDE8] mb-4">Proposed Stack</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Stack */}
+        <div className="rounded-3xl border border-[#2A2722] bg-[#161514] p-8">
+          <h3 className="text-lg font-bold text-white mb-6">Proposed Stack</h3>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { layer: 'Framework', tech: 'React 18 + Vite', note: 'Same as v3 desktop' },
-              { layer: 'Styling', tech: 'Tailwind CSS', note: 'Shared design tokens' },
-              { layer: 'State', tech: 'React Context + SWR', note: 'Cache + revalidate' },
-              { layer: 'PWA', tech: 'Workbox', note: 'Service worker toolkit' },
-              { layer: 'Routing', tech: 'React Router', note: 'Hash-based for GH Pages' },
-              { layer: 'Charts', tech: 'SVG Sparklines', note: 'No Recharts on mobile' },
-              { layer: 'Notifications', tech: 'Web Push API', note: 'VAPID keys' },
-              { layer: 'Deploy', tech: 'GitHub Pages', note: 'Same pipeline as v3' },
+              { l:'Framework',t:'React 18 + Vite',n:'Same as v3' }, { l:'Styling',t:'Tailwind CSS',n:'Shared tokens' },
+              { l:'State',t:'Context + SWR',n:'Cache + revalidate' }, { l:'PWA',t:'Workbox',n:'Service workers' },
+              { l:'Routing',t:'React Router',n:'Hash-based' }, { l:'Charts',t:'SVG Sparklines',n:'Lightweight' },
+              { l:'Push',t:'Web Push API',n:'VAPID keys' }, { l:'Deploy',t:'GitHub Pages',n:'Same pipeline' },
             ].map(s => (
-              <div key={s.layer} className="rounded-lg border border-[#38332B] bg-[#141210] p-3">
-                <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-wider mb-1">{s.layer}</p>
-                <p className="text-sm font-semibold text-[#F0EDE8]">{s.tech}</p>
-                <p className="text-xs text-[#ADA599]">{s.note}</p>
+              <div key={s.l} className="rounded-xl border border-[#2A2722] bg-[#0D0C0A] p-4">
+                <p className="text-[9px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-1">{s.l}</p>
+                <p className="text-sm font-bold text-white">{s.t}</p>
+                <p className="text-xs text-[#6B6359]">{s.n}</p>
               </div>
             ))}
           </div>
         </div>
-      </Section>
+      </div>
 
-      {/* ── PERSONAS ── */}
-      <Section id="personas" label="Target Users" title="Two personas. One app.">
-        <div className="grid md:grid-cols-2 gap-6">
-          {[
-            {
-              role: 'Floor Manager',
-              context: 'On the store floor, 10-second glances between customers',
-              needs: ['What alerts need my attention right now?', 'Are we running low on anything?', 'How are we tracking vs yesterday?'],
-              color: '#00C27C',
-              freq: '20-30x/day, 8-15 seconds each',
-            },
-            {
-              role: 'MSO Owner / Regional Director',
-              context: 'In transit or at home, checking in episodically',
-              needs: ['Which stores need attention?', 'What\'s my portfolio health at a glance?', 'Any AI recommendations I should approve?'],
-              color: '#D4A03A',
-              freq: '3-5x/day, 30-60 seconds each',
-            },
-          ].map(p => (
-            <div key={p.role} className="rounded-2xl border border-[#38332B] bg-[#1C1B1A] p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${p.color}14` }}>
-                  <User className="w-6 h-6" style={{ color: p.color }} />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-[#F0EDE8]">{p.role}</h3>
-                  <p className="text-xs text-[#ADA599]">{p.context}</p>
-                </div>
+      {/* ████ DESIGN TOKENS ████ */}
+      <div className="py-24" style={{ background: '#12110F' }}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <p className="text-[11px] font-bold uppercase tracking-[4px] text-[#D4A03A] mb-3">Design System</p>
+          <h2 className="text-4xl lg:text-5xl font-black text-white mb-12">Warm dark palette.</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+            {[
+              { n: 'Background', h: '#0D0C0A' }, { n: 'Surface', h: '#161514' }, { n: 'Border', h: '#2A2722' },
+              { n: 'Primary', h: '#F0EDE8' }, { n: 'Secondary', h: '#ADA599' }, { n: 'Muted', h: '#6B6359' },
+              { n: 'Gold', h: '#D4A03A' }, { n: 'Green', h: '#00C27C' }, { n: 'Red', h: '#E87068' },
+              { n: 'Blue', h: '#64A8E0' }, { n: 'Purple', h: '#B598E8' }, { n: 'Orange', h: '#FFA657' },
+            ].map(c => (
+              <div key={c.n} className="text-center">
+                <div className="w-full aspect-square rounded-2xl mb-2 border border-[#2A2722]" style={{ background: c.h }} />
+                <p className="text-xs font-bold text-white">{c.n}</p>
+                <p className="text-[10px] text-[#6B6359] font-mono">{c.h}</p>
               </div>
-              <p className="text-[10px] font-semibold text-[#6B6359] uppercase tracking-wider mb-2">Key Questions</p>
-              <div className="space-y-1.5 mb-4">
-                {p.needs.map(n => (
-                  <div key={n} className="flex items-start gap-2 text-sm text-[#ADA599]">
-                    <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: p.color }} />
-                    {n}
-                  </div>
-                ))}
-              </div>
-              <div className="rounded-lg bg-[#141210] border border-[#38332B] px-3 py-2">
-                <p className="text-xs text-[#6B6359]">Usage pattern: <span className="text-[#F0EDE8] font-semibold">{p.freq}</span></p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </Section>
+      </div>
 
-      {/* ── DESKTOP-ONLY ── */}
-      <Section id="desktop-only" label="Scope" title="What stays on desktop." dark>
-        <p className="text-sm text-[#ADA599] mb-6 max-w-2xl">Not everything belongs on mobile. These features require the space and focus of a desktop session.</p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[
-            'Full Sales Reporting (multi-tab charts & tables)',
-            'Omnichannel Collection setup (SMS, kiosk config)',
-            'Pricing scatter chart & optimization engine',
-            'Unified Sentiment Pipeline aggregation',
-            'Brand Analysis & competitive insights',
-            'Full Inventory Management (catalog, thresholds)',
-            'Campaign builder & marketing automation',
-            'Compliance reporting & audit trails',
-            'Staff scheduling & performance management',
-          ].map(item => (
-            <div key={item} className="flex items-center gap-2 rounded-lg border border-[#38332B] bg-[#1C1B1A] px-3 py-2.5">
-              <Monitor className="w-3.5 h-3.5 text-[#6B6359] flex-shrink-0" />
-              <span className="text-sm text-[#ADA599]">{item}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ── FOOTER ── */}
-      <div className="border-t border-[#38332B] py-12 px-6 text-center">
-        <NexusIcon size={28} className="mx-auto mb-3" />
-        <p className="text-sm font-semibold text-[#F0EDE8] mb-1">Nexus Mobile — Design Review</p>
-        <p className="text-xs text-[#6B6359]">Nexus Retail v3 · Dutchie AI · March 2026</p>
+      {/* ████ FOOTER ████ */}
+      <div className="py-16 text-center border-t border-[#2A2722]">
+        <NexusIcon size={32} className="mx-auto mb-4" />
+        <p className="text-lg font-bold text-white mb-1">Nexus Mobile — Design Review</p>
+        <p className="text-sm text-[#6B6359]">Dutchie AI · March 2026</p>
       </div>
     </div>
   );
