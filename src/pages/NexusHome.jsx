@@ -736,6 +736,8 @@ function SentimentTile() {
 
 function OmnichannelTile() {
   const [activeTab, setActiveTab] = useState('sms');
+  const { dateMultiplier, rangeLabel } = useDateRange();
+  const dm = dateMultiplier;
   const tabs = [
     { id: 'sms', label: 'SMS Surveys', icon: Smartphone },
     { id: 'ecomm', label: 'Ecomm/Kiosk', icon: Monitor },
@@ -748,7 +750,7 @@ function OmnichannelTile() {
       <TileHeader
         icon={Radio}
         title="Omnichannel Sentiment Collection"
-        subtitle="Proprietary first-party signals — no competitor can replicate this"
+        subtitle={`Proprietary first-party signals — ${rangeLabel.toLowerCase()}`}
         iconBg="bg-[rgba(163,113,247,0.12)] text-[#B598E8]"
         action={() => {}}
         actionLabel="Configure Channels"
@@ -759,10 +761,10 @@ function OmnichannelTile() {
           {tabs.map(({ id, label, icon: TabIcon }) => {
             const isActive = activeTab === id;
             const stats = {
-              sms: { signals: NEXUS_DATA.smsChannel.responded, rate: `${NEXUS_DATA.smsChannel.responseRate}%`, rateLabel: 'response' },
-              ecomm: { signals: NEXUS_DATA.ecommChannel.totalReactions, rate: `${NEXUS_DATA.ecommChannel.freeTextRate}%`, rateLabel: 'w/ text' },
-              voice: { signals: NEXUS_DATA.voiceSurveyChannel.completed, rate: `${NEXUS_DATA.voiceSurveyChannel.avgCsat}/5`, rateLabel: 'avg CSAT' },
-              qr: { signals: NEXUS_DATA.qrChannel.completed, rate: `${NEXUS_DATA.qrChannel.scanRate}%`, rateLabel: 'scan rate' },
+              sms: { signals: Math.round(NEXUS_DATA.smsChannel.responded * dm), rate: `${NEXUS_DATA.smsChannel.responseRate}%`, rateLabel: 'response' },
+              ecomm: { signals: Math.round(NEXUS_DATA.ecommChannel.totalReactions * dm), rate: `${NEXUS_DATA.ecommChannel.freeTextRate}%`, rateLabel: 'w/ text' },
+              voice: { signals: Math.round(NEXUS_DATA.voiceSurveyChannel.completed * dm), rate: `${NEXUS_DATA.voiceSurveyChannel.avgCsat}/5`, rateLabel: 'avg CSAT' },
+              qr: { signals: Math.round(NEXUS_DATA.qrChannel.completed * dm), rate: `${NEXUS_DATA.qrChannel.scanRate}%`, rateLabel: 'scan rate' },
             }[id];
             return (
               <button
@@ -837,8 +839,8 @@ function OmnichannelTile() {
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-[#6B6359] mb-3">Channel Stats</p>
               <div className="space-y-2 mb-4">
-                <StatRow label="Surveys Sent" value={NEXUS_DATA.smsChannel.sent.toLocaleString()} sub="this month" />
-                <StatRow label="Responses" value={NEXUS_DATA.smsChannel.responded.toLocaleString()} sub={`${NEXUS_DATA.smsChannel.responseRate}% rate`} />
+                <StatRow label="Surveys Sent" value={Math.round(NEXUS_DATA.smsChannel.sent * dm).toLocaleString()} sub={rangeLabel.toLowerCase()} />
+                <StatRow label="Responses" value={Math.round(NEXUS_DATA.smsChannel.responded * dm).toLocaleString()} sub={`${NEXUS_DATA.smsChannel.responseRate}% rate`} />
                 <StatRow label="Avg Sentiment" value={NEXUS_DATA.smsChannel.avgSentiment} trend={NEXUS_DATA.smsChannel.sentimentDelta} />
                 <StatRow label="Today" value={`${NEXUS_DATA.smsChannel.todayResponded}/${NEXUS_DATA.smsChannel.todaySent}`} sub="responded/sent" />
               </div>
@@ -946,8 +948,8 @@ function OmnichannelTile() {
                 </div>
               </div>
               <div className="flex gap-3 text-xs text-[#6B6359]">
-                <span>Surveyed: <span className="font-semibold text-[#F0EDE8]">{NEXUS_DATA.voiceSurveyChannel.surveyed}</span></span>
-                <span>Completed: <span className="font-semibold text-[#F0EDE8]">{NEXUS_DATA.voiceSurveyChannel.completed}</span></span>
+                <span>Surveyed: <span className="font-semibold text-[#F0EDE8]">{Math.round(NEXUS_DATA.voiceSurveyChannel.surveyed * dm)}</span></span>
+                <span>Completed: <span className="font-semibold text-[#F0EDE8]">{Math.round(NEXUS_DATA.voiceSurveyChannel.completed * dm)}</span></span>
                 <span>Rate: <span className="font-semibold text-[#F0EDE8]">{NEXUS_DATA.voiceSurveyChannel.completionRate}%</span></span>
               </div>
             </div>
@@ -1018,9 +1020,9 @@ function OmnichannelTile() {
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-[#6B6359] mb-3">Channel Stats</p>
               <div className="space-y-2 mb-4">
-                <StatRow label="QR Codes Printed" value={NEXUS_DATA.qrChannel.printed.toLocaleString()} />
-                <StatRow label="Scans" value={NEXUS_DATA.qrChannel.scanned} sub={`${NEXUS_DATA.qrChannel.scanRate}% scan rate`} />
-                <StatRow label="Completions" value={NEXUS_DATA.qrChannel.completed} sub={`${NEXUS_DATA.qrChannel.completionRate}% completion`} />
+                <StatRow label="QR Codes Printed" value={Math.round(NEXUS_DATA.qrChannel.printed * dm).toLocaleString()} />
+                <StatRow label="Scans" value={Math.round(NEXUS_DATA.qrChannel.scanned * dm)} sub={`${NEXUS_DATA.qrChannel.scanRate}% scan rate`} />
+                <StatRow label="Completions" value={Math.round(NEXUS_DATA.qrChannel.completed * dm)} sub={`${NEXUS_DATA.qrChannel.completionRate}% completion`} />
                 <StatRow label="Avg Score" value={`${NEXUS_DATA.qrChannel.avgScore}/5`} />
               </div>
               <div className="flex gap-3 mb-4">
@@ -1055,6 +1057,7 @@ function OmnichannelTile() {
 // ---------------------------------------------------------------------------
 
 function UnifiedPipelineTile() {
+  const { dateMultiplier, rangeLabel } = useDateRange();
   const d = NEXUS_DATA.unifiedPipeline;
   const firstParty = d.channelScores.filter((c) => c.type === 'first-party');
   const thirdParty = d.channelScores.filter((c) => c.type === 'third-party');
@@ -1069,7 +1072,7 @@ function UnifiedPipelineTile() {
       <TileHeader
         icon={Layers}
         title="Unified Sentiment Pipeline"
-        subtitle={`${d.totalSignals.toLocaleString()} signals from ${d.channelScores.length} channels — first-party + third-party merged`}
+        subtitle={`${Math.round(d.totalSignals * dateMultiplier).toLocaleString()} signals from ${d.channelScores.length} channels — ${rangeLabel.toLowerCase()}`}
         iconBg="bg-[rgba(100,168,224,0.12)] text-[#64A8E0]"
       />
       <div className="p-6">
@@ -1132,7 +1135,7 @@ function UnifiedPipelineTile() {
                           <span className="text-sm text-[#F0EDE8]">{c.channel}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-[11px] text-[#6B6359]">{c.signals.toLocaleString()}</span>
+                          <span className="text-[11px] text-[#6B6359]">{Math.round(c.signals * dateMultiplier).toLocaleString()}</span>
                           <span className={`text-sm font-bold ${c.score >= 70 ? 'text-[#00C27C]' : c.score >= 55 ? 'text-[#D4A03A]' : 'text-[#E87068]'}`}>
                             {c.score}
                           </span>
@@ -1155,11 +1158,11 @@ function UnifiedPipelineTile() {
                     return (
                       <div key={c.channel} className="flex items-center justify-between rounded-lg border border-[#38332B] bg-[rgba(100,168,224,0.12)]/30 px-3 py-2">
                         <div className="flex items-center gap-2">
-                          <Icon size={12} className="text-blue-500" />
+                          <Icon size={12} className="text-[#64A8E0]" />
                           <span className="text-sm text-[#F0EDE8]">{c.channel}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-[11px] text-[#6B6359]">{c.signals.toLocaleString()}</span>
+                          <span className="text-[11px] text-[#6B6359]">{Math.round(c.signals * dateMultiplier).toLocaleString()}</span>
                           <span className={`text-sm font-bold ${c.score >= 70 ? 'text-[#00C27C]' : c.score >= 55 ? 'text-[#D4A03A]' : 'text-[#E87068]'}`}>
                             {c.score}
                           </span>
@@ -1203,16 +1206,19 @@ function UnifiedPipelineTile() {
 }
 
 function InventoryTile() {
+  const { isAllSelected, selectionLabel } = useStores();
+  const scaledAlerts = isAllSelected ? NEXUS_DATA.lowStockAlerts : Math.max(1, Math.round(NEXUS_DATA.lowStockAlerts * 0.5));
+  const scaledRisk = isAllSelected ? NEXUS_DATA.stockoutRisk : Math.max(1, Math.round(NEXUS_DATA.stockoutRisk * 0.5));
   return (
     <NexusTile>
       <TileHeader
         icon={Package}
         title="Inventory & Reordering"
-        subtitle={`${NEXUS_DATA.lowStockAlerts} low-stock alerts`}
+        subtitle={`${scaledAlerts} low-stock alerts — ${selectionLabel}`}
         iconBg="bg-[rgba(255,166,87,0.12)] text-[#FFA657]"
         action={() => {}}
         actionLabel="Draft Reorder"
-        badge={{ count: NEXUS_DATA.stockoutRisk, color: 'bg-[#E87068]' }}
+        badge={{ count: scaledRisk, color: 'bg-[#E87068]' }}
       />
       <div className="p-6">
         <div className="mb-4 flex items-center gap-4">
@@ -1220,7 +1226,7 @@ function InventoryTile() {
             <AlertTriangle size={24} className="text-[#E87068]" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-[#E87068]">{NEXUS_DATA.stockoutRisk}</p>
+            <p className="text-2xl font-bold text-[#E87068]">{scaledRisk}</p>
             <p className="text-xs text-[#6B6359]">Products at stockout risk</p>
           </div>
         </div>
@@ -1246,6 +1252,7 @@ function InventoryTile() {
 
 function PricingTile() {
   const navigate = useNavigate();
+  const { rangeLabel } = useDateRange();
 
   const MiniTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
@@ -1276,7 +1283,7 @@ function PricingTile() {
       <TileHeader
         icon={DollarSign}
         title="Pricing & Discounts"
-        subtitle="Your price vs market"
+        subtitle={`Your price vs market — ${rangeLabel.toLowerCase()}`}
         iconBg="bg-[#00C27C]/10 text-[#00C27C]"
         action={() => navigate('/pricing')}
         actionLabel="Optimize"
@@ -1895,6 +1902,21 @@ function SalesReportingTile() {
 function MorningBriefing() {
   const now = new Date();
   const greeting = now.getHours() < 12 ? 'morning' : now.getHours() < 17 ? 'afternoon' : 'evening';
+  const { selectedStoreNames, isAllSelected, selectionLabel } = useStores();
+  const { dateMultiplier, rangeLabel, trendScale } = useDateRange();
+
+  const storeRatio = useMemo(() => {
+    if (isAllSelected) return 1;
+    const totalRev = STORE_METRICS.reduce((sum, s) => sum + s.revenue, 0);
+    const selRev = STORE_METRICS.filter(s => selectedStoreNames.has(s.name)).reduce((sum, s) => sum + s.revenue, 0);
+    return totalRev > 0 ? selRev / totalRev : 0;
+  }, [selectedStoreNames, isAllSelected]);
+
+  const scaledRevenue = Math.round(NEXUS_DATA.todaySales * storeRatio * dateMultiplier);
+  const scaledTraffic = Math.round(NEXUS_DATA.traffic.today * storeRatio * dateMultiplier);
+  const scaledStockouts = Math.max(1, Math.round(NEXUS_DATA.lowStockAlerts * storeRatio));
+  const scaledCritical = Math.max(1, Math.round(NEXUS_DATA.stockoutRisk * storeRatio));
+
   return (
     <div className="rounded-2xl border overflow-hidden animate-fade-up" style={{ background: 'linear-gradient(135deg, #1C1B1A 0%, #1A1710 50%, #1C1B1A 100%)', borderColor: 'rgba(212,160,58,0.12)' }}>
       <div className="px-6 py-5 flex items-start justify-between">
@@ -1903,7 +1925,7 @@ function MorningBriefing() {
             <NexusIcon size={22} />
           </div>
           <div>
-            <p className="text-xs text-[#6B6359]">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+            <p className="text-xs text-[#6B6359]">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} &middot; {rangeLabel} &middot; {selectionLabel}</p>
             <h1 className="text-xl font-bold text-[#F0EDE8]">Good {greeting}</h1>
           </div>
         </div>
@@ -1916,10 +1938,10 @@ function MorningBriefing() {
         </div>
         <div className="flex gap-5 flex-wrap">
           {[
-            { label: 'Revenue', value: fmtDollar(NEXUS_DATA.todaySales), trend: '+4.2%', up: true },
-            { label: 'Traffic', value: NEXUS_DATA.traffic.today.toLocaleString(), trend: '+3.7%', up: true },
+            { label: 'Revenue', value: fmtDollar(scaledRevenue), trend: `+${(4.2 * trendScale).toFixed(1)}%`, up: true },
+            { label: 'Traffic', value: scaledTraffic.toLocaleString(), trend: `+${(3.7 * trendScale).toFixed(1)}%`, up: true },
             { label: 'Avg Rating', value: '4.6\u2605', trend: '+0.2', up: true },
-            { label: 'Stockouts', value: String(NEXUS_DATA.lowStockAlerts), trend: `${NEXUS_DATA.stockoutRisk} critical`, up: false },
+            { label: 'Stockouts', value: String(scaledStockouts), trend: `${scaledCritical} critical`, up: false },
           ].map(m => (
             <div key={m.label} className="min-w-[72px]">
               <p className="text-[9px] uppercase tracking-[1px] text-[#6B6359] font-semibold mb-1">{m.label}</p>
@@ -2097,8 +2119,9 @@ function SmartAlertsFeed({ onAction }) {
 // ─── STORE HEALTH MATRIX ─── //
 
 function StoreHealthMatrix() {
+  const { selectedStoreNames } = useStores();
   const stores = useMemo(() => {
-    return STORE_METRICS.slice(0, 12).map(s => {
+    return STORE_METRICS.filter(s => selectedStoreNames.has(s.name)).slice(0, 12).map(s => {
       const rng = _seedRng(s.name.length * 31);
       const revScore = Math.min(100, Math.round((s.revenue / 750) * 100));
       const sentScore = s.sentimentScore;
@@ -2109,7 +2132,7 @@ function StoreHealthMatrix() {
       const alerts = s.sentimentFlag === 'alert' ? 3 : s.sentimentFlag === 'watch' ? 1 : 0;
       return { ...s, composite, alerts };
     }).sort((a, b) => b.composite - a.composite);
-  }, []);
+  }, [selectedStoreNames]);
 
   return (
     <NexusTile className="animate-fade-up" style={{ animationDelay: '400ms' }}>
