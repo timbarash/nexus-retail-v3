@@ -1907,10 +1907,6 @@ function MorningBriefing() {
             <h1 className="text-xl font-bold text-[#F0EDE8]">Good {greeting}</h1>
           </div>
         </div>
-        <span className="flex items-center gap-1.5 rounded-full bg-[#00C27C]/10 px-3 py-1.5 text-xs font-medium text-[#00C27C] border border-[#00C27C]/20">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#00C27C] animate-pulse" />
-          All systems live
-        </span>
       </div>
       <div className="px-6 pb-4">
         <div className="rounded-xl p-4 mb-4" style={{ background: 'rgba(212,160,58,0.04)', border: '1px solid rgba(212,160,58,0.1)' }}>
@@ -1924,7 +1920,6 @@ function MorningBriefing() {
             { label: 'Traffic', value: NEXUS_DATA.traffic.today.toLocaleString(), trend: '+3.7%', up: true },
             { label: 'Avg Rating', value: '4.6\u2605', trend: '+0.2', up: true },
             { label: 'Stockouts', value: String(NEXUS_DATA.lowStockAlerts), trend: `${NEXUS_DATA.stockoutRisk} critical`, up: false },
-            { label: 'Systems', value: 'All Live', trend: '', up: true },
           ].map(m => (
             <div key={m.label} className="min-w-[72px]">
               <p className="text-[9px] uppercase tracking-[1px] text-[#6B6359] font-semibold mb-1">{m.label}</p>
