@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { NavLink } from 'react-router-dom';
 import { BarChart3, Tag, MapPin, MessageSquare, Trophy, X, Zap, Bot, Megaphone, ShoppingCart, CircleDollarSign, Waypoints, Hash, Globe, Briefcase } from 'lucide-react';
 import { CHANNELS } from '../../data/slackMockData';
@@ -57,7 +58,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
           { label: 'Operations', items: OPERATIONS_ITEMS, icon: Bot },
           { label: 'Help', items: HELP_ITEMS },
         ].map(({ label: groupLabel, items, icon: GroupIcon }, gi) => (
-          <React.Fragment key={groupLabel}>
+          <Fragment key={groupLabel}>
             <p className={`px-3 ${gi > 0 ? 'mt-6' : ''} mb-2 text-[11px] font-semibold text-white/25 uppercase tracking-widest flex items-center gap-2`}>
               {GroupIcon && <GroupIcon className="w-3 h-3" />}
               {groupLabel}
@@ -85,7 +86,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
                 )}
               </NavLink>
             ))}
-          </React.Fragment>
+          </Fragment>
         ))}
       </nav>
 
