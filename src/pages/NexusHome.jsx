@@ -2152,34 +2152,20 @@ const AUTO_RESOLVED = [
   { text: 'Auto-reordered 50 Stiiizy Pods for Hoboken NJ', icon: 'reorder' },
 ];
 
-// Transfer workflow steps
-const TRANSFER_STEPS = ['Review', 'Scan METRC', 'Confirm Qty', 'Complete'];
-
 function SmartAlertsFeed({ onAction }) {
-  // Track per-alert transfer workflow state: { [alertId]: { step: 0-3, scanning: false } }
   const [transferState, setTransferState] = useState({});
+  const [expanded, setExpanded] = useState({});
+  const [actionDone, setActionDone] = useState({});
 
   const transferAlerts = SMART_ALERTS.filter(a => a.type === 'transfer');
-  const oosCount = transferAlerts.filter(a => a.floor === 0).length;
-  const totalAlerts = SMART_ALERTS.length;
+  const oosCount = transferAlerts.filter(a => a.floor === 0 && !transferState[a.id]).length;
 
+  /* ── Transfer workflow ── */
   const startTransfer = (id) => {
-    setTransferState(prev => ({ ...prev, [id]: { step: 0 } }));
-  };
-
-  const advanceTransfer = (id) => {
-    setTransferState(prev => {
-      const current = prev[id] || { step: 0 };
-      const nextStep = current.step + 1;
-      if (nextStep === 1) {
-        // Simulate METRC scan delay
-        setTimeout(() => {
-          setTransferState(p => ({ ...p, [id]: { step: 2 } }));
-        }, 1500);
-        return { ...prev, [id]: { step: 1, scanning: true } };
-      }
-      return { ...prev, [id]: { step: nextStep } };
-    });
+    setTransferState(prev => ({ ...prev, [id]: { step: 1, scanning: true } }));
+    setTimeout(() => {
+      setTransferState(prev => ({ ...prev, [id]: { step: 2 } }));
+    }, 1400);
   };
 
   const completeTransfer = (id) => {
@@ -2192,227 +2178,178 @@ function SmartAlertsFeed({ onAction }) {
         setTransferState(prev => ({ ...prev, [a.id]: { step: 1, scanning: true } }));
         setTimeout(() => {
           setTransferState(prev => ({ ...prev, [a.id]: { step: 3 } }));
-        }, 1200 + i * 400);
-      }, i * 600);
+        }, 1200 + i * 300);
+      }, i * 500);
     });
   };
 
+  /* ── Standard alert action handler ── */
+  const handleAction = (alertId, action, alertTitle) => {
+    setActionDone(prev => ({ ...prev, [`${alertId}-${action}`]: true }));
+    if (onAction) onAction(`${alertTitle}: ${action}`);
+  };
+
+  const toggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+
+  /* ── Render a compact transfer alert row ── */
   const renderTransferAlert = (a) => {
-    const state = transferState[a.id];
-    const statusColor = a.floor === 0 ? '#E87068' : '#D4A03A';
+    const ts = transferState[a.id];
+    const done = ts?.step === 3;
+    const scanning = ts?.step === 1 && ts?.scanning;
+    const confirming = ts?.step === 2;
+    const isExpanded = expanded[a.id];
 
     return (
-      <div key={a.id} className="px-5 py-4" style={{ background: state?.step === 3 ? 'rgba(0,194,124,0.04)' : `${a.color}05` }}>
-        <div className="flex items-start gap-3">
-          {/* Product image */}
-          <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-[#282724] mt-0.5">
+      <div key={a.id} className="px-4 py-2.5 hover:bg-white/[0.02] transition-colors" style={done ? { background: 'rgba(0,194,124,0.03)' } : undefined}>
+        {/* Compact row */}
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 bg-[#282724]">
             <img src={`${BASE}${a.img}`} alt={a.brand} className="w-full h-full object-cover" />
           </div>
-
-          <div className="flex-1 min-w-0">
-            {/* Severity + time */}
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ color: state?.step === 3 ? '#00C27C' : a.color, background: state?.step === 3 ? '#00C27C14' : `${a.color}14`, border: `1px solid ${state?.step === 3 ? '#00C27C' : a.color}25` }}>
-                {state?.step === 3 ? 'TRANSFERRED' : a.severity}
+          <div className="flex-1 min-w-0 cursor-pointer" onClick={() => toggle(a.id)}>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-bold px-1.5 py-px rounded-full" style={{ color: done ? '#00C27C' : a.color, background: done ? '#00C27C14' : `${a.color}14` }}>
+                {done ? 'DONE' : a.severity}
               </span>
-              <span className="text-[10px] text-[#6B6359]">{a.time}</span>
-              {a.daysOOS > 0 && <span className="text-[10px] font-semibold text-[#E87068]">{a.daysOOS}d out of stock</span>}
+              <span className="text-[12px] font-medium text-[#F0EDE8] truncate">{a.product}</span>
+              <span className="text-[10px] text-[#6B6359] flex-shrink-0">{a.time}</span>
             </div>
-
-            {/* Title */}
-            <p className="text-[13px] font-semibold text-[#F0EDE8] mb-1">{a.title}</p>
-
-            {/* AI insight */}
-            <div className="rounded-lg px-3 py-2 mb-3" style={{ background: `${a.color}06`, border: `1px solid ${a.color}12` }}>
-              <p className="text-[11px] text-[#C8C3BA] leading-relaxed">Nexus: "{a.ai}"</p>
+            <div className="flex items-center gap-3 text-[10px] text-[#6B6359] mt-0.5">
+              <span>{a.store}</span>
+              <span>Floor: <span className="font-semibold" style={{ color: a.floor === 0 ? '#E87068' : '#D4A03A' }}>{a.floor}</span></span>
+              <span>Vault: <span className="font-semibold text-[#00C27C]">{a.vault}</span></span>
+              <span className="flex items-center gap-0.5"><Lock size={8} />{a.metrcPkg.slice(-8)}</span>
             </div>
-
-            {/* Stock info row */}
-            <div className="flex items-center gap-4 mb-3 text-xs">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#6B6359]">Floor:</span>
-                <span className="font-bold" style={{ color: statusColor }}>{a.floor}</span>
+          </div>
+          {/* Action area */}
+          <div className="flex-shrink-0">
+            {done ? (
+              <span className="flex items-center gap-1 text-[10px] font-semibold text-[#00C27C]"><Check size={12} />{a.recQty} moved</span>
+            ) : scanning ? (
+              <div className="flex items-center gap-1.5 text-[10px] text-[#D4A03A]">
+                <div className="w-4 h-4 rounded-full border border-[#38332B] relative"><div className="absolute inset-0 rounded-full border border-t-[#D4A03A] animate-spin" /></div>
+                Scanning...
               </div>
-              <span className="text-[#38332B]">→</span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#6B6359]">Vault:</span>
-                <span className="font-bold text-[#00C27C]">{a.vault}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#6B6359]">Wk Avg:</span>
-                <span className="text-[#F0EDE8]">{a.avgWeekly}</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-[10px] text-[#6B6359]">
-                <Lock size={10} />
-                <span className="font-mono text-[9px]">{a.metrcPkg.slice(-8)}</span>
-              </div>
-            </div>
-
-            {/* Transfer workflow */}
-            {!state ? (
-              /* ── Initial: show transfer button ── */
-              <div className="flex gap-2">
-                <button onClick={() => startTransfer(a.id)} className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[11px] font-semibold text-white transition-colors hover:brightness-110" style={{ background: '#D4A03A' }}>
-                  <ArrowRightLeft size={13} />
-                  Transfer {a.recQty} to Floor
-                </button>
-                <button onClick={() => onAction && onAction(a.title)} className="px-3 py-2 rounded-lg text-[11px] font-semibold text-[#ADA599] border border-[#38332B] hover:text-[#F0EDE8] transition-colors">
-                  View Details
-                </button>
-              </div>
-            ) : state.step < 3 ? (
-              /* ── Multi-step transfer workflow ── */
-              <div className="rounded-xl border border-[#38332B] bg-[#141210] p-3">
-                {/* Step progress bar */}
-                <div className="flex items-center gap-1 mb-3">
-                  {TRANSFER_STEPS.map((label, si) => (
-                    <div key={si} className="flex items-center gap-1 flex-1">
-                      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 ${
-                        si < state.step ? 'bg-[#00C27C] text-white'
-                        : si === state.step ? 'bg-[#D4A03A] text-white'
-                        : 'bg-[#38332B] text-[#6B6359]'
-                      }`}>
-                        {si < state.step ? <Check size={10} /> : si + 1}
-                      </div>
-                      <span className={`text-[9px] flex-shrink-0 ${si <= state.step ? 'text-[#F0EDE8] font-medium' : 'text-[#6B6359]'}`}>{label}</span>
-                      {si < 3 && <div className={`flex-1 h-px ${si < state.step ? 'bg-[#00C27C]' : 'bg-[#38332B]'}`} />}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Step content */}
-                {state.step === 0 && (
-                  <div>
-                    <div className="grid grid-cols-2 gap-2 mb-3 text-[11px]">
-                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-2">
-                        <p className="text-[#6B6359] text-[10px] mb-0.5">Source</p>
-                        <p className="text-[#F0EDE8] font-medium">{a.metrcSrc}</p>
-                        <p className="text-[#6B6359] text-[9px]">{a.store}</p>
-                      </div>
-                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-2">
-                        <p className="text-[#6B6359] text-[10px] mb-0.5">Destination</p>
-                        <p className="text-[#F0EDE8] font-medium">{a.metrcDest}</p>
-                        <p className="text-[#6B6359] text-[9px]">{a.store}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 mb-3 px-1">
-                      <span className="text-[10px] text-[#6B6359]">Transfer Qty:</span>
-                      <span className="text-sm font-bold text-[#F0EDE8]">{a.recQty} units</span>
-                      <span className="text-[10px] text-[#6B6359]">of {a.product}</span>
-                    </div>
-                    <button onClick={() => advanceTransfer(a.id)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[#D4A03A] text-white text-[11px] font-semibold hover:brightness-110 transition-colors">
-                      <Package size={13} /> Scan METRC Package Tag
-                    </button>
-                  </div>
-                )}
-                {state.step === 1 && state.scanning && (
-                  <div className="text-center py-2">
-                    <div className="w-8 h-8 mx-auto mb-2 rounded-full border-2 border-[#38332B] relative">
-                      <div className="absolute inset-0 rounded-full border-2 border-t-[#D4A03A] animate-spin" />
-                    </div>
-                    <p className="text-[11px] text-[#ADA599]">Scanning METRC tag <span className="font-mono text-[#D4A03A]">{a.metrcPkg}</span></p>
-                    <p className="text-[10px] text-[#6B6359] mt-0.5">Validating package against state track-and-trace...</p>
-                  </div>
-                )}
-                {state.step === 2 && (
-                  <div>
-                    <div className="flex items-center gap-2 mb-3 px-2 py-2 rounded-lg bg-[#00C27C]/8 border border-[#00C27C]/15">
-                      <Check size={14} className="text-[#00C27C]" />
-                      <span className="text-[11px] text-[#00C27C] font-medium">METRC tag verified — package {a.metrcPkg.slice(-8)} valid</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2 mb-3 text-center text-[11px]">
-                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] py-2">
-                        <p className="font-bold text-[#F0EDE8]">{a.recQty}</p>
-                        <p className="text-[9px] text-[#6B6359]">Units</p>
-                      </div>
-                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] py-2">
-                        <p className="font-bold text-[#F0EDE8]">{a.metrcSrc.split(' ').pop()}</p>
-                        <p className="text-[9px] text-[#6B6359]">From</p>
-                      </div>
-                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] py-2">
-                        <p className="font-bold text-[#F0EDE8]">Floor</p>
-                        <p className="text-[9px] text-[#6B6359]">To</p>
-                      </div>
-                    </div>
-                    <button onClick={() => completeTransfer(a.id)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[#00C27C] text-white text-[11px] font-semibold hover:brightness-110 transition-colors">
-                      <Check size={13} /> Confirm Transfer &amp; Log to METRC
-                    </button>
-                  </div>
-                )}
-              </div>
+            ) : confirming ? (
+              <button onClick={() => completeTransfer(a.id)} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#00C27C] text-white hover:brightness-110 transition-colors">
+                <Check size={11} />Confirm
+              </button>
             ) : (
-              /* ── Completed ── */
-              <div className="rounded-xl border border-[#00C27C]/20 bg-[#00C27C]/5 px-4 py-3">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <CheckCircle2 size={16} className="text-[#00C27C]" />
-                  <span className="text-[12px] font-semibold text-[#00C27C]">{a.recQty} units transferred to floor</span>
-                </div>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-[#ADA599]">
-                  <span>METRC manifest created</span>
-                  <span>Package: <span className="font-mono text-[#6B6359]">{a.metrcPkg.slice(-8)}</span></span>
-                  <span>{a.metrcSrc} → {a.metrcDest}</span>
-                  <span>Logged by: Manager on duty</span>
-                </div>
-              </div>
+              <button onClick={() => startTransfer(a.id)} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#D4A03A] bg-[#D4A03A]/10 border border-[#D4A03A]/20 hover:bg-[#D4A03A]/20 transition-colors">
+                <ArrowRightLeft size={11} />Transfer {a.recQty}
+              </button>
             )}
           </div>
         </div>
+
+        {/* Expanded detail (click to toggle) */}
+        {isExpanded && (
+          <div className="mt-2 ml-11 text-[11px] rounded-lg px-3 py-2 border border-[#38332B] bg-[#141210]">
+            <p className="text-[#ADA599] mb-1.5">{a.ai}</p>
+            {done && (
+              <div className="flex flex-wrap gap-x-3 text-[10px] text-[#6B6359]">
+                <span className="text-[#00C27C]">METRC manifest created</span>
+                <span>{a.metrcSrc} → {a.metrcDest}</span>
+                <span>Pkg: {a.metrcPkg}</span>
+              </div>
+            )}
+            {!done && !scanning && !confirming && (
+              <div className="flex items-center gap-3 text-[10px] text-[#6B6359]">
+                <span>{a.metrcSrc} → {a.metrcDest}</span>
+                <span>Rec: {a.recQty} units</span>
+                {a.daysOOS > 0 && <span className="text-[#E87068]">{a.daysOOS}d OOS</span>}
+              </div>
+            )}
+            {confirming && (
+              <div className="flex items-center gap-2 text-[10px]">
+                <Check size={11} className="text-[#00C27C]" />
+                <span className="text-[#00C27C]">METRC tag {a.metrcPkg.slice(-8)} verified</span>
+                <span className="text-[#6B6359]">{a.recQty} units · {a.metrcSrc} → {a.metrcDest}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
 
-  const renderStandardAlert = (a) => (
-    <div key={a.id} className="px-5 py-3.5">
-      <div className="flex items-center gap-2 mb-1.5">
-        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ color: a.color, background: `${a.color}14`, border: `1px solid ${a.color}25` }}>{a.severity}</span>
-        <span className="text-[10px] text-[#6B6359]">{a.time}</span>
+  /* ── Render a compact standard alert row ── */
+  const renderStandardAlert = (a) => {
+    const isExpanded = expanded[a.id];
+    return (
+      <div key={a.id} className="px-4 py-2.5 hover:bg-white/[0.02] transition-colors">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${a.color}10` }}>
+            {a.severity === 'WARNING' && <AlertTriangle size={14} style={{ color: a.color }} />}
+            {a.severity === 'OPPORTUNITY' && <TrendingUp size={14} style={{ color: a.color }} />}
+            {a.severity === 'INSIGHT' && <Sparkles size={14} style={{ color: a.color }} />}
+          </div>
+          <div className="flex-1 min-w-0 cursor-pointer" onClick={() => toggle(a.id)}>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-bold px-1.5 py-px rounded-full" style={{ color: a.color, background: `${a.color}14` }}>
+                {a.severity}
+              </span>
+              <span className="text-[12px] font-medium text-[#F0EDE8] truncate">{a.title}</span>
+              <span className="text-[10px] text-[#6B6359] flex-shrink-0">{a.time}</span>
+            </div>
+          </div>
+          <div className="flex gap-1.5 flex-shrink-0">
+            {a.actions.map((act, j) => {
+              const isDone = actionDone[`${a.id}-${act}`];
+              return (
+                <button
+                  key={j}
+                  onClick={() => handleAction(a.id, act, a.title)}
+                  disabled={isDone}
+                  className={`px-2 py-1 rounded-md text-[10px] font-semibold transition-colors ${
+                    isDone ? 'text-[#00C27C] bg-[#00C27C]/10 cursor-default'
+                    : j === 0 ? 'text-white hover:brightness-110' : 'text-[#ADA599] border border-[#38332B] hover:text-[#F0EDE8]'
+                  }`}
+                  style={!isDone && j === 0 ? { background: a.color } : undefined}
+                >
+                  {isDone ? <span className="flex items-center gap-1"><Check size={10} />Done</span> : act}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        {isExpanded && (
+          <div className="mt-2 ml-11 text-[11px] rounded-lg px-3 py-2 border border-[#38332B] bg-[#141210]">
+            <p className="text-[#ADA599]">{a.ai}</p>
+          </div>
+        )}
       </div>
-      <p className="text-[12px] font-semibold text-[#F0EDE8] mb-1.5">{a.title}</p>
-      <div className="rounded-lg px-3 py-2 mb-2.5" style={{ background: `${a.color}06`, border: `1px solid ${a.color}15` }}>
-        <p className="text-[11px] text-[#C8C3BA] leading-relaxed">Nexus: "{a.ai}"</p>
-      </div>
-      <div className="flex gap-2">
-        {a.actions.map((act, j) => (
-          <button key={j} onClick={() => onAction && onAction(a.title)} className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-colors ${j === 0 ? 'text-white' : 'text-[#ADA599] border border-[#38332B] hover:text-[#F0EDE8]'}`} style={j === 0 ? { background: a.color } : undefined}>{act}</button>
-        ))}
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <NexusTile className="animate-fade-up" style={{ animationDelay: '300ms' }}>
-      {/* Header */}
-      <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
+      <div className="px-4 py-2.5 flex justify-between items-center border-b border-[#38332B]">
         <div className="flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-[#D4A03A]" />
           <span className="text-xs font-semibold text-[#F0EDE8]">Smart Alerts</span>
-          <span className="text-[10px] text-[#6B6359]">incl. vault-to-floor transfers</span>
+          <span className="text-[10px] text-[#6B6359]">{SMART_ALERTS.length} active</span>
         </div>
-        <div className="flex items-center gap-2">
-          {oosCount > 0 && (
-            <button onClick={handleBulkTransfer} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#E87068] bg-[#E87068]/10 border border-[#E87068]/20 hover:bg-[#E87068]/15 transition-colors">
-              <ArrowRightLeft size={11} /> Transfer {oosCount} OOS
-            </button>
-          )}
-          <span className="text-[10px] font-medium text-[#D4A03A] bg-[rgba(212,160,58,0.1)] px-2 py-0.5 rounded-full">{totalAlerts} active</span>
-        </div>
+        {oosCount > 0 && (
+          <button onClick={handleBulkTransfer} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#E87068] bg-[#E87068]/10 border border-[#E87068]/20 hover:bg-[#E87068]/15 transition-colors">
+            <ArrowRightLeft size={11} /> Transfer {oosCount} OOS
+          </button>
+        )}
       </div>
 
-      {/* Mixed alert feed */}
-      <div className="divide-y divide-[#38332B]">
+      <div className="divide-y divide-[#38332B]/60">
         {SMART_ALERTS.map(a => a.type === 'transfer' ? renderTransferAlert(a) : renderStandardAlert(a))}
       </div>
 
       {/* Auto-resolved footer */}
-      <div className="px-5 py-3 border-t border-[#38332B]" style={{ background: 'rgba(0,194,124,0.03)' }}>
-        <p className="text-[10px] font-medium text-[#6B6359] mb-2">Auto-Resolved Today</p>
+      <div className="px-4 py-2 border-t border-[#38332B]" style={{ background: 'rgba(0,194,124,0.03)' }}>
+        <p className="text-[10px] font-medium text-[#6B6359] mb-1">Auto-Resolved Today</p>
         {AUTO_RESOLVED.map((r, i) => (
-          <div key={i} className="flex items-center gap-1.5 text-[11px] text-[#ADA599] mb-1">
+          <div key={i} className="flex items-center gap-1.5 text-[10px] text-[#ADA599] mb-0.5">
             {r.icon === 'transfer' && <ArrowRightLeft className="w-3 h-3 text-[#00C27C]" />}
             {r.icon === 'campaign' && <Rocket className="w-3 h-3 text-[#00C27C]" />}
             {r.icon === 'compliance' && <Lock className="w-3 h-3 text-[#00C27C]" />}
             {r.icon === 'reorder' && <Package className="w-3 h-3 text-[#00C27C]" />}
-            {!r.icon && <CheckCircle2 className="w-3 h-3 text-[#00C27C]" />}
             {r.text}
           </div>
         ))}
