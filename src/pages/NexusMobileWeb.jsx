@@ -12,6 +12,7 @@ import {
   Calendar, Hash, AlertCircle, Info, Zap as ZapIcon,
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
+import { usePersona } from '../contexts/PersonaContext';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    DATA — Real prototype data from NexusHome, ConnectAgent, PricingAgent
@@ -217,10 +218,11 @@ const Section = ({ title, action, onAction, children }) => (
    SCREEN: HOME — Executive Dashboard
    ═══════════════════════════════════════════════════════════════════════════ */
 
-function ScreenHome({ data, alerts, vault, stores, onNav, showToast }) {
+function ScreenHome({ data, alerts, vault, stores, onNav, showToast, persona }) {
   const critAlerts = alerts.filter(a => a.sev === 'CRITICAL').length;
   const oosCount = vault.filter(v => v.floor === 0).length;
   const pricingIssues = PRICING_PRODUCTS.filter(p => Math.abs(p.price - p.mktAvg) / p.mktAvg > 0.08).length;
+  const PersonaIcon = persona?.selectedPersona?.icon || Store;
 
   return (
     <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-24">
@@ -232,10 +234,16 @@ function ScreenHome({ data, alerts, vault, stores, onNav, showToast }) {
           </div>
           <div>
             <div className="text-[15px] font-bold text-white">Nexus Mobile</div>
-            <div className="text-[11px] text-[#6B6359]">All Stores &middot; Today</div>
+            <div className="text-[11px] text-[#6B6359]">{persona?.selectedPersona?.label || 'All Stores'} &middot; Today</div>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {persona?.selectedPersona && (
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: 'rgba(212,160,58,0.08)', border: '1px solid rgba(212,160,58,0.12)' }}>
+              <PersonaIcon className="w-3 h-3 text-[#D4A03A]" />
+              <span className="text-[9px] font-semibold text-[#D4A03A]">{persona.selectedPersona.shortLabel}</span>
+            </div>
+          )}
           {critAlerts > 0 && (
             <button onClick={() => onNav('alerts')} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#E87068]/10 border border-[#E87068]/20">
               <AlertTriangle className="w-3.5 h-3.5 text-[#E87068]" />
@@ -602,7 +610,7 @@ const brandImgUrl = (brand) => {
   return path ? `${import.meta.env.BASE_URL || '/'}${path}` : null;
 };
 
-function ScreenChat({ vault, showToast, onNav, onTransfer }) {
+function ScreenChat({ vault, showToast, onNav, onTransfer, persona }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -974,7 +982,10 @@ function ScreenChat({ vault, showToast, onNav, onTransfer }) {
               </div>
               <div className="text-[16px] font-bold text-[#F0EDE8] mb-1">Nexus AI Assistant</div>
               <div className="text-[12px] text-[#ADA599] leading-relaxed max-w-[280px] mx-auto">
-                Your AI-powered retail command center. Ask anything or tap an action below.
+                {persona?.isStoreMgr ? 'What do you need for your store today? Ask anything or tap an action below.'
+                  : persona?.isCEO ? 'How can I help manage your portfolio? Ask anything about your MSO.'
+                  : persona?.isCompliance ? 'How can I help with compliance? Check sync status, discrepancies, or audits.'
+                  : 'Your AI-powered retail command center. Ask anything or tap an action below.'}
               </div>
             </div>
 
@@ -1184,6 +1195,7 @@ export default function NexusMobileWeb() {
   const [alerts, setAlerts] = useState(INITIAL_ALERTS);
   const [vault, setVault] = useState(VAULT_INVENTORY);
   const [transfers, setTransfers] = useState(INITIAL_TRANSFERS);
+  const persona = usePersona();
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type, key: Date.now() });
@@ -1255,10 +1267,10 @@ export default function NexusMobileWeb() {
 
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismissToast} key={toast.key} />}
 
-      {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} />}
+      {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} persona={persona} />}
       {screen === 'alerts' && <ScreenAlerts alerts={alerts} onAction={handleAlertAction} onNav={navigate} />}
       {screen === 'floor' && <ScreenFloor vault={vault} transfers={transfers} onTransfer={handleVaultTransfer} showToast={showToast} />}
-      {screen === 'chat' && <ScreenChat vault={vault} showToast={showToast} onNav={navigate} onTransfer={handleVaultTransfer} />}
+      {screen === 'chat' && <ScreenChat vault={vault} showToast={showToast} onNav={navigate} onTransfer={handleVaultTransfer} persona={persona} />}
       {screen === 'actions' && <ScreenActions vault={vault} transfers={transfers} showToast={showToast} onNav={navigate} />}
 
       <BottomNav active={screen} onNavigate={navigate} alertCount={alerts.length} />

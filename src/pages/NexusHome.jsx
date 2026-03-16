@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '../contexts/StoreContext';
 import { useDateRange } from '../contexts/DateRangeContext';
+import { usePersona } from '../contexts/PersonaContext';
 import { locations } from '../data/mockData';
 import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid,
@@ -14,8 +15,9 @@ import {
   Star, MessageSquare, BarChart3, Send, Sparkles, ChevronRight,
   MapPin, ThumbsUp, ThumbsDown, Mic, AlertCircle, ArrowUpRight,
   ArrowDownRight, Minus, CheckCircle2, Smartphone, QrCode, Monitor,
-  Layers, Radio, Activity, Percent, Receipt, Store,
+  Layers, Radio, Activity, Percent, Receipt, Store, Globe, Shield,
   Megaphone, ShoppingCart, ChevronDown, Rocket, ArrowRightLeft, Check, Lock,
+  Building2, Truck, Users, RefreshCw, FileText, Clipboard, Target, Eye,
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
 
@@ -1908,6 +1910,7 @@ function MorningBriefing() {
   const greeting = now.getHours() < 12 ? 'morning' : now.getHours() < 17 ? 'afternoon' : 'evening';
   const { selectedStoreNames, isAllSelected, selectionLabel } = useStores();
   const { dateMultiplier, rangeLabel, trendScale } = useDateRange();
+  const { selectedPersona, isCEO, isVP, isRegional, isStoreMgr, isCompliance } = usePersona();
 
   const storeRatio = useMemo(() => {
     if (isAllSelected) return 1;
@@ -1921,6 +1924,56 @@ function MorningBriefing() {
   const scaledStockouts = Math.max(1, Math.round(NEXUS_DATA.lowStockAlerts * storeRatio));
   const scaledCritical = Math.max(1, Math.round(NEXUS_DATA.stockoutRisk * storeRatio));
 
+  const briefingText = useMemo(() => {
+    if (isCEO) return '"Your MSO generated $2.8M across 39 stores yesterday. IL drove 42% of portfolio revenue. Springfield up 34% WoW. 2 compliance items need attention across OH and NJ. Portfolio margin holding steady at 48.2%."';
+    if (isVP) return '"Your 23 stores across IL, MI, OH generated $1.4M yesterday. Logan Square was top performer at $48.2K. Morenci down 23% — staffing review recommended. 1 METRC sync delay in OH (auto-resolved). Regional margin: 47.8%."';
+    if (isRegional) return '"Your 10 Illinois stores generated $680K yesterday. Springfield up 18% WoW with a basket size increase to $135. 2 vault transfers pending at Naperville. METRC reconciliation complete — 0 discrepancies. Next state audit: Mar 24."';
+    if (isStoreMgr) return '"Logan Square generated $34.2K yesterday, 8% above target. Blue Dream 3.5g is OOS on floor — 45 units in vault ready for transfer. Afternoon traffic expected +15% vs last Tuesday. 3 promos active today."';
+    if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ BioTrack sync delayed 12 min at Newark — auto-resolved. 3 product batches expiring within 30 days. Next scheduled audit: IL Mar 24."';
+    return '"Yesterday was your best Friday this quarter. Springfield IL drove 34% of revenue. 3 items need reordering."';
+  }, [isCEO, isVP, isRegional, isStoreMgr, isCompliance]);
+
+  const metrics = useMemo(() => {
+    if (isCEO) return [
+      { label: 'Portfolio Rev', value: '$2.8M', trend: '+6.8%', up: true },
+      { label: 'Stores', value: '39', trend: '7 states', up: true },
+      { label: 'Margin', value: '48.2%', trend: '+0.8pp', up: true },
+      { label: 'Compliance', value: '2 items', trend: 'OH, NJ', up: false },
+    ];
+    if (isVP) return [
+      { label: 'Regional Rev', value: '$1.4M', trend: '+5.1%', up: true },
+      { label: 'Stores', value: '23', trend: 'IL+MI+OH', up: true },
+      { label: 'Top Store', value: '$48.2K', trend: 'Logan Sq', up: true },
+      { label: 'Flagged', value: '1 store', trend: 'Morenci -23%', up: false },
+    ];
+    if (isRegional) return [
+      { label: 'IL Revenue', value: '$680K', trend: '+4.2%', up: true },
+      { label: 'Stores', value: '10', trend: 'Illinois', up: true },
+      { label: 'Transfers', value: '32 done', trend: '2 pending', up: false },
+      { label: 'METRC', value: '0 disc.', trend: 'All synced', up: true },
+    ];
+    if (isStoreMgr) return [
+      { label: 'Revenue', value: '$34.2K', trend: '+8% vs target', up: true },
+      { label: 'Traffic', value: '312', trend: '+7.1%', up: true },
+      { label: 'Basket', value: '$110', trend: '+$4', up: true },
+      { label: 'OOS Items', value: '2', trend: '1 critical', up: false },
+    ];
+    if (isCompliance) return [
+      { label: 'Sync Status', value: '39/39', trend: 'All green', up: true },
+      { label: 'Discrepancies', value: '0', trend: 'Clear', up: true },
+      { label: 'Expiring', value: '3 batches', trend: '30 days', up: false },
+      { label: 'Next Audit', value: 'Mar 24', trend: 'IL', up: true },
+    ];
+    return [
+      { label: 'Revenue', value: fmtDollar(scaledRevenue), trend: `+${(4.2 * trendScale).toFixed(1)}%`, up: true },
+      { label: 'Traffic', value: scaledTraffic.toLocaleString(), trend: `+${(3.7 * trendScale).toFixed(1)}%`, up: true },
+      { label: 'Avg Rating', value: '4.6\u2605', trend: '+0.2', up: true },
+      { label: 'Stockouts', value: String(scaledStockouts), trend: `${scaledCritical} critical`, up: false },
+    ];
+  }, [isCEO, isVP, isRegional, isStoreMgr, isCompliance, scaledRevenue, scaledTraffic, scaledStockouts, scaledCritical, trendScale]);
+
+  const Icon = selectedPersona.icon;
+
   return (
     <div className="rounded-2xl border overflow-hidden animate-fade-up" style={{ background: 'linear-gradient(135deg, #1C1B1A 0%, #1A1710 50%, #1C1B1A 100%)', borderColor: 'rgba(212,160,58,0.12)' }}>
       <div className="px-6 py-5 flex items-start justify-between">
@@ -1929,24 +1982,23 @@ function MorningBriefing() {
             <NexusIcon size={22} />
           </div>
           <div>
-            <p className="text-xs text-[#6B6359]">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} &middot; {rangeLabel} &middot; {selectionLabel}</p>
+            <p className="text-xs text-[#6B6359]">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} &middot; {rangeLabel} &middot; {selectedPersona.label}</p>
             <h1 className="text-xl font-bold text-[#F0EDE8]">Good {greeting}</h1>
           </div>
+        </div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg" style={{ background: 'rgba(212,160,58,0.08)', border: '1px solid rgba(212,160,58,0.12)' }}>
+          <Icon className="w-3.5 h-3.5 text-[#D4A03A]" />
+          <span className="text-[10px] font-semibold text-[#D4A03A]">{selectedPersona.shortLabel}</span>
         </div>
       </div>
       <div className="px-6 pb-4">
         <div className="rounded-xl p-4 mb-4" style={{ background: 'rgba(212,160,58,0.04)', border: '1px solid rgba(212,160,58,0.1)' }}>
           <p className="text-[13px] text-[#C8C3BA] leading-[1.7] italic">
-            "Yesterday was your best Friday this quarter. Springfield IL drove 34% of revenue with a 12% increase in basket size. 3 items need reordering — I've drafted a PO for your review. Your Google rating improved to 4.6 stars, and the March campaign generated 47 SMS opt-ins."
+            {briefingText}
           </p>
         </div>
         <div className="flex gap-5 flex-wrap">
-          {[
-            { label: 'Revenue', value: fmtDollar(scaledRevenue), trend: `+${(4.2 * trendScale).toFixed(1)}%`, up: true },
-            { label: 'Traffic', value: scaledTraffic.toLocaleString(), trend: `+${(3.7 * trendScale).toFixed(1)}%`, up: true },
-            { label: 'Avg Rating', value: '4.6\u2605', trend: '+0.2', up: true },
-            { label: 'Stockouts', value: String(scaledStockouts), trend: `${scaledCritical} critical`, up: false },
-          ].map(m => (
+          {metrics.map(m => (
             <div key={m.label} className="min-w-[72px]">
               <p className="text-[9px] uppercase tracking-[1px] text-[#6B6359] font-semibold mb-1">{m.label}</p>
               <div className="flex items-baseline gap-1.5">
@@ -2006,17 +2058,53 @@ function LiveTicker() {
 
 // ─── NEXUS COMMAND BAR ─── //
 
-const COMMAND_ACTIONS = [
-  { key: 'inventory', label: 'Reorder Inventory', desc: 'Restock low items', query: 'Show me a plan to reorder out-of-stock inventory', icon: ShoppingCart, color: '#64A8E0' },
-  { key: 'campaign', label: 'Launch Campaign', desc: 'Target best sellers', query: 'Run a marketing campaign for my top sellers', icon: Megaphone, color: '#00C27C' },
-  { key: 'pricing', label: 'Benchmark Pricing', desc: 'Compare vs market', query: 'Compare my prices vs the market', icon: DollarSign, color: '#D4A03A' },
-  { key: 'sentiment', label: 'Customer Sentiment', desc: 'Reviews & trends', query: "How's our customer sentiment this month?", icon: Star, color: '#B598E8' },
-  { key: 'report', label: 'Sales Summary', desc: 'Weekly performance', query: 'Give me a weekly sales performance summary', icon: BarChart3, color: '#0EA5E9' },
-  { key: 'explore', label: 'Trending Products', desc: 'New brands rising', query: 'What trending products should I add to my menu?', icon: Rocket, color: '#EC4899' },
-];
+const COMMAND_ACTIONS_BY_PERSONA = {
+  ceo: [
+    { key: 'portfolio', label: 'Portfolio Summary', desc: 'All stores overview', query: 'Give me a portfolio summary across all 39 stores', icon: Building2, color: '#D4A03A' },
+    { key: 'revenue', label: 'Revenue by State', desc: 'State comparisons', query: 'Compare revenue across all 7 states', icon: BarChart3, color: '#00C27C' },
+    { key: 'compliance', label: 'Compliance Status', desc: 'All state systems', query: 'Show compliance status across all states', icon: Shield, color: '#64A8E0' },
+    { key: 'brands', label: 'Brand Performance', desc: 'Top brands MSO-wide', query: 'Which brands are performing best across the portfolio?', icon: Star, color: '#B598E8' },
+    { key: 'inventory', label: 'Inventory Valuation', desc: 'Portfolio inventory', query: 'Show total inventory valuation and aging across all stores', icon: Package, color: '#0EA5E9' },
+    { key: 'expansion', label: 'Expansion Analysis', desc: 'Growth opportunities', query: 'What markets should we expand into based on current performance?', icon: Rocket, color: '#EC4899' },
+  ],
+  vp_retail: [
+    { key: 'regional', label: 'Regional Performance', desc: 'IL, MI, OH overview', query: 'Show me regional performance across IL, MI, and OH', icon: Globe, color: '#D4A03A' },
+    { key: 'rankings', label: 'Store Rankings', desc: 'Compare all stores', query: 'Rank all stores in my region by performance', icon: BarChart3, color: '#00C27C' },
+    { key: 'rebalance', label: 'Rebalance Inventory', desc: 'Cross-store transfers', query: 'Which products need rebalancing across my stores?', icon: ArrowRightLeft, color: '#64A8E0' },
+    { key: 'staffing', label: 'Staffing Overview', desc: 'Labor & overtime', query: 'Show staffing metrics and overtime across my region', icon: Users, color: '#B598E8' },
+    { key: 'pricing', label: 'Pricing Strategy', desc: 'Regional pricing', query: 'How do our prices compare across IL, MI, and OH?', icon: DollarSign, color: '#0EA5E9' },
+    { key: 'practices', label: 'Best Practices', desc: 'Share what works', query: 'What best practices from top stores can be shared?', icon: Sparkles, color: '#EC4899' },
+  ],
+  regional_mgr: [
+    { key: 'transfers', label: 'Transfer Status', desc: 'IL vault transfers', query: 'Show all pending vault-to-floor transfers for Illinois', icon: ArrowRightLeft, color: '#D4A03A' },
+    { key: 'close', label: 'Daily Close Reports', desc: 'End of day numbers', query: 'Show daily close reports for all IL stores', icon: FileText, color: '#00C27C' },
+    { key: 'delivery', label: 'Receive Delivery', desc: 'Incoming shipments', query: 'What deliveries are expected today across IL stores?', icon: Truck, color: '#64A8E0' },
+    { key: 'labor', label: 'Labor Dashboard', desc: 'Staff scheduling', query: 'Show labor metrics for Illinois stores', icon: Users, color: '#B598E8' },
+    { key: 'reorder', label: 'Reorder Inventory', desc: 'IL stock levels', query: 'Which products need reordering across IL stores?', icon: Package, color: '#0EA5E9' },
+    { key: 'compliance', label: 'Compliance Check', desc: 'METRC status', query: 'Run compliance check for all Illinois stores', icon: Shield, color: '#EC4899' },
+  ],
+  store_mgr: [
+    { key: 'vault', label: 'Vault to Floor', desc: 'Transfer inventory', query: 'Show items that need vault-to-floor transfer at Logan Square', icon: ArrowRightLeft, color: '#D4A03A' },
+    { key: 'reorder', label: 'Reorder Stock', desc: 'Low inventory items', query: 'What inventory needs reordering at Logan Square?', icon: ShoppingCart, color: '#00C27C' },
+    { key: 'promos', label: "Today's Promos", desc: 'Active promotions', query: 'What promotions are running at Logan Square today?', icon: Megaphone, color: '#64A8E0' },
+    { key: 'customers', label: 'Customer Flow', desc: 'Traffic & queues', query: 'Show current customer flow and queue status', icon: Users, color: '#B598E8' },
+    { key: 'sales', label: 'Sales Summary', desc: "Today's numbers", query: 'Give me today\'s sales summary for Logan Square', icon: BarChart3, color: '#0EA5E9' },
+    { key: 'eod', label: 'End of Day', desc: 'Close procedures', query: 'Start end-of-day closing procedures for Logan Square', icon: CheckCircle2, color: '#EC4899' },
+  ],
+  compliance: [
+    { key: 'sync', label: 'Sync Status', desc: 'All state systems', query: 'Show track-and-trace sync status for all states', icon: RefreshCw, color: '#D4A03A' },
+    { key: 'discrepancy', label: 'Discrepancy Queue', desc: 'Open items', query: 'Show all open inventory discrepancies sorted by age', icon: AlertTriangle, color: '#E87068' },
+    { key: 'license', label: 'License Tracker', desc: 'Expiration dates', query: 'Show license status and upcoming expirations', icon: Clipboard, color: '#64A8E0' },
+    { key: 'audit', label: 'Audit Prep', desc: 'Readiness check', query: 'Run audit readiness check for upcoming IL audit', icon: Eye, color: '#B598E8' },
+    { key: 'regulatory', label: 'Regulatory Updates', desc: 'State changes', query: 'What regulatory changes are coming in our operating states?', icon: FileText, color: '#0EA5E9' },
+    { key: 'report', label: 'Generate Report', desc: 'Compliance report', query: 'Generate a compliance report across all states', icon: BarChart3, color: '#EC4899' },
+  ],
+};
 
 function NexusCommandBar({ onAction }) {
   const [inputValue, setInputValue] = useState('');
+  const { selectedPersonaId } = usePersona();
+  const COMMAND_ACTIONS = COMMAND_ACTIONS_BY_PERSONA[selectedPersonaId] || COMMAND_ACTIONS_BY_PERSONA.ceo;
   return (
     <div className="rounded-2xl border overflow-hidden animate-fade-up" style={{ background: '#1C1B1A', borderColor: 'rgba(212,160,58,0.12)', animationDelay: '200ms' }}>
       <div className="px-5 py-4 border-b border-[#38332B] flex items-center gap-3" style={{ background: 'linear-gradient(135deg, #1C1B1A 0%, #1A1710 100%)' }}>
@@ -2072,13 +2160,13 @@ function NexusCommandBar({ onAction }) {
 
 const BASE = import.meta.env.BASE_URL || '/';
 
-const SMART_ALERTS = [
-  // ── Vault-to-floor transfers (CRITICAL: OOS with vault stock) ──
+// Store Manager alerts (original single-store vault transfers)
+const STORE_MGR_ALERTS = [
   {
     id: 'vtf-1', type: 'transfer', severity: 'CRITICAL', color: '#E87068', time: '2m ago',
     title: 'Blue Dream 3.5g — out of stock, 45 units in vault',
     ai: 'Floor empty for 3 days. $1,140 estimated lost sales. 45 units in vault at Logan Square ready for immediate transfer. METRC package 1A40603-BD35.',
-    product: 'Blue Dream 3.5g', brand: 'Jeeter', store: 'Logan Square, IL',
+    product: 'Blue Dream 3.5g', brand: 'Jeeter', store: 'Logan Square, IL', trackSystem: 'METRC',
     floor: 0, vault: 45, avgWeekly: 38, daysOOS: 3, recQty: 38,
     metrcPkg: '1A4060300003BD35', metrcSrc: 'Storage Vault A', metrcDest: 'Sales Floor',
     img: 'brands/jeeter-baby-churros.webp',
@@ -2087,76 +2175,225 @@ const SMART_ALERTS = [
     id: 'vtf-2', type: 'transfer', severity: 'CRITICAL', color: '#E87068', time: '18m ago',
     title: 'Kiva Lost Farm Gummies — 2 days out of stock',
     ai: '60 units in vault, customers asking at counter. Transfer 28 units (weekly avg) to floor. METRC package 1A40603-KL60.',
-    product: 'Kiva Lost Farm Gummies', brand: 'Kiva', store: 'Logan Square, IL',
+    product: 'Kiva Lost Farm Gummies', brand: 'Kiva', store: 'Logan Square, IL', trackSystem: 'METRC',
     floor: 0, vault: 60, avgWeekly: 28, daysOOS: 2, recQty: 28,
     metrcPkg: '1A4060300003KL60', metrcSrc: 'Storage Vault A', metrcDest: 'Sales Floor',
     img: 'brands/kiva-camino.jpg',
   },
-  // ── Pricing alert (breaks up the transfer block) ──
   {
-    id: 'price-1', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '15m ago',
-    title: 'Stiiizy Pod LLR priced 18% above market avg',
-    ai: 'Competitors at $42 avg. Suggest $44.99 (currently $52). Projected +23% unit velocity at new price.',
-    actions: ['Apply Price', 'View Comps'],
+    id: 'low-1', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '30m ago',
+    title: 'Stiiizy Pod LR — floor stock running low (4 units)',
+    ai: 'At current velocity, depletes by 3 PM. 18 units available in vault. Transfer before afternoon rush.',
+    actions: ['Transfer 18'],
   },
-  // ── Another vault transfer ──
   {
-    id: 'vtf-3', type: 'transfer', severity: 'CRITICAL', color: '#E87068', time: '45m ago',
-    title: 'Wyld Elderberry Gummies — out since yesterday at Fort Lee',
-    ai: '55 units in vault at Fort Lee. Avg weekly sell-through: 22 units. Transfer now to recapture ~$198/day in lost revenue.',
-    product: 'Wyld Elderberry Gummies', brand: 'Wyld', store: 'Fort Lee, NJ',
-    floor: 0, vault: 55, avgWeekly: 22, daysOOS: 1, recQty: 22,
-    metrcPkg: '1A4060300003WE55', metrcSrc: 'Storage Vault B', metrcDest: 'Sales Floor',
-    img: 'brands/wyld-elderberry.png',
+    id: 'promo-1', type: 'standard', severity: 'OPPORTUNITY', color: '#00C27C', time: '1h ago',
+    title: "Today's promo: Happy Hour 15% Off (3–6 PM)",
+    ai: 'Last week this promo drove +23% afternoon traffic. Ensure adequate floor stock for pre-rolls and edibles before 3 PM.',
+    actions: ['View Promo'],
   },
-  // ── Low stock warning (not OOS) ──
   {
-    id: 'vtf-4', type: 'transfer', severity: 'WARNING', color: '#D4A03A', time: '1h ago',
-    title: 'Stiiizy Live Resin Pod — 2 units left, 30 in vault',
-    ai: 'At current velocity, floor depletes in ~3 hours. 30 units in vault at Fort Lee. Transfer 24 (weekly avg) before afternoon rush.',
-    product: 'Stiiizy Live Resin Pod 1g', brand: 'STIIIZY', store: 'Fort Lee, NJ',
-    floor: 2, vault: 30, avgWeekly: 24, daysOOS: 0, recQty: 24,
-    metrcPkg: '1A4060300003SL10', metrcSrc: 'Storage Vault B', metrcDest: 'Sales Floor',
-    img: 'brands/stiiizy-pods.png',
-  },
-  // ── Opportunity alert ──
-  {
-    id: 'opp-1', type: 'standard', severity: 'OPPORTUNITY', color: '#00C27C', time: '1h ago',
-    title: 'Jeeter brand sentiment spike (+34% WoW)',
-    ai: '2 stores don\'t stock Jeeter yet. Trending on social media. Contact DreamFields vendor for initial order?',
-    actions: ['Draft PO', 'View Data'],
-  },
-  // ── One more low stock ──
-  {
-    id: 'vtf-5', type: 'transfer', severity: 'WARNING', color: '#D4A03A', time: '1h ago',
-    title: 'Jeeter Infused Pre-Roll — 4 left, weekend rush incoming',
-    ai: '72 units in vault at Logan Square. Weekend avg: 32/day. Transfer 32 now. METRC package 1A40603-JI72.',
-    product: 'Jeeter Infused Pre-Roll', brand: 'Jeeter', store: 'Logan Square, IL',
-    floor: 4, vault: 72, avgWeekly: 32, daysOOS: 0, recQty: 32,
-    metrcPkg: '1A4060300003JI72', metrcSrc: 'Storage Vault A', metrcDest: 'Sales Floor',
-    img: 'brands/jeeter-baby-churros.webp',
-  },
-  // ── Insight alert ──
-  {
-    id: 'ins-1', type: 'standard', severity: 'INSIGHT', color: '#64A8E0', time: '3h ago',
-    title: '62% of Tuesday sales happen after 4pm',
-    ai: 'Consider shifting staff coverage. Current schedule has equal AM/PM staffing — rebalance to 40/60 split.',
+    id: 'queue-1', type: 'standard', severity: 'INSIGHT', color: '#64A8E0', time: '2h ago',
+    title: 'Expected traffic spike: 920 customers today',
+    ai: 'Tuesday avg is 780. +18% projected from March Madness campaign. 62% of sales after 4 PM. Consider 40/60 staff split.',
     actions: ['View Staffing'],
   },
 ];
 
-const AUTO_RESOLVED = [
-  { text: 'Vault → Floor: 24 Alien Labs Baklava transferred at Boston (METRC logged)', icon: 'transfer' },
-  { text: 'Campaign "March Madness" auto-launched to 3 stores', icon: 'campaign' },
-  { text: 'METRC reconciliation completed — 0 discrepancies', icon: 'compliance' },
-  { text: 'Auto-reordered 50 Stiiizy Pods for Hoboken NJ', icon: 'reorder' },
+// CEO alerts (aggregated, strategic)
+const CEO_ALERTS = [
+  {
+    id: 'ceo-1', type: 'standard', severity: 'CRITICAL', color: '#E87068', time: '15m ago',
+    title: 'Revenue anomaly: 3 MI stores down 15%+ vs forecast',
+    ai: 'Ann Arbor (-18%), Morenci (-23%), and Grand Rapids (-15%) are underperforming. MI market saturation increasing — 4 new competitor openings in Q1. Recommend pricing review and targeted campaigns.',
+    actions: ['View Details', 'Assign VP'],
+  },
+  {
+    id: 'ceo-2', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '30m ago',
+    title: 'Compliance risk: OH METRC reconciliation overdue at 2 stores',
+    ai: 'Columbus and Cleveland stores have pending METRC reconciliations >24h overdue. State deadline is 48h. Auto-escalated to compliance officer.',
+    actions: ['View Status'],
+  },
+  {
+    id: 'ceo-3', type: 'standard', severity: 'OPPORTUNITY', color: '#00C27C', time: '1h ago',
+    title: 'Brand opportunity: Jeeter sentiment up 34% — 2 stores don\'t carry',
+    ai: 'Jeeter is trending across IL and NJ. Morenci MI and Grand Rapids MI don\'t stock Jeeter yet. Estimated incremental revenue: $42K/month if added.',
+    actions: ['Draft PO', 'View Data'],
+  },
+  {
+    id: 'ceo-4', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '2h ago',
+    title: 'Portfolio inventory: $42K in aging stock (>60 days) across 8 stores',
+    ai: 'Highest concentration in MA ($14K) and PA ($11K). Recommend markdown strategy or cross-store redistribution to higher-velocity locations.',
+    actions: ['View Breakdown'],
+  },
+  {
+    id: 'ceo-5', type: 'standard', severity: 'INSIGHT', color: '#64A8E0', time: '4h ago',
+    title: 'IL margin expanding: 48.2% → 49.1% this quarter',
+    ai: 'Pricing optimization in IL is working. If replicated in NJ and OH, projected +$180K in quarterly gross profit across portfolio.',
+    actions: ['View Strategy'],
+  },
 ];
+
+// VP Retail alerts (comparative, regional)
+const VP_ALERTS = [
+  {
+    id: 'vp-1', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '10m ago',
+    title: 'Store ranking: Logan Square +22% vs IL avg, Naperville -18% vs IL avg',
+    ai: 'Naperville declining 3rd consecutive week. Basket size down 12%. Staff turnover may be contributing — 2 experienced budtenders left this month.',
+    actions: ['View Stores', 'Contact GM'],
+  },
+  {
+    id: 'vp-2', type: 'standard', severity: 'CRITICAL', color: '#E87068', time: '25m ago',
+    title: 'Inventory rebalance: Blue Dream OOS at Logan Square, 22-day supply at Naperville',
+    ai: 'Logan Square lost $1,140 in 3 days. Naperville has 89 units (22-day supply). Recommend inter-store transfer of 40 units. METRC transfer manifest ready.',
+    actions: ['Approve Transfer', 'View Map'],
+  },
+  {
+    id: 'vp-3', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '1h ago',
+    title: 'Staffing: Schaumburg overtime budget exceeded by 12%',
+    ai: 'Overtime hours: 148 vs 132 budget. Primary driver: 2 sick calls not backfilled. Adjacent stores (Naperville, Arlington Heights) have coverage capacity.',
+    actions: ['View Labor'],
+  },
+  {
+    id: 'vp-4', type: 'standard', severity: 'OPPORTUNITY', color: '#00C27C', time: '2h ago',
+    title: 'Best practice: Wicker Park pre-roll attach rate 40% vs IL avg 22%',
+    ai: 'Wicker Park\'s checkout display placement drives 1.8x more pre-roll add-ons. Replicating this at other IL stores could add $24K/month in pre-roll revenue.',
+    actions: ['Share Playbook'],
+  },
+  {
+    id: 'vp-5', type: 'standard', severity: 'INSIGHT', color: '#64A8E0', time: '3h ago',
+    title: 'Cross-market pricing: Stiiizy Pod priced $10 higher in NJ vs IL',
+    ai: 'IL: $45 (12/day avg), NJ: $55 (6/day avg). NJ price elasticity analysis suggests $48 would increase volume to 10/day — net revenue positive.',
+    actions: ['View Pricing'],
+  },
+];
+
+// Regional Manager alerts (operational, state-level)
+const REGIONAL_ALERTS = [
+  {
+    id: 'reg-1', type: 'transfer', severity: 'CRITICAL', color: '#E87068', time: '2m ago',
+    title: 'Blue Dream 3.5g — OOS at Logan Square, 45 in vault',
+    ai: 'Floor empty for 3 days. $1,140 estimated lost sales. Transfer immediately via METRC.',
+    product: 'Blue Dream 3.5g', brand: 'Jeeter', store: 'Logan Square, IL', trackSystem: 'METRC',
+    floor: 0, vault: 45, avgWeekly: 38, daysOOS: 3, recQty: 38,
+    metrcPkg: '1A4060300003BD35', metrcSrc: 'Storage Vault A', metrcDest: 'Sales Floor',
+    img: 'brands/jeeter-baby-churros.webp',
+  },
+  {
+    id: 'reg-2', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '20m ago',
+    title: 'Vault-to-floor status: 32 complete, 2 pending across IL',
+    ai: 'Naperville: 1 transfer pending (Kiva Gummies, 24 units). Springfield: 1 transfer pending (Stiiizy Pods, 18 units). Both within METRC transfer window.',
+    actions: ['View All'],
+  },
+  {
+    id: 'reg-3', type: 'standard', severity: 'OPPORTUNITY', color: '#00C27C', time: '45m ago',
+    title: 'Delivery arriving: 14 packages expected at Springfield today',
+    ai: '42 SKUs from DreamFields (Jeeter) arriving 2:30 PM. Includes 48x Baby Jeeter Churros, 72x Infused Pre-Rolls. Receiving dock B. METRC manifest verified.',
+    actions: ['Prep Receiving'],
+  },
+  {
+    id: 'reg-4', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '1h ago',
+    title: 'Cash reconciliation: 2 flags from last night close',
+    ai: 'Schaumburg: $47 over (drawer 3). Arlington Heights: $12 short (drawer 1). Both within tolerance but trend at Schaumburg is 3 overs in 5 days.',
+    actions: ['Review'],
+  },
+  {
+    id: 'reg-5', type: 'standard', severity: 'INSIGHT', color: '#64A8E0', time: '2h ago',
+    title: 'Springfield revenue: +18% WoW, basket size up $12',
+    ai: 'New checkout display and staff training showing results. Consider sharing playbook with other IL stores. Springfield now #2 in state behind Logan Square.',
+    actions: ['View Report'],
+  },
+];
+
+// Compliance Officer alerts (risk-focused, cross-state)
+const COMPLIANCE_ALERTS = [
+  {
+    id: 'comp-1', type: 'standard', severity: 'CRITICAL', color: '#E87068', time: '5m ago',
+    title: 'OH METRC reconciliation overdue at Columbus (28h)',
+    ai: 'State requires reconciliation within 48h. Columbus last synced 28h ago. 4 packages pending verification. Auto-reminder sent to store manager.',
+    actions: ['Force Sync', 'Contact Store'],
+  },
+  {
+    id: 'comp-2', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '12m ago',
+    title: 'NJ BioTrack: Newark sync delayed 12 min — auto-resolved',
+    ai: 'BioTrack API timeout at 8:42 AM. System auto-retried at 8:54 AM. All 4 NJ stores now green. No data loss detected.',
+    actions: ['View Log'],
+  },
+  {
+    id: 'comp-3', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '1h ago',
+    title: '3 product batches expiring within 30 days across 3 states',
+    ai: 'Ozone Cart batch #2847 (14 units, IL), Camino Gummies batch #1923 (8 units, NJ), Simply Herb batch #3401 (22 units, MA). METRC/BioTrack destruction manifests needed.',
+    actions: ['Create Manifests'],
+  },
+  {
+    id: 'comp-4', type: 'standard', severity: 'OPPORTUNITY', color: '#00C27C', time: '2h ago',
+    title: 'State sync status: IL METRC ✓, NJ BioTrack ✓, OH METRC ⚠, MA METRC ✓, MD METRC ✓, MI METRC ✓, PA Leaf Data ✓',
+    ai: '38/39 stores fully synced. Only Columbus OH has a pending item. All other states green. Average sync latency: 3.2 minutes.',
+    actions: ['Full Dashboard'],
+  },
+  {
+    id: 'comp-5', type: 'standard', severity: 'INSIGHT', color: '#64A8E0', time: '4h ago',
+    title: 'License tracker: IL renewal due Apr 15, MD renewal due Jun 30',
+    ai: 'IL renewal paperwork 80% complete — pending final inspection schedule. MD renewal process not yet started (120 days out). All other licenses current.',
+    actions: ['View Tracker'],
+  },
+  {
+    id: 'comp-6', type: 'standard', severity: 'INSIGHT', color: '#B598E8', time: '6h ago',
+    title: 'Regulatory update: OH proposing new inventory audit frequency',
+    ai: 'Ohio Cannabis Control Board draft rule would increase audit frequency from quarterly to monthly for stores >$500K/month. 4 of our 6 OH stores would be affected.',
+    actions: ['Read Brief'],
+  },
+];
+
+function getAlertsForPersona(personaId) {
+  switch (personaId) {
+    case 'ceo': return CEO_ALERTS;
+    case 'vp_retail': return VP_ALERTS;
+    case 'regional_mgr': return REGIONAL_ALERTS;
+    case 'store_mgr': return STORE_MGR_ALERTS;
+    case 'compliance': return COMPLIANCE_ALERTS;
+    default: return STORE_MGR_ALERTS;
+  }
+}
+
+const AUTO_RESOLVED_BY_PERSONA = {
+  ceo: [
+    { text: 'NJ BioTrack sync delay auto-resolved at Newark (12 min)', icon: 'compliance' },
+    { text: 'Campaign "March Madness" auto-launched across 12 stores', icon: 'campaign' },
+    { text: 'Portfolio METRC reconciliation — 0 discrepancies across 39 stores', icon: 'compliance' },
+    { text: 'Auto-rebalanced Stiiizy Pods: IL → MI (120 units)', icon: 'reorder' },
+  ],
+  vp_retail: [
+    { text: 'Vault → Floor: 24 Alien Labs Baklava transferred at Springfield IL', icon: 'transfer' },
+    { text: 'Staffing alert at Morenci resolved — coverage backfilled', icon: 'campaign' },
+    { text: 'METRC reconciliation completed — 0 discrepancies (IL+MI+OH)', icon: 'compliance' },
+    { text: 'Price optimization applied: Stiiizy Pod adjusted at 3 OH stores', icon: 'reorder' },
+  ],
+  regional_mgr: [
+    { text: 'Vault → Floor: 24 Alien Labs Baklava transferred at Springfield (METRC logged)', icon: 'transfer' },
+    { text: 'METRC reconciliation completed — 0 discrepancies across IL', icon: 'compliance' },
+    { text: 'Auto-reordered 50 Stiiizy Pods for Schaumburg IL', icon: 'reorder' },
+  ],
+  store_mgr: [
+    { text: 'Vault → Floor: 24 Alien Labs Baklava transferred (METRC logged)', icon: 'transfer' },
+    { text: 'Campaign "March Madness" auto-launched', icon: 'campaign' },
+    { text: 'METRC reconciliation completed — 0 discrepancies', icon: 'compliance' },
+  ],
+  compliance: [
+    { text: 'NJ BioTrack sync delay auto-resolved at Newark (12 min latency)', icon: 'compliance' },
+    { text: 'METRC reconciliation completed across all IL stores — 0 discrepancies', icon: 'compliance' },
+    { text: 'PA Leaf Data sync verified — all 3 stores green', icon: 'compliance' },
+    { text: 'Auto-flagged batch #2847 approaching 30-day expiry', icon: 'reorder' },
+  ],
+};
 
 function SmartAlertsFeed({ onAction }) {
   const [transferState, setTransferState] = useState({});
   const [expanded, setExpanded] = useState({});
   const [actionDone, setActionDone] = useState({});
+  const { selectedPersonaId, selectedPersona } = usePersona();
 
+  const SMART_ALERTS = useMemo(() => getAlertsForPersona(selectedPersonaId), [selectedPersonaId]);
   const transferAlerts = SMART_ALERTS.filter(a => a.type === 'transfer');
   const oosCount = transferAlerts.filter(a => a.floor === 0 && !transferState[a.id]).length;
 
@@ -2218,6 +2455,7 @@ function SmartAlertsFeed({ onAction }) {
               <span>{a.store}</span>
               <span>Floor: <span className="font-semibold" style={{ color: a.floor === 0 ? '#E87068' : '#D4A03A' }}>{a.floor}</span></span>
               <span>Vault: <span className="font-semibold text-[#00C27C]">{a.vault}</span></span>
+              {a.trackSystem && <span className="px-1 py-px rounded text-[8px] font-bold" style={{ background: a.trackSystem === 'BioTrack' ? 'rgba(100,168,224,0.15)' : 'rgba(0,194,124,0.15)', color: a.trackSystem === 'BioTrack' ? '#64A8E0' : '#00C27C' }}>{a.trackSystem}</span>}
               <span className="flex items-center gap-0.5"><Lock size={8} />{a.metrcPkg.slice(-8)}</span>
             </div>
           </div>
@@ -2328,7 +2566,7 @@ function SmartAlertsFeed({ onAction }) {
         <div className="flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-[#D4A03A]" />
           <span className="text-xs font-semibold text-[#F0EDE8]">Smart Alerts</span>
-          <span className="text-[10px] text-[#6B6359]">{SMART_ALERTS.length} active</span>
+          <span className="text-[10px] text-[#6B6359]">{SMART_ALERTS.length} active &middot; {selectedPersona.shortLabel}</span>
         </div>
         {oosCount > 0 && (
           <button onClick={handleBulkTransfer} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#E87068] bg-[#E87068]/10 border border-[#E87068]/20 hover:bg-[#E87068]/15 transition-colors">
@@ -2344,7 +2582,7 @@ function SmartAlertsFeed({ onAction }) {
       {/* Auto-resolved footer */}
       <div className="px-4 py-2 border-t border-[#38332B]" style={{ background: 'rgba(0,194,124,0.03)' }}>
         <p className="text-[10px] font-medium text-[#6B6359] mb-1">Auto-Resolved Today</p>
-        {AUTO_RESOLVED.map((r, i) => (
+        {(AUTO_RESOLVED_BY_PERSONA[selectedPersonaId] || AUTO_RESOLVED_BY_PERSONA.store_mgr).map((r, i) => (
           <div key={i} className="flex items-center gap-1.5 text-[10px] text-[#ADA599] mb-0.5">
             {r.icon === 'transfer' && <ArrowRightLeft className="w-3 h-3 text-[#00C27C]" />}
             {r.icon === 'campaign' && <Rocket className="w-3 h-3 text-[#00C27C]" />}
@@ -2358,10 +2596,119 @@ function SmartAlertsFeed({ onAction }) {
   );
 }
 
+// ─── CROSS-STORE INTELLIGENCE ─── //
+
+function CrossStoreIntelligence() {
+  const { showCrossStore } = usePersona();
+  if (!showCrossStore) return null;
+
+  const rebalanceItems = [
+    { product: 'Blue Dream 3.5g', from: 'Naperville, IL', fromQty: 89, fromDays: 22, to: 'Logan Square, IL', toQty: 0, toDays: 0, recTransfer: 40, estRevRecovery: '$1,140/wk' },
+    { product: 'Wyld Elderberry Gummies', from: 'Springfield, IL', fromQty: 44, fromDays: 18, to: 'Fort Lee, NJ', toQty: 0, toDays: 0, recTransfer: 22, estRevRecovery: '$396/wk' },
+    { product: 'Stiiizy Live Resin Pod', from: 'Boston, MA', fromQty: 62, fromDays: 28, to: 'Hoboken, NJ', toQty: 3, toDays: 1, recTransfer: 24, estRevRecovery: '$720/wk' },
+  ];
+
+  const bestPractices = [
+    { store: 'Wicker Park, IL', metric: 'Pre-roll attach rate', value: '40%', avg: '22%', insight: 'Checkout display placement drives 1.8x more pre-roll add-ons', action: 'Replicate at 8 IL stores' },
+    { store: 'Fort Lee, NJ', metric: 'Online order pickup time', value: '4.2 min', avg: '8.1 min', insight: 'Dedicated pickup counter reduces wait by 48%', action: 'Deploy at high-volume stores' },
+  ];
+
+  const crossPricing = [
+    { product: 'Stiiizy Pod 1g', ilPrice: 45, ilVol: 12, njPrice: 55, njVol: 6, optimalNJ: 48, projVol: 10, projLift: '+$840/wk' },
+    { product: 'Cookies Gary Payton', ilPrice: 52, ilVol: 8, njPrice: 58, njVol: 4, optimalNJ: 54, projVol: 6, projLift: '+$360/wk' },
+  ];
+
+  return (
+    <NexusTile className="animate-fade-up" style={{ animationDelay: '350ms' }}>
+      <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
+        <div className="flex items-center gap-2">
+          <Globe className="w-4 h-4 text-[#B598E8]" />
+          <span className="text-xs font-semibold text-[#F0EDE8]">Cross-Store Intelligence</span>
+          <span className="text-[9px] px-1.5 py-px rounded-full bg-[#B598E8]/10 text-[#B598E8] font-bold">AI</span>
+        </div>
+      </div>
+      <div className="p-5 space-y-5">
+        {/* Inventory Rebalancing */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <ArrowRightLeft className="w-3.5 h-3.5 text-[#64A8E0]" />
+            <span className="text-[11px] font-semibold text-[#F0EDE8] uppercase tracking-wider">Inventory Rebalancing</span>
+          </div>
+          <div className="space-y-2">
+            {rebalanceItems.map((item, i) => (
+              <div key={i} className="flex items-center gap-3 rounded-xl border border-[#38332B] bg-[#141210] px-4 py-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] font-medium text-[#F0EDE8]">{item.product}</p>
+                  <div className="flex items-center gap-2 mt-1 text-[10px]">
+                    <span className="text-[#E87068]">{item.to}: {item.toQty} units ({item.toDays}d supply)</span>
+                    <span className="text-[#6B6359]">←</span>
+                    <span className="text-[#00C27C]">{item.from}: {item.fromQty} units ({item.fromDays}d supply)</span>
+                  </div>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-[10px] text-[#00C27C] font-semibold">{item.estRevRecovery}</p>
+                  <button className="mt-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white bg-[#64A8E0] hover:brightness-110 transition-colors">
+                    Transfer {item.recTransfer}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Best Practice Sharing */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-[#00C27C]" />
+            <span className="text-[11px] font-semibold text-[#F0EDE8] uppercase tracking-wider">Best Practice Sharing</span>
+          </div>
+          <div className="space-y-2">
+            {bestPractices.map((bp, i) => (
+              <div key={i} className="rounded-xl border border-[#38332B] bg-[#141210] px-4 py-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[12px] font-medium text-[#F0EDE8]">{bp.store} — {bp.metric}: <span className="text-[#00C27C] font-bold">{bp.value}</span></span>
+                  <span className="text-[10px] text-[#6B6359]">vs avg {bp.avg}</span>
+                </div>
+                <p className="text-[10px] text-[#ADA599]">{bp.insight}</p>
+                <button className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#00C27C] bg-[#00C27C]/10 border border-[#00C27C]/20 hover:bg-[#00C27C]/20 transition-colors">
+                  {bp.action}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Cross-Market Pricing */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <DollarSign className="w-3.5 h-3.5 text-[#D4A03A]" />
+            <span className="text-[11px] font-semibold text-[#F0EDE8] uppercase tracking-wider">Cross-Market Pricing</span>
+          </div>
+          <div className="space-y-2">
+            {crossPricing.map((cp, i) => (
+              <div key={i} className="rounded-xl border border-[#38332B] bg-[#141210] px-4 py-3">
+                <p className="text-[12px] font-medium text-[#F0EDE8] mb-1">{cp.product}</p>
+                <div className="flex items-center gap-4 text-[10px]">
+                  <span className="text-[#ADA599]">IL: ${cp.ilPrice} ({cp.ilVol}/day)</span>
+                  <span className="text-[#ADA599]">NJ: ${cp.njPrice} ({cp.njVol}/day)</span>
+                  <span className="text-[#D4A03A] font-semibold">Optimal NJ: ${cp.optimalNJ} → {cp.projVol}/day</span>
+                  <span className="text-[#00C27C] font-bold">{cp.projLift}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </NexusTile>
+  );
+}
+
 // ─── STORE HEALTH MATRIX ─── //
 
 function StoreHealthMatrix() {
   const { selectedStoreNames } = useStores();
+  const { isStoreMgr, isCompliance, selectedPersona } = usePersona();
+
   const stores = useMemo(() => {
     return STORE_METRICS.filter(s => selectedStoreNames.has(s.name)).slice(0, 12).map(s => {
       const rng = _seedRng(s.name.length * 31);
@@ -2372,21 +2719,121 @@ function StoreHealthMatrix() {
       const mktScore = Math.round(50 + rng() * 40);
       const composite = Math.round(revScore * 0.3 + sentScore * 0.25 + stockScore * 0.2 + compScore * 0.15 + mktScore * 0.1);
       const alerts = s.sentimentFlag === 'alert' ? 3 : s.sentimentFlag === 'watch' ? 1 : 0;
-      return { ...s, composite, alerts };
+      return { ...s, composite, alerts, stockScore, compScore };
     }).sort((a, b) => b.composite - a.composite);
   }, [selectedStoreNames]);
 
+  // Store Manager: single-store deep dive
+  if (isStoreMgr) {
+    return (
+      <NexusTile className="animate-fade-up" style={{ animationDelay: '400ms' }}>
+        <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
+          <div className="flex items-center gap-2">
+            <Store className="w-4 h-4 text-[#D4A03A]" />
+            <span className="text-xs font-semibold text-[#F0EDE8]">Logan Square — Store Dashboard</span>
+          </div>
+          <span className="text-[9px] px-1.5 py-px rounded-full bg-[#00C27C]/10 text-[#00C27C] font-bold">METRC Synced</span>
+        </div>
+        <div className="px-5 py-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            {[
+              { label: 'Vault Items', value: '142', sub: '12 pending transfer', color: '#D4A03A' },
+              { label: 'Floor SKUs', value: '284', sub: '2 OOS', color: '#E87068' },
+              { label: 'Staff On Duty', value: '8', sub: '3 budtenders', color: '#64A8E0' },
+              { label: 'Revenue Today', value: '$34.2K', sub: '+8% vs target', color: '#00C27C' },
+            ].map(m => (
+              <div key={m.label} className="rounded-xl border border-[#38332B] bg-[#141210] p-3">
+                <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-1">{m.label}</p>
+                <p className="text-lg font-bold" style={{ color: m.color }}>{m.value}</p>
+                <p className="text-[10px] text-[#6B6359]">{m.sub}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: 'Transactions', value: '312', trend: '+7.1%', up: true },
+              { label: 'Avg Basket', value: '$110', trend: '+$4', up: true },
+              { label: 'CSAT Score', value: '4.6', trend: '+0.2', up: true },
+            ].map(m => (
+              <div key={m.label} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center">
+                <p className="text-[10px] text-[#6B6359] mb-1">{m.label}</p>
+                <p className="text-base font-bold text-[#F0EDE8]">{m.value}</p>
+                <p className={`text-[10px] font-medium ${m.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{m.trend}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </NexusTile>
+    );
+  }
+
+  // Compliance Officer: compliance status grid per state
+  if (isCompliance) {
+    const stateCompliance = [
+      { state: 'IL', system: 'METRC', stores: 10, synced: 10, lastSync: '4m ago', status: 'green', discrepancies: 0, nextAudit: 'Mar 24' },
+      { state: 'NJ', system: 'BioTrack', stores: 6, synced: 6, lastSync: '8m ago', status: 'green', discrepancies: 0, nextAudit: 'Apr 12' },
+      { state: 'OH', system: 'METRC', stores: 6, synced: 5, lastSync: '28h ago', status: 'warning', discrepancies: 1, nextAudit: 'May 1' },
+      { state: 'MA', system: 'METRC', stores: 5, synced: 5, lastSync: '6m ago', status: 'green', discrepancies: 0, nextAudit: 'Jun 15' },
+      { state: 'MI', system: 'METRC', stores: 6, synced: 6, lastSync: '3m ago', status: 'green', discrepancies: 0, nextAudit: 'Apr 30' },
+      { state: 'MD', system: 'METRC', stores: 3, synced: 3, lastSync: '5m ago', status: 'green', discrepancies: 0, nextAudit: 'Jun 30' },
+      { state: 'PA', system: 'Leaf Data', stores: 3, synced: 3, lastSync: '7m ago', status: 'green', discrepancies: 0, nextAudit: 'May 15' },
+    ];
+    return (
+      <NexusTile className="animate-fade-up" style={{ animationDelay: '400ms' }}>
+        <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-[#64A8E0]" />
+            <span className="text-xs font-semibold text-[#F0EDE8]">Compliance Status by State</span>
+          </div>
+          <span className="text-[10px] text-[#00C27C] font-semibold">38/39 stores synced</span>
+        </div>
+        <div className="px-5 py-4 space-y-2">
+          {stateCompliance.map(sc => {
+            const statusColor = sc.status === 'green' ? '#00C27C' : sc.status === 'warning' ? '#D4A03A' : '#E87068';
+            return (
+              <div key={sc.state} className="flex items-center gap-4 rounded-xl border border-[#38332B] bg-[#141210] px-4 py-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm" style={{ background: `${statusColor}14`, color: statusColor }}>
+                  {sc.state}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[12px] font-medium text-[#F0EDE8]">{sc.stores} stores</span>
+                    <span className="px-1.5 py-px rounded text-[8px] font-bold" style={{ background: `${statusColor}15`, color: statusColor }}>{sc.system}</span>
+                  </div>
+                  <p className="text-[10px] text-[#6B6359]">Last sync: {sc.lastSync} &middot; Next audit: {sc.nextAudit}</p>
+                </div>
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="text-center">
+                    <p className="text-xs font-bold" style={{ color: statusColor }}>{sc.synced}/{sc.stores}</p>
+                    <p className="text-[9px] text-[#6B6359]">synced</p>
+                  </div>
+                  <div className="text-center">
+                    <p className={`text-xs font-bold ${sc.discrepancies > 0 ? 'text-[#E87068]' : 'text-[#00C27C]'}`}>{sc.discrepancies}</p>
+                    <p className="text-[9px] text-[#6B6359]">disc.</p>
+                  </div>
+                  <div className={`w-2 h-2 rounded-full`} style={{ background: statusColor }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </NexusTile>
+    );
+  }
+
+  // Default: Multi-store health matrix for CEO/VP/Regional
   return (
     <NexusTile className="animate-fade-up" style={{ animationDelay: '400ms' }}>
       <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
         <div className="flex items-center gap-2">
           <Store className="w-4 h-4 text-[#D4A03A]" />
           <span className="text-xs font-semibold text-[#F0EDE8]">Store Health Matrix</span>
+          <span className="text-[10px] text-[#6B6359]">{selectedPersona.shortLabel} view</span>
         </div>
         <div className="flex gap-3 text-[10px]">
-          <span className="text-[#00C27C]">\u25CF \u226575</span>
-          <span className="text-[#D4A03A]">\u25CF \u226555</span>
-          <span className="text-[#E87068]">\u25CF &lt;55</span>
+          <span className="text-[#00C27C]">{'\u25CF'} {'\u2265'}75</span>
+          <span className="text-[#D4A03A]">{'\u25CF'} {'\u2265'}55</span>
+          <span className="text-[#E87068]">{'\u25CF'} &lt;55</span>
         </div>
       </div>
       <div className="px-5 py-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -2433,6 +2880,9 @@ export default function NexusHome({ onOpenNexus }) {
 
       {/* 5. Store Health Matrix */}
       <StoreHealthMatrix />
+
+      {/* 5b. Cross-Store Intelligence (CEO/VP/Regional only) */}
+      <CrossStoreIntelligence />
 
       {/* 7. Sales Reporting — kept from v2 */}
       <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mt-1">Performance</p>

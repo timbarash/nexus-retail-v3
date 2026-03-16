@@ -80,6 +80,27 @@ export function StoreProvider({ children }) {
       setSelectedStoreNames(new Set());
     }
 
+    function setStoresByPersona(persona) {
+      if (!persona || !persona.storeFilter) {
+        // Portfolio scope — select all
+        setSelectedStoreNames(new Set(allStoreNames));
+        return;
+      }
+      const filter = persona.storeFilter;
+      if (filter.store) {
+        // Single store
+        setSelectedStoreNames(new Set([filter.store]));
+      } else if (filter.states) {
+        // States filter
+        const names = locations
+          .filter(l => filter.states.includes(l.state))
+          .map(l => l.name);
+        setSelectedStoreNames(new Set(names));
+      } else {
+        setSelectedStoreNames(new Set(allStoreNames));
+      }
+    }
+
     return {
       selectedStoreNames,
       selectedStores,
@@ -92,6 +113,7 @@ export function StoreProvider({ children }) {
       toggleState,
       selectAll,
       clearAll,
+      setStoresByPersona,
     };
   }, [selectedStoreNames]);
 

@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePortal } from '../contexts/PortalContext';
+import { usePersona } from '../contexts/PersonaContext';
+import { useStores } from '../contexts/StoreContext';
 import {
   Sparkles, Send, ChevronRight, Zap, TrendingUp,
   CheckCircle2, Clock, DollarSign, BarChart3, Star,
@@ -11,7 +13,8 @@ import {
   Smartphone, Monitor, ExternalLink,
   FileText, Tag, Ticket, Bug, Lightbulb, Settings,
   Layers, PanelRight, Megaphone,
-  Upload, Image, Info, MapPin, User, Hash
+  Upload, Image, Info, MapPin, User, Hash,
+  ArrowRightLeft, Truck, Users, RefreshCw, Globe,
 } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
 import { generateBridgeResponse, generateMarketingCampaignPlan, generateConnectAnalysis, generatePricingAnalysis, isGeminiAvailable } from '../utils/gemini';
@@ -2325,6 +2328,8 @@ const SUGGESTIONS = [
 export default function CustomerBridge({ compact = false, nexusOverlay = false }) {
   const navigate = useNavigate();
   const { addInteraction } = usePortal();
+  const { selectedPersona, isCEO, isVP, isRegional, isStoreMgr, isCompliance } = usePersona();
+  const { selectionLabel } = useStores();
   const [products, setProducts] = useState(DEFAULT_PRODUCTS);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState([]);
@@ -2901,14 +2906,39 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
     { key: 'menu_boards', label: 'Add Menu Boards to my Account', icon: Monitor, gradient: 'from-pink-600/20 to-rose-600/20', border: 'hover:border-pink-500/40', tag: 'Upgrade', tagColor: '#EC4899' },
     { key: 'winback', label: 'Set up a marketing win back campaign', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Marketing', tagColor: '#00C27C' },
   ];
-  const NEXUS_SUGGESTIONS = [
-    { key: 'inventory', label: 'Show me a plan to reorder out-of-stock inventory', icon: ShoppingCart, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Inventory', tagColor: '#64A8E0', confidence: 'high' },
-    { key: 'campaign', label: 'Run a marketing campaign for my top sellers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Marketing', tagColor: '#00C27C', confidence: 'medium' },
-    { key: 'pricing_gap', label: 'Compare my prices vs the market', icon: DollarSign, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Pricing', tagColor: '#D4A03A' },
-    { key: 'sentiment_check', label: "How's our customer sentiment this month?", icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Sentiment', tagColor: '#B598E8' },
-    { key: 'report', label: 'Give me a weekly sales performance summary', icon: BarChart3, gradient: 'from-emerald-600/20 to-teal-600/20', border: 'hover:border-emerald-500/40', tag: 'Reporting', tagColor: '#00C27C' },
-    { key: 'explore', label: 'What trending products should I add to my menu?', icon: Rocket, gradient: 'from-pink-600/20 to-rose-600/20', border: 'hover:border-pink-500/40', tag: 'Products', tagColor: '#EC4899' },
-  ];
+  const NEXUS_SUGGESTIONS_BY_PERSONA = {
+    ceo: [
+      { key: 'portfolio', label: 'Give me a portfolio summary across all 39 stores', icon: BarChart3, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Portfolio', tagColor: '#D4A03A' },
+      { key: 'revenue_state', label: 'Compare revenue across all 7 states', icon: TrendingUp, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Revenue', tagColor: '#00C27C' },
+      { key: 'compliance_all', label: 'Show compliance status across all states', icon: Shield, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Compliance', tagColor: '#64A8E0' },
+      { key: 'brand_perf', label: 'Which brands are performing best?', icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Brands', tagColor: '#B598E8' },
+    ],
+    vp_retail: [
+      { key: 'rankings', label: 'Rank all stores in my region by performance', icon: BarChart3, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Rankings', tagColor: '#00C27C' },
+      { key: 'rebalance', label: 'Show me all stores with Blue Dream OOS', icon: Package, gradient: 'from-red-600/20 to-rose-600/20', border: 'hover:border-red-500/40', tag: 'Inventory', tagColor: '#E87068' },
+      { key: 'compare', label: 'Compare IL vs OH revenue this month', icon: TrendingUp, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Compare', tagColor: '#D4A03A' },
+      { key: 'practices', label: 'What best practices can we share across stores?', icon: Sparkles, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Insights', tagColor: '#B598E8' },
+    ],
+    regional_mgr: [
+      { key: 'transfers', label: 'Show all pending vault transfers for IL', icon: ArrowRightLeft, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Transfers', tagColor: '#D4A03A' },
+      { key: 'delivery', label: 'What deliveries are expected today?', icon: Truck, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Delivery', tagColor: '#64A8E0' },
+      { key: 'close', label: 'Show daily close reports for all IL stores', icon: FileText, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Reports', tagColor: '#00C27C' },
+      { key: 'labor', label: 'Show labor metrics for Illinois stores', icon: Users, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Staffing', tagColor: '#B598E8' },
+    ],
+    store_mgr: [
+      { key: 'inventory', label: 'Show items that need vault-to-floor transfer', icon: ShoppingCart, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Inventory', tagColor: '#64A8E0', confidence: 'high' },
+      { key: 'campaign', label: 'Run a marketing campaign for my top sellers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Marketing', tagColor: '#00C27C' },
+      { key: 'pricing_gap', label: 'Compare my prices vs the market', icon: DollarSign, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Pricing', tagColor: '#D4A03A' },
+      { key: 'sentiment_check', label: "How's our customer sentiment this month?", icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Sentiment', tagColor: '#B598E8' },
+    ],
+    compliance: [
+      { key: 'sync', label: 'Show track-and-trace sync status for all states', icon: RefreshCw, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Sync', tagColor: '#00C27C' },
+      { key: 'discrepancy', label: 'Show all open inventory discrepancies', icon: AlertTriangle, gradient: 'from-red-600/20 to-rose-600/20', border: 'hover:border-red-500/40', tag: 'Discrepancy', tagColor: '#E87068' },
+      { key: 'audit', label: 'Run audit readiness check for IL', icon: Eye, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Audit', tagColor: '#64A8E0' },
+      { key: 'regulatory', label: 'What regulatory changes are coming?', icon: FileText, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Regulatory', tagColor: '#B598E8' },
+    ],
+  };
+  const NEXUS_SUGGESTIONS = NEXUS_SUGGESTIONS_BY_PERSONA[selectedPersona?.id] || NEXUS_SUGGESTIONS_BY_PERSONA.store_mgr;
 
   const compactSuggestions = nexusOverlay ? NEXUS_SUGGESTIONS : compact ? COMPACT_SUGGESTIONS : SUGGESTIONS;
 
@@ -2921,7 +2951,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
         </div>
         <div>
           <h1 className={`${compact ? 'text-base' : 'text-xl'} font-bold text-[#F0EDE8]`}>{compact ? 'Nexus Chat' : 'Nexus Chat'}</h1>
-          <p className="text-xs text-[#ADA599]">{compact ? 'Ask anything, execute any action' : 'AI-Powered Retail Operations Agent'}</p>
+          <p className="text-xs text-[#ADA599]">{compact ? `Ask anything — ${selectedPersona?.shortLabel || 'Store Mgr'}` : `AI-Powered Retail Operations Agent — ${selectedPersona?.label || 'Store Manager'}`}</p>
         </div>
         <div className="ml-auto flex items-center gap-2">
           {compact ? (
