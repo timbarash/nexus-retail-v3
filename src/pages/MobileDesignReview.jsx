@@ -178,6 +178,8 @@ function ScreenHome() {
    SCREEN: ALERTS
    ═══════════════════════════════════════════════════════════════════ */
 function ScreenAlerts() {
+  const [done, setDone] = useState({});
+  const tap = (key) => { setDone(p => ({ ...p, [key]: true })); setTimeout(() => setDone(p => ({ ...p, [key]: false })), 1500); };
   const alerts = [
     { sev: 'CRITICAL', color: '#E87068', time: '2m', title: 'Blue Dream 3.5g out at 4 stores', ai: 'Reorder 200 units for $2,840. Est. delivery: 2 days.', actions: ['Approve Reorder', 'Modify'] },
     { sev: 'WARNING', color: '#D4A03A', time: '15m', title: 'Stiiizy Pod 18% above market avg', ai: 'Suggest $44.99 (currently $52). Projected +23% velocity.', actions: ['Apply Price', 'View Comps'] },
@@ -205,9 +207,12 @@ function ScreenAlerts() {
                 </div>
               </div>
               <div className="flex gap-2">
-                {a.actions.map((act, j) => (
-                  <button key={j} className={`flex-1 py-2 rounded-xl text-[10px] font-bold transition-all ${j === 0 ? 'text-white' : 'text-[#ADA599] border border-[#38332B]'}`} style={j === 0 ? { background: a.color } : undefined}>{act}</button>
-                ))}
+                {a.actions.map((act, j) => {
+                  const k = `${i}-${j}`;
+                  return (
+                    <button key={j} onClick={() => tap(k)} className={`flex-1 py-2 rounded-xl text-[10px] font-bold transition-all ${done[k] ? 'bg-[#00C27C] text-white' : j === 0 ? 'text-white' : 'text-[#ADA599] border border-[#38332B]'}`} style={!done[k] && j === 0 ? { background: a.color } : undefined}>{done[k] ? '✓ Done' : act}</button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -313,6 +318,7 @@ function ScreenStore() {
    SCREEN: AI CHAT
    ═══════════════════════════════════════════════════════════════════ */
 function ScreenChat() {
+  const [approved, setApproved] = useState(false);
   return (
     <div className="px-4 pt-2 flex flex-col" style={{ minHeight: 540 }}>
       <div className="flex items-center gap-2.5 mb-4">
@@ -355,7 +361,7 @@ function ScreenChat() {
                 <span className="text-[9px] font-bold" style={{ color: p.c }}>{p.time}</span>
               </div>
             ))}
-            <button className="mt-2.5 w-full py-2 rounded-xl bg-[#00C27C] text-[10px] font-bold text-white">Approve All Reorders — $3,935</button>
+            <button onClick={() => setApproved(true)} className={`mt-2.5 w-full py-2 rounded-xl text-[10px] font-bold text-white transition-all ${approved ? 'bg-[#00C27C]/60' : 'bg-[#00C27C]'}`}>{approved ? '✓ Reorders Approved' : 'Approve All Reorders — $3,935'}</button>
           </div>
         </div>
       </div>
@@ -375,6 +381,9 @@ function ScreenChat() {
    SCREEN: INVENTORY
    ═══════════════════════════════════════════════════════════════════ */
 function ScreenInventory() {
+  const [allApproved, setAllApproved] = useState(false);
+  const [reordered, setReordered] = useState({});
+  const reorder = (name) => { setReordered(p => ({ ...p, [name]: true })); };
   const items = [
     { name: 'Blue Dream 3.5g', store: '4 stores', hours: 12, cost: '$2,840', sev: 'critical' },
     { name: 'Ozone Gummies 100mg', store: 'Fort Lee', hours: 36, cost: '$675', sev: 'warning' },
@@ -385,11 +394,12 @@ function ScreenInventory() {
     <div className="px-4 pt-2">
       <div className="flex items-center justify-between mb-4">
         <div><p className="text-[14px] font-bold text-white">Low Stock</p><p className="text-[9px] text-[#6B6359]">4 items need attention</p></div>
-        <button className="px-3.5 py-1.5 rounded-xl bg-[#00C27C] text-[10px] font-bold text-white">Approve All</button>
+        <button onClick={() => setAllApproved(true)} className={`px-3.5 py-1.5 rounded-xl text-[10px] font-bold text-white transition-all ${allApproved ? 'bg-[#00C27C]/60' : 'bg-[#00C27C]'}`}>{allApproved ? '✓ Approved' : 'Approve All'}</button>
       </div>
       <div className="space-y-2.5">
         {items.map(it => {
           const c = it.sev === 'critical' ? '#E87068' : it.sev === 'warning' ? '#D4A03A' : '#64A8E0';
+          const ordered = allApproved || reordered[it.name];
           return (
             <div key={it.name} className="rounded-2xl border bg-[#161514] p-3.5" style={{ borderColor: it.sev === 'critical' ? `${c}40` : '#2A2722' }}>
               <div className="flex items-start justify-between mb-2">
@@ -408,7 +418,7 @@ function ScreenInventory() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[9px] text-[#ADA599]">{it.cost}</span>
-                <button className="px-3 py-1.5 rounded-lg text-[9px] font-bold text-white" style={{ background: c }}>Reorder Now</button>
+                <button onClick={() => reorder(it.name)} className={`px-3 py-1.5 rounded-lg text-[9px] font-bold text-white transition-all ${ordered ? 'bg-[#00C27C]/60' : ''}`} style={!ordered ? { background: c } : undefined}>{ordered ? '✓ Ordered' : 'Reorder Now'}</button>
               </div>
             </div>
           );
@@ -423,6 +433,7 @@ function ScreenInventory() {
    SCREEN: REPORTS
    ═══════════════════════════════════════════════════════════════════ */
 function ScreenReports() {
+  const [dashOpen, setDashOpen] = useState(false);
   return (
     <div className="px-4 pt-2">
       <div className="flex items-center justify-between mb-4">
@@ -463,7 +474,7 @@ function ScreenReports() {
           <div key={c.n} className="flex items-center gap-2 mb-1.5"><div className="w-2 h-2 rounded-full flex-shrink-0" style={{background:c.c}}/><span className="text-[9px] text-[#ADA599] w-14">{c.n}</span><div className="flex-1 h-2 rounded-full bg-[#2A2722] overflow-hidden"><div className="h-full rounded-full" style={{width:`${c.p}%`,background:c.c}}/></div><span className="text-[9px] font-bold text-white w-8 text-right">{c.p}%</span></div>
         ))}
       </div>
-      <button className="w-full py-2.5 rounded-xl border border-[#2A2722] bg-[#161514] text-[10px] text-[#ADA599] font-semibold flex items-center justify-center gap-1.5"><Monitor className="w-3.5 h-3.5" />Open Full Dashboard</button>
+      <button onClick={() => setDashOpen(true)} className={`w-full py-2.5 rounded-xl border text-[10px] font-semibold flex items-center justify-center gap-1.5 transition-all ${dashOpen ? 'border-[#00C27C]/30 bg-[#00C27C]/10 text-[#00C27C]' : 'border-[#2A2722] bg-[#161514] text-[#ADA599]'}`}>{dashOpen ? <><Check className="w-3.5 h-3.5" />Opening Dashboard...</> : <><Monitor className="w-3.5 h-3.5" />Open Full Dashboard</>}</button>
       <BottomNav active="reports" />
     </div>
   );

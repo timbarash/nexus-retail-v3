@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus Logo Study</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=DM+Serif+Display&family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600&family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=Source+Serif+4:wght@300;400;600&family=Inter:wght@200;300;400;500;600;700&family=Outfit:wght@200;300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700&family=Crimson+Pro:wght@300;400;500;600&family=Fraunces:wght@300;400;500;700&family=Instrument+Serif&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0D0C0B; color: #F0EDE8; font-family: 'Inter', system-ui, sans-serif; }
+
+  .header { padding: 40px 48px 24px; border-bottom: 1px solid #2A2722; }
+  .header h1 { font-size: 28px; font-weight: 600; color: #F0EDE8; margin-bottom: 6px; }
+  .header p { font-size: 14px; color: #6B6359; }
+
+  .section-title {
+    padding: 32px 48px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #6B6359;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    padding: 0 48px 32px;
+  }
+
+  .card {
+    border: 1px solid #2A2722;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+  .card:hover { border-color: #D4A03A40; }
+  .card.selected { border-color: #D4A03A; box-shadow: 0 0 0 1px #D4A03A40; }
+
+  .card-preview {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+  }
+
+  .card-meta {
+    padding: 12px 16px;
+    border-top: 1px solid #2A2722;
+    background: #141210;
+  }
+  .card-meta .name { font-size: 13px; font-weight: 600; color: #F0EDE8; margin-bottom: 2px; }
+  .card-meta .desc { font-size: 11px; color: #6B6359; line-height: 1.5; }
+
+  /* NexusIcon SVG placeholder */
+  .nx-icon {
+    width: 24px; height: 24px;
+    background: linear-gradient(135deg, #D4A03A, #F0D78A);
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .nx-icon.lg { width: 28px; height: 28px; border-radius: 7px; }
+
+  /* Backgrounds */
+  .bg-sidebar { background: #141210; }
+  .bg-main { background: #0D0C0B; }
+  .bg-card { background: #1C1B1A; }
+  .bg-elevated { background: #161514; }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  .tag-current { background: #D4A03A20; color: #D4A03A; }
+  .tag-rec { background: #00C27C20; color: #00C27C; }
+
+  /* Context strip */
+  .context-strip {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 20px 48px;
+    border-bottom: 1px solid #2A2722;
+    background: #141210;
+    overflow-x: auto;
+  }
+  .ctx-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #6B6359; white-space: nowrap; }
+  .ctx-swatch {
+    width: 32px; height: 32px; border-radius: 8px; border: 1px solid #2A2722;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 8px; color: #6B6359;
+  }
+
+  .full-row {
+    padding: 24px 48px;
+  }
+  .sidebar-mock {
+    width: 240px;
+    background: #141210;
+    border: 1px solid #2A2722;
+    border-radius: 16px;
+    padding: 20px 16px;
+  }
+  .sidebar-mock .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .sidebar-mock .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #6B6359;
+    margin-bottom: 2px;
+  }
+  .sidebar-mock .nav-item.active {
+    background: #D4A03A12;
+    color: #D4A03A;
+  }
+  .nav-dot { width: 16px; height: 16px; border-radius: 4px; background: #2A2722; }
+
+  .vote-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    padding: 16px 48px;
+    background: #141210;
+    border-top: 1px solid #2A2722;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+  .vote-bar span { font-size: 13px; color: #ADA599; }
+  .vote-bar .selected-name { font-weight: 600; color: #D4A03A; }
+
+  body { padding-bottom: 72px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Nexus Logo Study</h1>
+  <p>Click any option to see it in the sidebar context below. Comparing across background colors used in the app.</p>
+</div>
+
+<!-- Color context -->
+<div class="context-strip">
+  <span class="ctx-label">App Backgrounds</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="ctx-swatch" style="background:#0D0C0B">Main</div>
+    <div class="ctx-swatch" style="background:#141210">Side</div>
+    <div class="ctx-swatch" style="background:#1C1B1A">Card</div>
+    <div class="ctx-swatch" style="background:#161514">Elev</div>
+  </div>
+  <span class="ctx-label" style="margin-left:16px">Brand Colors</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="ctx-swatch" style="background:linear-gradient(135deg,#F0D78A,#D4A03A)"></div>
+    <div class="ctx-swatch" style="background:#00C27C"></div>
+    <div class="ctx-swatch" style="background:#64A8E0"></div>
+    <div class="ctx-swatch" style="background:#B598E8"></div>
+  </div>
+</div>
+
+<!-- SECTION: Serif Options -->
+<div class="section-title">Serif & Display Serif</div>
+<div class="grid" id="serif-grid"></div>
+
+<!-- SECTION: Sans-Serif Options -->
+<div class="section-title">Sans-Serif & Geometric</div>
+<div class="grid" id="sans-grid"></div>
+
+<!-- SECTION: Mixed / Stylized -->
+<div class="section-title">Stylized & Experimental</div>
+<div class="grid" id="exp-grid"></div>
+
+<!-- Live Sidebar Preview -->
+<div class="section-title">Live Sidebar Preview</div>
+<div class="full-row" style="display:flex;gap:24px;flex-wrap:wrap">
+  <div class="sidebar-mock" id="sidebar-preview-dark">
+    <div class="logo-row">
+      <div class="nx-icon"></div>
+      <span id="preview-logo-1" style="font-size:22px">nexus</span>
+    </div>
+    <div class="nav-item active"><div class="nav-dot"></div> Dashboard</div>
+    <div class="nav-item"><div class="nav-dot"></div> Nexus Chat</div>
+    <div class="nav-item"><div class="nav-dot"></div> Inventory</div>
+    <div class="nav-item"><div class="nav-dot"></div> Reports</div>
+  </div>
+  <div class="sidebar-mock" style="background:#0D0C0B">
+    <div class="logo-row">
+      <div class="nx-icon"></div>
+      <span id="preview-logo-2" style="font-size:22px">nexus</span>
+    </div>
+    <div class="nav-item active"><div class="nav-dot"></div> Dashboard</div>
+    <div class="nav-item"><div class="nav-dot"></div> Nexus Chat</div>
+    <div class="nav-item"><div class="nav-dot"></div> Inventory</div>
+    <div class="nav-item"><div class="nav-dot"></div> Reports</div>
+  </div>
+  <div class="sidebar-mock" style="background:#1C1B1A">
+    <div class="logo-row">
+      <div class="nx-icon"></div>
+      <span id="preview-logo-3" style="font-size:22px">nexus</span>
+    </div>
+    <div class="nav-item active"><div class="nav-dot"></div> Dashboard</div>
+    <div class="nav-item"><div class="nav-dot"></div> Nexus Chat</div>
+    <div class="nav-item"><div class="nav-dot"></div> Inventory</div>
+    <div class="nav-item"><div class="nav-dot"></div> Reports</div>
+  </div>
+</div>
+
+<!-- Vote bar -->
+<div class="vote-bar">
+  <span>Selected:</span>
+  <span class="selected-name" id="vote-name">None — click a card above</span>
+</div>
+
+<script>
+const GOLD = 'linear-gradient(135deg, #F0D78A 0%, #D4A03A 100%)';
+const WARM = 'linear-gradient(135deg, #E8D5A3 0%, #C49A2E 100%)';
+const CREAM = 'linear-gradient(135deg, #F5ECD7 0%, #D4A03A 100%)';
+const FLAT_GOLD = '#D4A03A';
+const LIGHT = '#F0EDE8';
+
+const OPTIONS = {
+  serif: [
+    {
+      name: 'Current — System Light', tag: 'current',
+      text: 'nexus', font: 'system-ui, -apple-system, sans-serif', weight: 300,
+      size: '22px', spacing: '0.04em', color: GOLD, desc: 'Current logo. Light system font, lowercase.'
+    },
+    {
+      name: 'Playfair Display',
+      text: 'Nexus', font: "'Playfair Display', serif", weight: 500,
+      size: '24px', spacing: '0.02em', color: GOLD, desc: 'Elegant high-contrast serif. Feels premium & editorial.'
+    },
+    {
+      name: 'Playfair Italic',
+      text: 'Nexus', font: "'Playfair Display', serif", weight: 400,
+      size: '24px', spacing: '0.02em', color: GOLD, italic: true, desc: 'Italic Playfair. Softer, more refined personality.'
+    },
+    {
+      name: 'DM Serif Display',
+      text: 'Nexus', font: "'DM Serif Display', serif", weight: 400,
+      size: '24px', spacing: '0.01em', color: GOLD, desc: 'Clean modern serif. Strong but warm.'
+    },
+    {
+      name: 'Cormorant Light',
+      text: 'Nexus', font: "'Cormorant Garamond', serif", weight: 300,
+      size: '28px', spacing: '0.06em', color: GOLD, desc: 'Thin elegant Garamond-style. Very refined, airy feel.'
+    },
+    {
+      name: 'Cormorant Medium',
+      text: 'NEXUS', font: "'Cormorant Garamond', serif", weight: 500,
+      size: '22px', spacing: '0.16em', color: GOLD, desc: 'Uppercase Cormorant with wide tracking. Classic luxury.'
+    },
+    {
+      name: 'Libre Baskerville',
+      text: 'Nexus', font: "'Libre Baskerville', serif", weight: 400,
+      size: '22px', spacing: '0.02em', color: GOLD, desc: 'Workhorse serif. Trustworthy, readable, traditional.'
+    },
+    {
+      name: 'Lora',
+      text: 'nexus', font: "'Lora', serif", weight: 500,
+      size: '24px', spacing: '0.03em', color: GOLD, desc: 'Calligraphic serif. Warm and approachable.'
+    },
+    {
+      name: 'Source Serif Light',
+      text: 'nexus', font: "'Source Serif 4', serif", weight: 300,
+      size: '26px', spacing: '0.05em', color: GOLD, desc: 'Adobe Source Serif thin. Clean, modern serif energy.'
+    },
+    {
+      name: 'Instrument Serif',
+      text: 'Nexus', font: "'Instrument Serif', serif", weight: 400,
+      size: '26px', spacing: '0.01em', color: GOLD, desc: 'Contemporary editorial serif. Trendy, distinctive.'
+    },
+    {
+      name: 'Fraunces Light',
+      text: 'nexus', font: "'Fraunces', serif", weight: 300,
+      size: '26px', spacing: '0.02em', color: GOLD, desc: 'Soft "wonky" serif. Friendly, organic, distinctive.'
+    },
+    {
+      name: 'Fraunces Bold',
+      text: 'Nexus', font: "'Fraunces', serif", weight: 700,
+      size: '22px', spacing: '0.01em', color: GOLD, desc: 'Bold Fraunces. Punchy, modern, memorable.'
+    },
+    {
+      name: 'Crimson Pro Light',
+      text: 'nexus', font: "'Crimson Pro', serif", weight: 300,
+      size: '28px', spacing: '0.08em', color: GOLD, desc: 'Thin elegant Crimson. Whisper-light sophistication.'
+    },
+  ],
+  sans: [
+    {
+      name: 'Inter Thin',
+      text: 'nexus', font: "'Inter', sans-serif", weight: 200,
+      size: '24px', spacing: '0.08em', color: GOLD, desc: 'Ultra-thin Inter. Minimal, techy, modern.'
+    },
+    {
+      name: 'Inter Medium Caps',
+      text: 'NEXUS', font: "'Inter', sans-serif", weight: 500,
+      size: '16px', spacing: '0.22em', color: GOLD, desc: 'All-caps wide tracking. Clean corporate feel.'
+    },
+    {
+      name: 'DM Sans Light',
+      text: 'nexus', font: "'DM Sans', sans-serif", weight: 300,
+      size: '24px', spacing: '0.06em', color: GOLD, desc: 'Geometric DM Sans light. Friendly and balanced.'
+    },
+    {
+      name: 'DM Sans Bold',
+      text: 'Nexus', font: "'DM Sans', sans-serif", weight: 700,
+      size: '22px', spacing: '0.01em', color: GOLD, desc: 'Bold DM Sans. Confident, modern SaaS feel.'
+    },
+    {
+      name: 'Outfit Light',
+      text: 'nexus', font: "'Outfit', sans-serif", weight: 200,
+      size: '26px', spacing: '0.05em', color: GOLD, desc: 'Geometric Outfit thin. Calm, spacious, premium.'
+    },
+    {
+      name: 'Outfit Medium',
+      text: 'Nexus', font: "'Outfit', sans-serif", weight: 500,
+      size: '22px', spacing: '0.02em', color: GOLD, desc: 'Outfit at medium weight. Balanced geometric beauty.'
+    },
+    {
+      name: 'Space Grotesk',
+      text: 'nexus', font: "'Space Grotesk', sans-serif", weight: 400,
+      size: '24px', spacing: '0.04em', color: GOLD, desc: 'Monospace-inspired proportional. Techy but warm.'
+    },
+    {
+      name: 'Space Grotesk Bold',
+      text: 'NEXUS', font: "'Space Grotesk', sans-serif", weight: 700,
+      size: '16px', spacing: '0.18em', color: GOLD, desc: 'Bold all-caps Space Grotesk. Strong tech brand energy.'
+    },
+    {
+      name: 'Syne',
+      text: 'nexus', font: "'Syne', sans-serif", weight: 500,
+      size: '24px', spacing: '0.03em', color: GOLD, desc: 'Distinctive art-directed sans. Unique, memorable.'
+    },
+    {
+      name: 'Syne Bold',
+      text: 'NEXUS', font: "'Syne', sans-serif", weight: 700,
+      size: '18px', spacing: '0.14em', color: GOLD, desc: 'Bold Syne caps. Striking, almost brutalist.'
+    },
+    {
+      name: 'Bricolage Grotesque',
+      text: 'nexus', font: "'Bricolage Grotesque', sans-serif", weight: 400,
+      size: '24px', spacing: '0.02em', color: GOLD, desc: 'Eclectic grotesque. Warm, quirky, approachable.'
+    },
+    {
+      name: 'Bricolage Light',
+      text: 'Nexus', font: "'Bricolage Grotesque', sans-serif", weight: 300,
+      size: '26px', spacing: '0.04em', color: GOLD, desc: 'Light Bricolage. Elegant with character.'
+    },
+  ],
+  exp: [
+    {
+      name: 'Flat Gold on Dark',
+      text: 'nexus', font: "'Outfit', sans-serif", weight: 300,
+      size: '24px', spacing: '0.06em', color: FLAT_GOLD, flat: true, desc: 'No gradient — flat gold. Simpler, more understated.'
+    },
+    {
+      name: 'Cream Gradient',
+      text: 'nexus', font: "'Cormorant Garamond', serif", weight: 400,
+      size: '26px', spacing: '0.06em', color: CREAM, desc: 'Lighter cream-to-gold gradient. Softer glow.'
+    },
+    {
+      name: 'White / No Color',
+      text: 'nexus', font: "'DM Sans', sans-serif", weight: 300,
+      size: '24px', spacing: '0.06em', color: LIGHT, flat: true, desc: 'Pure white. Lets the icon carry the brand color.'
+    },
+    {
+      name: 'Mixed — Serif + Sans',
+      text: 'html', font: "'Inter', sans-serif", weight: 300,
+      size: '24px', spacing: '0.04em', color: GOLD,
+      html: '<span style="font-family:\'Instrument Serif\',serif;font-weight:400;font-size:26px;letter-spacing:0.01em">N</span><span style="font-family:\'Inter\',sans-serif;font-weight:300;font-size:20px;letter-spacing:0.06em">exus</span>',
+      desc: 'Serif capital N + sans body. Hybrid personality.'
+    },
+    {
+      name: 'Spaced Caps Thin',
+      text: 'N E X U S', font: "'Inter', sans-serif", weight: 200,
+      size: '16px', spacing: '0.04em', color: GOLD, desc: 'Ultra-spaced thin caps. Luxury fashion energy.'
+    },
+    {
+      name: 'Dotted Separator',
+      text: 'html', font: "'Outfit', sans-serif", weight: 400,
+      size: '20px', spacing: '0.03em', color: GOLD,
+      html: 'n<span style="opacity:0.3;margin:0 2px">·</span>e<span style="opacity:0.3;margin:0 2px">·</span>x<span style="opacity:0.3;margin:0 2px">·</span>u<span style="opacity:0.3;margin:0 2px">·</span>s',
+      desc: 'Dot-separated letters. Distinctive, techy, unique.'
+    },
+    {
+      name: 'Warm Gradient Bold Serif',
+      text: 'Nexus', font: "'Playfair Display', serif", weight: 700,
+      size: '26px', spacing: '0.01em', color: WARM, desc: 'Bold serif with warmer gradient. Statement piece.'
+    },
+    {
+      name: 'Monospace Vibe',
+      text: 'nexus_', font: "'Space Grotesk', sans-serif", weight: 400,
+      size: '22px', spacing: '0.08em', color: GOLD, desc: 'Trailing underscore cursor. Dev/hacker aesthetic.'
+    },
+    {
+      name: 'Fraunces + Wide Track',
+      text: 'nexus', font: "'Fraunces', serif", weight: 400,
+      size: '24px', spacing: '0.12em', color: GOLD, desc: 'Fraunces with extra tracking. Organic luxury.'
+    },
+    {
+      name: 'Small Caps Serif',
+      text: 'Nexus', font: "'Cormorant Garamond', serif", weight: 600,
+      size: '20px', spacing: '0.20em', color: GOLD, variant: 'small-caps', desc: 'Small caps Cormorant. Old-money editorial.'
+    },
+  ]
+};
+
+function renderCard(opt, bg, idx) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.idx = idx;
+  card.dataset.name = opt.name;
+
+  const preview = document.createElement('div');
+  preview.className = 'card-preview ' + bg;
+
+  // Icon
+  const icon = document.createElement('div');
+  icon.className = 'nx-icon lg';
+  preview.appendChild(icon);
+
+  // Logo text
+  const logo = document.createElement('span');
+  if (opt.html) {
+    logo.innerHTML = opt.html;
+    logo.style.background = opt.color;
+    logo.style.WebkitBackgroundClip = 'text';
+    logo.style.WebkitTextFillColor = 'transparent';
+  } else {
+    logo.textContent = opt.text;
+    logo.style.fontFamily = opt.font;
+    logo.style.fontWeight = opt.weight;
+    logo.style.fontSize = opt.size;
+    logo.style.letterSpacing = opt.spacing;
+    if (opt.italic) logo.style.fontStyle = 'italic';
+    if (opt.variant) logo.style.fontVariant = opt.variant;
+    if (opt.flat) {
+      logo.style.color = opt.color;
+    } else {
+      logo.style.background = opt.color;
+      logo.style.WebkitBackgroundClip = 'text';
+      logo.style.WebkitTextFillColor = 'transparent';
+    }
+  }
+  preview.appendChild(logo);
+
+  const meta = document.createElement('div');
+  meta.className = 'card-meta';
+  let tagHtml = '';
+  if (opt.tag === 'current') tagHtml = '<span class="tag tag-current">CURRENT</span>';
+  if (opt.tag === 'rec') tagHtml = '<span class="tag tag-rec">RECOMMENDED</span>';
+  meta.innerHTML = `<div class="name">${opt.name}${tagHtml}</div><div class="desc">${opt.desc}</div>`;
+
+  card.appendChild(preview);
+  card.appendChild(meta);
+
+  card.addEventListener('click', () => selectOption(opt, card));
+  return card;
+}
+
+function selectOption(opt, cardEl) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+
+  document.getElementById('vote-name').textContent = opt.name;
+
+  // Update all 3 sidebar previews
+  ['preview-logo-1', 'preview-logo-2', 'preview-logo-3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (opt.html) {
+      el.innerHTML = opt.html;
+      el.style = '';
+      el.style.background = opt.color;
+      el.style.WebkitBackgroundClip = 'text';
+      el.style.WebkitTextFillColor = 'transparent';
+    } else {
+      el.textContent = opt.text;
+      el.style.fontFamily = opt.font;
+      el.style.fontWeight = opt.weight;
+      el.style.fontSize = opt.size;
+      el.style.letterSpacing = opt.spacing;
+      el.style.fontStyle = opt.italic ? 'italic' : 'normal';
+      el.style.fontVariant = opt.variant || 'normal';
+      if (opt.flat) {
+        el.style.color = opt.color;
+        el.style.background = 'none';
+        el.style.WebkitBackgroundClip = 'unset';
+        el.style.WebkitTextFillColor = 'unset';
+      } else {
+        el.style.color = 'unset';
+        el.style.background = opt.color;
+        el.style.WebkitBackgroundClip = 'text';
+        el.style.WebkitTextFillColor = 'transparent';
+      }
+    }
+  });
+}
+
+// Render all cards
+let idx = 0;
+const bgs = ['bg-sidebar', 'bg-main', 'bg-card'];
+
+OPTIONS.serif.forEach((opt, i) => {
+  const bg = bgs[i % bgs.length];
+  document.getElementById('serif-grid').appendChild(renderCard(opt, bg, idx++));
+});
+OPTIONS.sans.forEach((opt, i) => {
+  const bg = bgs[i % bgs.length];
+  document.getElementById('sans-grid').appendChild(renderCard(opt, bg, idx++));
+});
+OPTIONS.exp.forEach((opt, i) => {
+  const bg = bgs[i % bgs.length];
+  document.getElementById('exp-grid').appendChild(renderCard(opt, bg, idx++));
+});
+</script>
+</body>
+</html>

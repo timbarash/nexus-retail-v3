@@ -39,7 +39,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
             <NexusIcon size={22} />
           </div>
           <div className="flex items-center">
-            <span className="text-lg" style={{ fontFamily: "'Trebuchet MS', 'Avenir', 'Segoe UI', sans-serif", fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', fontSize: '14px', background: 'linear-gradient(90deg, #E8C87A 0%, #F0D78A 50%, #D4A03A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>nexus</span>
+            <span style={{ fontFamily: "system-ui, -apple-system, sans-serif", fontWeight: 300, letterSpacing: '0.04em', fontSize: '22px', background: 'linear-gradient(135deg, #F0D78A 0%, #D4A03A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>nexus</span>
           </div>
         </div>
         {onClose && (

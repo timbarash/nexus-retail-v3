@@ -694,6 +694,7 @@ function InteractionsSection({ interactions }) {
    ═══════════════════════════════════════════════════════════════════ */
 
 function BillingSection() {
+  const [downloaded, setDownloaded] = useState(false);
   const currentBill = BILLING_HISTORY[0];
   const activeProductCount = currentBill.lineItems.length;
 
@@ -2275,11 +2276,16 @@ function HomeSection({ interactions }) {
     { id: 3, icon: Ticket, text: 'Ticket CB-5201 updated — fix deployed', color: '#00C27C', bg: 'rgba(0,194,124,0.12)' },
   ];
   const quickActions = [
-    { label: 'Open Ticket', icon: Ticket, color: '#64A8E0' },
-    { label: 'Search KB', icon: BookOpen, color: '#00C27C' },
-    { label: 'View Billing', icon: Receipt, color: '#D4A03A' },
-    { label: 'Schedule Demo', icon: Video, color: '#B598E8' },
+    { label: 'Open Ticket', icon: Ticket, color: '#64A8E0', done: 'Ticket form opened' },
+    { label: 'Search KB', icon: BookOpen, color: '#00C27C', done: 'Searching knowledge base...' },
+    { label: 'View Billing', icon: Receipt, color: '#D4A03A', done: 'Loading billing...' },
+    { label: 'Schedule Demo', icon: Video, color: '#B598E8', done: 'Opening scheduler...' },
   ];
+  const [clickedAction, setClickedAction] = useState(null);
+  const handleQuickAction = (a) => {
+    setClickedAction(a.label);
+    setTimeout(() => setClickedAction(null), 2000);
+  };
   const recentInteractions = interactions.slice(0, 3);
 
   return (
@@ -2324,10 +2330,11 @@ function HomeSection({ interactions }) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {quickActions.map(a => {
             const Icon = a.icon;
+            const isClicked = clickedAction === a.label;
             return (
-              <button key={a.label} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-[#38332B] bg-[#1C1B1A] hover:bg-[#282724] transition-colors">
-                <Icon className="w-5 h-5" style={{ color: a.color }} />
-                <span className="text-xs font-medium text-[#F0EDE8]">{a.label}</span>
+              <button key={a.label} onClick={() => handleQuickAction(a)} className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${isClicked ? 'border-[#00C27C]/40 bg-[#00C27C]/10' : 'border-[#38332B] bg-[#1C1B1A] hover:bg-[#282724]'}`}>
+                {isClicked ? <Check className="w-5 h-5 text-[#00C27C]" /> : <Icon className="w-5 h-5" style={{ color: a.color }} />}
+                <span className={`text-xs font-medium ${isClicked ? 'text-[#00C27C]' : 'text-[#F0EDE8]'}`}>{isClicked ? a.done : a.label}</span>
               </button>
             );
           })}
@@ -2613,9 +2620,8 @@ function AccountSection() {
             </tbody>
           </table>
         </div>
-        <button className="mt-3 flex items-center gap-2 px-4 py-2 rounded-lg border border-[#38332B] text-sm text-[#ADA599] hover:text-[#F0EDE8] hover:bg-[#282724] transition-colors">
-          <Download className="w-4 h-4" />
-          Download Report
+        <button onClick={() => { setDownloaded(true); setTimeout(() => setDownloaded(false), 2000); }} className={`mt-3 flex items-center gap-2 px-4 py-2 rounded-lg border text-sm transition-all ${downloaded ? 'border-[#00C27C]/40 text-[#00C27C] bg-[#00C27C]/10' : 'border-[#38332B] text-[#ADA599] hover:text-[#F0EDE8] hover:bg-[#282724]'}`}>
+          {downloaded ? <><Check className="w-4 h-4" /> Report Downloaded</> : <><Download className="w-4 h-4" /> Download Report</>}
         </button>
       </div>
     </div>

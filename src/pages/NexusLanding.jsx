@@ -107,6 +107,7 @@ function MarketingPreview({ color }) {
 }
 
 function ConnectPreview({ color }) {
+  const [drafted, setDrafted] = useState(false);
   const rows = [
     { name: 'Blue Dream 3.5g', stock: 8, status: 'critical', pct: 12 },
     { name: 'Gummy Bears 10pk', stock: 34, status: 'warning', pct: 45 },
@@ -142,8 +143,8 @@ function ConnectPreview({ color }) {
             </div>
           ))}
         </div>
-        <button className="mt-auto w-full py-1.5 rounded-md text-[10px] font-semibold transition-colors" style={{ background: `${color}20`, color }}>
-          Generate Reorder Draft
+        <button onClick={() => { setDrafted(true); setTimeout(() => setDrafted(false), 2000); }} className="mt-auto w-full py-1.5 rounded-md text-[10px] font-semibold transition-colors" style={{ background: drafted ? 'rgba(0,194,124,0.2)' : `${color}20`, color: drafted ? '#00C27C' : color }}>
+          {drafted ? '✓ Draft Generated' : 'Generate Reorder Draft'}
         </button>
       </div>
     </div>

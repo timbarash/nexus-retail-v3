@@ -2148,7 +2148,7 @@ function NexusCommandBar({ onAction }) {
           ))}
         </div>
         <div className="mt-3 text-[10px] text-[#6B6359]">
-          Recent: <span onClick={() => onAction("Show me stockout report")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Show me stockout report"</span> &middot; <span onClick={() => onAction("Reprice Blue Dream")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Reprice Blue Dream"</span>
+          Recent: <span onClick={() => onAction("<<nexus_action:rebalance>>Show me stockout report")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Stockout report"</span> &middot; <span onClick={() => onAction("<<nexus_action:market_prices>>Reprice Blue Dream")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Market prices"</span>
         </div>
       </div>
     </div>
