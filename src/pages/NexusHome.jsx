@@ -1206,154 +1206,8 @@ function UnifiedPipelineTile() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   VAULT-TO-FLOOR — Items OOS/low on floor with vault inventory ready
+   INVENTORY
    ═══════════════════════════════════════════════════════════════════ */
-
-const VAULT_FLOOR_ITEMS = [
-  { id: 'vf1', name: 'Blue Dream 3.5g', brand: 'Jeeter', store: 'Logan Square', floor: 0, vault: 45, avgWeekly: 38, daysOOS: 3, lostRev: '$1,140', urgency: 'critical', metrc: 'METRC-1A40603-BD35', img: 'brands/jeeter-baby-churros.webp' },
-  { id: 'vf2', name: 'Kiva Lost Farm Gummies', brand: 'Kiva', store: 'Logan Square', floor: 0, vault: 60, avgWeekly: 28, daysOOS: 2, lostRev: '$560', urgency: 'critical', metrc: 'METRC-1A40603-KL60', img: 'brands/kiva-camino.jpg' },
-  { id: 'vf3', name: 'Wyld Elderberry Gummies', brand: 'Wyld', store: 'Fort Lee', floor: 0, vault: 55, avgWeekly: 22, daysOOS: 1, lostRev: '$198', urgency: 'critical', metrc: 'METRC-1A40603-WE55', img: 'brands/wyld-elderberry.png' },
-  { id: 'vf4', name: 'Stiiizy Live Resin Pod 1g', brand: 'STIIIZY', store: 'Fort Lee', floor: 2, vault: 30, avgWeekly: 24, daysOOS: 0, lostRev: null, urgency: 'high', metrc: 'METRC-1A40603-SL10', img: 'brands/stiiizy-pods.png' },
-  { id: 'vf5', name: 'Jeeter Infused Pre-Roll', brand: 'Jeeter', store: 'Logan Square', floor: 4, vault: 72, avgWeekly: 32, daysOOS: 0, lostRev: null, urgency: 'high', metrc: 'METRC-1A40603-JI72', img: 'brands/jeeter-baby-churros.webp' },
-  { id: 'vf6', name: 'Alien Labs Baklava 3.5g', brand: 'Alien Labs', store: 'Boston', floor: 1, vault: 24, avgWeekly: 12, daysOOS: 0, lostRev: null, urgency: 'high', metrc: 'METRC-1A40603-AL35', img: 'brands/alien-xeno.png' },
-];
-
-function VaultToFloorTile({ onAction }) {
-  const [transferred, setTransferred] = useState({});
-  const oosCount = VAULT_FLOOR_ITEMS.filter(v => v.floor === 0).length;
-  const lowCount = VAULT_FLOOR_ITEMS.filter(v => v.floor > 0 && v.floor <= 5).length;
-  const totalLostRev = VAULT_FLOOR_ITEMS.filter(v => v.lostRev).reduce((sum, v) => sum + parseInt(v.lostRev.replace(/[^0-9]/g, '')), 0);
-  const base = import.meta.env.BASE_URL || '/';
-
-  const handleTransfer = (item) => {
-    const qty = Math.min(item.vault, Math.max(item.avgWeekly, 10));
-    setTransferred(prev => ({ ...prev, [item.id]: qty }));
-  };
-
-  const handleTransferAll = () => {
-    const batch = {};
-    VAULT_FLOOR_ITEMS.filter(v => v.urgency === 'critical' && !transferred[v.id]).forEach(v => {
-      batch[v.id] = Math.min(v.vault, Math.max(v.avgWeekly, 10));
-    });
-    setTransferred(prev => ({ ...prev, ...batch }));
-  };
-
-  return (
-    <NexusTile className="animate-fade-up" style={{ animationDelay: '350ms' }}>
-      <div className="flex items-start justify-between border-b border-[#38332B] px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-[#E87068]/10 text-[#E87068]">
-            <ArrowRightLeft size={20} />
-            <span className="absolute -top-1.5 -right-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-white bg-[#E87068]">
-              {oosCount}
-            </span>
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-[#F0EDE8]">Vault → Floor Transfers</h3>
-            <p className="text-xs text-[#6B6359]">{oosCount} out of stock, {lowCount} running low — vault inventory ready</p>
-          </div>
-        </div>
-        <button
-          onClick={handleTransferAll}
-          className="flex items-center gap-1 rounded-lg bg-[#E87068] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#D4605A]"
-        >
-          Transfer All Critical
-          <ChevronRight size={14} />
-        </button>
-      </div>
-
-      {/* Lost revenue callout */}
-      <div className="mx-6 mt-4 mb-3 flex items-center gap-3 rounded-xl bg-[#E87068]/8 border border-[#E87068]/15 px-4 py-3">
-        <AlertTriangle size={18} className="text-[#E87068] flex-shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-[#F0EDE8]">${totalLostRev.toLocaleString()} in estimated lost revenue</p>
-          <p className="text-xs text-[#ADA599]">from {oosCount} products sitting in vault while floor is empty</p>
-        </div>
-      </div>
-
-      {/* Item list */}
-      <div className="px-6 pb-5 space-y-2">
-        {VAULT_FLOOR_ITEMS.map(item => {
-          const isTransferred = !!transferred[item.id];
-          const recQty = Math.min(item.vault, Math.max(item.avgWeekly, 10));
-          const statusColor = item.floor === 0 ? '#E87068' : '#D4A03A';
-          const statusLabel = item.floor === 0 ? 'OUT OF STOCK' : 'LOW';
-
-          return (
-            <div key={item.id} className={`flex items-center gap-4 rounded-xl border px-4 py-3 transition-all ${
-              isTransferred
-                ? 'border-[#00C27C]/25 bg-[#00C27C]/5'
-                : `border-[${statusColor}]/20 bg-[${statusColor}]/[0.04]`
-            }`} style={!isTransferred ? { borderColor: `${statusColor}30`, background: `${statusColor}08` } : undefined}>
-              {/* Product image */}
-              <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-[#282724]">
-                <img src={`${base}${item.img}`} alt={item.brand} className="w-full h-full object-cover" />
-              </div>
-
-              {/* Product info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-sm font-semibold text-[#F0EDE8] truncate">{item.name}</span>
-                  <span className="text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: `${statusColor}18`, color: statusColor }}>
-                    {statusLabel}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-[#6B6359]">
-                  <span>{item.brand}</span>
-                  <span className="text-[#38332B]">|</span>
-                  <span>{item.store}</span>
-                  {item.daysOOS > 0 && (
-                    <>
-                      <span className="text-[#38332B]">|</span>
-                      <span className="text-[#E87068] font-medium">{item.daysOOS}d out of stock</span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Stock numbers */}
-              <div className="flex items-center gap-4 text-xs flex-shrink-0">
-                <div className="text-center">
-                  <p className={`text-sm font-bold ${item.floor === 0 ? 'text-[#E87068]' : 'text-[#D4A03A]'}`}>{item.floor}</p>
-                  <p className="text-[10px] text-[#6B6359]">Floor</p>
-                </div>
-                <div className="text-[#38332B]">→</div>
-                <div className="text-center">
-                  <p className="text-sm font-bold text-[#00C27C]">{item.vault}</p>
-                  <p className="text-[10px] text-[#6B6359]">Vault</p>
-                </div>
-              </div>
-
-              {/* Transfer action */}
-              <div className="flex-shrink-0 w-[140px]">
-                {isTransferred ? (
-                  <div className="flex items-center gap-1.5 justify-center py-2 rounded-lg bg-[#00C27C]/12 text-[#00C27C] text-xs font-semibold">
-                    <Check size={14} />
-                    {transferred[item.id]} units transferred
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => handleTransfer(item)}
-                    className="w-full flex items-center gap-1.5 justify-center py-2 rounded-lg bg-[#D4A03A]/12 text-[#D4A03A] text-xs font-semibold border border-[#D4A03A]/20 hover:bg-[#D4A03A]/20 transition-colors"
-                  >
-                    <ArrowRightLeft size={12} />
-                    Transfer {recQty}
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* METRC compliance note */}
-        <div className="flex items-center gap-2 mt-2 px-1">
-          <Lock size={12} className="text-[#6B6359]" />
-          <p className="text-[10px] text-[#6B6359]">All transfers auto-logged to METRC with package tag tracking</p>
-        </div>
-      </div>
-    </NexusTile>
-  );
-}
 
 function InventoryTile() {
   const { isAllSelected, selectionLabel } = useStores();
@@ -2212,53 +2066,354 @@ function NexusCommandBar({ onAction }) {
 
 // ─── SMART ALERTS & ACTIONS FEED ─── //
 
+/* ═══════════════════════════════════════════════════════════════════
+   SMART ALERTS — Mixed feed with vault-to-floor METRC transfer workflow
+   ═══════════════════════════════════════════════════════════════════ */
+
+const BASE = import.meta.env.BASE_URL || '/';
+
 const SMART_ALERTS = [
-  { severity: 'CRITICAL', color: '#E87068', time: '2m ago', title: 'Blue Dream 3.5g out of stock at 4 stores', ai: 'Vendor has stock. Reorder 200 units for $2,840. Est. delivery: 2 days.', actions: ['Approve Reorder', 'Modify'] },
-  { severity: 'WARNING', color: '#D4A03A', time: '15m ago', title: 'Stiiizy Pod LLR priced 18% above market avg', ai: 'Competitors at $42 avg. Suggest $44.99 (currently $52). Projected +23% velocity.', actions: ['Apply Price', 'View Comps'] },
-  { severity: 'OPPORTUNITY', color: '#00C27C', time: '1h ago', title: 'Jeeter brand sentiment spike (+34% WoW)', ai: '2 stores don\'t stock it. Trending on social. Contact vendor for initial order?', actions: ['Draft PO', 'View Data'] },
-  { severity: 'INSIGHT', color: '#64A8E0', time: '3h ago', title: '62% of Tuesday sales happen after 4pm', ai: 'Consider shifting staff coverage to match peak traffic window.', actions: ['View Staffing'] },
+  // ── Vault-to-floor transfers (CRITICAL: OOS with vault stock) ──
+  {
+    id: 'vtf-1', type: 'transfer', severity: 'CRITICAL', color: '#E87068', time: '2m ago',
+    title: 'Blue Dream 3.5g — out of stock, 45 units in vault',
+    ai: 'Floor empty for 3 days. $1,140 estimated lost sales. 45 units in vault at Logan Square ready for immediate transfer. METRC package 1A40603-BD35.',
+    product: 'Blue Dream 3.5g', brand: 'Jeeter', store: 'Logan Square, IL',
+    floor: 0, vault: 45, avgWeekly: 38, daysOOS: 3, recQty: 38,
+    metrcPkg: '1A4060300003BD35', metrcSrc: 'Storage Vault A', metrcDest: 'Sales Floor',
+    img: 'brands/jeeter-baby-churros.webp',
+  },
+  {
+    id: 'vtf-2', type: 'transfer', severity: 'CRITICAL', color: '#E87068', time: '18m ago',
+    title: 'Kiva Lost Farm Gummies — 2 days out of stock',
+    ai: '60 units in vault, customers asking at counter. Transfer 28 units (weekly avg) to floor. METRC package 1A40603-KL60.',
+    product: 'Kiva Lost Farm Gummies', brand: 'Kiva', store: 'Logan Square, IL',
+    floor: 0, vault: 60, avgWeekly: 28, daysOOS: 2, recQty: 28,
+    metrcPkg: '1A4060300003KL60', metrcSrc: 'Storage Vault A', metrcDest: 'Sales Floor',
+    img: 'brands/kiva-camino.jpg',
+  },
+  // ── Pricing alert (breaks up the transfer block) ──
+  {
+    id: 'price-1', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '15m ago',
+    title: 'Stiiizy Pod LLR priced 18% above market avg',
+    ai: 'Competitors at $42 avg. Suggest $44.99 (currently $52). Projected +23% unit velocity at new price.',
+    actions: ['Apply Price', 'View Comps'],
+  },
+  // ── Another vault transfer ──
+  {
+    id: 'vtf-3', type: 'transfer', severity: 'CRITICAL', color: '#E87068', time: '45m ago',
+    title: 'Wyld Elderberry Gummies — out since yesterday at Fort Lee',
+    ai: '55 units in vault at Fort Lee. Avg weekly sell-through: 22 units. Transfer now to recapture ~$198/day in lost revenue.',
+    product: 'Wyld Elderberry Gummies', brand: 'Wyld', store: 'Fort Lee, NJ',
+    floor: 0, vault: 55, avgWeekly: 22, daysOOS: 1, recQty: 22,
+    metrcPkg: '1A4060300003WE55', metrcSrc: 'Storage Vault B', metrcDest: 'Sales Floor',
+    img: 'brands/wyld-elderberry.png',
+  },
+  // ── Low stock warning (not OOS) ──
+  {
+    id: 'vtf-4', type: 'transfer', severity: 'WARNING', color: '#D4A03A', time: '1h ago',
+    title: 'Stiiizy Live Resin Pod — 2 units left, 30 in vault',
+    ai: 'At current velocity, floor depletes in ~3 hours. 30 units in vault at Fort Lee. Transfer 24 (weekly avg) before afternoon rush.',
+    product: 'Stiiizy Live Resin Pod 1g', brand: 'STIIIZY', store: 'Fort Lee, NJ',
+    floor: 2, vault: 30, avgWeekly: 24, daysOOS: 0, recQty: 24,
+    metrcPkg: '1A4060300003SL10', metrcSrc: 'Storage Vault B', metrcDest: 'Sales Floor',
+    img: 'brands/stiiizy-pods.png',
+  },
+  // ── Opportunity alert ──
+  {
+    id: 'opp-1', type: 'standard', severity: 'OPPORTUNITY', color: '#00C27C', time: '1h ago',
+    title: 'Jeeter brand sentiment spike (+34% WoW)',
+    ai: '2 stores don\'t stock Jeeter yet. Trending on social media. Contact DreamFields vendor for initial order?',
+    actions: ['Draft PO', 'View Data'],
+  },
+  // ── One more low stock ──
+  {
+    id: 'vtf-5', type: 'transfer', severity: 'WARNING', color: '#D4A03A', time: '1h ago',
+    title: 'Jeeter Infused Pre-Roll — 4 left, weekend rush incoming',
+    ai: '72 units in vault at Logan Square. Weekend avg: 32/day. Transfer 32 now. METRC package 1A40603-JI72.',
+    product: 'Jeeter Infused Pre-Roll', brand: 'Jeeter', store: 'Logan Square, IL',
+    floor: 4, vault: 72, avgWeekly: 32, daysOOS: 0, recQty: 32,
+    metrcPkg: '1A4060300003JI72', metrcSrc: 'Storage Vault A', metrcDest: 'Sales Floor',
+    img: 'brands/jeeter-baby-churros.webp',
+  },
+  // ── Insight alert ──
+  {
+    id: 'ins-1', type: 'standard', severity: 'INSIGHT', color: '#64A8E0', time: '3h ago',
+    title: '62% of Tuesday sales happen after 4pm',
+    ai: 'Consider shifting staff coverage. Current schedule has equal AM/PM staffing — rebalance to 40/60 split.',
+    actions: ['View Staffing'],
+  },
 ];
 
 const AUTO_RESOLVED = [
-  'Springfield IL register sync issue resolved',
-  'Campaign "March Madness" launched to 3 stores',
-  'Auto-reordered Stiiizy Pods (50 units) for Hoboken NJ',
+  { text: 'Vault → Floor: 24 Alien Labs Baklava transferred at Boston (METRC logged)', icon: 'transfer' },
+  { text: 'Campaign "March Madness" auto-launched to 3 stores', icon: 'campaign' },
+  { text: 'METRC reconciliation completed — 0 discrepancies', icon: 'compliance' },
+  { text: 'Auto-reordered 50 Stiiizy Pods for Hoboken NJ', icon: 'reorder' },
 ];
 
+// Transfer workflow steps
+const TRANSFER_STEPS = ['Review', 'Scan METRC', 'Confirm Qty', 'Complete'];
+
 function SmartAlertsFeed({ onAction }) {
+  // Track per-alert transfer workflow state: { [alertId]: { step: 0-3, scanning: false } }
+  const [transferState, setTransferState] = useState({});
+
+  const transferAlerts = SMART_ALERTS.filter(a => a.type === 'transfer');
+  const oosCount = transferAlerts.filter(a => a.floor === 0).length;
+  const totalAlerts = SMART_ALERTS.length;
+
+  const startTransfer = (id) => {
+    setTransferState(prev => ({ ...prev, [id]: { step: 0 } }));
+  };
+
+  const advanceTransfer = (id) => {
+    setTransferState(prev => {
+      const current = prev[id] || { step: 0 };
+      const nextStep = current.step + 1;
+      if (nextStep === 1) {
+        // Simulate METRC scan delay
+        setTimeout(() => {
+          setTransferState(p => ({ ...p, [id]: { step: 2 } }));
+        }, 1500);
+        return { ...prev, [id]: { step: 1, scanning: true } };
+      }
+      return { ...prev, [id]: { step: nextStep } };
+    });
+  };
+
+  const completeTransfer = (id) => {
+    setTransferState(prev => ({ ...prev, [id]: { step: 3 } }));
+  };
+
+  const handleBulkTransfer = () => {
+    transferAlerts.filter(a => a.floor === 0 && !transferState[a.id]).forEach((a, i) => {
+      setTimeout(() => {
+        setTransferState(prev => ({ ...prev, [a.id]: { step: 1, scanning: true } }));
+        setTimeout(() => {
+          setTransferState(prev => ({ ...prev, [a.id]: { step: 3 } }));
+        }, 1200 + i * 400);
+      }, i * 600);
+    });
+  };
+
+  const renderTransferAlert = (a) => {
+    const state = transferState[a.id];
+    const statusColor = a.floor === 0 ? '#E87068' : '#D4A03A';
+
+    return (
+      <div key={a.id} className="px-5 py-4" style={{ background: state?.step === 3 ? 'rgba(0,194,124,0.04)' : `${a.color}05` }}>
+        <div className="flex items-start gap-3">
+          {/* Product image */}
+          <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-[#282724] mt-0.5">
+            <img src={`${BASE}${a.img}`} alt={a.brand} className="w-full h-full object-cover" />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            {/* Severity + time */}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ color: state?.step === 3 ? '#00C27C' : a.color, background: state?.step === 3 ? '#00C27C14' : `${a.color}14`, border: `1px solid ${state?.step === 3 ? '#00C27C' : a.color}25` }}>
+                {state?.step === 3 ? 'TRANSFERRED' : a.severity}
+              </span>
+              <span className="text-[10px] text-[#6B6359]">{a.time}</span>
+              {a.daysOOS > 0 && <span className="text-[10px] font-semibold text-[#E87068]">{a.daysOOS}d out of stock</span>}
+            </div>
+
+            {/* Title */}
+            <p className="text-[13px] font-semibold text-[#F0EDE8] mb-1">{a.title}</p>
+
+            {/* AI insight */}
+            <div className="rounded-lg px-3 py-2 mb-3" style={{ background: `${a.color}06`, border: `1px solid ${a.color}12` }}>
+              <p className="text-[11px] text-[#C8C3BA] leading-relaxed">Nexus: "{a.ai}"</p>
+            </div>
+
+            {/* Stock info row */}
+            <div className="flex items-center gap-4 mb-3 text-xs">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#6B6359]">Floor:</span>
+                <span className="font-bold" style={{ color: statusColor }}>{a.floor}</span>
+              </div>
+              <span className="text-[#38332B]">→</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#6B6359]">Vault:</span>
+                <span className="font-bold text-[#00C27C]">{a.vault}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#6B6359]">Wk Avg:</span>
+                <span className="text-[#F0EDE8]">{a.avgWeekly}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-[#6B6359]">
+                <Lock size={10} />
+                <span className="font-mono text-[9px]">{a.metrcPkg.slice(-8)}</span>
+              </div>
+            </div>
+
+            {/* Transfer workflow */}
+            {!state ? (
+              /* ── Initial: show transfer button ── */
+              <div className="flex gap-2">
+                <button onClick={() => startTransfer(a.id)} className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[11px] font-semibold text-white transition-colors hover:brightness-110" style={{ background: '#D4A03A' }}>
+                  <ArrowRightLeft size={13} />
+                  Transfer {a.recQty} to Floor
+                </button>
+                <button onClick={() => onAction && onAction(a.title)} className="px-3 py-2 rounded-lg text-[11px] font-semibold text-[#ADA599] border border-[#38332B] hover:text-[#F0EDE8] transition-colors">
+                  View Details
+                </button>
+              </div>
+            ) : state.step < 3 ? (
+              /* ── Multi-step transfer workflow ── */
+              <div className="rounded-xl border border-[#38332B] bg-[#141210] p-3">
+                {/* Step progress bar */}
+                <div className="flex items-center gap-1 mb-3">
+                  {TRANSFER_STEPS.map((label, si) => (
+                    <div key={si} className="flex items-center gap-1 flex-1">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 ${
+                        si < state.step ? 'bg-[#00C27C] text-white'
+                        : si === state.step ? 'bg-[#D4A03A] text-white'
+                        : 'bg-[#38332B] text-[#6B6359]'
+                      }`}>
+                        {si < state.step ? <Check size={10} /> : si + 1}
+                      </div>
+                      <span className={`text-[9px] flex-shrink-0 ${si <= state.step ? 'text-[#F0EDE8] font-medium' : 'text-[#6B6359]'}`}>{label}</span>
+                      {si < 3 && <div className={`flex-1 h-px ${si < state.step ? 'bg-[#00C27C]' : 'bg-[#38332B]'}`} />}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Step content */}
+                {state.step === 0 && (
+                  <div>
+                    <div className="grid grid-cols-2 gap-2 mb-3 text-[11px]">
+                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-2">
+                        <p className="text-[#6B6359] text-[10px] mb-0.5">Source</p>
+                        <p className="text-[#F0EDE8] font-medium">{a.metrcSrc}</p>
+                        <p className="text-[#6B6359] text-[9px]">{a.store}</p>
+                      </div>
+                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-2">
+                        <p className="text-[#6B6359] text-[10px] mb-0.5">Destination</p>
+                        <p className="text-[#F0EDE8] font-medium">{a.metrcDest}</p>
+                        <p className="text-[#6B6359] text-[9px]">{a.store}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mb-3 px-1">
+                      <span className="text-[10px] text-[#6B6359]">Transfer Qty:</span>
+                      <span className="text-sm font-bold text-[#F0EDE8]">{a.recQty} units</span>
+                      <span className="text-[10px] text-[#6B6359]">of {a.product}</span>
+                    </div>
+                    <button onClick={() => advanceTransfer(a.id)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[#D4A03A] text-white text-[11px] font-semibold hover:brightness-110 transition-colors">
+                      <Package size={13} /> Scan METRC Package Tag
+                    </button>
+                  </div>
+                )}
+                {state.step === 1 && state.scanning && (
+                  <div className="text-center py-2">
+                    <div className="w-8 h-8 mx-auto mb-2 rounded-full border-2 border-[#38332B] relative">
+                      <div className="absolute inset-0 rounded-full border-2 border-t-[#D4A03A] animate-spin" />
+                    </div>
+                    <p className="text-[11px] text-[#ADA599]">Scanning METRC tag <span className="font-mono text-[#D4A03A]">{a.metrcPkg}</span></p>
+                    <p className="text-[10px] text-[#6B6359] mt-0.5">Validating package against state track-and-trace...</p>
+                  </div>
+                )}
+                {state.step === 2 && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3 px-2 py-2 rounded-lg bg-[#00C27C]/8 border border-[#00C27C]/15">
+                      <Check size={14} className="text-[#00C27C]" />
+                      <span className="text-[11px] text-[#00C27C] font-medium">METRC tag verified — package {a.metrcPkg.slice(-8)} valid</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 mb-3 text-center text-[11px]">
+                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] py-2">
+                        <p className="font-bold text-[#F0EDE8]">{a.recQty}</p>
+                        <p className="text-[9px] text-[#6B6359]">Units</p>
+                      </div>
+                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] py-2">
+                        <p className="font-bold text-[#F0EDE8]">{a.metrcSrc.split(' ').pop()}</p>
+                        <p className="text-[9px] text-[#6B6359]">From</p>
+                      </div>
+                      <div className="rounded-lg bg-[#1C1B1A] border border-[#38332B] py-2">
+                        <p className="font-bold text-[#F0EDE8]">Floor</p>
+                        <p className="text-[9px] text-[#6B6359]">To</p>
+                      </div>
+                    </div>
+                    <button onClick={() => completeTransfer(a.id)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[#00C27C] text-white text-[11px] font-semibold hover:brightness-110 transition-colors">
+                      <Check size={13} /> Confirm Transfer &amp; Log to METRC
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* ── Completed ── */
+              <div className="rounded-xl border border-[#00C27C]/20 bg-[#00C27C]/5 px-4 py-3">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <CheckCircle2 size={16} className="text-[#00C27C]" />
+                  <span className="text-[12px] font-semibold text-[#00C27C]">{a.recQty} units transferred to floor</span>
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-[#ADA599]">
+                  <span>METRC manifest created</span>
+                  <span>Package: <span className="font-mono text-[#6B6359]">{a.metrcPkg.slice(-8)}</span></span>
+                  <span>{a.metrcSrc} → {a.metrcDest}</span>
+                  <span>Logged by: Manager on duty</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderStandardAlert = (a) => (
+    <div key={a.id} className="px-5 py-3.5">
+      <div className="flex items-center gap-2 mb-1.5">
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ color: a.color, background: `${a.color}14`, border: `1px solid ${a.color}25` }}>{a.severity}</span>
+        <span className="text-[10px] text-[#6B6359]">{a.time}</span>
+      </div>
+      <p className="text-[12px] font-semibold text-[#F0EDE8] mb-1.5">{a.title}</p>
+      <div className="rounded-lg px-3 py-2 mb-2.5" style={{ background: `${a.color}06`, border: `1px solid ${a.color}15` }}>
+        <p className="text-[11px] text-[#C8C3BA] leading-relaxed">Nexus: "{a.ai}"</p>
+      </div>
+      <div className="flex gap-2">
+        {a.actions.map((act, j) => (
+          <button key={j} onClick={() => onAction && onAction(a.title)} className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-colors ${j === 0 ? 'text-white' : 'text-[#ADA599] border border-[#38332B] hover:text-[#F0EDE8]'}`} style={j === 0 ? { background: a.color } : undefined}>{act}</button>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <NexusTile className="animate-fade-up" style={{ animationDelay: '300ms' }}>
+      {/* Header */}
       <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
         <div className="flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-[#D4A03A]" />
           <span className="text-xs font-semibold text-[#F0EDE8]">Smart Alerts</span>
+          <span className="text-[10px] text-[#6B6359]">incl. vault-to-floor transfers</span>
         </div>
-        <span className="text-[10px] font-medium text-[#D4A03A] bg-[rgba(212,160,58,0.1)] px-2 py-0.5 rounded-full">{SMART_ALERTS.length} active</span>
+        <div className="flex items-center gap-2">
+          {oosCount > 0 && (
+            <button onClick={handleBulkTransfer} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#E87068] bg-[#E87068]/10 border border-[#E87068]/20 hover:bg-[#E87068]/15 transition-colors">
+              <ArrowRightLeft size={11} /> Transfer {oosCount} OOS
+            </button>
+          )}
+          <span className="text-[10px] font-medium text-[#D4A03A] bg-[rgba(212,160,58,0.1)] px-2 py-0.5 rounded-full">{totalAlerts} active</span>
+        </div>
       </div>
+
+      {/* Mixed alert feed */}
       <div className="divide-y divide-[#38332B]">
-        {SMART_ALERTS.map((a, i) => (
-          <div key={i} className="px-5 py-3.5" style={i === 0 ? { background: `${a.color}06` } : undefined}>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ color: a.color, background: `${a.color}14`, border: `1px solid ${a.color}25` }}>{a.severity}</span>
-              <span className="text-[10px] text-[#6B6359]">{a.time}</span>
-            </div>
-            <p className="text-[12px] font-semibold text-[#F0EDE8] mb-1.5">{a.title}</p>
-            <div className="rounded-lg px-3 py-2 mb-2.5" style={{ background: `${a.color}06`, border: `1px solid ${a.color}15` }}>
-              <p className="text-[11px] text-[#C8C3BA] italic">AI: "{a.ai}"</p>
-            </div>
-            <div className="flex gap-2">
-              {a.actions.map((act, j) => (
-                <button key={j} onClick={() => onAction && onAction(a.title)} className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-colors ${j === 0 ? 'text-white' : 'text-[#ADA599] border border-[#38332B] hover:text-[#F0EDE8]'}`} style={j === 0 ? { background: a.color } : undefined}>{act}</button>
-              ))}
-            </div>
-          </div>
-        ))}
+        {SMART_ALERTS.map(a => a.type === 'transfer' ? renderTransferAlert(a) : renderStandardAlert(a))}
       </div>
+
+      {/* Auto-resolved footer */}
       <div className="px-5 py-3 border-t border-[#38332B]" style={{ background: 'rgba(0,194,124,0.03)' }}>
-        <p className="text-[9px] font-semibold uppercase tracking-[1px] text-[#6B6359] mb-2">Auto-Resolved Today</p>
+        <p className="text-[10px] font-medium text-[#6B6359] mb-2">Auto-Resolved Today</p>
         {AUTO_RESOLVED.map((r, i) => (
           <div key={i} className="flex items-center gap-1.5 text-[11px] text-[#ADA599] mb-1">
-            <CheckCircle2 className="w-3 h-3 text-[#00C27C]" /> {r}
+            {r.icon === 'transfer' && <ArrowRightLeft className="w-3 h-3 text-[#00C27C]" />}
+            {r.icon === 'campaign' && <Rocket className="w-3 h-3 text-[#00C27C]" />}
+            {r.icon === 'compliance' && <Lock className="w-3 h-3 text-[#00C27C]" />}
+            {r.icon === 'reorder' && <Package className="w-3 h-3 text-[#00C27C]" />}
+            {!r.icon && <CheckCircle2 className="w-3 h-3 text-[#00C27C]" />}
+            {r.text}
           </div>
         ))}
       </div>
@@ -2336,13 +2491,10 @@ export default function NexusHome({ onOpenNexus }) {
       {/* 3. Nexus Command Bar */}
       <NexusCommandBar onAction={onOpenNexus} />
 
-      {/* 4. Smart Alerts */}
+      {/* 4. Smart Alerts (includes vault-to-floor transfers) */}
       <SmartAlertsFeed onAction={(q) => onOpenNexus && onOpenNexus(q)} />
 
-      {/* 5. Vault → Floor Transfers */}
-      <VaultToFloorTile onAction={(q) => onOpenNexus && onOpenNexus(q)} />
-
-      {/* 6. Store Health Matrix */}
+      {/* 5. Store Health Matrix */}
       <StoreHealthMatrix />
 
       {/* 7. Sales Reporting — kept from v2 */}
