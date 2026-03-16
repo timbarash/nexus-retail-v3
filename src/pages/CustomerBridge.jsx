@@ -3082,12 +3082,8 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
     const all = [...NEXUS_SUGGESTIONS, ...COMPACT_SUGGESTIONS, ...SUGGESTIONS];
     const suggestion = all.find(s => s.key === key);
     if (!suggestion) return;
-    // If the suggestion has a direct action, bypass intent detection
-    if (suggestion.action) {
-      processNexusAction(suggestion);
-    } else {
-      processMessage(suggestion.label);
-    }
+    // All suggestions go through normal intent detection for consistent UX
+    processMessage(suggestion.label);
   };
 
   const handleBugSubmit = async (userMessage, kbResults, extraDetails) => {
@@ -3203,16 +3199,16 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
   ];
   const NEXUS_SUGGESTIONS_BY_PERSONA = {
     ceo: [
-      { key: 'flash', label: 'How are all stores doing today vs last week?', icon: Activity, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Sales', tagColor: '#D4A03A', action: 'daily_flash' },
-      { key: 'rankings', label: 'Which stores are crushing it and which need help?', icon: BarChart3, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Stores', tagColor: '#00C27C', action: 'rankings' },
-      { key: 'brands', label: 'What brands are selling best across the chain?', icon: Star, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Brands', tagColor: '#64A8E0', action: 'brand_perf' },
-      { key: 'catmix', label: 'Are edibles or pre-rolls gaining on flower?', icon: Layers, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Trends', tagColor: '#B598E8', action: 'category_mix' },
+      { key: 'flash', label: 'How are all stores doing today vs last week?', icon: Activity, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Sales', tagColor: '#D4A03A' },
+      { key: 'reorder', label: 'Reorder out of stock and low stock items', icon: Package, gradient: 'from-red-600/20 to-rose-600/20', border: 'hover:border-red-500/40', tag: 'Reorder', tagColor: '#E87068' },
+      { key: 'brands', label: 'What are our top selling brands right now?', icon: Star, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Brands', tagColor: '#64A8E0' },
+      { key: 'winback', label: 'Run a win-back campaign for lapsed customers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Campaign', tagColor: '#00C27C' },
     ],
     vp_retail: [
-      { key: 'rebalance', label: 'What\'s out of stock that I can rebalance?', icon: Package, gradient: 'from-red-600/20 to-rose-600/20', border: 'hover:border-red-500/40', tag: 'OOS', tagColor: '#E87068', action: 'rebalance' },
-      { key: 'vendors', label: 'Which vendors are shorting us on orders?', icon: Truck, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Vendors', tagColor: '#64A8E0', action: 'vendor_scorecard' },
-      { key: 'pricing', label: 'Are we priced right vs competitors?', icon: DollarSign, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Pricing', tagColor: '#D4A03A', action: 'market_prices' },
-      { key: 'practices', label: 'What are top stores doing that others aren\'t?', icon: Sparkles, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Insights', tagColor: '#B598E8', action: 'practices' },
+      { key: 'rebalance', label: 'Reorder out of stock and low inventory items', icon: Package, gradient: 'from-red-600/20 to-rose-600/20', border: 'hover:border-red-500/40', tag: 'Reorder', tagColor: '#E87068' },
+      { key: 'pricing', label: 'Compare our prices vs market average', icon: DollarSign, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Pricing', tagColor: '#D4A03A' },
+      { key: 'winback', label: 'Launch a marketing campaign to win back lapsed customers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Campaign', tagColor: '#00C27C' },
+      { key: 'performance', label: 'How are all stores doing on sales this week?', icon: BarChart3, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Sales', tagColor: '#64A8E0' },
     ],
     regional_mgr: [
       { key: 'transfers', label: 'Any transfers waiting on my approval?', icon: ArrowRightLeft, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Transfers', tagColor: '#D4A03A', action: 'transfers' },
@@ -3221,10 +3217,10 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
       { key: 'labor', label: 'Are any stores short-staffed or running OT?', icon: Users, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Staffing', tagColor: '#B598E8', action: 'labor' },
     ],
     store_mgr: [
-      { key: 'vault', label: 'What needs to come out of the vault?', icon: ArrowRightLeft, gradient: 'from-red-600/20 to-rose-600/20', border: 'hover:border-red-500/40', tag: 'Vault', tagColor: '#E87068', action: 'vault_transfer' },
-      { key: 'budtender', label: 'Who\'s upselling best today?', icon: Users, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Staff', tagColor: '#D4A03A', action: 'budtender_perf' },
-      { key: 'winback', label: 'Which regulars haven\'t been in lately?', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Win-Back', tagColor: '#00C27C', action: 'winback_campaign' },
-      { key: 'loyalty', label: 'How many loyalty members signed up this week?', icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Loyalty', tagColor: '#B598E8', action: 'loyalty_health' },
+      { key: 'reorder', label: 'Reorder out of stock and low stock items', icon: Package, gradient: 'from-red-600/20 to-rose-600/20', border: 'hover:border-red-500/40', tag: 'Reorder', tagColor: '#E87068' },
+      { key: 'winback', label: 'Run a win-back campaign for lapsed customers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Campaign', tagColor: '#00C27C' },
+      { key: 'budtender', label: 'How are my budtenders doing on sales today?', icon: Users, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Staff', tagColor: '#D4A03A' },
+      { key: 'sentiment', label: 'What are customers saying about us?', icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Reviews', tagColor: '#B598E8' },
     ],
     compliance: [
       { key: 'metrc', label: 'Any packages stuck or needing METRC tags?', icon: Package, gradient: 'from-red-600/20 to-rose-600/20', border: 'hover:border-red-500/40', tag: 'METRC', tagColor: '#E87068', action: 'metrc_queue' },

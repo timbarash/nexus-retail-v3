@@ -556,7 +556,7 @@ function SentimentTile({ onOpenNexus }) {
         title="Consumer Sentiment"
         subtitle={`${Math.round(NEXUS_DATA.unifiedPipeline.totalSignals * dateMultiplier).toLocaleString()} signals across ${NEXUS_DATA.unifiedPipeline.channelScores.length} channels — ${rangeLabel}`}
         iconBg="bg-[#00C27C]/10 text-[#00C27C]"
-        action={() => onOpenNexus && onOpenNexus('<<nexus_action:sentiment_overview>> Give me a deep dive on consumer sentiment')}
+        action={() => onOpenNexus && onOpenNexus('Give me a deep dive on consumer sentiment')}
         actionLabel="Deep Dive"
         badge={{ count: 2, color: 'bg-[#D4A03A]' }}
       />
@@ -721,7 +721,7 @@ function SentimentTile({ onOpenNexus }) {
                   <p className="text-sm text-[#F0EDE8]">{item.action}</p>
                   <p className="mt-0.5 text-xs text-[#6B6359] font-medium">{item.impact}</p>
                 </div>
-                <button onClick={() => onOpenNexus && onOpenNexus(`<<nexus_action:sentiment_overview>> ${item.action}`)} className="flex-shrink-0 rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-1.5 text-xs font-semibold text-[#F0EDE8] hover:bg-[#282724] transition-colors">
+                <button onClick={() => onOpenNexus && onOpenNexus(`${item.action}`)} className="flex-shrink-0 rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-1.5 text-xs font-semibold text-[#F0EDE8] hover:bg-[#282724] transition-colors">
                   Execute
                 </button>
               </div>
@@ -756,7 +756,7 @@ function OmnichannelTile({ onOpenNexus }) {
         title="Omnichannel Sentiment Collection"
         subtitle={`Proprietary first-party signals — ${rangeLabel.toLowerCase()}`}
         iconBg="bg-[rgba(163,113,247,0.12)] text-[#B598E8]"
-        action={() => onOpenNexus && onOpenNexus('<<nexus_action:sentiment_overview>> Show me omnichannel sentiment and response rates')}
+        action={() => onOpenNexus && onOpenNexus('Show me omnichannel sentiment and response rates')}
         actionLabel="Configure Channels"
       />
       <div className="p-6">
@@ -1225,7 +1225,7 @@ function InventoryTile({ onOpenNexus }) {
         title="Inventory & Reordering"
         subtitle={`${scaledAlerts} low-stock alerts — ${selectionLabel}`}
         iconBg="bg-[rgba(255,166,87,0.12)] text-[#FFA657]"
-        action={() => onOpenNexus && onOpenNexus('<<nexus_action:rebalance>> Draft a reorder for low-stock products')}
+        action={() => onOpenNexus && onOpenNexus('Draft a reorder for low-stock products')}
         actionLabel="Draft Reorder"
         badge={{ count: scaledRisk, color: 'bg-[#E87068]' }}
       />
@@ -2063,44 +2063,44 @@ function LiveTicker() {
 
 const COMMAND_ACTIONS_BY_PERSONA = {
   ceo: [
-    { key: 'flash', action: 'daily_flash', label: 'Today\'s Sales', desc: 'Real-time all stores', query: 'How are all stores doing today vs last week?', icon: Activity, color: '#D4A03A' },
-    { key: 'rankings', action: 'rankings', label: 'Store Rankings', desc: 'Top & bottom stores', query: 'Rank all stores by performance', icon: BarChart3, color: '#00C27C' },
-    { key: 'brands', action: 'brand_perf', label: 'Top Brands', desc: 'Best sellers MSO-wide', query: 'Which brands are driving the most revenue?', icon: Star, color: '#64A8E0' },
-    { key: 'catmix', action: 'category_mix', label: 'Category Trends', desc: 'What\'s hot right now', query: 'Show category trends — what\'s growing, what\'s slowing?', icon: Layers, color: '#B598E8' },
-    { key: 'rebalance', action: 'rebalance', label: 'Stockout Alerts', desc: 'OOS costing us sales', query: 'What stockouts are costing us sales right now?', icon: Package, color: '#E87068' },
-    { key: 'online', action: 'online_vs_instore', label: 'Online vs In-Store', desc: 'Channel growth', query: 'How is online ordering growing vs walk-in?', icon: Globe, color: '#0EA5E9' },
+    { key: 'reorder', label: 'Reorder Stock', desc: 'Low & out-of-stock items', query: 'Reorder out of stock and low stock items', icon: Package, color: '#E87068' },
+    { key: 'flash', label: 'Today\'s Sales', desc: 'Real-time all stores', query: 'How are all stores doing on sales today vs last week?', icon: Activity, color: '#D4A03A' },
+    { key: 'winback', label: 'Win-Back Campaign', desc: 'Re-engage lapsed customers', query: 'Run a marketing campaign to win back lapsed customers', icon: Megaphone, color: '#00C27C' },
+    { key: 'brands', label: 'Top Brands', desc: 'Best sellers MSO-wide', query: 'What are our top selling brands by revenue?', icon: Star, color: '#64A8E0' },
+    { key: 'pricing', label: 'Price Check', desc: 'Us vs competitors', query: 'Compare our prices vs market average', icon: DollarSign, color: '#B598E8' },
+    { key: 'sentiment', label: 'Customer Feedback', desc: 'Reviews & NPS', query: 'What is our customer sentiment and NPS score?', icon: MessageSquare, color: '#0EA5E9' },
   ],
   vp_retail: [
-    { key: 'rankings', action: 'rankings', label: 'Store Scorecard', desc: 'Rank all 21 stores', query: 'Rank all stores in my region by performance', icon: BarChart3, color: '#D4A03A' },
-    { key: 'rebalance', action: 'rebalance', label: 'OOS & Rebalance', desc: 'Move stock to fill gaps', query: 'Which products are OOS and can be rebalanced?', icon: ArrowRightLeft, color: '#E87068' },
-    { key: 'vendors', action: 'vendor_scorecard', label: 'Vendor Reliability', desc: 'Fill rates & shorts', query: 'Which vendors are shorting us or delivering late?', icon: Truck, color: '#64A8E0' },
-    { key: 'pricing', action: 'market_prices', label: 'Price Check', desc: 'Us vs competitors', query: 'How do our prices compare to competitors?', icon: DollarSign, color: '#B598E8' },
-    { key: 'practices', action: 'practices', label: 'Best Practices', desc: 'Copy what works', query: 'What are top stores doing that we can replicate?', icon: Sparkles, color: '#0EA5E9' },
-    { key: 'online', action: 'online_vs_instore', label: 'Online Orders', desc: 'Pickup & delivery mix', query: 'Show online vs in-store order breakdown', icon: Globe, color: '#EC4899' },
+    { key: 'reorder', label: 'Reorder Stock', desc: 'Low & out-of-stock items', query: 'Reorder out of stock and low inventory items', icon: Package, color: '#E87068' },
+    { key: 'winback', label: 'Win-Back Campaign', desc: 'Re-engage lapsed customers', query: 'Launch a marketing campaign to win back lapsed customers', icon: Megaphone, color: '#00C27C' },
+    { key: 'pricing', label: 'Price Check', desc: 'Us vs competitors', query: 'Compare our prices vs market average', icon: DollarSign, color: '#D4A03A' },
+    { key: 'performance', label: 'Store Performance', desc: 'Sales & rankings', query: 'How are all stores doing on sales this week?', icon: BarChart3, color: '#64A8E0' },
+    { key: 'sentiment', label: 'Customer Feedback', desc: 'Reviews & NPS', query: 'What is customer sentiment across our stores?', icon: MessageSquare, color: '#B598E8' },
+    { key: 'brands', label: 'Top Brands', desc: 'Best sellers', query: 'What are our best selling brands by revenue?', icon: Star, color: '#0EA5E9' },
   ],
   regional_mgr: [
-    { key: 'transfers', action: 'transfers', label: 'Approve Transfers', desc: '3 pending manifests', query: 'Show pending inter-store transfers I need to approve', icon: ArrowRightLeft, color: '#D4A03A' },
-    { key: 'close', action: 'close', label: 'Close Reports', desc: 'Cash variances', query: 'Any cash variances from last night\'s close?', icon: FileText, color: '#00C27C' },
-    { key: 'delivery', action: 'delivery', label: 'Today\'s Deliveries', desc: 'Vendor receiving', query: 'What vendor deliveries are coming in today?', icon: Truck, color: '#64A8E0' },
-    { key: 'labor', action: 'labor', label: 'Staffing Levels', desc: 'Coverage by store', query: 'Show staffing levels and overtime across IL stores', icon: Users, color: '#B598E8' },
-    { key: 'reorder', action: 'rebalance', label: 'Reorder Queue', desc: 'What\'s running low', query: 'Which products need reordering across my stores?', icon: Package, color: '#0EA5E9' },
-    { key: 'audit', action: 'audit', label: 'Store Readiness', desc: 'Inspection prep', query: 'Are my stores ready for the upcoming inspection?', icon: Eye, color: '#EC4899' },
+    { key: 'reorder', label: 'Reorder Stock', desc: 'What\'s running low', query: 'Reorder out of stock and low stock products across my stores', icon: Package, color: '#E87068' },
+    { key: 'winback', label: 'Win-Back Campaign', desc: 'Re-engage lapsed customers', query: 'Run a marketing campaign for lapsed customers', icon: Megaphone, color: '#00C27C' },
+    { key: 'flash', label: 'Today\'s Sales', desc: 'Real-time vs last week', query: 'How are my stores doing on sales today?', icon: Activity, color: '#D4A03A' },
+    { key: 'pricing', label: 'Price Check', desc: 'Us vs market', query: 'How do our prices compare to competitors?', icon: DollarSign, color: '#64A8E0' },
+    { key: 'sentiment', label: 'Customer Feedback', desc: 'Reviews & NPS', query: 'What are customers saying about my stores?', icon: MessageSquare, color: '#B598E8' },
+    { key: 'brands', label: 'Top Brands', desc: 'Best sellers', query: 'What are the best selling brands across my stores?', icon: Star, color: '#0EA5E9' },
   ],
   store_mgr: [
-    { key: 'vault', action: 'vault_transfer', label: 'Vault Pull List', desc: '3 SKUs critical', query: 'What needs to come out of the vault right now?', icon: ArrowRightLeft, color: '#E87068' },
-    { key: 'budtender', action: 'budtender_perf', label: 'Budtender Stats', desc: 'AOV & upsell rates', query: 'How are my budtenders doing on upsells and AOV?', icon: Users, color: '#D4A03A' },
-    { key: 'flash', action: 'daily_flash', label: 'Today\'s Sales', desc: 'Real-time vs last week', query: 'How are we doing today compared to last week?', icon: Activity, color: '#00C27C' },
-    { key: 'loyalty', action: 'loyalty_health', label: 'Loyalty Check', desc: 'Sign-ups & lapsed', query: 'How\'s our loyalty program — any lapsed members to win back?', icon: Star, color: '#B598E8' },
-    { key: 'winback', action: 'winback_campaign', label: 'Win-Back Campaign', desc: 'Re-engage lapsed', query: 'Show lapsed customers we should target for win-back', icon: Megaphone, color: '#0EA5E9' },
-    { key: 'sentiment', action: 'sentiment_overview', label: 'Customer Reviews', desc: 'Feedback & NPS', query: 'What are customers saying about us this month?', icon: MessageSquare, color: '#EC4899' },
+    { key: 'reorder', label: 'Reorder Stock', desc: 'Low & out-of-stock', query: 'Reorder out of stock and low stock items', icon: Package, color: '#E87068' },
+    { key: 'winback', label: 'Win-Back Campaign', desc: 'Re-engage lapsed', query: 'Run a win-back campaign for lapsed customers', icon: Megaphone, color: '#00C27C' },
+    { key: 'flash', label: 'Today\'s Sales', desc: 'Real-time vs last week', query: 'How are we doing on sales today compared to last week?', icon: Activity, color: '#D4A03A' },
+    { key: 'pricing', label: 'Price Check', desc: 'Us vs competitors', query: 'Compare our prices vs competitors', icon: DollarSign, color: '#B598E8' },
+    { key: 'sentiment', label: 'Customer Reviews', desc: 'Feedback & NPS', query: 'What is our customer sentiment this month?', icon: MessageSquare, color: '#64A8E0' },
+    { key: 'brands', label: 'Top Sellers', desc: 'Best-moving products', query: 'What are our top selling products this week?', icon: Star, color: '#0EA5E9' },
   ],
   compliance: [
-    { key: 'metrc', action: 'metrc_queue', label: 'METRC Queue', desc: 'Untagged packages', query: 'Any METRC packages stuck or needing tags?', icon: Package, color: '#E87068' },
-    { key: 'discrepancy', action: 'discrepancy', label: 'Exceptions', desc: 'Inventory mismatches', query: 'Show urgent inventory exceptions', icon: AlertTriangle, color: '#D4A03A' },
-    { key: 'sync', action: 'sync_status', label: 'Sync Health', desc: 'All state systems', query: 'Are all state tracking systems synced and healthy?', icon: RefreshCw, color: '#00C27C' },
-    { key: 'audit', action: 'audit', label: 'Readiness Score', desc: 'Inspection prep', query: 'Are we ready for the upcoming state inspection?', icon: Eye, color: '#64A8E0' },
-    { key: 'regulatory', action: 'regulatory', label: 'Reg Changes', desc: 'Upcoming deadlines', query: 'What regulatory changes do we need to prepare for?', icon: Clipboard, color: '#B598E8' },
-    { key: 'shrinkage', action: 'shrinkage', label: 'Waste Tracking', desc: 'Loss & disposal', query: 'Show waste and disposal tracking for all stores', icon: FileText, color: '#0EA5E9' },
+    { key: 'reorder', label: 'Reorder Stock', desc: 'Low & out-of-stock', query: 'Reorder out of stock and low stock items', icon: Package, color: '#E87068' },
+    { key: 'winback', label: 'Win-Back Campaign', desc: 'Re-engage lapsed', query: 'Launch a marketing campaign to win back lapsed customers', icon: Megaphone, color: '#00C27C' },
+    { key: 'flash', label: 'Today\'s Sales', desc: 'Real-time status', query: 'How are sales doing today across all stores?', icon: Activity, color: '#D4A03A' },
+    { key: 'pricing', label: 'Price Check', desc: 'Market comparison', query: 'Compare our prices vs market average', icon: DollarSign, color: '#64A8E0' },
+    { key: 'sentiment', label: 'Customer Feedback', desc: 'Reviews & NPS', query: 'What is our customer sentiment and NPS?', icon: MessageSquare, color: '#B598E8' },
+    { key: 'brands', label: 'Top Brands', desc: 'Best sellers', query: 'What brands are selling best?', icon: Star, color: '#0EA5E9' },
   ],
 };
 
@@ -2136,7 +2136,7 @@ function NexusCommandBar({ onAction }) {
         </form>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 stagger-grid">
           {COMMAND_ACTIONS.map(a => (
-            <button key={a.key} onClick={() => onAction(a.action ? `<<nexus_action:${a.action}>> ${a.query}` : a.query)} className="group text-left rounded-xl border border-[#38332B] hover:border-[rgba(212,160,58,0.15)] bg-[#141210] p-3 transition-all hover:brightness-110 hover:scale-[1.01] active:scale-[0.98]">
+            <button key={a.key} onClick={() => onAction(a.query)} className="group text-left rounded-xl border border-[#38332B] hover:border-[rgba(212,160,58,0.15)] bg-[#141210] p-3 transition-all hover:brightness-110 hover:scale-[1.01] active:scale-[0.98]">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${a.color}14` }}>
                   <a.icon className="w-3 h-3" style={{ color: a.color }} />
@@ -2148,7 +2148,7 @@ function NexusCommandBar({ onAction }) {
           ))}
         </div>
         <div className="mt-3 text-[10px] text-[#6B6359]">
-          Recent: <span onClick={() => onAction("<<nexus_action:rebalance>>Show me stockout report")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Stockout report"</span> &middot; <span onClick={() => onAction("<<nexus_action:market_prices>>Reprice Blue Dream")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Market prices"</span>
+          Recent: <span onClick={() => onAction("Show me stockout report")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Stockout report"</span> &middot; <span onClick={() => onAction("Reprice Blue Dream")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Market prices"</span>
         </div>
       </div>
     </div>
@@ -2434,7 +2434,7 @@ function SmartAlertsFeed({ onAction }) {
       'comp-1': 'sync_status', 'comp-2': 'discrepancy', 'comp-3': 'regulatory', 'comp-4': 'compliance_all', 'comp-5': 'audit', 'comp-6': 'regulatory',
     };
     const nexusAction = alertActionMap[alertId] || 'portfolio';
-    if (onAction) onAction(`<<nexus_action:${nexusAction}>> ${alertTitle}: ${action}`);
+    if (onAction) onAction(`${alertTitle}: ${action}`);
   };
 
   const toggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
@@ -2659,7 +2659,7 @@ function CrossStoreIntelligence({ onOpenNexus }) {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="text-[10px] text-[#00C27C] font-semibold">{item.estRevRecovery}</p>
-                  <button onClick={() => onOpenNexus && onOpenNexus(`<<nexus_action:transfers>> Transfer ${item.recTransfer} units of ${item.product} from ${item.from} to ${item.to}`)} className="mt-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white bg-[#64A8E0] hover:brightness-110 transition-colors">
+                  <button onClick={() => onOpenNexus && onOpenNexus(`Transfer ${item.recTransfer} units of ${item.product} from ${item.from} to ${item.to}`)} className="mt-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white bg-[#64A8E0] hover:brightness-110 transition-colors">
                     Transfer {item.recTransfer}
                   </button>
                 </div>
@@ -2682,7 +2682,7 @@ function CrossStoreIntelligence({ onOpenNexus }) {
                   <span className="text-[10px] text-[#6B6359]">vs avg {bp.avg}</span>
                 </div>
                 <p className="text-[10px] text-[#ADA599]">{bp.insight}</p>
-                <button onClick={() => onOpenNexus && onOpenNexus(`<<nexus_action:practices>> ${bp.action} — ${bp.store} has ${bp.metric}: ${bp.value}`)} className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#00C27C] bg-[#00C27C]/10 border border-[#00C27C]/20 hover:bg-[#00C27C]/20 transition-colors">
+                <button onClick={() => onOpenNexus && onOpenNexus(`${bp.action} — ${bp.store} has ${bp.metric}: ${bp.value}`)} className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#00C27C] bg-[#00C27C]/10 border border-[#00C27C]/20 hover:bg-[#00C27C]/20 transition-colors">
                   {bp.action}
                 </button>
               </div>
@@ -2854,7 +2854,7 @@ function StoreHealthMatrix({ onOpenNexus }) {
           const color = s.composite >= 75 ? '#00C27C' : s.composite >= 55 ? '#D4A03A' : '#E87068';
           const deg = s.composite * 3.6;
           return (
-            <div key={s.name} onClick={() => onOpenNexus && onOpenNexus(`<<nexus_action:rankings>> Deep dive on ${s.name} — score ${s.composite}, ${s.alerts} alerts`)} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
+            <div key={s.name} onClick={() => onOpenNexus && onOpenNexus(`Deep dive on ${s.name} — score ${s.composite}, ${s.alerts} alerts`)} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
               <div className="w-11 h-11 rounded-full mx-auto mb-2 flex items-center justify-center" style={{ background: `conic-gradient(${color} ${deg}deg, #38332B 0deg)` }}>
                 <div className="w-8 h-8 rounded-full bg-[#141210] flex items-center justify-center text-xs font-bold" style={{ color }}>{s.composite}</div>
               </div>
