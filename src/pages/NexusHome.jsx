@@ -1928,8 +1928,8 @@ function MorningBriefing() {
   const scaledCritical = Math.max(1, Math.round(NEXUS_DATA.stockoutRisk * storeRatio));
 
   const briefingText = useMemo(() => {
-    if (isCEO) return '"Portfolio revenue $2.8M yesterday, +6.8% same-store growth vs last year. IL and NJ leading at +9% and +7% SSG. MI flat — 3 stores dragging avg. Inventory turnover at 4.2x (target 5x). 14 SKUs currently out of stock across 8 stores — estimated $18K in missed sales yesterday. Margin holding at 48.2%."';
-    if (isVP) return '"Your 23 stores did $1.4M yesterday. Same-store growth +5.1% YoY. Logan Square top performer at $48.2K. Morenci down 23% — foot traffic declining 3 weeks straight, may need local campaign. 6 out-of-stock SKUs across your region — $7.2K in estimated missed sales. Avg basket $118, up $4 WoW."';
+    if (isCEO) return '"Portfolio revenue $2.8M yesterday, +6.8% same-store growth vs last year. IL and NJ leading at +9% and +7% SSG. MI flat — 3 stores dragging avg. Inventory turnover at 4.2x (target 5x). 87 SKUs currently out of stock across 8 stores — estimated $112K in missed sales yesterday. Margin holding at 48.2%."';
+    if (isVP) return '"Your 23 stores did $1.4M yesterday. Same-store growth +5.1% YoY. Logan Square top performer at $48.2K. Morenci down 23% — foot traffic declining 3 weeks straight, may need local campaign. 34 out-of-stock SKUs across your region — $48K in estimated missed sales. Avg basket $118, up $4 WoW."';
     if (isRegional) return '"IL revenue $680K yesterday, +4.2% WoW. Springfield leading at +18%. 2 vault-to-floor transfers pending at Naperville — Kiva Gummies and Stiiizy Pods both have demand on floor. 34 SKUs received yesterday, all checked in. Schaumburg running a flash promo today (15% off 3-6 PM)."';
     if (isStoreMgr) return '"Logan Square did $34.2K yesterday, 8% above target. 2 products out of stock on floor — Blue Dream 3.5g (45 units in vault, ready to transfer) and Kiva Gummies (60 in vault). Stiiizy Pod LR down to 4 units on floor, transfer before afternoon rush. Happy Hour promo starts at 3 PM. No pending reorders to review."';
     if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ BioTrack sync delay cleared at Newark (12 min, no data loss). 3 product batches expiring within 30 days need destruction manifests. Next scheduled audit: IL Mar 24."';
@@ -1940,13 +1940,13 @@ function MorningBriefing() {
     if (isCEO) return [
       { label: 'Portfolio Rev', value: '$2.8M', trend: '+6.8% SSG', up: true },
       { label: 'Inv Turnover', value: '4.2x', trend: 'target 5x', up: false },
-      { label: 'OOS Lost Sales', value: '$18K', trend: '14 SKUs', up: false },
+      { label: 'OOS Lost Sales', value: '$112K', trend: '87 SKUs', up: false },
       { label: 'Margin', value: '48.2%', trend: '+0.8pp', up: true },
     ];
     if (isVP) return [
       { label: 'Regional Rev', value: '$1.4M', trend: '+5.1% SSG', up: true },
       { label: 'Avg Basket', value: '$118', trend: '+$4 WoW', up: true },
-      { label: 'OOS Lost Sales', value: '$7.2K', trend: '6 SKUs', up: false },
+      { label: 'OOS Lost Sales', value: '$48K', trend: '34 SKUs', up: false },
       { label: 'Flagged', value: '1 store', trend: 'Morenci -23%', up: false },
     ];
     if (isRegional) return [
