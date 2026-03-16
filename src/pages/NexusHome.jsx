@@ -2025,12 +2025,12 @@ const TICKER_EVENTS = [
   { icon: '\uD83D\uDCF1', text: 'SMS opt-in x12 Chicago IL', time: '11m', cat: 'marketing' },
   { icon: '\uD83C\uDFAF', text: 'Campaign click x47 "Spring Sale"', time: '15m', cat: 'marketing' },
   { icon: '\uD83D\uDCB0', text: '$89 sale Ann Arbor MI', time: '18m', cat: 'sale' },
-  { icon: '\u26A0\uFE0F', text: 'Low stock: Blue Dream 3.5g', time: '22m', cat: 'alert' },
-  { icon: '\uD83D\uDCB0', text: '$221 sale Fort Lee NJ', time: '25m', cat: 'sale' },
-  { icon: '\u2B50', text: '4-star Leafly review Boston MA', time: '28m', cat: 'review' },
-  { icon: '\uD83D\uDCE6', text: 'Reorder triggered: Stiiizy Pods', time: '32m', cat: 'inventory' },
-  { icon: '\uD83D\uDCB0', text: '$78 sale Morenci MI', time: '35m', cat: 'sale' },
-  { icon: '\uD83D\uDCF1', text: 'SMS survey response x8 Springfield', time: '38m', cat: 'marketing' },
+  { icon: '\uD83D\uDCB0', text: '$221 sale Fort Lee NJ', time: '22m', cat: 'sale' },
+  { icon: '\u2B50', text: '4-star Leafly review Boston MA', time: '25m', cat: 'review' },
+  { icon: '\uD83D\uDCE6', text: 'Delivery checked in Springfield IL', time: '28m', cat: 'inventory' },
+  { icon: '\uD83D\uDCB0', text: '$78 sale Morenci MI', time: '32m', cat: 'sale' },
+  { icon: '\uD83D\uDCF1', text: 'SMS survey response x8 Springfield', time: '35m', cat: 'marketing' },
+  { icon: '\uD83D\uDCB0', text: '$312 sale Logan Square IL', time: '38m', cat: 'sale' },
 ];
 
 function LiveTicker() {
@@ -2911,20 +2911,20 @@ export default function NexusHome({ onOpenNexus }) {
       {/* 1. AI Morning Briefing */}
       <MorningBriefing />
 
-      {/* 2. Live Activity Ticker */}
-      <LiveTicker />
-
-      {/* 3. Nexus Command Bar */}
+      {/* 2. Nexus Command Bar */}
       <NexusCommandBar onAction={onOpenNexus} />
 
-      {/* 4. Smart Alerts (includes vault-to-floor transfers) */}
+      {/* 3. Smart Alerts (includes vault-to-floor transfers) */}
       <SmartAlertsFeed onAction={(q) => onOpenNexus && onOpenNexus(q)} />
 
-      {/* 5. Store Health Matrix */}
+      {/* 4. Store Health Matrix */}
       <StoreHealthMatrix onOpenNexus={onOpenNexus} />
 
-      {/* 5b. Cross-Store Intelligence (CEO/VP/Regional only) */}
+      {/* 5. Cross-Store Intelligence (CEO/VP/Regional only) */}
       <CrossStoreIntelligence onOpenNexus={onOpenNexus} />
+
+      {/* 6. Live Activity Ticker */}
+      <LiveTicker />
 
       {/* 7. Sales Reporting — kept from v2 */}
       <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mt-1">Performance</p>
