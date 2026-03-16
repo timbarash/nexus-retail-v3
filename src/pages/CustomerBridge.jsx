@@ -2330,88 +2330,109 @@ function getNexusActionData(action) {
     portfolio: { title:'Portfolio Summary', color:'#D4A03A', summary:'Here\'s your portfolio overview across all 39 stores in 7 states.',
       kpis:[{l:'Total Revenue',v:'$11.2M',c:'#00C27C'},{l:'Avg Growth',v:'+11.3%',c:'#0EA5E9'},{l:'Portfolio Health',v:'91/100',c:'#D4A03A'},{l:'Active Stores',v:'39/39',c:'#B598E8'}],
       cols:['State','Stores','Revenue (MTD)','Growth','Health'],
-      rows:[['Illinois',8,'$2.4M','+12%',94],['Michigan',7,'$1.9M','+8%',91],['Ohio',6,'$1.6M','+15%',89],['Pennsylvania',5,'$1.3M','+6%',92],['New Jersey',5,'$1.7M','+18%',87],['Maryland',4,'$1.1M','+11%',93],['Massachusetts',4,'$1.2M','+9%',90]]},
+      rows:[['Illinois',8,'$2.4M','+12%',94],['Michigan',7,'$1.9M','+8%',91],['Ohio',6,'$1.6M','+15%',89],['Pennsylvania',5,'$1.3M','+6%',92],['New Jersey',5,'$1.7M','+18%',87],['Maryland',4,'$1.1M','+11%',93],['Massachusetts',4,'$1.2M','+9%',90]],
+      actions:[{label:'Export Report',done:'Report exported to email'},{label:'Share with Team',done:'Shared with leadership team'}]},
     revenue_state: { title:'State Revenue Comparison', color:'#00C27C', summary:'Revenue breakdown across all 7 states — current month vs prior.',
       kpis:[{l:'Total MTD',v:'$11.29M',c:'#00C27C'},{l:'vs Prior',v:'+$1.15M',c:'#0EA5E9'},{l:'Top State',v:'Illinois',c:'#D4A03A'},{l:'Fastest Growth',v:'New Jersey',c:'#B598E8'}],
       cols:['State','Current MTD','Prior Month','Delta','% Change'],
-      rows:[['New Jersey','$1.71M','$1.45M','+$260K','+18%'],['Ohio','$1.62M','$1.41M','+$210K','+15%'],['Illinois','$2.41M','$2.15M','+$260K','+12%'],['Maryland','$1.12M','$1.01M','+$110K','+11%'],['Massachusetts','$1.22M','$1.12M','+$100K','+9%'],['Michigan','$1.89M','$1.75M','+$140K','+8%'],['Pennsylvania','$1.32M','$1.25M','+$70K','+6%']]},
+      rows:[['New Jersey','$1.71M','$1.45M','+$260K','+18%'],['Ohio','$1.62M','$1.41M','+$210K','+15%'],['Illinois','$2.41M','$2.15M','+$260K','+12%'],['Maryland','$1.12M','$1.01M','+$110K','+11%'],['Massachusetts','$1.22M','$1.12M','+$100K','+9%'],['Michigan','$1.89M','$1.75M','+$140K','+8%'],['Pennsylvania','$1.32M','$1.25M','+$70K','+6%']],
+      actions:[{label:'Export CSV',done:'CSV downloaded'},{label:'Email to VPs',done:'Sent to 3 VPs'}]},
     compliance_all: { title:'Operational Health — All States', color:'#00C27C', summary:'System health and sync status across all 7 states at a glance.',
       kpis:[{l:'States Online',v:'6/7',c:'#00C27C'},{l:'Needs Attention',v:'1',c:'#D4A03A'},{l:'Total Stores',v:'39',c:'#0EA5E9'},{l:'Uptime',v:'99.8%',c:'#00C27C'}],
       cols:['State','Stores','Status','Last Updated','Uptime','Next Review'],
-      rows:[['Illinois',8,'All Good','2 min ago','100%','Apr 15'],['Michigan',7,'All Good','5 min ago','99.9%','May 1'],['Ohio',6,'All Good','3 min ago','100%','Apr 22'],['Pennsylvania',5,'Review','47 min ago','98.2%','Mar 28'],['New Jersey',5,'All Good','8 min ago','100%','Apr 10'],['Maryland',4,'All Good','1 min ago','100%','May 15'],['Massachusetts',4,'All Good','4 min ago','99.9%','Apr 5']]},
+      rows:[['Illinois',8,'All Good','2 min ago','100%','Apr 15'],['Michigan',7,'All Good','5 min ago','99.9%','May 1'],['Ohio',6,'All Good','3 min ago','100%','Apr 22'],['Pennsylvania',5,'Review','47 min ago','98.2%','Mar 28'],['New Jersey',5,'All Good','8 min ago','100%','Apr 10'],['Maryland',4,'All Good','1 min ago','100%','May 15'],['Massachusetts',4,'All Good','4 min ago','99.9%','Apr 5']],
+      actions:[{label:'Force Sync PA',done:'PA sync initiated'},{label:'Export Status',done:'Report exported'}]},
     brand_perf: { title:'Brand Performance Rankings', color:'#B598E8', summary:'Top brands across all stores by revenue contribution this month.',
       kpis:[{l:'Top Brand',v:'Jeeter',c:'#00C27C'},{l:'Highest Margin',v:'Wyld (45%)',c:'#D4A03A'},{l:'Fastest Growth',v:'Jeeter (+22%)',c:'#0EA5E9'},{l:'Brands Tracked',v:'48',c:'#B598E8'}],
       cols:['Rank','Brand','Category','Revenue','Units','Margin','Trend'],
-      rows:[['#1','Jeeter','Pre-Rolls','$1.42M','31.2K','42%','+22%'],['#2','STIIIZY','Vapes','$1.18M','18.4K','38%','+15%'],['#3','Wyld','Edibles','$892K','44.6K','45%','+18%'],['#4','Raw Garden','Concentrates','$764K','12.1K','36%','+9%'],['#5','Kiva','Edibles','$651K','29.8K','44%','+12%'],['#6','Cookies','Flower','$598K','8.9K','35%','-3%']]},
+      rows:[['#1','Jeeter','Pre-Rolls','$1.42M','31.2K','42%','+22%'],['#2','STIIIZY','Vapes','$1.18M','18.4K','38%','+15%'],['#3','Wyld','Edibles','$892K','44.6K','45%','+18%'],['#4','Raw Garden','Concentrates','$764K','12.1K','36%','+9%'],['#5','Kiva','Edibles','$651K','29.8K','44%','+12%'],['#6','Cookies','Flower','$598K','8.9K','35%','-3%']],
+      actions:[{label:'Reorder Top Brands',done:'PO draft created for Jeeter & STIIIZY'},{label:'Share Rankings',done:'Sent to merchandising team'}]},
     rankings: { title:'Store Performance Rankings', color:'#00C27C', summary:'All stores in IL, MI, OH ranked by composite performance score.',
       kpis:[{l:'Top Store',v:'River North',c:'#00C27C'},{l:'Avg Score',v:'92/100',c:'#0EA5E9'},{l:'Region Revenue',v:'$5.94M',c:'#D4A03A'},{l:'Stores',v:'21',c:'#B598E8'}],
       cols:['Rank','Store','State','Revenue','Orders','AOV','Score'],
-      rows:[['#1','Ascend River North','IL','$412K','4,218','$97.70',96],['#2','Ascend Logan Square','IL','$388K','3,941','$98.50',94],['#3','Ascend Ann Arbor','MI','$367K','3,712','$98.85',93],['#4','Ascend Columbus','OH','$351K','3,580','$98.04',91],['#5','Ascend Schaumburg','IL','$342K','3,421','$100.00',90],['#6','Ascend Detroit','MI','$328K','3,298','$99.45',88]]},
+      rows:[['#1','Ascend River North','IL','$412K','4,218','$97.70',96],['#2','Ascend Logan Square','IL','$388K','3,941','$98.50',94],['#3','Ascend Ann Arbor','MI','$367K','3,712','$98.85',93],['#4','Ascend Columbus','OH','$351K','3,580','$98.04',91],['#5','Ascend Schaumburg','IL','$342K','3,421','$100.00',90],['#6','Ascend Detroit','MI','$328K','3,298','$99.45',88]],
+      actions:[{label:'Contact Bottom Stores',done:'Messages sent to Detroit & Schaumburg GMs'},{label:'Export Rankings',done:'CSV downloaded'}]},
     rebalance: { title:'Blue Dream — OOS & Rebalance', color:'#E87068', summary:'4 stores out of stock on Blue Dream, 3 nearby with surplus. Rebalance transfers recommended.',
       kpis:[{l:'OOS Stores',v:'4',c:'#E87068'},{l:'Surplus Stores',v:'3',c:'#00C27C'},{l:'Lost Rev/Day',v:'$2,840',c:'#D4A03A'},{l:'Transfer ETA',v:'~24hrs',c:'#64A8E0'}],
       cols:['Store','State','Status','Qty','Recommended Action'],
-      rows:[['Ascend Schaumburg','IL','OUT OF STOCK','0 units','Receive from Logan Sq'],['Ascend Canton','OH','OUT OF STOCK','0 units','Receive from Columbus'],['Ascend Springfield','IL','OUT OF STOCK','0 units','Receive from River North'],['Ascend Kalamazoo','MI','OUT OF STOCK','0 units','Receive from Ann Arbor'],['Ascend Logan Square','IL','SURPLUS','124 units','Transfer 40 → Schaumburg'],['Ascend River North','IL','SURPLUS','98 units','Transfer 35 → Springfield'],['Ascend Columbus','OH','SURPLUS','87 units','Transfer 30 → Canton']]},
+      rows:[['Ascend Schaumburg','IL','OUT OF STOCK','0 units','Receive from Logan Sq'],['Ascend Canton','OH','OUT OF STOCK','0 units','Receive from Columbus'],['Ascend Springfield','IL','OUT OF STOCK','0 units','Receive from River North'],['Ascend Kalamazoo','MI','OUT OF STOCK','0 units','Receive from Ann Arbor'],['Ascend Logan Square','IL','SURPLUS','124 units','Transfer 40 → Schaumburg'],['Ascend River North','IL','SURPLUS','98 units','Transfer 35 → Springfield'],['Ascend Columbus','OH','SURPLUS','87 units','Transfer 30 → Canton']],
+      actions:[{label:'Approve All Transfers',done:'3 transfers approved — manifests created'},{label:'Notify Stores',done:'Notifications sent to 7 stores'}]},
     compare: { title:'IL vs OH Revenue Comparison', color:'#D4A03A', summary:'Side-by-side comparison of Illinois and Ohio revenue metrics this month.',
       kpis:[{l:'IL Revenue',v:'$2.41M',c:'#00C27C'},{l:'OH Revenue',v:'$1.62M',c:'#0EA5E9'},{l:'IL Lead',v:'+$790K',c:'#D4A03A'},{l:'OH Faster Growth',v:'+15%',c:'#B598E8'}],
       cols:['Metric','Illinois','Ohio','Delta'],
-      rows:[['Total Revenue','$2.41M','$1.62M','+$790K (IL)'],['Total Orders','24,812','16,541','+8,271 (IL)'],['Avg Order Value','$97.10','$98.00','+$0.90 (OH)'],['Growth vs Prior','+12%','+15%','+3% (OH)'],['Store Count','8','6','+2 (IL)'],['Rev per Store','$301K','$270K','+$31K (IL)']]},
+      rows:[['Total Revenue','$2.41M','$1.62M','+$790K (IL)'],['Total Orders','24,812','16,541','+8,271 (IL)'],['Avg Order Value','$97.10','$98.00','+$0.90 (OH)'],['Growth vs Prior','+12%','+15%','+3% (OH)'],['Store Count','8','6','+2 (IL)'],['Rev per Store','$301K','$270K','+$31K (IL)']],
+      actions:[{label:'Share Comparison',done:'Report sent to leadership'},{label:'Set Growth Targets',done:'OH targets updated to match IL pace'}]},
     practices: { title:'Best Practices — Cross-Store Insights', color:'#B598E8', summary:'Actionable practices from top-performing stores that could lift underperformers.',
       kpis:[{l:'Practices Found',v:'5',c:'#B598E8'},{l:'High Priority',v:'2',c:'#E87068'},{l:'Est. Rev Lift',v:'+$340K/mo',c:'#00C27C'},{l:'Stores Impacted',v:'21',c:'#D4A03A'}],
       cols:['Practice','Source Store','Impact','Applicable To','Priority'],
-      rows:[['Happy Hour 4-6pm','River North (IL)','+18% AOV','12 stores','High'],['Budtender Rec Display','Ann Arbor (MI)','+23% attach rate','8 stores','High'],['Text-Before-Pickup','Columbus (OH)','-40% wait time','15 stores','Medium'],['Weekend Loyalty 2x Pts','Logan Square (IL)','+31% Sat volume','21 stores','Medium'],['New Arrivals Endcap','Edison (NJ)','+15% new SKU trial','18 stores','Low']]},
+      rows:[['Happy Hour 4-6pm','River North (IL)','+18% AOV','12 stores','High'],['Budtender Rec Display','Ann Arbor (MI)','+23% attach rate','8 stores','High'],['Text-Before-Pickup','Columbus (OH)','-40% wait time','15 stores','Medium'],['Weekend Loyalty 2x Pts','Logan Square (IL)','+31% Sat volume','21 stores','Medium'],['New Arrivals Endcap','Edison (NJ)','+15% new SKU trial','18 stores','Low']],
+      actions:[{label:'Deploy Top 2 Practices',done:'Happy Hour & Rec Display rolled out to 12 stores'},{label:'Create Playbook',done:'Playbook PDF generated & shared'}]},
     transfers: { title:'Pending Vault Transfers — Illinois', color:'#D4A03A', summary:'6 inter-store vault transfers for IL — 3 awaiting your approval.',
       kpis:[{l:'Pending Approval',v:'3',c:'#D4A03A'},{l:'In Transit',v:'2',c:'#0EA5E9'},{l:'Delivered Today',v:'1',c:'#00C27C'},{l:'Total Value',v:'$18.4K',c:'#B598E8'}],
       cols:['Transfer ID','From','To','Product','Qty','Status','METRC Tag'],
-      rows:[['VT-4821','Logan Square','Schaumburg','Blue Dream 3.5g',40,'Awaiting Approval','1A40..3921'],['VT-4822','River North','Springfield','Blue Dream 3.5g',35,'Awaiting Approval','1A40..3922'],['VT-4818','River North','Naperville','Jeeter Baby Js 5pk',60,'In Transit','1A40..3918'],['VT-4815','Naperville','Schaumburg','Wyld Gummies 10pk',80,'In Transit','1A40..3915'],['VT-4810','Logan Square','Peoria','STIIIZY Pod 1g',24,'Awaiting Approval','1A40..3910'],['VT-4808','Springfield','Champaign','Kiva Camino 20pk',48,'Delivered','1A40..3908']]},
+      rows:[['VT-4821','Logan Square','Schaumburg','Blue Dream 3.5g',40,'Awaiting Approval','1A40..3921'],['VT-4822','River North','Springfield','Blue Dream 3.5g',35,'Awaiting Approval','1A40..3922'],['VT-4818','River North','Naperville','Jeeter Baby Js 5pk',60,'In Transit','1A40..3918'],['VT-4815','Naperville','Schaumburg','Wyld Gummies 10pk',80,'In Transit','1A40..3915'],['VT-4810','Logan Square','Peoria','STIIIZY Pod 1g',24,'Awaiting Approval','1A40..3910'],['VT-4808','Springfield','Champaign','Kiva Camino 20pk',48,'Delivered','1A40..3908']],
+      actions:[{label:'Approve 3 Pending',done:'All 3 transfers approved — METRC tags generated'},{label:'Print Manifests',done:'Manifests sent to printer'}]},
     delivery: { title:'Today\'s Delivery Schedule — Illinois', color:'#64A8E0', summary:'Vendor deliveries for all Illinois stores today.',
       kpis:[{l:'Deliveries Today',v:'5',c:'#64A8E0'},{l:'Completed',v:'2',c:'#00C27C'},{l:'In Transit',v:'1',c:'#D4A03A'},{l:'Scheduled',v:'2',c:'#B598E8'}],
       cols:['Time','Store','Vendor','Items','Status','PO #'],
-      rows:[['9:00 AM','River North','Jeeter','12 SKUs','Delivered','PO-8821'],['10:30 AM','Logan Square','STIIIZY','8 SKUs','Delivered','PO-8819'],['12:00 PM','Naperville','Wyld','6 SKUs','In Transit','PO-8825'],['1:30 PM','Schaumburg','Kiva','10 SKUs','Scheduled','PO-8830'],['3:00 PM','Springfield','Raw Garden','5 SKUs','Scheduled','PO-8832']]},
+      rows:[['9:00 AM','River North','Jeeter','12 SKUs','Delivered','PO-8821'],['10:30 AM','Logan Square','STIIIZY','8 SKUs','Delivered','PO-8819'],['12:00 PM','Naperville','Wyld','6 SKUs','In Transit','PO-8825'],['1:30 PM','Schaumburg','Kiva','10 SKUs','Scheduled','PO-8830'],['3:00 PM','Springfield','Raw Garden','5 SKUs','Scheduled','PO-8832']],
+      actions:[{label:'Confirm All Received',done:'2 deliveries confirmed — inventory updated'},{label:'Notify Stores',done:'Schaumburg & Springfield notified of upcoming deliveries'}]},
     close: { title:'Daily Close Reports — Illinois', color:'#00C27C', summary:'Yesterday\'s close summaries for all 8 Illinois stores.',
       kpis:[{l:'Total Revenue',v:'$303.6K',c:'#00C27C'},{l:'Total Orders',v:'3,090',c:'#0EA5E9'},{l:'Balanced',v:'6/8',c:'#D4A03A'},{l:'Needs Review',v:'2',c:'#E87068'}],
       cols:['Store','Revenue','Orders','Cash Collected','Variance','Status'],
-      rows:[['River North','$58.2K','594','$12.1K','$0','Balanced'],['Logan Square','$52.8K','538','$11.4K','$0','Balanced'],['Naperville','$44.1K','451','$9.8K','-$22','Review'],['Schaumburg','$41.5K','418','$8.9K','$0','Balanced'],['Springfield','$32.6K','332','$7.2K','$0','Balanced'],['Peoria','$28.4K','289','$6.1K','$0','Balanced'],['Champaign','$24.8K','252','$5.4K','+$15','Review'],['Bloomington','$21.2K','216','$4.6K','$0','Balanced']]},
+      rows:[['River North','$58.2K','594','$12.1K','$0','Balanced'],['Logan Square','$52.8K','538','$11.4K','$0','Balanced'],['Naperville','$44.1K','451','$9.8K','-$22','Review'],['Schaumburg','$41.5K','418','$8.9K','$0','Balanced'],['Springfield','$32.6K','332','$7.2K','$0','Balanced'],['Peoria','$28.4K','289','$6.1K','$0','Balanced'],['Champaign','$24.8K','252','$5.4K','+$15','Review'],['Bloomington','$21.2K','216','$4.6K','$0','Balanced']],
+      actions:[{label:'Resolve Variances',done:'Naperville (-$22) & Champaign (+$15) marked as reviewed'},{label:'Export Close Report',done:'PDF sent to accounting team'}]},
     labor: { title:'Labor Metrics — Illinois Stores', color:'#B598E8', summary:'Staffing levels and labor efficiency for all IL stores this week.',
       kpis:[{l:'Total Staff',v:'80',c:'#B598E8'},{l:'Avg Efficiency',v:'90%',c:'#00C27C'},{l:'Overtime',v:'5.6 hrs',c:'#D4A03A'},{l:'Understaffed',v:'2 stores',c:'#E87068'}],
       cols:['Store','Staff Today','Scheduled','Overtime','Cost/Order','Efficiency'],
-      rows:[['River North',18,18,'2.1 hrs','$4.82','96%'],['Logan Square',16,16,'0 hrs','$4.91','94%'],['Naperville',14,15,'0 hrs','$5.12','91%'],['Schaumburg',13,14,'0 hrs','$5.25','89%'],['Springfield',10,10,'3.5 hrs','$5.48','87%'],['Peoria',9,10,'0 hrs','$5.61','85%']]},
+      rows:[['River North',18,18,'2.1 hrs','$4.82','96%'],['Logan Square',16,16,'0 hrs','$4.91','94%'],['Naperville',14,15,'0 hrs','$5.12','91%'],['Schaumburg',13,14,'0 hrs','$5.25','89%'],['Springfield',10,10,'3.5 hrs','$5.48','87%'],['Peoria',9,10,'0 hrs','$5.61','85%']],
+      actions:[{label:'Approve Overtime',done:'5.6 hrs overtime approved for Springfield & River North'},{label:'Request Coverage',done:'Coverage requests sent to Naperville & Schaumburg'}]},
     vault_transfer: { title:'Vault-to-Floor Transfer Queue', color:'#64A8E0', summary:'7 items in your vault ready for floor replenishment at Logan Square.',
       kpis:[{l:'Critical',v:'3 SKUs',c:'#E87068'},{l:'High',v:'1 SKU',c:'#D4A03A'},{l:'Total to Move',v:'108 units',c:'#0EA5E9'},{l:'Est. Time',v:'~25 min',c:'#B598E8'}],
       cols:['Product','In Vault','On Floor','Restock Qty','Urgency'],
-      rows:[['Blue Dream 3.5g',124,3,20,'Critical'],['Jeeter Baby Js 5pk',88,5,15,'High'],['STIIIZY OG Pod 1g',56,2,12,'Critical'],['Wyld Elderberry 10pk',200,8,25,'Medium'],['Kiva Camino 20pk',144,6,18,'Medium'],['Raw Garden Sauce 1g',42,1,10,'Critical'],['Cookies Gary Payton 3.5g',36,4,8,'Low']]},
+      rows:[['Blue Dream 3.5g',124,3,20,'Critical'],['Jeeter Baby Js 5pk',88,5,15,'High'],['STIIIZY OG Pod 1g',56,2,12,'Critical'],['Wyld Elderberry 10pk',200,8,25,'Medium'],['Kiva Camino 20pk',144,6,18,'Medium'],['Raw Garden Sauce 1g',42,1,10,'Critical'],['Cookies Gary Payton 3.5g',36,4,8,'Low']],
+      actions:[{label:'Move All Critical',done:'3 critical SKUs moved to floor — METRC updated'},{label:'Print Pull List',done:'Pull list sent to printer'}]},
     sync_status: { title:'Inventory Sync Overview', color:'#00C27C', summary:'Live inventory sync health across all state systems.',
       kpis:[{l:'Systems Online',v:'6/7',c:'#00C27C'},{l:'Needs Attention',v:'1 (PA)',c:'#D4A03A'},{l:'Total Products',v:'56,400',c:'#0EA5E9'},{l:'Accuracy',v:'99.7%',c:'#00C27C'}],
       cols:['State','System','Last Updated','Status','Products Tracked','Accuracy'],
-      rows:[['Illinois','METRC','2 min ago','All Good','12,481','100%'],['Michigan','METRC','5 min ago','All Good','9,842','99.9%'],['Ohio','METRC','3 min ago','All Good','8,215','100%'],['Pennsylvania','Leaf Data','47 min ago','Review','6,932','97.8%'],['New Jersey','BioTrack','8 min ago','All Good','7,621','100%'],['Maryland','METRC','1 min ago','All Good','5,418','100%'],['Massachusetts','METRC','4 min ago','All Good','5,891','99.9%']]},
+      rows:[['Illinois','METRC','2 min ago','All Good','12,481','100%'],['Michigan','METRC','5 min ago','All Good','9,842','99.9%'],['Ohio','METRC','3 min ago','All Good','8,215','100%'],['Pennsylvania','Leaf Data','47 min ago','Review','6,932','97.8%'],['New Jersey','BioTrack','8 min ago','All Good','7,621','100%'],['Maryland','METRC','1 min ago','All Good','5,418','100%'],['Massachusetts','METRC','4 min ago','All Good','5,891','99.9%']],
+      actions:[{label:'Force Sync PA',done:'Pennsylvania sync re-initiated — updating now'},{label:'Export Status Report',done:'Sync report exported to email'}]},
     discrepancy: { title:'Inventory Exceptions', color:'#D4A03A', summary:'Items that need attention — quantity mismatches flagged for review.',
       kpis:[{l:'Open Items',v:'9',c:'#D4A03A'},{l:'Priority',v:'3 urgent',c:'#E87068'},{l:'Most Affected',v:'PA (5)',c:'#64A8E0'},{l:'Avg Resolution',v:'2.1 days',c:'#00C27C'}],
       cols:['ID','Store','Product','Expected','Actual','Diff','Age','Priority'],
-      rows:[['EX-291','Scranton (PA)','Jeeter Infused 1g',24,22,-2,'3 days','Urgent'],['EX-289','Scranton (PA)','Wyld CBN Pear 10pk',48,50,+2,'3 days','Urgent'],['EX-287','Reading (PA)','STIIIZY Pod 0.5g',12,10,-2,'5 days','Urgent'],['EX-285','Ann Arbor (MI)','Kiva Terra Bites',36,35,-1,'2 days','Standard'],['EX-283','Detroit (MI)','Raw Garden Cart 1g',18,19,+1,'1 day','Low'],['EX-280','Edison (NJ)','Cookies Flower 3.5g',8,9,+1,'4 days','Standard']]},
+      rows:[['EX-291','Scranton (PA)','Jeeter Infused 1g',24,22,-2,'3 days','Urgent'],['EX-289','Scranton (PA)','Wyld CBN Pear 10pk',48,50,+2,'3 days','Urgent'],['EX-287','Reading (PA)','STIIIZY Pod 0.5g',12,10,-2,'5 days','Urgent'],['EX-285','Ann Arbor (MI)','Kiva Terra Bites',36,35,-1,'2 days','Standard'],['EX-283','Detroit (MI)','Raw Garden Cart 1g',18,19,+1,'1 day','Low'],['EX-280','Edison (NJ)','Cookies Flower 3.5g',8,9,+1,'4 days','Standard']],
+      actions:[{label:'Resolve 3 Urgent',done:'PA exceptions sent to store managers for cycle count'},{label:'Auto-Adjust Low',done:'2 low-priority items auto-corrected in system'}]},
     audit: { title:'Store Readiness Score — Illinois', color:'#00C27C', summary:'Operational readiness checklist across all 8 IL stores.',
       kpis:[{l:'Overall Score',v:'96%',c:'#00C27C'},{l:'Checks Passing',v:'6/7',c:'#0EA5E9'},{l:'To-Do Items',v:'3',c:'#D4A03A'},{l:'Next Review',v:'Apr 15',c:'#64A8E0'}],
       cols:['Area','Status','Score','Stores Passing','Notes'],
-      rows:[['Product accuracy','Pass','99.8%','8/8','All good'],['Documentation','Pass','100%','8/8','All filed'],['Waste tracking','Pass','98.5%','7/8','Peoria — 2 pending'],['Vault accuracy','Review','97.2%','6/8','Springfield, Champaign need cycle count'],['Team credentials','Pass','100%','8/8','All current'],['Camera systems','Pass','99.9%','8/8','1 replaced last week'],['Visitor tracking','Pass','100%','8/8','Digital logs active']]},
+      rows:[['Product accuracy','Pass','99.8%','8/8','All good'],['Documentation','Pass','100%','8/8','All filed'],['Waste tracking','Pass','98.5%','7/8','Peoria — 2 pending'],['Vault accuracy','Review','97.2%','6/8','Springfield, Champaign need cycle count'],['Team credentials','Pass','100%','8/8','All current'],['Camera systems','Pass','99.9%','8/8','1 replaced last week'],['Visitor tracking','Pass','100%','8/8','Digital logs active']],
+      actions:[{label:'Start Cycle Count',done:'Cycle count initiated at Springfield & Champaign'},{label:'Generate Report',done:'Readiness report PDF generated'}]},
     regulatory: { title:'Upcoming Industry Changes', color:'#B598E8', summary:'Key changes across your markets to stay ahead of.',
       kpis:[{l:'Upcoming',v:'5',c:'#B598E8'},{l:'Action Needed',v:'1',c:'#E87068'},{l:'Impactful',v:'2',c:'#D4A03A'},{l:'Next Date',v:'Apr 1',c:'#64A8E0'}],
       cols:['Date','State','What\'s Changing','Impact','Your Next Step'],
-      rows:[['Apr 1','Illinois','New potency testing for edibles','High','Update vendor process'],['Apr 15','New Jersey','Delivery license expansion','Medium','Evaluate delivery ops'],['May 1','Pennsylvania','System API v3 migration','High','Dev team integration update'],['May 15','Ohio','Adult-use sales begin','High','Staff training + menu update'],['Jun 1','Maryland','Updated packaging requirements','Medium','Review current packaging']]},
+      rows:[['Apr 1','Illinois','New potency testing for edibles','High','Update vendor process'],['Apr 15','New Jersey','Delivery license expansion','Medium','Evaluate delivery ops'],['May 1','Pennsylvania','System API v3 migration','High','Dev team integration update'],['May 15','Ohio','Adult-use sales begin','High','Staff training + menu update'],['Jun 1','Maryland','Updated packaging requirements','Medium','Review current packaging']],
+      actions:[{label:'Create Action Items',done:'5 tasks created and assigned to state leads'},{label:'Set Calendar Reminders',done:'Reminders set 2 weeks before each deadline'}]},
     winback_campaign: { title:'Win-Back Campaign — Lapsed Customers', color:'#00C27C', summary:'Customers inactive 60+ days with high lifetime value, ready for re-engagement.',
       kpis:[{l:'Lapsed (60d+)',v:'1,247',c:'#E87068'},{l:'Avg LTV',v:'$2,840',c:'#00C27C'},{l:'Win-Back Rate',v:'23%',c:'#D4A03A'},{l:'Est. Revenue',v:'$89K',c:'#0EA5E9'}],
       cols:['Customer Segment','Count','Avg Last Visit','Avg LTV','Top Category','Recommended Channel'],
-      rows:[['High-Value VIP (>$5K LTV)',142,'72 days','$6,420','Flower','SMS + $25 credit'],['Regular Weekly (was 1x/wk)',384,'68 days','$3,180','Vapes','Email + 20% off'],['Monthly Bulk Buyers',218,'91 days','$2,650','Edibles','Push + BOGO'],['New-ish (3-6 purchases)',503,'85 days','$890','Pre-rolls','SMS + first-timer bundle']]},
+      rows:[['High-Value VIP (>$5K LTV)',142,'72 days','$6,420','Flower','SMS + $25 credit'],['Regular Weekly (was 1x/wk)',384,'68 days','$3,180','Vapes','Email + 20% off'],['Monthly Bulk Buyers',218,'91 days','$2,650','Edibles','Push + BOGO'],['New-ish (3-6 purchases)',503,'85 days','$890','Pre-rolls','SMS + first-timer bundle']],
+      actions:[{label:'Launch Campaign',done:'Win-back campaign launched — 1,247 customers targeted'},{label:'Schedule Follow-Up',done:'Follow-up drip set for 7 days post-campaign'}]},
     market_prices: { title:'Price vs Market Comparison', color:'#D4A03A', summary:'Your top sellers compared to competitor and market average pricing.',
       kpis:[{l:'Below Market',v:'12',c:'#00C27C'},{l:'At Market',v:'18',c:'#0EA5E9'},{l:'Above Market',v:'6',c:'#E87068'},{l:'Avg Gap',v:'-3.2%',c:'#00C27C'}],
       cols:['Product','Your Price','Market Avg','Competitor Low','Gap','Recommendation'],
-      rows:[['Blue Dream 3.5g','$38','$42','$35','-9.5%','At optimal'],['STIIIZY OG Pod 1g','$52','$48','$45','+8.3%','Review — above market'],['Wyld Elderberry 10pk','$22','$24','$20','-8.3%','At optimal'],['Jeeter Baby Js 5pk','$45','$40','$38','+12.5%','Review — above market'],['Kiva Camino 20pk','$32','$30','$28','+6.7%','Review — slight premium'],['Raw Garden Sauce 1g','$28','$32','$25','-12.5%','Opportunity to raise']]},
+      rows:[['Blue Dream 3.5g','$38','$42','$35','-9.5%','At optimal'],['STIIIZY OG Pod 1g','$52','$48','$45','+8.3%','Review — above market'],['Wyld Elderberry 10pk','$22','$24','$20','-8.3%','At optimal'],['Jeeter Baby Js 5pk','$45','$40','$38','+12.5%','Review — above market'],['Kiva Camino 20pk','$32','$30','$28','+6.7%','Review — slight premium'],['Raw Garden Sauce 1g','$28','$32','$25','-12.5%','Opportunity to raise']],
+      actions:[{label:'Apply Suggested Prices',done:'3 price changes staged for review'},{label:'Run Price Simulation',done:'Margin impact simulation generated'}]},
     sentiment_overview: { title:'Customer Sentiment — This Month', color:'#B598E8', summary:'Aggregated feedback from reviews, surveys, and support interactions.',
       kpis:[{l:'NPS Score',v:'72',c:'#00C27C'},{l:'Avg Rating',v:'4.6★',c:'#D4A03A'},{l:'Reviews',v:'348',c:'#0EA5E9'},{l:'Trend',v:'+5 pts',c:'#00C27C'}],
       cols:['Theme','Mentions','Sentiment','Trend','Sample Feedback'],
-      rows:[['Product Quality',89,'Positive','Balanced','Great flower selection, always fresh'],['Wait Times',64,'Warning','Review','Line was long on Saturday, but staff was friendly'],['Staff Knowledge',52,'Positive','Balanced','Budtender knew exactly what I needed'],['Price Value',47,'Warning','Review','Prices higher than shop down the street'],['Online Ordering',38,'Positive','Balanced','Pickup was super smooth, ready in 10 min']]},
+      rows:[['Product Quality',89,'Positive','Balanced','Great flower selection, always fresh'],['Wait Times',64,'Warning','Review','Line was long on Saturday, but staff was friendly'],['Staff Knowledge',52,'Positive','Balanced','Budtender knew exactly what I needed'],['Price Value',47,'Warning','Review','Prices higher than shop down the street'],['Online Ordering',38,'Positive','Balanced','Pickup was super smooth, ready in 10 min']],
+      actions:[{label:'Address Wait Times',done:'Staffing recommendation sent to affected stores'},{label:'Share Wins with Team',done:'Positive feedback highlights shared with all stores'}]},
   };
   return A[action] || { title:'Action', color:'#D4A03A', summary:'Processing your request...', kpis:[], cols:[], rows:[] };
 }
 
 function NexusActionCard({ data, compact = false }) {
+  const [actionStates, setActionStates] = useState({});
   const sc = (v) => {
     const s = String(v).toLowerCase();
     if (['synced','pass','balanced','delivered','all clear','all good','surplus'].some(k => s.includes(k))) return '#00C27C';
@@ -2419,6 +2440,10 @@ function NexusActionCard({ data, compact = false }) {
     if (['critical','high','out of stock','urgent'].some(k => s.includes(k))) return '#E87068';
     if (['low','scheduled'].some(k => s.includes(k))) return '#64A8E0';
     return null;
+  };
+  const handleAction = (idx) => {
+    setActionStates(prev => ({ ...prev, [idx]: 'loading' }));
+    setTimeout(() => setActionStates(prev => ({ ...prev, [idx]: 'done' })), 1200);
   };
   const maxRows = compact ? 4 : undefined;
   const displayRows = maxRows && data.rows?.length > maxRows ? data.rows.slice(0, maxRows) : data.rows;
@@ -2475,6 +2500,36 @@ function NexusActionCard({ data, compact = false }) {
           )}
         </div>
       )}
+      {/* Action buttons */}
+      {data.actions?.length > 0 && (
+        <div className={`${compact ? 'px-3 pb-3 pt-1' : 'px-5 pb-4 pt-1'} flex flex-wrap gap-2`}>
+          {data.actions.map((act, idx) => {
+            const state = actionStates[idx];
+            return (
+              <button
+                key={idx}
+                onClick={() => !state && handleAction(idx)}
+                disabled={!!state}
+                className={`${compact ? 'px-3 py-1.5 text-[10px]' : 'px-4 py-2 text-xs'} rounded-xl font-semibold transition-all duration-300 flex items-center gap-2`}
+                style={state === 'done'
+                  ? { background: '#00C27C18', border: '1px solid #00C27C40', color: '#00C27C', cursor: 'default' }
+                  : state === 'loading'
+                  ? { background: `${data.color}15`, border: `1px solid ${data.color}30`, color: data.color, cursor: 'wait' }
+                  : { background: `${data.color}15`, border: `1px solid ${data.color}30`, color: data.color, cursor: 'pointer' }
+                }
+              >
+                {state === 'done' ? (
+                  <><Check className={`${compact ? 'w-3 h-3' : 'w-3.5 h-3.5'}`} />{act.done}</>
+                ) : state === 'loading' ? (
+                  <><RefreshCw className={`${compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} animate-spin`} />Running...</>
+                ) : (
+                  <><Zap className={`${compact ? 'w-3 h-3' : 'w-3.5 h-3.5'}`} />{act.label}</>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -2514,7 +2569,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
       await new Promise(r => setTimeout(r, 800));
       setThinkingStatus(null);
       const data = getNexusActionData(actionKey);
-      setMessages(prev => [...prev, { role: 'nexus', text: data.summary, responseType: 'nexus_action', actionData: data }]);
+      setMessages(prev => [...prev, { role: 'agent', text: data.summary, component: 'nexus_action', data }]);
       return;
     }
 
