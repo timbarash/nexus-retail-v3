@@ -39,7 +39,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
             <NexusIcon size={22} />
           </div>
           <div className="flex items-center">
-            <span className="text-xl tracking-tight bg-gradient-to-r from-[#D4A03A] via-[#FFC02A] to-[#D4A03A] bg-clip-text text-transparent" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontWeight: 700, fontStyle: 'italic', letterSpacing: '-0.02em' }}>nexus</span>
+            <span className="text-lg font-bold tracking-tight" style={{ background: 'radial-gradient(circle at 30% 50%, #FFD666 0%, #FFC02A 40%, #D4A03A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>nexus</span>
           </div>
         </div>
         {onClose && (
