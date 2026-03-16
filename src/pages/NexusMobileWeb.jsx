@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
 import { usePersona } from '../contexts/PersonaContext';
+import { useStores } from '../contexts/StoreContext';
+import CustomerBridge from './CustomerBridge';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    DATA — Real prototype data from NexusHome, ConnectAgent, PricingAgent
@@ -214,15 +216,56 @@ const Section = ({ title, action, onAction, children }) => (
   </div>
 );
 
+/* ── Persona Switcher Bottom Sheet ── */
+function PersonaSwitcherSheet({ isOpen, onClose, persona, onSwitch }) {
+  if (!isOpen || !persona) return null;
+  const { personas, selectedPersona } = persona;
+  return (
+    <>
+      <div className="fixed inset-0 z-[200] bg-black/60" onClick={onClose} style={{ animation: 'fadeIn 0.15s ease-out' }} />
+      <div className="fixed bottom-0 left-0 right-0 z-[201] rounded-t-3xl" style={{ background: '#1C1B1A', border: '1px solid #38332B', borderBottom: 'none', animation: 'slideUp 0.25s ease-out' }}>
+        <div className="w-10 h-1 rounded-full bg-[#38332B] mx-auto mt-3 mb-2" />
+        <div className="px-5 pb-2">
+          <div className="text-[15px] font-bold text-white mb-1">Switch Persona</div>
+          <div className="text-[11px] text-[#6B6359] mb-4">Choose your role to see relevant data and actions</div>
+        </div>
+        <div className="px-4 pb-[calc(env(safe-area-inset-bottom,16px)+12px)] space-y-1.5">
+          {personas.map(p => {
+            const Icon = p.icon;
+            const active = selectedPersona?.id === p.id;
+            return (
+              <button key={p.id} onClick={() => { onSwitch(p); onClose(); }}
+                className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all active:scale-[0.98]"
+                style={{ background: active ? 'rgba(212,160,58,0.1)' : 'transparent', border: active ? '1px solid rgba(212,160,58,0.25)' : '1px solid transparent' }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: active ? 'rgba(212,160,58,0.15)' : '#141210' }}>
+                  <Icon className="w-5 h-5" style={{ color: active ? '#D4A03A' : '#6B6359' }} />
+                </div>
+                <div className="flex-1 text-left">
+                  <div className={`text-[13px] font-semibold ${active ? 'text-[#D4A03A]' : 'text-white'}`}>{p.label}</div>
+                  <div className="text-[10px] text-[#6B6359]">{p.scope === 'portfolio' ? 'All 39 stores · 7 states' : p.scope === 'region' ? 'IL, MI, OH · 21 stores' : p.scope === 'state' ? 'Illinois · 8 stores' : p.scope === 'store' ? 'Logan Square' : 'All states'}</div>
+                </div>
+                {active && <div className="w-5 h-5 rounded-full bg-[#D4A03A] flex items-center justify-center"><Check className="w-3 h-3 text-[#141210]" /></div>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    SCREEN: HOME — Executive Dashboard
    ═══════════════════════════════════════════════════════════════════════════ */
 
-function ScreenHome({ data, alerts, vault, stores, onNav, showToast, persona }) {
+function ScreenHome({ data, alerts, vault, stores, onNav, showToast, persona, onPersonaTap }) {
   const critAlerts = alerts.filter(a => a.sev === 'CRITICAL').length;
   const oosCount = vault.filter(v => v.floor === 0).length;
   const pricingIssues = PRICING_PRODUCTS.filter(p => Math.abs(p.price - p.mktAvg) / p.mktAvg > 0.08).length;
   const PersonaIcon = persona?.selectedPersona?.icon || Store;
+  const isCEO = persona?.isCEO;
+  const isCompliance = persona?.isCompliance;
+  const isStoreMgr = persona?.isStoreMgr;
 
   return (
     <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-24">
@@ -239,10 +282,11 @@ function ScreenHome({ data, alerts, vault, stores, onNav, showToast, persona }) 
         </div>
         <div className="flex items-center gap-2">
           {persona?.selectedPersona && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: 'rgba(212,160,58,0.08)', border: '1px solid rgba(212,160,58,0.12)' }}>
+            <button onClick={onPersonaTap} className="flex items-center gap-1 px-2 py-1.5 rounded-lg active:scale-95 transition-transform" style={{ background: 'rgba(212,160,58,0.08)', border: '1px solid rgba(212,160,58,0.12)' }}>
               <PersonaIcon className="w-3 h-3 text-[#D4A03A]" />
               <span className="text-[9px] font-semibold text-[#D4A03A]">{persona.selectedPersona.shortLabel}</span>
-            </div>
+              <ChevronDown className="w-2.5 h-2.5 text-[#D4A03A]/60" />
+            </button>
           )}
           {critAlerts > 0 && (
             <button onClick={() => onNav('alerts')} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#E87068]/10 border border-[#E87068]/20">
@@ -309,6 +353,82 @@ function ScreenHome({ data, alerts, vault, stores, onNav, showToast, persona }) 
           ))}
         </div>
       </Section>
+
+      {/* Compliance Snapshot — compliance persona */}
+      {isCompliance && (
+        <Section title="Compliance Status">
+          <Card className="!p-3">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-[#00C27C]/10 flex items-center justify-center"><Shield className="w-4.5 h-4.5 text-[#00C27C]" /></div>
+              <div>
+                <div className="text-[13px] font-bold text-white">All Systems Operational</div>
+                <div className="text-[10px] text-[#6B6359]">6/7 states synced · 1 warning</div>
+              </div>
+            </div>
+            {[
+              { state: 'Illinois', sys: 'METRC', status: 'Synced', sync: '2m ago', color: '#00C27C' },
+              { state: 'Michigan', sys: 'METRC', status: 'Synced', sync: '5m ago', color: '#00C27C' },
+              { state: 'Pennsylvania', sys: 'Leaf Data', status: 'Delayed', sync: '47m ago', color: '#D4A03A' },
+              { state: 'New Jersey', sys: 'BioTrack', status: 'Synced', sync: '8m ago', color: '#00C27C' },
+            ].map((s, i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-t border-[#38332B]/50">
+                <div>
+                  <div className="text-[12px] text-white">{s.state}</div>
+                  <div className="text-[10px] text-[#6B6359]">{s.sys}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-[#6B6359]">{s.sync}</span>
+                  <span className="flex items-center gap-1 text-[10px] font-semibold" style={{ color: s.color }}>
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.color }} />{s.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+            <button onClick={() => onNav('chat')} className="w-full mt-3 py-2 rounded-lg text-[11px] font-semibold bg-[#64A8E0]/10 text-[#64A8E0] border border-[#64A8E0]/20 flex items-center justify-center gap-1">
+              <Eye className="w-3 h-3" /> Run Full Audit Check
+            </button>
+          </Card>
+        </Section>
+      )}
+
+      {/* Portfolio KPIs — CEO/VP */}
+      {(isCEO || persona?.isVP) && (
+        <Section title="Portfolio Overview">
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            {[
+              { label: 'Total Revenue', value: isCEO ? '$11.2M' : '$5.9M', sub: 'MTD', color: '#00C27C' },
+              { label: 'Avg Growth', value: isCEO ? '+11.3%' : '+11.7%', sub: 'vs prior', color: '#0EA5E9' },
+              { label: 'Portfolio Health', value: isCEO ? '91' : '92', sub: '/100', color: '#D4A03A' },
+              { label: 'Active Stores', value: isCEO ? '39' : '21', sub: 'online', color: '#B598E8' },
+            ].map((k, i) => (
+              <Card key={i} className="!p-3 text-center">
+                <div className="text-[18px] font-bold" style={{ color: k.color }}>{k.value}</div>
+                <div className="text-[10px] text-[#6B6359]">{k.label} <span className="text-[#38332B]">{k.sub}</span></div>
+              </Card>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Ops Status — Store Manager */}
+      {isStoreMgr && (
+        <Section title="Ops Status">
+          <Card className="!p-3">
+            <div className="grid grid-cols-3 gap-3 text-center">
+              {[
+                { label: 'Staff on Duty', value: '6/8', color: '#00C27C' },
+                { label: 'Peak Hour', value: '5 PM', color: '#D4A03A' },
+                { label: 'Projected', value: '920', color: '#0EA5E9' },
+              ].map((k, i) => (
+                <div key={i}>
+                  <div className="text-[16px] font-bold" style={{ color: k.color }}>{k.value}</div>
+                  <div className="text-[9px] text-[#6B6359]">{k.label}</div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </Section>
+      )}
 
       {/* Pricing Snapshot */}
       <Section title="Pricing Benchmark" action="See All" onAction={() => onNav('actions')}>
@@ -1196,7 +1316,9 @@ export default function NexusMobileWeb() {
   const [alerts, setAlerts] = useState(INITIAL_ALERTS);
   const [vault, setVault] = useState(VAULT_INVENTORY);
   const [transfers, setTransfers] = useState(INITIAL_TRANSFERS);
+  const [personaSwitcherOpen, setPersonaSwitcherOpen] = useState(false);
   const persona = usePersona();
+  const { setStoresByPersona } = useStores();
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type, key: Date.now() });
@@ -1207,6 +1329,12 @@ export default function NexusMobileWeb() {
     setScreen(s);
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
+
+  const handlePersonaSwitch = useCallback((p) => {
+    persona.setSelectedPersona(p.id);
+    setStoresByPersona(p);
+    showToast(`Switched to ${p.shortLabel}`, 'info');
+  }, [persona, setStoresByPersona, showToast]);
 
   // Handle vault transfer with connected state
   const handleVaultTransfer = useCallback((vaultId, qty) => {
@@ -1273,14 +1401,36 @@ export default function NexusMobileWeb() {
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismissToast} key={toast.key} />}
 
       <div className="mobile-screen" key={screen}>
-        {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} persona={persona} />}
+        {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} persona={persona} onPersonaTap={() => setPersonaSwitcherOpen(true)} />}
         {screen === 'alerts' && <ScreenAlerts alerts={alerts} onAction={handleAlertAction} onNav={navigate} />}
         {screen === 'floor' && <ScreenFloor vault={vault} transfers={transfers} onTransfer={handleVaultTransfer} showToast={showToast} />}
-        {screen === 'chat' && <ScreenChat vault={vault} showToast={showToast} onNav={navigate} onTransfer={handleVaultTransfer} persona={persona} />}
+        {screen === 'chat' && (
+          <div className="flex flex-col h-screen">
+            {/* Chat header */}
+            <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-2 border-b border-[#38332B] flex-shrink-0" style={{ background: '#1C1B1A' }}>
+              <div className="flex items-center gap-2.5 py-2">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#D4A03A] to-[#B8860B] flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <div className="text-[14px] font-bold text-white">Nexus Chat</div>
+                  <div className="text-[10px] text-[#00C27C] flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> {persona?.selectedPersona?.shortLabel || 'Online'}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Real CustomerBridge in overlay mode */}
+            <div className="flex-1 overflow-hidden px-2 pb-16">
+              <CustomerBridge nexusOverlay />
+            </div>
+          </div>
+        )}
         {screen === 'actions' && <ScreenActions vault={vault} transfers={transfers} showToast={showToast} onNav={navigate} />}
       </div>
 
       <BottomNav active={screen} onNavigate={navigate} alertCount={alerts.length} />
+      <PersonaSwitcherSheet isOpen={personaSwitcherOpen} onClose={() => setPersonaSwitcherOpen(false)} persona={persona} onSwitch={handlePersonaSwitch} />
     </div>
   );
 }
