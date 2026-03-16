@@ -99,7 +99,7 @@ export default function App() {
           Nexus v3 — AI-Powered Command Center for Cannabis Retail
         </div>
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto" style={{
-          background: `radial-gradient(ellipse 80% 60% at 50% 40%, rgba(212,160,58,0.015) 0%, transparent 60%), radial-gradient(ellipse 120% 100% at 50% 0%, #181513 0%, #141210 50%)`,
+          background: `radial-gradient(ellipse 60% 50% at 20% 30%, rgba(0,194,124,0.02) 0%, transparent 50%), radial-gradient(ellipse 80% 60% at 50% 40%, rgba(212,160,58,0.015) 0%, transparent 60%), radial-gradient(ellipse 120% 100% at 50% 0%, #181513 0%, #141210 50%)`,
           backgroundColor: '#141210',
           backgroundAttachment: 'fixed',
         }}>

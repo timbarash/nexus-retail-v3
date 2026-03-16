@@ -72,8 +72,8 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
                 className={({ isActive }) =>
                   `group flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-150 ${
                     isActive
-                      ? 'bg-white/[0.10] text-white'
-                      : 'text-white/60 hover:bg-white/[0.06] hover:text-white/90'
+                      ? 'bg-[#00C27C]/[0.12] text-white'
+                      : 'text-white/60 hover:bg-[#00C27C]/[0.06] hover:text-white/90'
                   }`
                 }
               >
@@ -81,7 +81,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
                   <>
                     <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-colors duration-150 ${isActive ? 'text-white/90' : 'text-white/40 group-hover:text-white/70'}`} strokeWidth={isActive ? 2.2 : 1.8} />
                     <span>{label}</span>
-                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#D4A03A]" />}
+                    {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00C27C]" />}
                   </>
                 )}
               </NavLink>

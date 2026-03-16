@@ -126,7 +126,7 @@ function Toast({ message, type = 'success', onDismiss }) {
   const bg = type === 'success' ? '#00C27C' : type === 'warning' ? '#D4A03A' : type === 'error' ? '#E87068' : '#64A8E0';
   return (
     <div className="fixed top-4 left-4 right-4 z-[10000] flex justify-center" style={{ animation: 'slideDown 0.3s ease-out' }}>
-      <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl max-w-sm w-full" style={{ background: '#1E1D1B', border: `1px solid ${bg}40` }}>
+      <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl max-w-sm w-full" style={{ background: '#1C1B1A', border: `1px solid ${bg}40` }}>
         <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `${bg}20` }}>
           <Check className="w-3.5 h-3.5" style={{ color: bg }} />
         </div>
@@ -141,8 +141,8 @@ function HealthRing({ score, size = 44 }) {
   const c = score >= 75 ? '#00C27C' : score >= 55 ? '#D4A03A' : '#E87068';
   const inner = Math.round(size * 0.72);
   return (
-    <div className="rounded-full flex items-center justify-center flex-shrink-0" style={{ width: size, height: size, background: `conic-gradient(${c} ${score * 3.6}deg, #2A2722 0deg)` }}>
-      <div className="rounded-full bg-[#161514] flex items-center justify-center font-bold" style={{ width: inner, height: inner, color: c, fontSize: size * 0.27 }}>{score}</div>
+    <div className="rounded-full flex items-center justify-center flex-shrink-0" style={{ width: size, height: size, background: `conic-gradient(${c} ${score * 3.6}deg, #38332B 0deg)` }}>
+      <div className="rounded-full bg-[#1C1B1A] flex items-center justify-center font-bold" style={{ width: inner, height: inner, color: c, fontSize: size * 0.27 }}>{score}</div>
     </div>
   );
 }
@@ -162,10 +162,10 @@ function PriceBar({ price, mktLow, mktHigh, mktAvg }) {
   const yourPos = Math.max(0, Math.min(100, ((price - mktLow) / range) * 100));
   const avgPos = Math.max(0, Math.min(100, ((mktAvg - mktLow) / range) * 100));
   return (
-    <div className="relative h-2 rounded-full bg-[#2A2722] w-full mt-1">
+    <div className="relative h-2 rounded-full bg-[#38332B] w-full mt-1">
       <div className="absolute top-0 h-2 rounded-full" style={{ left: 0, width: '100%', background: 'linear-gradient(90deg, #00C27C, #D4A03A, #E87068)' , opacity: 0.3 }} />
       <div className="absolute -top-0.5 w-1 h-3 rounded bg-[#6B6359]" style={{ left: `${avgPos}%` }} title="Market Avg" />
-      <div className="absolute -top-1 w-2.5 h-4 rounded-sm bg-white border border-[#0D0C0A]" style={{ left: `calc(${yourPos}% - 5px)` }} title="Your Price" />
+      <div className="absolute -top-1 w-2.5 h-4 rounded-sm bg-white border border-[#141210]" style={{ left: `calc(${yourPos}% - 5px)` }} title="Your Price" />
     </div>
   );
 }
@@ -179,7 +179,7 @@ function BottomNav({ active = 'home', onNavigate, alertCount = 0 }) {
     { id: 'actions', icon: LayoutGrid, label: 'Actions' },
   ];
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom,8px)] pt-3" style={{ background: 'linear-gradient(transparent 0%, rgba(10,9,8,0.97) 35%)' }}>
+    <div className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[env(safe-area-inset-bottom,8px)] pt-3" style={{ background: 'linear-gradient(transparent 0%, rgba(20,18,16,0.97) 35%)' }}>
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {tabs.map(t => {
           const Icon = t.icon;
@@ -200,7 +200,7 @@ function BottomNav({ active = 'home', onNavigate, alertCount = 0 }) {
 }
 
 const Card = ({ children, className = '', style = {} }) => (
-  <div className={`rounded-2xl p-4 ${className}`} style={{ background: '#161514', border: '1px solid #2A2722', ...style }}>{children}</div>
+  <div className={`rounded-2xl p-4 ${className}`} style={{ background: '#1C1B1A', border: '1px solid #38332B', ...style }}>{children}</div>
 );
 
 const Section = ({ title, action, onAction, children }) => (
@@ -258,7 +258,7 @@ function ScreenHome({ data, alerts, vault, stores, onNav, showToast }) {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-3 mt-4 pt-3 border-t border-[#2A2722]">
+        <div className="grid grid-cols-4 gap-3 mt-4 pt-3 border-t border-[#38332B]">
           {[
             { label: 'Traffic', value: data.traffic.today, sub: data.traffic.delta, up: true },
             { label: 'Sentiment', value: `${data.sentiment.score}/5`, sub: `NPS ${data.sentiment.nps}`, up: true },
@@ -318,7 +318,7 @@ function ScreenHome({ data, alerts, vault, stores, onNav, showToast }) {
             const diff = ((p.price - p.mktAvg) / p.mktAvg * 100).toFixed(0);
             const diffColor = Math.abs(diff) <= 5 ? '#00C27C' : Math.abs(diff) <= 10 ? '#D4A03A' : '#E87068';
             return (
-              <div key={p.id} className="flex items-center justify-between py-2 border-t border-[#2A2722]/50">
+              <div key={p.id} className="flex items-center justify-between py-2 border-t border-[#38332B]/50">
                 <div className="flex-1 min-w-0">
                   <div className="text-[12px] text-white truncate">{p.name}</div>
                   <div className="text-[10px] text-[#6B6359]">{p.brand} &middot; {p.margin}% margin</div>
@@ -382,7 +382,7 @@ function ScreenAlerts({ alerts, onAction, onNav }) {
       <div className="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4 scrollbar-hide">
         {filters.map(f => (
           <button key={f.id} onClick={() => setFilter(f.id)}
-            className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${filter === f.id ? 'bg-[#D4A03A]/15 text-[#D4A03A] border border-[#D4A03A]/30' : 'bg-[#161514] text-[#6B6359] border border-[#2A2722]'}`}>
+            className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${filter === f.id ? 'bg-[#D4A03A]/15 text-[#D4A03A] border border-[#D4A03A]/30' : 'bg-[#1C1B1A] text-[#6B6359] border border-[#38332B]'}`}>
             {f.label} ({f.count})
           </button>
         ))}
@@ -474,10 +474,10 @@ function ScreenFloor({ vault, transfers, onTransfer, showToast }) {
       </div>
 
       {/* Tab toggle */}
-      <div className="flex bg-[#161514] rounded-xl p-1 mb-4 border border-[#2A2722]">
+      <div className="flex bg-[#1C1B1A] rounded-xl p-1 mb-4 border border-[#38332B]">
         {['inventory', 'transfers'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`flex-1 py-2 rounded-lg text-[12px] font-semibold transition-all ${tab === t ? 'bg-[#2A2722] text-white' : 'text-[#6B6359]'}`}>
+            className={`flex-1 py-2 rounded-lg text-[12px] font-semibold transition-all ${tab === t ? 'bg-[#38332B] text-white' : 'text-[#6B6359]'}`}>
             {t === 'inventory' ? `Inventory (${vault.length})` : `Log (${transfers.length})`}
           </button>
         ))}
@@ -498,7 +498,7 @@ function ScreenFloor({ vault, transfers, onTransfer, showToast }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-2 mb-2.5 py-2 bg-[#0D0C0A] rounded-lg px-2">
+              <div className="grid grid-cols-4 gap-2 mb-2.5 py-2 bg-[#141210] rounded-lg px-2">
                 <div className="text-center">
                   <div className="text-[14px] font-bold" style={{ color: statusColor(v) }}>{v.floor}</div>
                   <div className="text-[8px] text-[#6B6359]">Floor</div>
@@ -522,11 +522,11 @@ function ScreenFloor({ vault, transfers, onTransfer, showToast }) {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[11px] text-[#A39B8D]">Transfer quantity:</span>
                     <div className="flex items-center gap-3">
-                      <button onClick={() => setTransferQty(q => Math.max(1, q - 1))} className="w-8 h-8 rounded-lg bg-[#2A2722] flex items-center justify-center">
+                      <button onClick={() => setTransferQty(q => Math.max(1, q - 1))} className="w-8 h-8 rounded-lg bg-[#38332B] flex items-center justify-center">
                         <Minus className="w-3.5 h-3.5 text-white" />
                       </button>
                       <span className="text-[16px] font-bold text-white w-8 text-center">{transferQty}</span>
-                      <button onClick={() => setTransferQty(q => Math.min(v.vault, q + 1))} className="w-8 h-8 rounded-lg bg-[#2A2722] flex items-center justify-center">
+                      <button onClick={() => setTransferQty(q => Math.min(v.vault, q + 1))} className="w-8 h-8 rounded-lg bg-[#38332B] flex items-center justify-center">
                         <Plus className="w-3.5 h-3.5 text-white" />
                       </button>
                     </div>
@@ -536,7 +536,7 @@ function ScreenFloor({ vault, transfers, onTransfer, showToast }) {
                     <span>Chain of custody logged to {v.metrc}</span>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => { setSelectedId(null); setTransferQty(0); }} className="flex-1 py-2.5 rounded-xl text-[12px] font-semibold bg-[#2A2722] text-[#6B6359]">Cancel</button>
+                    <button onClick={() => { setSelectedId(null); setTransferQty(0); }} className="flex-1 py-2.5 rounded-xl text-[12px] font-semibold bg-[#38332B] text-[#6B6359]">Cancel</button>
                     <button onClick={handleTransfer} className="flex-1 py-2.5 rounded-xl text-[12px] font-semibold bg-[#D4A03A]/15 text-[#D4A03A] border border-[#D4A03A]/25">
                       Confirm Transfer
                     </button>
@@ -546,7 +546,7 @@ function ScreenFloor({ vault, transfers, onTransfer, showToast }) {
                 <button
                   onClick={() => { setSelectedId(v.id); setTransferQty(Math.min(v.vault, Math.ceil(v.avgWeekly / 2))); }}
                   className="w-full py-2.5 rounded-xl text-[12px] font-semibold flex items-center justify-center gap-1.5"
-                  style={{ background: v.vault > 0 ? '#D4A03A15' : '#2A2722', color: v.vault > 0 ? '#D4A03A' : '#6B6359', border: v.vault > 0 ? '1px solid #D4A03A25' : '1px solid #2A2722' }}
+                  style={{ background: v.vault > 0 ? '#D4A03A15' : '#38332B', color: v.vault > 0 ? '#D4A03A' : '#6B6359', border: v.vault > 0 ? '1px solid #D4A03A25' : '1px solid #38332B' }}
                   disabled={v.vault <= 0}>
                   <ArrowRightLeft className="w-3.5 h-3.5" />
                   {v.vault > 0 ? 'Transfer to Floor' : 'No Vault Stock'}
@@ -586,13 +586,21 @@ function ScreenFloor({ vault, transfers, onTransfer, showToast }) {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function ScreenChat({ vault, showToast, onNav }) {
-  const [messages, setMessages] = useState([
-    { id: 'welcome', role: 'assistant', content: "Hey! I'm Nexus, your AI retail assistant. I can help you reorder inventory, launch campaigns, analyze pricing, check customer sentiment, pull sales summaries, and more.\n\nWhat do you need?", type: 'text' }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showTiles, setShowTiles] = useState(true);
   const chatRef = useRef(null);
   const inputRef = useRef(null);
+
+  const ACTION_TILES = [
+    { id: 'restock', icon: Package, label: 'Restock Inventory', desc: 'Find out-of-stock items and reorder from suppliers', tag: 'Urgent', tagColor: '#E87068', gradient: 'from-red-600/20 to-orange-600/20', query: 'Reorder out-of-stock inventory' },
+    { id: 'campaign', icon: Rocket, label: 'Launch Campaign', desc: 'Ready-to-go campaigns targeting lapsed and active customers', tag: 'Marketing', tagColor: '#00C27C', gradient: 'from-green-600/20 to-emerald-600/20', query: 'Run a marketing campaign' },
+    { id: 'pricing', icon: DollarSign, label: 'Price Benchmarks', desc: 'Compare your prices vs market and find margin opportunities', tag: 'Pricing', tagColor: '#D4A03A', gradient: 'from-amber-600/20 to-orange-600/20', query: 'Compare prices vs market' },
+    { id: 'sentiment', icon: Star, label: 'Customer Sentiment', desc: 'NPS scores, review trends, and satisfaction analysis', tag: 'Insights', tagColor: '#64A8E0', gradient: 'from-blue-600/20 to-indigo-600/20', query: 'Customer sentiment this month' },
+    { id: 'sales', icon: BarChart3, label: 'Sales Summary', desc: "Today's revenue, top sellers, and category breakdown", tag: 'Performance', tagColor: '#00C27C', gradient: 'from-emerald-600/20 to-green-600/20', query: 'Weekly sales summary' },
+    { id: 'trending', icon: TrendingUp, label: 'Trending Products', desc: 'Hot products in your market worth adding to inventory', tag: 'Discovery', tagColor: '#B598E8', gradient: 'from-purple-600/20 to-indigo-600/20', query: 'Trending products to add' },
+  ];
 
   useEffect(() => {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
@@ -602,6 +610,7 @@ function ScreenChat({ vault, showToast, onNav }) {
     const msg = text || input.trim();
     if (!msg) return;
     setInput('');
+    setShowTiles(false);
     setMessages(prev => [...prev, { id: `u-${Date.now()}`, role: 'user', content: msg, type: 'text' }]);
     setIsTyping(true);
 
@@ -702,7 +711,7 @@ function ScreenChat({ vault, showToast, onNav }) {
           <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
           <div className="space-y-2">
             {msg.items.map((item, i) => (
-              <div key={i} className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+              <div key={i} className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
                 <div className="flex justify-between items-start mb-1.5">
                   <div>
                     <div className="text-[13px] font-semibold text-white">{item.name}</div>
@@ -730,7 +739,7 @@ function ScreenChat({ vault, showToast, onNav }) {
           <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
           <div className="space-y-2">
             {msg.campaigns.map((c, i) => (
-              <div key={i} className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+              <div key={i} className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
                 <div className="text-[13px] font-semibold text-white mb-1">{c.name}</div>
                 <div className="text-[11px] text-[#A39B8D] mb-2">{c.desc}</div>
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-[#6B6359] mb-2.5">
@@ -756,7 +765,7 @@ function ScreenChat({ vault, showToast, onNav }) {
               const diff = ((p.price - p.mktAvg) / p.mktAvg * 100).toFixed(0);
               const diffColor = Math.abs(diff) <= 5 ? '#00C27C' : Math.abs(diff) <= 10 ? '#D4A03A' : '#E87068';
               return (
-                <div key={i} className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+                <div key={i} className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
                   <div className="flex justify-between items-start mb-1">
                     <div>
                       <div className="text-[12px] font-semibold text-white">{p.name}</div>
@@ -785,7 +794,7 @@ function ScreenChat({ vault, showToast, onNav }) {
       return (
         <div>
           <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
-          <div className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722] mb-2">
+          <div className="p-3 rounded-xl bg-[#141210] border border-[#38332B] mb-2">
             <div className="flex gap-4 mb-3">
               <div className="text-center">
                 <div className="text-[22px] font-bold text-[#00C27C]">{d.nps}</div>
@@ -808,7 +817,7 @@ function ScreenChat({ vault, showToast, onNav }) {
               <div key={i} className="flex items-center gap-1.5 text-[11px] text-[#E87068] mb-0.5"><TrendingDown className="w-3 h-3" />{n}</div>
             ))}
           </div>
-          <div className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+          <div className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
             <div className="text-[10px] text-[#6B6359] mb-1">Recent Review</div>
             <div className="text-[12px] text-[#E8E3DA] italic leading-relaxed">{d.topReview}</div>
           </div>
@@ -820,7 +829,7 @@ function ScreenChat({ vault, showToast, onNav }) {
       return (
         <div>
           <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
-          <div className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722] mb-2">
+          <div className="p-3 rounded-xl bg-[#141210] border border-[#38332B] mb-2">
             <div className="flex justify-between items-center mb-3">
               <div>
                 <div className="text-[22px] font-bold text-white">{d.total}</div>
@@ -830,13 +839,13 @@ function ScreenChat({ vault, showToast, onNav }) {
             </div>
             <div className="text-[11px] text-[#A39B8D] mb-2">Top Sellers Today</div>
             {d.topSellers.map((s, i) => (
-              <div key={i} className="flex justify-between py-1.5 border-t border-[#2A2722]/50 text-[11px]">
+              <div key={i} className="flex justify-between py-1.5 border-t border-[#38332B]/50 text-[11px]">
                 <span className="text-white">{i + 1}. {s.name}</span>
                 <span className="text-[#6B6359]">{s.units}u &middot; {s.rev}</span>
               </div>
             ))}
           </div>
-          <div className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+          <div className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
             <div className="text-[11px] text-[#A39B8D] mb-2">Revenue by Category</div>
             {d.byCategory.map((c, i) => (
               <div key={i} className="mb-2">
@@ -844,7 +853,7 @@ function ScreenChat({ vault, showToast, onNav }) {
                   <span className="text-white">{c.cat}</span>
                   <span className="text-[#6B6359]">{c.rev} ({c.pct}%)</span>
                 </div>
-                <div className="h-1.5 rounded-full bg-[#2A2722]">
+                <div className="h-1.5 rounded-full bg-[#38332B]">
                   <div className="h-1.5 rounded-full bg-[#D4A03A]" style={{ width: `${c.pct}%` }} />
                 </div>
               </div>
@@ -859,7 +868,7 @@ function ScreenChat({ vault, showToast, onNav }) {
           <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
           <div className="space-y-2">
             {msg.products.map((p, i) => (
-              <div key={i} className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+              <div key={i} className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
                 <div className="flex justify-between items-start mb-1">
                   <div>
                     <div className="text-[12px] font-semibold text-white">{p.name}</div>
@@ -879,9 +888,9 @@ function ScreenChat({ vault, showToast, onNav }) {
   };
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#0D0C0A' }}>
+    <div className="flex flex-col h-screen" style={{ background: '#141210' }}>
       {/* Chat Header */}
-      <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-2 border-b border-[#2A2722]" style={{ background: '#161514' }}>
+      <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-2 border-b border-[#38332B]" style={{ background: '#1C1B1A' }}>
         <div className="flex items-center gap-2.5 py-2">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#D4A03A] to-[#B8860B] flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-white" />
@@ -895,58 +904,90 @@ function ScreenChat({ vault, showToast, onNav }) {
         </div>
       </div>
 
-      {/* Messages */}
-      <div ref={chatRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4" style={{ paddingBottom: '140px' }}>
-        {messages.map(msg => (
-          <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[88%] rounded-2xl px-4 py-3 ${
-              msg.role === 'user'
-                ? 'bg-[#D4A03A]/15 border border-[#D4A03A]/20'
-                : 'bg-[#161514] border border-[#2A2722]'
-            }`}>
-              {msg.role === 'assistant' && (
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Sparkles className="w-3 h-3 text-[#D4A03A]" />
-                  <span className="text-[10px] font-semibold text-[#D4A03A]">Nexus</span>
-                </div>
-              )}
-              {renderMessage(msg)}
+      {/* Content Area */}
+      <div ref={chatRef} className="flex-1 overflow-y-auto px-4 py-4" style={{ paddingBottom: '100px' }}>
+        {showTiles ? (
+          /* ── Action Tiles Grid (Connect-style) ── */
+          <div>
+            <div className="text-center mb-5 mt-2">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#D4A03A] to-[#B8860B] flex items-center justify-center mx-auto mb-3">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-[16px] font-bold text-[#F0EDE8] mb-1">Nexus AI Assistant</div>
+              <div className="text-[12px] text-[#ADA599] leading-relaxed max-w-[280px] mx-auto">
+                Your AI-powered retail command center. Ask anything or tap an action below.
+              </div>
+            </div>
+
+            <div className="text-[10px] text-[#ADA599] uppercase tracking-wider font-semibold mb-2.5 px-1">Quick actions</div>
+            <div className="grid grid-cols-2 gap-2.5">
+              {ACTION_TILES.map(tile => {
+                const Icon = tile.icon;
+                return (
+                  <button key={tile.id} onClick={() => handleSend(tile.query)}
+                    className={`text-left p-3.5 rounded-xl bg-[#1C1B1A] border border-[#38332B] active:scale-[0.97] transition-all`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${tile.gradient} flex items-center justify-center`}>
+                        <Icon className="w-4 h-4" style={{ color: tile.tagColor }} />
+                      </div>
+                      <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full border border-white/10" style={{ color: tile.tagColor, background: `${tile.tagColor}15` }}>
+                        {tile.tag}
+                      </span>
+                    </div>
+                    <div className="text-[13px] font-semibold text-[#F0EDE8] mb-0.5">{tile.label}</div>
+                    <div className="text-[10px] text-[#6B6359] leading-snug">{tile.desc}</div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="text-center mt-4 text-[10px] text-[#6B6359]">
+              Or type a question below to get started
             </div>
           </div>
-        ))}
-        {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-[#161514] border border-[#2A2722] rounded-2xl px-4 py-3">
-              <div className="flex items-center gap-1.5 mb-1">
-                <Sparkles className="w-3 h-3 text-[#D4A03A]" />
-                <span className="text-[10px] font-semibold text-[#D4A03A]">Nexus</span>
+        ) : (
+          /* ── Chat Messages ── */
+          <div className="space-y-4">
+            {messages.map(msg => (
+              <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[88%] rounded-2xl px-4 py-3 ${
+                  msg.role === 'user'
+                    ? 'bg-[#D4A03A]/15 border border-[#D4A03A]/20'
+                    : 'bg-[#1C1B1A] border border-[#38332B]'
+                }`}>
+                  {msg.role === 'assistant' && (
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Sparkles className="w-3 h-3 text-[#D4A03A]" />
+                      <span className="text-[10px] font-semibold text-[#D4A03A]">Nexus</span>
+                    </div>
+                  )}
+                  {renderMessage(msg)}
+                </div>
               </div>
-              <div className="flex gap-1.5 items-center h-5">
-                <span className="w-2 h-2 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '300ms' }} />
+            ))}
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="bg-[#1C1B1A] border border-[#38332B] rounded-2xl px-4 py-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Sparkles className="w-3 h-3 text-[#D4A03A]" />
+                    <span className="text-[10px] font-semibold text-[#D4A03A]">Nexus</span>
+                  </div>
+                  <div className="flex gap-1.5 items-center h-5">
+                    <span className="w-2 h-2 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Suggestions */}
-      {messages.length <= 1 && (
-        <div className="px-4 pb-2">
-          <div className="flex flex-wrap gap-2">
-            {CHAT_SUGGESTIONS.map((s, i) => (
-              <button key={i} onClick={() => handleSend(s)}
-                className="px-3.5 py-2.5 rounded-xl text-[12px] font-medium bg-[#161514] border border-[#2A2722] text-[#A39B8D] active:bg-[#2A2722] min-h-[40px]">
-                {s}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Nothing here — tiles are inline now */}
 
       {/* Input */}
-      <div className="px-4 pb-[env(safe-area-inset-bottom,8px)] pt-2 border-t border-[#2A2722]" style={{ background: '#161514' }}>
+      <div className="px-4 pb-[env(safe-area-inset-bottom,8px)] pt-2 border-t border-[#38332B]" style={{ background: '#1C1B1A' }}>
         <div className="flex items-center gap-2">
           <input
             ref={inputRef}
@@ -954,7 +995,7 @@ function ScreenChat({ vault, showToast, onNav }) {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSend()}
             placeholder="Ask Nexus anything..."
-            className="flex-1 bg-[#0D0C0A] border border-[#2A2722] rounded-xl px-4 py-3 text-[14px] text-white placeholder-[#6B6359] outline-none focus:border-[#D4A03A]/40 min-h-[48px]"
+            className="flex-1 bg-[#141210] border border-[#38332B] rounded-xl px-4 py-3 text-[14px] text-white placeholder-[#6B6359] outline-none focus:border-[#D4A03A]/40 min-h-[48px]"
           />
           <button
             onClick={() => handleSend()}
@@ -1063,7 +1104,7 @@ function ScreenActions({ vault, transfers, showToast, onNav }) {
                     <div className="text-[13px] font-semibold text-white">{item.title}</div>
                     <div className="text-[10px] text-[#6B6359] leading-snug">{item.sub}</div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[#2A2722] flex-shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-[#38332B] flex-shrink-0" />
                 </Card>
               </button>
             ))}
@@ -1146,7 +1187,7 @@ export default function NexusMobileWeb() {
   }, [navigate, showToast]);
 
   return (
-    <div className="min-h-screen text-white" style={{ background: '#0D0C0A', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+    <div className="min-h-screen text-white" style={{ background: '#141210', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       <style>{`
         @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
