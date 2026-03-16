@@ -2399,7 +2399,7 @@ function getNexusActionData(action) {
   return A[action] || { title:'Action', color:'#D4A03A', summary:'Processing your request...', kpis:[], cols:[], rows:[] };
 }
 
-function NexusActionCard({ data }) {
+function NexusActionCard({ data, compact = false }) {
   const sc = (v) => {
     const s = String(v).toLowerCase();
     if (['synced','pass','balanced','delivered','all clear','surplus'].some(k => s.includes(k))) return '#00C27C';
@@ -2408,36 +2408,38 @@ function NexusActionCard({ data }) {
     if (['low','scheduled'].some(k => s.includes(k))) return '#64A8E0';
     return null;
   };
+  const maxRows = compact ? 4 : undefined;
+  const displayRows = maxRows && data.rows?.length > maxRows ? data.rows.slice(0, maxRows) : data.rows;
   return (
     <div className="bg-[#141210] rounded-xl border border-[#38332B] overflow-hidden">
-      <div className="px-4 py-2.5 border-b border-[#38332B] flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${data.color}20` }}>
-          <BarChart3 className="w-3.5 h-3.5" style={{ color: data.color }} />
+      <div className={`${compact ? 'px-3 py-2' : 'px-4 py-2.5'} border-b border-[#38332B] flex items-center gap-2`}>
+        <div className={`${compact ? 'w-5 h-5' : 'w-7 h-7'} rounded-lg flex items-center justify-center`} style={{ background: `${data.color}20` }}>
+          <BarChart3 className={`${compact ? 'w-2.5 h-2.5' : 'w-3.5 h-3.5'}`} style={{ color: data.color }} />
         </div>
-        <span className="text-sm font-semibold text-[#F0EDE8]">{data.title}</span>
+        <span className={`${compact ? 'text-xs' : 'text-sm'} font-semibold text-[#F0EDE8]`}>{data.title}</span>
       </div>
       {data.kpis && (
-        <div className="grid grid-cols-4 gap-1 px-3 py-2.5 border-b border-[#38332B]">
-          {data.kpis.map((k, i) => (
+        <div className={`grid ${compact ? 'grid-cols-2 gap-1 px-2.5 py-2' : 'grid-cols-4 gap-1 px-3 py-2.5'} border-b border-[#38332B]`}>
+          {(compact ? data.kpis.slice(0, 4) : data.kpis).map((k, i) => (
             <div key={i} className="text-center">
-              <p className="text-[9px] text-[#6B6359]">{k.l}</p>
-              <p className="text-xs font-bold" style={{ color: k.c }}>{k.v}</p>
+              <p className={`${compact ? 'text-[8px]' : 'text-[9px]'} text-[#6B6359]`}>{k.l}</p>
+              <p className={`${compact ? 'text-[11px]' : 'text-xs'} font-bold`} style={{ color: k.c }}>{k.v}</p>
             </div>
           ))}
         </div>
       )}
-      {data.rows?.length > 0 && (
+      {displayRows?.length > 0 && (
         <div className="overflow-x-auto">
-          <table className="w-full text-[11px]">
+          <table className={`w-full ${compact ? 'text-[10px]' : 'text-[11px]'}`}>
             <thead><tr className="border-b border-[#38332B]">
-              {data.cols.map((c, i) => <th key={i} className="px-2.5 py-1.5 text-left text-[9px] font-semibold text-[#6B6359] uppercase tracking-wider whitespace-nowrap">{c}</th>)}
+              {data.cols.map((c, i) => <th key={i} className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-left text-[9px] font-semibold text-[#6B6359] uppercase tracking-wider whitespace-nowrap`}>{c}</th>)}
             </tr></thead>
             <tbody>
-              {data.rows.map((row, ri) => (
+              {displayRows.map((row, ri) => (
                 <tr key={ri} className="border-b border-[#38332B]/40 hover:bg-[#1C1B1A]/60">
                   {row.map((cell, ci) => {
                     const color = sc(cell);
-                    return <td key={ci} className="px-2.5 py-1.5 whitespace-nowrap">{color
+                    return <td key={ci} className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} whitespace-nowrap`}>{color
                       ? <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }}/><span style={{ color }} className="font-medium">{String(cell)}</span></span>
                       : <span className="text-[#F0EDE8]">{String(cell)}</span>
                     }</td>;
@@ -2446,6 +2448,11 @@ function NexusActionCard({ data }) {
               ))}
             </tbody>
           </table>
+          {maxRows && data.rows?.length > maxRows && (
+            <div className="px-2.5 py-1.5 text-center text-[9px] text-[#6B6359] border-t border-[#38332B]/40">
+              +{data.rows.length - maxRows} more rows
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -2456,7 +2463,7 @@ function NexusActionCard({ data }) {
    MAIN PAGE COMPONENT
    ═══════════════════════════════════════════════════════════════════ */
 
-export default function CustomerBridge({ compact = false, nexusOverlay = false }) {
+export default function CustomerBridge({ compact = false, nexusOverlay = false, mobileCompact = false }) {
   const navigate = useNavigate();
   const { addInteraction } = usePortal();
   const { selectedPersona, isCEO, isVP, isRegional, isStoreMgr, isCompliance } = usePersona();
@@ -3080,7 +3087,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
     ],
     store_mgr: [
       { key: 'inventory', label: 'Show items that need vault-to-floor transfer', icon: ShoppingCart, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Inventory', tagColor: '#64A8E0', confidence: 'high', action: 'vault_transfer' },
-      { key: 'campaign', label: 'Run a marketing campaign for my top sellers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Marketing', tagColor: '#00C27C' },
+      { key: 'campaign', label: 'Launch a win-back campaign for lapsed customers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Marketing', tagColor: '#00C27C' },
       { key: 'pricing_gap', label: 'Compare my prices vs the market', icon: DollarSign, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Pricing', tagColor: '#D4A03A' },
       { key: 'sentiment_check', label: "How's our customer sentiment this month?", icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Sentiment', tagColor: '#B598E8' },
     ],
@@ -3270,58 +3277,58 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
                 </div>
               )}
               {msg.component === 'campaign' && msg.data && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <CampaignPlan data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'reorder' && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <ReorderView data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'explore' && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <ExploreView data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'recommendations' && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <RecommendationsView data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'pricing_market_comparison' && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <MarketComparisonView data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'pricing_price_cost_overview' && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <PriceCostView data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'pricing_discount_review' && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <DiscountReviewView data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'pricing_price_scenarios' && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <PriceScenariosView data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'pricing_change_prices' && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <ChangePricesView data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'pricing_create_discount' && (
-                <div className="mt-3 -mx-5">
+                <div className={mobileCompact ? "mt-2 overflow-x-auto text-xs" : "mt-3 -mx-5"}>
                   <CreateDiscountView data={msg.data} onBack={null} />
                 </div>
               )}
               {msg.component === 'nexus_action' && msg.data && (
-                <div className="mt-3">
-                  <NexusActionCard data={msg.data} />
+                <div className={mobileCompact ? "mt-2" : "mt-3"}>
+                  <NexusActionCard data={msg.data} compact={mobileCompact} />
                 </div>
               )}
             </div>
@@ -3333,23 +3340,22 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
         {/* suggestion bubbles — show when no messages or after result */}
         {messages.length === 0 && thinkingStatus === null && (
           <div className={`pt-2 animate-fade-in ${nexusOverlay ? 'max-w-[580px] mx-auto' : ''}`}>
-            {!nexusOverlay && <p className={`text-xs text-[#ADA599] mb-3 ${compact ? '' : 'ml-11'}`}>{compact ? 'Try asking:' : 'Try one of these scenarios'}</p>}
-            <div className={`grid gap-3 stagger-grid ${nexusOverlay ? 'grid-cols-2 sm:grid-cols-3 gap-3' : compact ? 'grid-cols-1 gap-2' : 'grid-cols-1 sm:grid-cols-2 ml-11'}`}>
+            {!nexusOverlay && !mobileCompact && <p className={`text-xs text-[#ADA599] mb-3 ${compact ? '' : 'ml-11'}`}>{compact ? 'Try asking:' : 'Try one of these scenarios'}</p>}
+            <div className={`grid stagger-grid ${mobileCompact ? 'grid-cols-2 gap-2' : nexusOverlay ? 'grid-cols-2 sm:grid-cols-3 gap-3' : compact ? 'grid-cols-1 gap-2' : 'grid-cols-1 sm:grid-cols-2 gap-3 ml-11'}`}>
               {compactSuggestions.map((s) => (
                 <button
                   key={s.key}
                   onClick={() => handleSuggestionClick(s.key)}
-                  className={`group text-left bg-[#1C1B1A] border border-[#38332B] ${s.border} rounded-xl ${compact ? 'p-3' : 'p-4'} transition-all hover:brightness-110 hover:scale-[1.02] active:scale-[0.98]`}
+                  className={`group text-left bg-[#1C1B1A] border border-[#38332B] ${s.border} rounded-xl ${mobileCompact ? 'p-2.5' : compact ? 'p-3' : 'p-4'} transition-all hover:brightness-110 hover:scale-[1.02] active:scale-[0.98]`}
                 >
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className={`${compact ? 'w-6 h-6' : 'w-8 h-8'} rounded-lg bg-gradient-to-br ${s.gradient} flex items-center justify-center`}>
-                      <s.icon className={`${compact ? 'w-3 h-3' : 'w-4 h-4'} text-[#F0EDE8]`} />
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <div className={`${mobileCompact ? 'w-5 h-5' : compact ? 'w-6 h-6' : 'w-8 h-8'} rounded-lg bg-gradient-to-br ${s.gradient} flex items-center justify-center`}>
+                      <s.icon className={`${mobileCompact ? 'w-2.5 h-2.5' : compact ? 'w-3 h-3' : 'w-4 h-4'} text-[#F0EDE8]`} />
                     </div>
-                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full border border-white/10" style={{ color: s.tagColor }}>{s.tag}</span>
-                    {s.confidence === 'high' && <span className="text-[9px] font-semibold text-[#00C27C] bg-[#00C27C]/10 px-1.5 py-0.5 rounded border border-[#00C27C]/30">High</span>}
+                    <span className={`${mobileCompact ? 'text-[8px]' : 'text-[9px]'} font-semibold px-1.5 py-0.5 rounded-full border border-white/10`} style={{ color: s.tagColor }}>{s.tag}</span>
                   </div>
-                  <p className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-[#F0EDE8]`}>"{s.label}"</p>
-                  {!compact && (
+                  <p className={`${mobileCompact ? 'text-[11px] leading-tight' : compact ? 'text-xs' : 'text-sm'} font-medium text-[#F0EDE8]`}>"{s.label}"</p>
+                  {!compact && !mobileCompact && (
                     <div className={`flex items-center gap-1 mt-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity ${nexusOverlay ? 'text-[#00C27C]' : 'text-[#D4A03A]'}`}>
                       <Zap className="w-3 h-3" /> Ask <ChevronRight className="w-3 h-3" />
                     </div>
@@ -3365,25 +3371,26 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
 
       {/* input bar */}
       <form onSubmit={handleSubmit} className="sticky bottom-0 pb-2">
-        <div className={`flex items-center gap-3 bg-[#1C1B1A] border border-[#38332B] rounded-2xl ${compact ? 'px-3 py-2' : 'px-4 py-3'} focus-within:border-[#D4A03A]/40 transition-colors`}>
-          <Search className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} text-[#ADA599] flex-shrink-0`} />
+        <div className={`flex items-center bg-[#1C1B1A] border border-[#38332B] rounded-2xl ${mobileCompact ? 'gap-2 px-3 py-1.5' : compact ? 'gap-3 px-3 py-2' : 'gap-3 px-4 py-3'} focus-within:border-[#D4A03A]/40 transition-colors`}>
+          <Search className={`${mobileCompact || compact ? 'w-4 h-4' : 'w-5 h-5'} text-[#ADA599] flex-shrink-0`} />
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder={compact ? 'Ask anything...' : 'Ask about your products, report an issue, or explore upgrades...'}
-            className={`flex-1 bg-transparent ${compact ? 'text-xs' : 'text-sm'} text-[#F0EDE8] placeholder-[#484F58] outline-none`}
+            placeholder={mobileCompact ? 'Ask Nexus...' : compact ? 'Ask anything...' : 'Ask about your products, report an issue, or explore upgrades...'}
+            className={`flex-1 bg-transparent ${mobileCompact ? 'text-sm' : compact ? 'text-xs' : 'text-sm'} text-[#F0EDE8] placeholder-[#484F58] outline-none`}
+            style={mobileCompact ? { fontSize: '16px' } : undefined}
             disabled={thinkingStatus !== null}
           />
           <button
             type="submit"
             disabled={!inputValue.trim() || thinkingStatus !== null}
-            className={`${compact ? 'w-7 h-7' : 'w-8 h-8'} rounded-lg bg-[#D4A03A]/80 flex items-center justify-center text-white disabled:opacity-30 hover:bg-[#D4A03A] transition-colors disabled:hover:bg-[#D4A03A]/80`}
+            className={`${mobileCompact ? 'w-7 h-7' : compact ? 'w-7 h-7' : 'w-8 h-8'} rounded-lg bg-[#D4A03A]/80 flex items-center justify-center text-white disabled:opacity-30 hover:bg-[#D4A03A] transition-colors disabled:hover:bg-[#D4A03A]/80`}
           >
-            <Send className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
+            <Send className={`${compact || mobileCompact ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
           </button>
         </div>
-        {!compact && (
+        {!compact && !mobileCompact && (
           <div className="flex items-center justify-between mt-2 px-1">
             <p className="text-[10px] text-[#6B6359]">
               Nexus Chat uses intelligent intent recognition and 55+ knowledge articles to answer your questions.

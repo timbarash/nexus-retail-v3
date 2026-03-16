@@ -1306,6 +1306,43 @@ function ScreenActions({ vault, transfers, showToast, onNav }) {
   );
 }
 
+/* ── Mobile Chat Wrapper — prevents keyboard auto-open, mobile-optimized card sizing ── */
+function MobileChatScreen({ persona }) {
+  const chatRef = useRef(null);
+  // Blur any auto-focused input to prevent keyboard from opening on tab switch
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+        document.activeElement.blur();
+      }
+    }, 50);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div ref={chatRef} className="flex flex-col h-screen">
+      {/* Chat header */}
+      <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-2 border-b border-[#38332B] flex-shrink-0" style={{ background: '#1C1B1A' }}>
+        <div className="flex items-center gap-2.5 py-2">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#D4A03A] to-[#B8860B] flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <div className="text-[14px] font-bold text-white">Nexus Chat</div>
+            <div className="text-[10px] text-[#00C27C] flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> {persona?.selectedPersona?.shortLabel || 'Online'}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Real CustomerBridge in overlay mode */}
+      <div className="flex-1 overflow-hidden px-1 pb-16">
+        <CustomerBridge nexusOverlay mobileCompact />
+      </div>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    MAIN COMPONENT — State Management & Routing
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -1404,28 +1441,7 @@ export default function NexusMobileWeb() {
         {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} persona={persona} onPersonaTap={() => setPersonaSwitcherOpen(true)} />}
         {screen === 'alerts' && <ScreenAlerts alerts={alerts} onAction={handleAlertAction} onNav={navigate} />}
         {screen === 'floor' && <ScreenFloor vault={vault} transfers={transfers} onTransfer={handleVaultTransfer} showToast={showToast} />}
-        {screen === 'chat' && (
-          <div className="flex flex-col h-screen">
-            {/* Chat header */}
-            <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-2 border-b border-[#38332B] flex-shrink-0" style={{ background: '#1C1B1A' }}>
-              <div className="flex items-center gap-2.5 py-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#D4A03A] to-[#B8860B] flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <div className="text-[14px] font-bold text-white">Nexus Chat</div>
-                  <div className="text-[10px] text-[#00C27C] flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> {persona?.selectedPersona?.shortLabel || 'Online'}
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* Real CustomerBridge in overlay mode */}
-            <div className="flex-1 overflow-hidden px-2 pb-16">
-              <CustomerBridge nexusOverlay />
-            </div>
-          </div>
-        )}
+        {screen === 'chat' && <MobileChatScreen persona={persona} />}
         {screen === 'actions' && <ScreenActions vault={vault} transfers={transfers} showToast={showToast} onNav={navigate} />}
       </div>
 
