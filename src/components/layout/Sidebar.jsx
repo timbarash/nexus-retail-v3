@@ -35,11 +35,11 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
       {/* Logo */}
       <div className="flex items-center justify-between px-5 py-5 border-b border-white/[0.08]">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, #0A2E1E 0%, #153D2A 100%)', boxShadow: '0 0 20px rgba(0,194,124,0.2), inset 0 1px 0 rgba(0,194,124,0.1)', border: '1px solid rgba(0,194,124,0.2)' }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, #2A1E0A 0%, #3D2A0A 100%)', boxShadow: '0 0 20px rgba(212,160,58,0.2), inset 0 1px 0 rgba(212,160,58,0.1)', border: '1px solid rgba(212,160,58,0.25)' }}>
             <NexusIcon size={22} />
           </div>
           <div className="flex items-center">
-            <span className="text-xl font-black tracking-tight bg-gradient-to-r from-[#00C27C] via-[#00C27C] to-[#64A8E0] bg-clip-text text-transparent">nexus</span>
+            <span className="text-xl font-black tracking-tight bg-gradient-to-r from-[#D4A03A] via-[#E8C06A] to-[#D4A03A] bg-clip-text text-transparent">nexus</span>
           </div>
         </div>
         {onClose && (
