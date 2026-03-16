@@ -2335,10 +2335,10 @@ function getNexusActionData(action) {
       kpis:[{l:'Total MTD',v:'$11.29M',c:'#00C27C'},{l:'vs Prior',v:'+$1.15M',c:'#0EA5E9'},{l:'Top State',v:'Illinois',c:'#D4A03A'},{l:'Fastest Growth',v:'New Jersey',c:'#B598E8'}],
       cols:['State','Current MTD','Prior Month','Delta','% Change'],
       rows:[['New Jersey','$1.71M','$1.45M','+$260K','+18%'],['Ohio','$1.62M','$1.41M','+$210K','+15%'],['Illinois','$2.41M','$2.15M','+$260K','+12%'],['Maryland','$1.12M','$1.01M','+$110K','+11%'],['Massachusetts','$1.22M','$1.12M','+$100K','+9%'],['Michigan','$1.89M','$1.75M','+$140K','+8%'],['Pennsylvania','$1.32M','$1.25M','+$70K','+6%']]},
-    compliance_all: { title:'Multi-State Compliance Status', color:'#64A8E0', summary:'Track-and-trace compliance status across all 7 states.',
-      kpis:[{l:'States Synced',v:'6/7',c:'#00C27C'},{l:'Warnings',v:'1',c:'#E87068'},{l:'Open Discrepancies',v:'9',c:'#D4A03A'},{l:'Next Audit',v:'Mar 28 (PA)',c:'#64A8E0'}],
-      cols:['State','System','Status','Last Sync','Discrepancies','Next Audit'],
-      rows:[['Illinois','METRC','Synced','2 min ago',0,'Apr 15'],['Michigan','METRC','Synced','5 min ago',2,'May 1'],['Ohio','METRC','Synced','3 min ago',0,'Apr 22'],['Pennsylvania','Leaf Data','Warning','47 min ago',5,'Mar 28'],['New Jersey','BioTrack','Synced','8 min ago',1,'Apr 10'],['Maryland','METRC','Synced','1 min ago',0,'May 15'],['Massachusetts','METRC','Synced','4 min ago',1,'Apr 5']]},
+    compliance_all: { title:'Operational Health — All States', color:'#00C27C', summary:'System health and sync status across all 7 states at a glance.',
+      kpis:[{l:'States Online',v:'6/7',c:'#00C27C'},{l:'Needs Attention',v:'1',c:'#D4A03A'},{l:'Total Stores',v:'39',c:'#0EA5E9'},{l:'Uptime',v:'99.8%',c:'#00C27C'}],
+      cols:['State','Stores','Status','Last Updated','Uptime','Next Review'],
+      rows:[['Illinois',8,'All Good','2 min ago','100%','Apr 15'],['Michigan',7,'All Good','5 min ago','99.9%','May 1'],['Ohio',6,'All Good','3 min ago','100%','Apr 22'],['Pennsylvania',5,'Review','47 min ago','98.2%','Mar 28'],['New Jersey',5,'All Good','8 min ago','100%','Apr 10'],['Maryland',4,'All Good','1 min ago','100%','May 15'],['Massachusetts',4,'All Good','4 min ago','99.9%','Apr 5']]},
     brand_perf: { title:'Brand Performance Rankings', color:'#B598E8', summary:'Top brands across all stores by revenue contribution this month.',
       kpis:[{l:'Top Brand',v:'Jeeter',c:'#00C27C'},{l:'Highest Margin',v:'Wyld (45%)',c:'#D4A03A'},{l:'Fastest Growth',v:'Jeeter (+22%)',c:'#0EA5E9'},{l:'Brands Tracked',v:'48',c:'#B598E8'}],
       cols:['Rank','Brand','Category','Revenue','Units','Margin','Trend'],
@@ -2379,22 +2379,22 @@ function getNexusActionData(action) {
       kpis:[{l:'Critical',v:'3 SKUs',c:'#E87068'},{l:'High',v:'1 SKU',c:'#D4A03A'},{l:'Total to Move',v:'108 units',c:'#0EA5E9'},{l:'Est. Time',v:'~25 min',c:'#B598E8'}],
       cols:['Product','In Vault','On Floor','Restock Qty','Urgency'],
       rows:[['Blue Dream 3.5g',124,3,20,'Critical'],['Jeeter Baby Js 5pk',88,5,15,'High'],['STIIIZY OG Pod 1g',56,2,12,'Critical'],['Wyld Elderberry 10pk',200,8,25,'Medium'],['Kiva Camino 20pk',144,6,18,'Medium'],['Raw Garden Sauce 1g',42,1,10,'Critical'],['Cookies Gary Payton 3.5g',36,4,8,'Low']]},
-    sync_status: { title:'Track-and-Trace Sync Status', color:'#00C27C', summary:'Real-time sync status across all state compliance systems.',
-      kpis:[{l:'Systems Online',v:'6/7',c:'#00C27C'},{l:'Delayed',v:'1 (PA)',c:'#E87068'},{l:'Total Packages',v:'56,400',c:'#0EA5E9'},{l:'Sync Errors',v:'3',c:'#D4A03A'}],
-      cols:['State','System','Last Sync','Status','Active Packages','Errors'],
-      rows:[['Illinois','METRC','2 min ago','Synced','12,481',0],['Michigan','METRC','5 min ago','Synced','9,842',0],['Ohio','METRC','3 min ago','Synced','8,215',0],['Pennsylvania','Leaf Data','47 min ago','Delayed','6,932',3],['New Jersey','BioTrack','8 min ago','Synced','7,621',0],['Maryland','METRC','1 min ago','Synced','5,418',0],['Massachusetts','METRC','4 min ago','Synced','5,891',0]]},
-    discrepancy: { title:'Open Inventory Discrepancies', color:'#E87068', summary:'All unresolved discrepancies between POS and state compliance systems.',
-      kpis:[{l:'Open',v:'9',c:'#E87068'},{l:'High Priority',v:'3',c:'#D4A03A'},{l:'Worst State',v:'PA (5)',c:'#64A8E0'},{l:'Avg Resolution',v:'2.1 days',c:'#B598E8'}],
-      cols:['ID','Store','Product','POS Qty','State Qty','Delta','Age','Priority'],
-      rows:[['DISC-291','Scranton (PA)','Jeeter Infused 1g',24,22,-2,'3 days','High'],['DISC-289','Scranton (PA)','Wyld CBN Pear 10pk',48,50,+2,'3 days','High'],['DISC-287','Reading (PA)','STIIIZY Pod 0.5g',12,10,-2,'5 days','High'],['DISC-285','Ann Arbor (MI)','Kiva Terra Bites',36,35,-1,'2 days','Medium'],['DISC-283','Detroit (MI)','Raw Garden Cart 1g',18,19,+1,'1 day','Low'],['DISC-280','Edison (NJ)','Cookies Flower 3.5g',8,9,+1,'4 days','Medium']]},
-    audit: { title:'Audit Readiness — Illinois', color:'#64A8E0', summary:'Pre-audit checklist for all 8 IL stores against METRC compliance requirements.',
-      kpis:[{l:'Overall Readiness',v:'96%',c:'#00C27C'},{l:'Checks Passing',v:'6/7',c:'#0EA5E9'},{l:'Action Items',v:'3',c:'#D4A03A'},{l:'Next Audit',v:'Apr 15',c:'#64A8E0'}],
-      cols:['Check','Status','Score','Passing Stores','Notes'],
-      rows:[['Package tag accuracy','Pass','99.8%','8/8','All clear'],['Manifest documentation','Pass','100%','8/8','All manifests filed'],['Disposal records','Pass','98.5%','7/8','Peoria — 2 missing'],['Vault inventory accuracy','Warning','97.2%','6/8','Springfield, Champaign need cycle count'],['Employee badge compliance','Pass','100%','8/8','All current'],['Video surveillance uptime','Pass','99.9%','8/8','1 camera replaced last week'],['Visitor log completeness','Pass','100%','8/8','Digital logs active']]},
-    regulatory: { title:'Upcoming Regulatory Changes', color:'#B598E8', summary:'Regulatory updates affecting operations across all 7 states.',
-      kpis:[{l:'Upcoming',v:'5',c:'#B598E8'},{l:'Critical',v:'1',c:'#E87068'},{l:'High Impact',v:'2',c:'#D4A03A'},{l:'Next Deadline',v:'Apr 1',c:'#64A8E0'}],
-      cols:['Effective Date','State','Change','Impact','Action Required'],
-      rows:[['Apr 1, 2026','Illinois','New potency testing for edibles','High','Update vendor COA process'],['Apr 15, 2026','New Jersey','Delivery license expansion','Medium','Evaluate delivery ops'],['May 1, 2026','Pennsylvania','Leaf Data API v3 migration','Critical','Dev team integration update'],['May 15, 2026','Ohio','Adult-use sales begin','High','Staff training + menu update'],['Jun 1, 2026','Maryland','Updated packaging requirements','Medium','Audit current packaging']]},
+    sync_status: { title:'Inventory Sync Overview', color:'#00C27C', summary:'Live inventory sync health across all state systems.',
+      kpis:[{l:'Systems Online',v:'6/7',c:'#00C27C'},{l:'Needs Attention',v:'1 (PA)',c:'#D4A03A'},{l:'Total Products',v:'56,400',c:'#0EA5E9'},{l:'Accuracy',v:'99.7%',c:'#00C27C'}],
+      cols:['State','System','Last Updated','Status','Products Tracked','Accuracy'],
+      rows:[['Illinois','METRC','2 min ago','All Good','12,481','100%'],['Michigan','METRC','5 min ago','All Good','9,842','99.9%'],['Ohio','METRC','3 min ago','All Good','8,215','100%'],['Pennsylvania','Leaf Data','47 min ago','Review','6,932','97.8%'],['New Jersey','BioTrack','8 min ago','All Good','7,621','100%'],['Maryland','METRC','1 min ago','All Good','5,418','100%'],['Massachusetts','METRC','4 min ago','All Good','5,891','99.9%']]},
+    discrepancy: { title:'Inventory Exceptions', color:'#D4A03A', summary:'Items that need attention — quantity mismatches flagged for review.',
+      kpis:[{l:'Open Items',v:'9',c:'#D4A03A'},{l:'Priority',v:'3 urgent',c:'#E87068'},{l:'Most Affected',v:'PA (5)',c:'#64A8E0'},{l:'Avg Resolution',v:'2.1 days',c:'#00C27C'}],
+      cols:['ID','Store','Product','Expected','Actual','Diff','Age','Priority'],
+      rows:[['EX-291','Scranton (PA)','Jeeter Infused 1g',24,22,-2,'3 days','Urgent'],['EX-289','Scranton (PA)','Wyld CBN Pear 10pk',48,50,+2,'3 days','Urgent'],['EX-287','Reading (PA)','STIIIZY Pod 0.5g',12,10,-2,'5 days','Urgent'],['EX-285','Ann Arbor (MI)','Kiva Terra Bites',36,35,-1,'2 days','Standard'],['EX-283','Detroit (MI)','Raw Garden Cart 1g',18,19,+1,'1 day','Low'],['EX-280','Edison (NJ)','Cookies Flower 3.5g',8,9,+1,'4 days','Standard']]},
+    audit: { title:'Store Readiness Score — Illinois', color:'#00C27C', summary:'Operational readiness checklist across all 8 IL stores.',
+      kpis:[{l:'Overall Score',v:'96%',c:'#00C27C'},{l:'Checks Passing',v:'6/7',c:'#0EA5E9'},{l:'To-Do Items',v:'3',c:'#D4A03A'},{l:'Next Review',v:'Apr 15',c:'#64A8E0'}],
+      cols:['Area','Status','Score','Stores Passing','Notes'],
+      rows:[['Product accuracy','Pass','99.8%','8/8','All good'],['Documentation','Pass','100%','8/8','All filed'],['Waste tracking','Pass','98.5%','7/8','Peoria — 2 pending'],['Vault accuracy','Review','97.2%','6/8','Springfield, Champaign need cycle count'],['Team credentials','Pass','100%','8/8','All current'],['Camera systems','Pass','99.9%','8/8','1 replaced last week'],['Visitor tracking','Pass','100%','8/8','Digital logs active']]},
+    regulatory: { title:'Upcoming Industry Changes', color:'#B598E8', summary:'Key changes across your markets to stay ahead of.',
+      kpis:[{l:'Upcoming',v:'5',c:'#B598E8'},{l:'Action Needed',v:'1',c:'#E87068'},{l:'Impactful',v:'2',c:'#D4A03A'},{l:'Next Date',v:'Apr 1',c:'#64A8E0'}],
+      cols:['Date','State','What\'s Changing','Impact','Your Next Step'],
+      rows:[['Apr 1','Illinois','New potency testing for edibles','High','Update vendor process'],['Apr 15','New Jersey','Delivery license expansion','Medium','Evaluate delivery ops'],['May 1','Pennsylvania','System API v3 migration','High','Dev team integration update'],['May 15','Ohio','Adult-use sales begin','High','Staff training + menu update'],['Jun 1','Maryland','Updated packaging requirements','Medium','Review current packaging']]},
     winback_campaign: { title:'Win-Back Campaign — Lapsed Customers', color:'#00C27C', summary:'Customers inactive 60+ days with high lifetime value, ready for re-engagement.',
       kpis:[{l:'Lapsed (60d+)',v:'1,247',c:'#E87068'},{l:'Avg LTV',v:'$2,840',c:'#00C27C'},{l:'Win-Back Rate',v:'23%',c:'#D4A03A'},{l:'Est. Revenue',v:'$89K',c:'#0EA5E9'}],
       cols:['Customer Segment','Count','Avg Last Visit','Avg LTV','Top Category','Recommended Channel'],
@@ -2414,54 +2414,62 @@ function getNexusActionData(action) {
 function NexusActionCard({ data, compact = false }) {
   const sc = (v) => {
     const s = String(v).toLowerCase();
-    if (['synced','pass','balanced','delivered','all clear','surplus'].some(k => s.includes(k))) return '#00C27C';
-    if (['warning','delayed','review','medium','in transit','awaiting'].some(k => s.includes(k))) return '#D4A03A';
-    if (['critical','high','out of stock'].some(k => s.includes(k))) return '#E87068';
+    if (['synced','pass','balanced','delivered','all clear','all good','surplus'].some(k => s.includes(k))) return '#00C27C';
+    if (['warning','delayed','review','medium','in transit','awaiting','standard'].some(k => s.includes(k))) return '#D4A03A';
+    if (['critical','high','out of stock','urgent'].some(k => s.includes(k))) return '#E87068';
     if (['low','scheduled'].some(k => s.includes(k))) return '#64A8E0';
     return null;
   };
   const maxRows = compact ? 4 : undefined;
   const displayRows = maxRows && data.rows?.length > maxRows ? data.rows.slice(0, maxRows) : data.rows;
   return (
-    <div className="bg-[#141210] rounded-xl border border-[#38332B] overflow-hidden">
-      <div className={`${compact ? 'px-3 py-2' : 'px-4 py-2.5'} border-b border-[#38332B] flex items-center gap-2`}>
-        <div className={`${compact ? 'w-5 h-5' : 'w-7 h-7'} rounded-lg flex items-center justify-center`} style={{ background: `${data.color}20` }}>
-          <BarChart3 className={`${compact ? 'w-2.5 h-2.5' : 'w-3.5 h-3.5'}`} style={{ color: data.color }} />
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(180deg, #1C1B1A 0%, #141210 100%)', border: `1px solid ${data.color}25` }}>
+      {/* Header with gradient accent */}
+      <div className={`${compact ? 'px-3 py-2.5' : 'px-5 py-3.5'} flex items-center gap-3`} style={{ background: `linear-gradient(135deg, ${data.color}12 0%, transparent 60%)` }}>
+        <div className={`${compact ? 'w-7 h-7' : 'w-9 h-9'} rounded-xl flex items-center justify-center shadow-lg`} style={{ background: `linear-gradient(135deg, ${data.color}30 0%, ${data.color}15 100%)`, border: `1px solid ${data.color}30` }}>
+          <BarChart3 className={`${compact ? 'w-3 h-3' : 'w-4 h-4'}`} style={{ color: data.color }} />
         </div>
-        <span className={`${compact ? 'text-xs' : 'text-sm'} font-semibold text-[#F0EDE8]`}>{data.title}</span>
+        <div className="flex-1">
+          <span className={`${compact ? 'text-xs' : 'text-sm'} font-bold text-[#F0EDE8]`}>{data.title}</span>
+        </div>
+        <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: data.color }} />
       </div>
+      {/* KPI cards */}
       {data.kpis && (
-        <div className={`grid ${compact ? 'grid-cols-2 gap-1 px-2.5 py-2' : 'grid-cols-4 gap-1 px-3 py-2.5'} border-b border-[#38332B]`}>
+        <div className={`grid ${compact ? 'grid-cols-2 gap-2 px-3 py-2.5' : 'grid-cols-4 gap-2.5 px-5 py-3.5'}`}>
           {(compact ? data.kpis.slice(0, 4) : data.kpis).map((k, i) => (
-            <div key={i} className="text-center">
-              <p className={`${compact ? 'text-[8px]' : 'text-[9px]'} text-[#6B6359]`}>{k.l}</p>
-              <p className={`${compact ? 'text-[11px]' : 'text-xs'} font-bold`} style={{ color: k.c }}>{k.v}</p>
+            <div key={i} className={`${compact ? 'px-2 py-1.5' : 'px-3 py-2'} rounded-lg text-center`} style={{ background: `${k.c}08`, border: `1px solid ${k.c}15` }}>
+              <p className={`${compact ? 'text-[8px]' : 'text-[10px]'} text-[#ADA599] font-medium`}>{k.l}</p>
+              <p className={`${compact ? 'text-sm' : 'text-base'} font-bold mt-0.5`} style={{ color: k.c }}>{k.v}</p>
             </div>
           ))}
         </div>
       )}
+      {/* Data table */}
       {displayRows?.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className={`w-full ${compact ? 'text-[10px]' : 'text-[11px]'}`}>
-            <thead><tr className="border-b border-[#38332B]">
-              {data.cols.map((c, i) => <th key={i} className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-left text-[9px] font-semibold text-[#6B6359] uppercase tracking-wider whitespace-nowrap`}>{c}</th>)}
-            </tr></thead>
-            <tbody>
-              {displayRows.map((row, ri) => (
-                <tr key={ri} className="border-b border-[#38332B]/40 hover:bg-[#1C1B1A]/60">
-                  {row.map((cell, ci) => {
-                    const color = sc(cell);
-                    return <td key={ci} className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} whitespace-nowrap`}>{color
-                      ? <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }}/><span style={{ color }} className="font-medium">{String(cell)}</span></span>
-                      : <span className="text-[#F0EDE8]">{String(cell)}</span>
-                    }</td>;
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className={`${compact ? 'px-2.5 pb-2.5' : 'px-4 pb-4'}`}>
+          <div className="overflow-x-auto rounded-xl border border-[#38332B]/60">
+            <table className={`w-full ${compact ? 'text-[10px]' : 'text-[11px]'}`}>
+              <thead><tr style={{ background: `${data.color}08` }}>
+                {data.cols.map((c, i) => <th key={i} className={`${compact ? 'px-2.5 py-1.5' : 'px-3 py-2'} text-left text-[9px] font-bold text-[#ADA599] uppercase tracking-wider whitespace-nowrap`}>{c}</th>)}
+              </tr></thead>
+              <tbody>
+                {displayRows.map((row, ri) => (
+                  <tr key={ri} className="border-t border-[#38332B]/30 hover:bg-white/[0.02] transition-colors">
+                    {row.map((cell, ci) => {
+                      const color = sc(cell);
+                      return <td key={ci} className={`${compact ? 'px-2.5 py-1.5' : 'px-3 py-2'} whitespace-nowrap`}>{color
+                        ? <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: color, boxShadow: `0 0 6px ${color}40` }}/><span style={{ color }} className="font-medium">{String(cell)}</span></span>
+                        : <span className="text-[#F0EDE8]">{String(cell)}</span>
+                      }</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           {maxRows && data.rows?.length > maxRows && (
-            <div className="px-2.5 py-1.5 text-center text-[9px] text-[#6B6359] border-t border-[#38332B]/40">
+            <div className="mt-2 text-center text-[10px] text-[#ADA599]">
               +{data.rows.length - maxRows} more rows
             </div>
           )}
@@ -3104,10 +3112,10 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
       { key: 'sentiment_check', label: "How's our customer sentiment this month?", icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Sentiment', tagColor: '#B598E8', action: 'sentiment_overview' },
     ],
     compliance: [
-      { key: 'sync', label: 'Show track-and-trace sync status for all states', icon: RefreshCw, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Sync', tagColor: '#00C27C', action: 'sync_status' },
-      { key: 'discrepancy', label: 'Show all open inventory discrepancies', icon: AlertTriangle, gradient: 'from-red-600/20 to-rose-600/20', border: 'hover:border-red-500/40', tag: 'Discrepancy', tagColor: '#E87068', action: 'discrepancy' },
-      { key: 'audit', label: 'Run audit readiness check for IL', icon: Eye, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Audit', tagColor: '#64A8E0', action: 'audit' },
-      { key: 'regulatory', label: 'What regulatory changes are coming?', icon: FileText, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Regulatory', tagColor: '#B598E8', action: 'regulatory' },
+      { key: 'sync', label: 'How\'s our inventory sync health across all states?', icon: RefreshCw, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Health', tagColor: '#00C27C', action: 'sync_status' },
+      { key: 'discrepancy', label: 'Show me inventory exceptions that need attention', icon: AlertTriangle, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Exceptions', tagColor: '#D4A03A', action: 'discrepancy' },
+      { key: 'audit', label: 'What\'s our store readiness score for Illinois?', icon: Eye, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Readiness', tagColor: '#64A8E0', action: 'audit' },
+      { key: 'regulatory', label: 'What industry changes should we prepare for?', icon: FileText, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Upcoming', tagColor: '#B598E8', action: 'regulatory' },
     ],
   };
   const NEXUS_SUGGESTIONS = NEXUS_SUGGESTIONS_BY_PERSONA[selectedPersona?.id] || NEXUS_SUGGESTIONS_BY_PERSONA.store_mgr;

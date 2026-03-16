@@ -513,7 +513,7 @@ function StatRow({ label, value, sub, trend, color }) {
 // Individual Tiles
 // ---------------------------------------------------------------------------
 
-function SentimentTile() {
+function SentimentTile({ onOpenNexus }) {
   const navigate = useNavigate();
   const { selectedStoreNames } = useStores();
   const { dateMultiplier, periodLabel, rangeLabel } = useDateRange();
@@ -721,7 +721,7 @@ function SentimentTile() {
                   <p className="text-sm text-[#F0EDE8]">{item.action}</p>
                   <p className="mt-0.5 text-xs text-[#6B6359] font-medium">{item.impact}</p>
                 </div>
-                <button onClick={() => navigate('/overview')} className="flex-shrink-0 rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-1.5 text-xs font-semibold text-[#F0EDE8] hover:bg-[#282724] transition-colors">
+                <button onClick={() => onOpenNexus && onOpenNexus(item.action)} className="flex-shrink-0 rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-1.5 text-xs font-semibold text-[#F0EDE8] hover:bg-[#282724] transition-colors">
                   Execute
                 </button>
               </div>
@@ -737,7 +737,7 @@ function SentimentTile() {
 // Omnichannel Sentiment Collection Tile
 // ---------------------------------------------------------------------------
 
-function OmnichannelTile() {
+function OmnichannelTile({ onOpenNexus }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('sms');
   const { dateMultiplier, rangeLabel } = useDateRange();
@@ -756,7 +756,7 @@ function OmnichannelTile() {
         title="Omnichannel Sentiment Collection"
         subtitle={`Proprietary first-party signals — ${rangeLabel.toLowerCase()}`}
         iconBg="bg-[rgba(163,113,247,0.12)] text-[#B598E8]"
-        action={() => navigate('/overview')}
+        action={() => onOpenNexus && onOpenNexus('Show me omnichannel sentiment collection configuration and response rates')}
         actionLabel="Configure Channels"
       />
       <div className="p-6">
@@ -1213,7 +1213,7 @@ function UnifiedPipelineTile() {
    INVENTORY
    ═══════════════════════════════════════════════════════════════════ */
 
-function InventoryTile() {
+function InventoryTile({ onOpenNexus }) {
   const navigate = useNavigate();
   const { isAllSelected, selectionLabel } = useStores();
   const scaledAlerts = isAllSelected ? NEXUS_DATA.lowStockAlerts : Math.max(1, Math.round(NEXUS_DATA.lowStockAlerts * 0.5));
@@ -1225,7 +1225,7 @@ function InventoryTile() {
         title="Inventory & Reordering"
         subtitle={`${scaledAlerts} low-stock alerts — ${selectionLabel}`}
         iconBg="bg-[rgba(255,166,87,0.12)] text-[#FFA657]"
-        action={() => navigate('/agents/connect')}
+        action={() => onOpenNexus && onOpenNexus('Draft a reorder for low-stock products based on current inventory levels and sales velocity')}
         actionLabel="Draft Reorder"
         badge={{ count: scaledRisk, color: 'bg-[#E87068]' }}
       />
@@ -2601,7 +2601,7 @@ function SmartAlertsFeed({ onAction }) {
 
 // ─── CROSS-STORE INTELLIGENCE ─── //
 
-function CrossStoreIntelligence() {
+function CrossStoreIntelligence({ onOpenNexus }) {
   const navigate = useNavigate();
   const { showCrossStore } = usePersona();
   if (!showCrossStore) return null;
@@ -2651,7 +2651,7 @@ function CrossStoreIntelligence() {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="text-[10px] text-[#00C27C] font-semibold">{item.estRevRecovery}</p>
-                  <button onClick={() => navigate('/agents/connect')} className="mt-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white bg-[#64A8E0] hover:brightness-110 transition-colors">
+                  <button onClick={() => onOpenNexus && onOpenNexus(`Initiate transfer of ${item.recTransfer} units of ${item.product} from ${item.from} to ${item.to}`)} className="mt-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white bg-[#64A8E0] hover:brightness-110 transition-colors">
                     Transfer {item.recTransfer}
                   </button>
                 </div>
@@ -2674,7 +2674,7 @@ function CrossStoreIntelligence() {
                   <span className="text-[10px] text-[#6B6359]">vs avg {bp.avg}</span>
                 </div>
                 <p className="text-[10px] text-[#ADA599]">{bp.insight}</p>
-                <button onClick={() => navigate('/overview')} className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#00C27C] bg-[#00C27C]/10 border border-[#00C27C]/20 hover:bg-[#00C27C]/20 transition-colors">
+                <button onClick={() => onOpenNexus && onOpenNexus(`${bp.action} — ${bp.store} has ${bp.metric}: ${bp.value} vs avg ${bp.avg}. ${bp.insight}`)} className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#00C27C] bg-[#00C27C]/10 border border-[#00C27C]/20 hover:bg-[#00C27C]/20 transition-colors">
                   {bp.action}
                 </button>
               </div>
@@ -2709,7 +2709,7 @@ function CrossStoreIntelligence() {
 
 // ─── STORE HEALTH MATRIX ─── //
 
-function StoreHealthMatrix() {
+function StoreHealthMatrix({ onOpenNexus }) {
   const navigate = useNavigate();
   const { selectedStoreNames } = useStores();
   const { isStoreMgr, isCompliance, selectedPersona } = usePersona();
@@ -2846,7 +2846,7 @@ function StoreHealthMatrix() {
           const color = s.composite >= 75 ? '#00C27C' : s.composite >= 55 ? '#D4A03A' : '#E87068';
           const deg = s.composite * 3.6;
           return (
-            <div key={s.name} onClick={() => navigate('/overview')} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
+            <div key={s.name} onClick={() => onOpenNexus && onOpenNexus(`Show me a deep dive on ${s.name} store — health score ${s.composite}, sentiment ${s.sentimentDelta >= 0 ? '+' : ''}${s.sentimentDelta}%, ${s.alerts} alerts`)} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
               <div className="w-11 h-11 rounded-full mx-auto mb-2 flex items-center justify-center" style={{ background: `conic-gradient(${color} ${deg}deg, #38332B 0deg)` }}>
                 <div className="w-8 h-8 rounded-full bg-[#141210] flex items-center justify-center text-xs font-bold" style={{ color }}>{s.composite}</div>
               </div>
@@ -2884,10 +2884,10 @@ export default function NexusHome({ onOpenNexus }) {
       <SmartAlertsFeed onAction={(q) => onOpenNexus && onOpenNexus(q)} />
 
       {/* 5. Store Health Matrix */}
-      <StoreHealthMatrix />
+      <StoreHealthMatrix onOpenNexus={onOpenNexus} />
 
       {/* 5b. Cross-Store Intelligence (CEO/VP/Regional only) */}
-      <CrossStoreIntelligence />
+      <CrossStoreIntelligence onOpenNexus={onOpenNexus} />
 
       {/* 7. Sales Reporting — kept from v2 */}
       <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mt-1">Performance</p>
@@ -2895,8 +2895,8 @@ export default function NexusHome({ onOpenNexus }) {
 
       {/* 8. Sentiment + Omnichannel — side by side */}
       <div className="grid gap-5 lg:grid-cols-2 stagger-grid">
-        <SentimentTile />
-        <OmnichannelTile />
+        <SentimentTile onOpenNexus={onOpenNexus} />
+        <OmnichannelTile onOpenNexus={onOpenNexus} />
       </div>
 
       {/* 9. Pricing */}
@@ -2912,7 +2912,7 @@ export default function NexusHome({ onOpenNexus }) {
       {showMore && (
         <div className="grid gap-5 lg:grid-cols-2 stagger-grid">
           <UnifiedPipelineTile />
-          <InventoryTile />
+          <InventoryTile onOpenNexus={onOpenNexus} />
         </div>
       )}
     </div>

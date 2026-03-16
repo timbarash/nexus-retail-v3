@@ -11,7 +11,7 @@ export default function Footer() {
             <span className="font-semibold text-[#F0EDE8]">Dutchie AI</span>
           </span>
         </div>
-        <span>Nexus Retail Platform v3.0</span>
+        <span>Nexus Platform v3.0</span>
         <span>&copy; 2026 Dutchie. All rights reserved.</span>
       </div>
     </footer>

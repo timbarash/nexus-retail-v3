@@ -38,9 +38,8 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
           <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, #0A2E1E 0%, #153D2A 100%)', boxShadow: '0 0 20px rgba(0,194,124,0.2), inset 0 1px 0 rgba(0,194,124,0.1)', border: '1px solid rgba(0,194,124,0.2)' }}>
             <NexusIcon size={22} />
           </div>
-          <div>
-            <span className="text-lg font-bold tracking-tight text-[#F0EDE8]">Nexus</span>
-            <span className="text-lg font-light text-[#ADA599] ml-1">Retail</span>
+          <div className="flex items-center">
+            <span className="text-xl font-black tracking-tight bg-gradient-to-r from-[#00C27C] via-[#00C27C] to-[#64A8E0] bg-clip-text text-transparent">nexus</span>
           </div>
         </div>
         {onClose && (

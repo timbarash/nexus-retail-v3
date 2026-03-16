@@ -1070,18 +1070,6 @@ export function CampaignPlan({ data, onBack }) {
         </div>
       </Section>
 
-      {/* ───── compliance ───── */}
-      <Section title="Compliance Review" icon={Shield} iconColor="#00C27C" badge="All Passed">
-        <div className="space-y-2">
-          {(c.compliance || []).map((item) => (
-            <div key={item.label} className="flex items-center gap-3 py-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#00C27C] flex-shrink-0" />
-              <span className="text-xs text-[#F0EDE8]">{item.label}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
-
       {/* ───── projected performance ───── */}
       <Section title="Projected Performance" icon={TrendingUp} iconColor="#00C27C">
         {(dynamicProjections.noChannels || dynamicProjections.noLocations) && (
@@ -1418,7 +1406,7 @@ export default function MarketingCampaigns() {
           <div className="bg-[#1C1B1A] border border-[#38332B] rounded-2xl rounded-tl-sm px-5 py-4 max-w-2xl">
             <p className="text-sm text-[#F0EDE8] leading-relaxed">
               Hey! I'm your Marketing Campaign agent. I can build full campaign plans with audience targeting,
-              A/B testing, creative assets, channel strategy, compliance review, and projected ROI — all from a single prompt.
+              A/B testing, creative assets, channel strategy, and projected ROI — all from a single prompt.
             </p>
             <p className="text-sm text-[#ADA599] mt-2 leading-relaxed">
               Select a campaign below or describe one you'd like to create.
