@@ -1928,38 +1928,38 @@ function MorningBriefing() {
   const scaledCritical = Math.max(1, Math.round(NEXUS_DATA.stockoutRisk * storeRatio));
 
   const briefingText = useMemo(() => {
-    if (isCEO) return '"Your MSO generated $2.8M across 39 stores yesterday. IL drove 42% of portfolio revenue. Springfield up 34% WoW. 2 compliance items need attention across OH and NJ. Portfolio margin holding steady at 48.2%."';
-    if (isVP) return '"Your 23 stores across IL, MI, OH generated $1.4M yesterday. Logan Square was top performer at $48.2K. Morenci down 23% — staffing review recommended. OH METRC sync delay cleared, no issues. Regional margin: 47.8%."';
-    if (isRegional) return '"Your 10 Illinois stores generated $680K yesterday. Springfield up 18% WoW with a basket size increase to $135. 2 vault transfers pending at Naperville. METRC reconciliation complete — 0 discrepancies. Next state audit: Mar 24."';
-    if (isStoreMgr) return '"Logan Square generated $34.2K yesterday, 8% above target. Blue Dream 3.5g is OOS on floor — 45 units in vault ready for transfer. Afternoon traffic expected +15% vs last Tuesday. 3 promos active today."';
-    if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ BioTrack sync delay cleared at Newark (12 min, no data loss). 3 product batches expiring within 30 days. Next scheduled audit: IL Mar 24."';
+    if (isCEO) return '"Portfolio revenue $2.8M yesterday, +6.8% same-store growth vs last year. IL and NJ leading at +9% and +7% SSG. MI flat — 3 stores dragging avg. Inventory turnover at 4.2x (target 5x). 14 SKUs currently out of stock across 8 stores — estimated $18K in missed sales yesterday. Margin holding at 48.2%."';
+    if (isVP) return '"Your 23 stores did $1.4M yesterday. Same-store growth +5.1% YoY. Logan Square top performer at $48.2K. Morenci down 23% — foot traffic declining 3 weeks straight, may need local campaign. 6 out-of-stock SKUs across your region — $7.2K in estimated missed sales. Avg basket $118, up $4 WoW."';
+    if (isRegional) return '"IL revenue $680K yesterday, +4.2% WoW. Springfield leading at +18%. 2 vault-to-floor transfers pending at Naperville — Kiva Gummies and Stiiizy Pods both have demand on floor. 34 SKUs received yesterday, all checked in. Schaumburg running a flash promo today (15% off 3-6 PM)."';
+    if (isStoreMgr) return '"Logan Square did $34.2K yesterday, 8% above target. 2 products out of stock on floor — Blue Dream 3.5g (45 units in vault, ready to transfer) and Kiva Gummies (60 in vault). Stiiizy Pod LR down to 4 units on floor, transfer before afternoon rush. Happy Hour promo starts at 3 PM. No pending reorders to review."';
+    if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ BioTrack sync delay cleared at Newark (12 min, no data loss). 3 product batches expiring within 30 days need destruction manifests. Next scheduled audit: IL Mar 24."';
     return '"Yesterday was your best Friday this quarter. Springfield IL drove 34% of revenue. 3 items need reordering."';
   }, [isCEO, isVP, isRegional, isStoreMgr, isCompliance]);
 
   const metrics = useMemo(() => {
     if (isCEO) return [
-      { label: 'Portfolio Rev', value: '$2.8M', trend: '+6.8%', up: true },
-      { label: 'Stores', value: '39', trend: '7 states', up: true },
+      { label: 'Portfolio Rev', value: '$2.8M', trend: '+6.8% SSG', up: true },
+      { label: 'Inv Turnover', value: '4.2x', trend: 'target 5x', up: false },
+      { label: 'OOS Lost Sales', value: '$18K', trend: '14 SKUs', up: false },
       { label: 'Margin', value: '48.2%', trend: '+0.8pp', up: true },
-      { label: 'Compliance', value: '2 items', trend: 'OH, NJ', up: false },
     ];
     if (isVP) return [
-      { label: 'Regional Rev', value: '$1.4M', trend: '+5.1%', up: true },
-      { label: 'Stores', value: '23', trend: 'IL+MI+OH', up: true },
-      { label: 'Top Store', value: '$48.2K', trend: 'Logan Sq', up: true },
+      { label: 'Regional Rev', value: '$1.4M', trend: '+5.1% SSG', up: true },
+      { label: 'Avg Basket', value: '$118', trend: '+$4 WoW', up: true },
+      { label: 'OOS Lost Sales', value: '$7.2K', trend: '6 SKUs', up: false },
       { label: 'Flagged', value: '1 store', trend: 'Morenci -23%', up: false },
     ];
     if (isRegional) return [
-      { label: 'IL Revenue', value: '$680K', trend: '+4.2%', up: true },
-      { label: 'Stores', value: '10', trend: 'Illinois', up: true },
+      { label: 'IL Revenue', value: '$680K', trend: '+4.2% WoW', up: true },
       { label: 'Transfers', value: '32 done', trend: '2 pending', up: false },
-      { label: 'METRC', value: '0 disc.', trend: 'All synced', up: true },
+      { label: 'Received', value: '34 SKUs', trend: 'All verified', up: true },
+      { label: 'Promos Today', value: '1 active', trend: 'Schaumburg', up: true },
     ];
     if (isStoreMgr) return [
       { label: 'Revenue', value: '$34.2K', trend: '+8% vs target', up: true },
-      { label: 'Traffic', value: '312', trend: '+7.1%', up: true },
-      { label: 'Basket', value: '$110', trend: '+$4', up: true },
-      { label: 'OOS Items', value: '2', trend: '1 critical', up: false },
+      { label: 'OOS Floor', value: '2 items', trend: 'Vault ready', up: false },
+      { label: 'Low Stock', value: '1 item', trend: '4 units left', up: false },
+      { label: 'Promo', value: '3 PM', trend: 'Happy Hour', up: true },
     ];
     if (isCompliance) return [
       { label: 'Sync Status', value: '39/39', trend: 'All green', up: true },
