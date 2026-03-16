@@ -8,7 +8,7 @@ import {
   BarChart3, Store, Search, ArrowUpDown, Percent,
   Eye, Truck, Box, Clipboard, Camera, FileText,
   ArrowRightLeft, Lock, Megaphone, Rocket, Users,
-  Plus, Minus, ChevronDown, Filter, Flame, Target,
+  Plus, Minus, ChevronDown, Filter, Flame, Target, Heart,
   Calendar, Hash, AlertCircle, Info, Zap as ZapIcon,
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
@@ -77,21 +77,25 @@ const CAMPAIGNS_READY = [
 ];
 
 const INITIAL_ALERTS = [
+  // Interleaved by type — never more than 2 of any category in a row
   { id: 'a01', sev: 'CRITICAL', icon: 'vault', color: '#E87068', time: '2m ago', title: 'Blue Dream 3.5g — out of stock on floor', detail: 'Floor: 0 units | Vault: 45 units available. Lost ~$380 in sales today. Avg weekly: 38 units.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v1' },
-  { id: 'a02', sev: 'CRITICAL', icon: 'vault', color: '#E87068', time: '18m ago', title: 'Kiva Lost Farm Gummies — out of stock 2 days', detail: 'Floor: 0 units | Vault: 60 units. 2 days of lost sales (~$560). Customers asking at counter.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v3' },
-  { id: 'a03', sev: 'CRITICAL', icon: 'vault', color: '#E87068', time: '45m ago', title: 'Wyld Elderberry Gummies — out since yesterday', detail: 'Floor: 0 units | Vault: 55 units at Fort Lee. Avg weekly: 22 units. Transfer immediately.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v8' },
-  { id: 'a04', sev: 'WARNING', icon: 'vault', color: '#D4A03A', time: '1h ago', title: 'Stiiizy Live Resin Pod — low stock warning', detail: 'Floor: 2 units remaining | Vault: 30 units. At current velocity, floor depletes in ~3 hours.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v2' },
-  { id: 'a05', sev: 'WARNING', icon: 'vault', color: '#D4A03A', time: '1h ago', title: 'Jeeter Infused Pre-Roll running low', detail: 'Floor: 4 units | Vault: 72 units. Weekend rush approaching — avg 32/wk. Restock now.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v10' },
-  { id: 'a06', sev: 'WARNING', icon: 'price', color: '#D4A03A', time: '30m ago', title: 'Stiiizy Battery Kit priced 14% below market', detail: 'Your price: $29.99 | Market avg: $34.99. Opportunity to increase to $32.99 = +$450/wk margin.', action: 'Adjust Price', actionType: 'price' },
-  { id: 'a07', sev: 'WARNING', icon: 'price', color: '#D4A03A', time: '2h ago', title: 'Cookies Gary Payton 3.5g — 6% above market', detail: 'Your price: $55 | Market avg: $52 | Range: $48-$58. Sales velocity declining 8% WoW.', action: 'Review Pricing', actionType: 'price' },
+  { id: 'a16', sev: 'CRITICAL', icon: 'ops', color: '#E87068', time: '8m ago', title: '2 budtenders called out — afternoon gap', detail: 'Peak hours 4-7pm have 3 staff vs 5 needed. Saturday traffic projected 920+. Call backup or adjust breaks.', action: 'View Schedule', actionType: 'staffing' },
+  { id: 'a06', sev: 'WARNING', icon: 'price', color: '#D4A03A', time: '30m ago', title: 'Stiiizy Battery Kit priced 14% below market', detail: 'Your price: $29.99 | Market avg: $34.99. Raising to $32.99 = +$450/wk margin.', action: 'Adjust Price', actionType: 'price' },
   { id: 'a08', sev: 'OPPORTUNITY', icon: 'campaign', color: '#00C27C', time: '1h ago', title: 'Win-Back campaign ready to launch', detail: '340 lapsed customers identified. Projected 12% return rate. Est. revenue: $8,200. One tap to launch.', action: 'Launch Campaign', actionType: 'campaign', refId: 'c1' },
-  { id: 'a09', sev: 'OPPORTUNITY', icon: 'campaign', color: '#00C27C', time: '2h ago', title: 'Happy Hour promo driving 23% traffic lift', detail: '156 redemptions this week. Afternoon traffic up 23%. ROI: 1.5x. Consider expanding hours.', action: 'View Details', actionType: 'info' },
+  { id: 'a11', sev: 'INFO', icon: 'compliance', color: '#64A8E0', time: '1h ago', title: '3 products expiring within 30 days', detail: 'Ozone Cart batch #2847 (14 units), Camino Gummies batch #1923 (8 units), Simply Herb batch #3401 (22 units). METRC destruction manifest needed.', action: 'Create Manifest', actionType: 'compliance' },
+  { id: 'a02', sev: 'CRITICAL', icon: 'vault', color: '#E87068', time: '18m ago', title: 'Kiva Lost Farm Gummies — out of stock 2 days', detail: 'Floor: 0 units | Vault: 60 units. 2 days of lost sales (~$560). Customers asking at counter.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v3' },
+  { id: 'a17', sev: 'WARNING', icon: 'insight', color: '#D4A03A', time: '1.5h ago', title: 'Loyalty member visits down 18% this week', detail: '23 VIP customers haven\'t returned in 14+ days. Avg LTV $3,200. Win-back before they churn.', action: 'View Segments', actionType: 'loyalty' },
+  { id: 'a07', sev: 'WARNING', icon: 'price', color: '#D4A03A', time: '2h ago', title: 'Cookies Gary Payton 3.5g — 6% above market', detail: 'Your price: $55 | Market avg: $52 | Range: $48-$58. Sales velocity declining 8% WoW.', action: 'Review Pricing', actionType: 'price' },
   { id: 'a10', sev: 'OPPORTUNITY', icon: 'price', color: '#00C27C', time: '3h ago', title: 'BOGO Edibles promo — recommend discontinuing', detail: 'ROI: 0.3x. Cannibalizing full-price gummy sales. $4,800 spend with minimal incremental revenue.', action: 'Kill Promo', actionType: 'promo' },
-  { id: 'a11', sev: 'INFO', icon: 'compliance', color: '#64A8E0', time: '4h ago', title: '3 products expiring within 30 days', detail: 'Ozone Cart batch #2847 (14 units), Camino Gummies batch #1923 (8 units), Simply Herb batch #3401 (22 units). METRC destruction manifest needed.', action: 'Create Manifest', actionType: 'compliance' },
-  { id: 'a12', sev: 'INFO', icon: 'compliance', color: '#64A8E0', time: '5h ago', title: 'Daily inventory reconciliation due by 5pm', detail: 'METRC reconciliation required. Last sync: 4 minutes ago. 2 discrepancies flagged for review.', action: 'Start Recon', actionType: 'compliance' },
+  { id: 'a14', sev: 'INSIGHT', icon: 'insight', color: '#B598E8', time: '3h ago', title: 'Tuesday projected traffic: 920 customers', detail: 'Current staff covers 750 capacity. Gap of 170 customers. 62% of sales happen after 4pm.', action: 'View Staffing', actionType: 'staffing' },
+  { id: 'a04', sev: 'WARNING', icon: 'vault', color: '#D4A03A', time: '4h ago', title: 'Stiiizy Live Resin Pod — low stock warning', detail: 'Floor: 2 units remaining | Vault: 30 units. At current velocity, floor depletes in ~3 hours.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v2' },
+  { id: 'a09', sev: 'OPPORTUNITY', icon: 'campaign', color: '#00C27C', time: '4h ago', title: 'Happy Hour promo driving 23% traffic lift', detail: '156 redemptions this week. Afternoon traffic up 23%. ROI: 1.5x. Consider expanding hours.', action: 'Expand Hours', actionType: 'campaign' },
+  { id: 'a18', sev: 'INFO', icon: 'compliance', color: '#64A8E0', time: '5h ago', title: 'IL license renewal due in 45 days', detail: 'Cannabis retailer license expires May 1, 2026. 3 documents need updating: insurance cert, floor plan, SOPs.', action: 'View Checklist', actionType: 'compliance' },
   { id: 'a13', sev: 'INFO', icon: 'ops', color: '#64A8E0', time: '6h ago', title: 'Jeeter shipment arriving 2:30 PM today', detail: '42 SKUs from DreamFields. Includes 48x Baby Jeeter Churros, 72x Infused Pre-Rolls. Receiving dock B.', action: 'Prep Receiving', actionType: 'receive' },
-  { id: 'a14', sev: 'INSIGHT', icon: 'insight', color: '#B598E8', time: '8h ago', title: 'Tuesday projected traffic: 920 customers', detail: 'Current staff covers 750 capacity. Gap of 170 customers. 62% of sales happen after 4pm.', action: 'View Staffing', actionType: 'info' },
-  { id: 'a15', sev: 'INSIGHT', icon: 'insight', color: '#B598E8', time: '12h ago', title: 'Jeeter brand sentiment surging +34% WoW', detail: 'Social mentions up significantly. 2 stores don\'t stock Jeeter yet. Trending in local market.', action: 'Draft PO', actionType: 'info' },
+  { id: 'a12', sev: 'INFO', icon: 'compliance', color: '#64A8E0', time: '6h ago', title: 'Daily inventory reconciliation due by 5pm', detail: 'METRC reconciliation required. Last sync: 4 minutes ago. 2 discrepancies flagged for review.', action: 'Start Recon', actionType: 'compliance' },
+  { id: 'a05', sev: 'WARNING', icon: 'vault', color: '#D4A03A', time: '7h ago', title: 'Jeeter Infused Pre-Roll running low', detail: 'Floor: 4 units | Vault: 72 units. Weekend rush approaching — avg 32/wk. Restock now.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v10' },
+  { id: 'a03', sev: 'WARNING', icon: 'vault', color: '#D4A03A', time: '8h ago', title: 'Wyld Elderberry Gummies — running low', detail: 'Floor: 3 units | Vault: 55 units. Avg weekly: 22 units. Consider restocking soon.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v8' },
+  { id: 'a15', sev: 'INSIGHT', icon: 'insight', color: '#B598E8', time: '12h ago', title: 'Jeeter brand sentiment surging +34% WoW', detail: 'Social mentions up significantly. 2 stores don\'t stock Jeeter yet. Trending in local market.', action: 'View Trend', actionType: 'info' },
 ];
 
 const COMPLIANCE_DATA = {
@@ -177,7 +181,7 @@ function BottomNav({ active = 'home', onNavigate, alertCount = 0 }) {
   const tabs = [
     { id: 'home', icon: Home, label: 'Home' },
     { id: 'alerts', icon: Bell, label: 'Alerts', badge: alertCount },
-    { id: 'floor', icon: ArrowRightLeft, label: 'Floor' },
+    { id: 'reports', icon: BarChart3, label: 'Reports' },
     { id: 'chat', icon: MessageSquare, label: 'Chat' },
     { id: 'actions', icon: LayoutGrid, label: 'Actions' },
   ];
@@ -330,7 +334,7 @@ function ScreenHome({ data, alerts, vault, stores, onNav, showToast, persona, on
       <Section title="Smart Briefing">
         <div className="space-y-2.5">
           {[
-            { icon: AlertTriangle, color: '#E87068', text: `${oosCount} products out of stock on floor — vault inventory available for all. Transfer now to recover ~$940/day in lost sales.`, action: 'Transfer All', onAction: () => onNav('floor') },
+            { icon: AlertTriangle, color: '#E87068', text: `${oosCount} products out of stock on floor — vault inventory available for all. Transfer now to recover ~$940/day in lost sales.`, action: 'Transfer All', onAction: () => onNav('alerts') },
             { icon: DollarSign, color: '#D4A03A', text: `${pricingIssues} products priced >8% from market avg. Stiiizy Battery Kit 14% below = $450/wk margin opportunity.`, action: 'Review Pricing', onAction: () => onNav('actions') },
             { icon: Megaphone, color: '#00C27C', text: 'Win-Back campaign ready: 340 lapsed customers, projected $8,200 revenue. Jeeter sentiment surging +34%.', action: 'Launch', onAction: () => showToast('Win-Back campaign launched to 340 customers') },
             { icon: Clock, color: '#64A8E0', text: 'Jeeter shipment arriving 2:30 PM (42 SKUs). Tuesday peak traffic expected after 4pm — ensure coverage.', action: null },
@@ -546,6 +550,8 @@ function ScreenAlerts({ alerts, onAction, onNav }) {
                   {a.actionType === 'compliance' && <Shield className="w-3.5 h-3.5" />}
                   {a.actionType === 'receive' && <Truck className="w-3.5 h-3.5" />}
                   {a.actionType === 'promo' && <X className="w-3.5 h-3.5" />}
+                  {a.actionType === 'staffing' && <Users className="w-3.5 h-3.5" />}
+                  {a.actionType === 'loyalty' && <Heart className="w-3.5 h-3.5" />}
                   {a.actionType === 'info' && <Eye className="w-3.5 h-3.5" />}
                   {a.action}
                 </button>
@@ -553,6 +559,206 @@ function ScreenAlerts({ alerts, onAction, onNav }) {
             </div>
           </Card>
         ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCREEN: REPORTS — At-a-Glance Reporting Dashboard
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function ScreenReports() {
+  const dailyRevenue = [
+    { day: 'Mon', rev: 41200 }, { day: 'Tue', rev: 47800 }, { day: 'Wed', rev: 43100 },
+    { day: 'Thu', rev: 50200 }, { day: 'Fri', rev: 58400 }, { day: 'Sat', rev: 62100 }, { day: 'Sun', rev: 45300 },
+  ];
+  const maxRev = Math.max(...dailyRevenue.map(d => d.rev));
+  const hourlyTraffic = [8,15,28,42,65,78,92,105,118,98,82,74,110,124,89,52];
+  const maxTraffic = Math.max(...hourlyTraffic);
+  const topProducts = [
+    { name: 'Baby Jeeter Churros', units: 48, rev: '$1,680', margin: '48.6%', trend: '+12%' },
+    { name: 'Blue Dream 3.5g', units: 38, rev: '$1,444', margin: '42.1%', trend: '+8%' },
+    { name: 'Wyld Elderberry 10pk', units: 34, rev: '$748', margin: '45.0%', trend: '+22%' },
+    { name: 'STIIIZY OG Pod 1g', units: 27, rev: '$1,404', margin: '38.4%', trend: '-3%' },
+    { name: 'Kiva Camino 20pk', units: 24, rev: '$768', margin: '54.5%', trend: '+15%' },
+  ];
+  const categories = [
+    { name: 'Flower', pct: 38, color: '#00C27C' },
+    { name: 'Vapes', pct: 24, color: '#64A8E0' },
+    { name: 'Edibles', pct: 18, color: '#D4A03A' },
+    { name: 'Pre-Rolls', pct: 12, color: '#B598E8' },
+    { name: 'Other', pct: 8, color: '#6B6359' },
+  ];
+
+  return (
+    <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-24">
+      <div className="flex items-center justify-between pt-3 pb-3">
+        <div className="text-[17px] font-bold text-white">Reports</div>
+        <span className="text-[11px] text-[#6B6359]">Today &middot; Logan Square</span>
+      </div>
+
+      {/* KPI Cards — 2x2 grid */}
+      <div className="grid grid-cols-2 gap-2.5 mb-4">
+        <Card className="!p-3">
+          <div className="text-[10px] text-[#6B6359] mb-1">Revenue Today</div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-[20px] font-bold text-white">$47.8K</span>
+            <span className="text-[10px] font-semibold text-[#00C27C]">+7.1%</span>
+          </div>
+          <div className="mt-1.5 h-1.5 rounded-full bg-[#38332B] overflow-hidden">
+            <div className="h-full rounded-full bg-[#00C27C]" style={{ width: '92%' }} />
+          </div>
+          <div className="text-[9px] text-[#6B6359] mt-1">$52K goal &middot; 92%</div>
+        </Card>
+        <Card className="!p-3">
+          <div className="text-[10px] text-[#6B6359] mb-1">Transactions</div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-[20px] font-bold text-white">312</span>
+            <span className="text-[10px] font-semibold text-[#00C27C]">+12</span>
+          </div>
+          <Spark data={[245,268,290,312,298,278,312]} color="#64A8E0" w={60} h={16} />
+          <div className="text-[9px] text-[#6B6359] mt-1">vs 300 yesterday</div>
+        </Card>
+        <Card className="!p-3">
+          <div className="text-[10px] text-[#6B6359] mb-1">Avg Order Value</div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-[20px] font-bold text-white">$68.40</span>
+            <span className="text-[10px] font-semibold text-[#D4A03A]">-$1.20</span>
+          </div>
+          <Spark data={[71,69,72,68,70,69,68]} color="#D4A03A" w={60} h={16} />
+          <div className="text-[9px] text-[#6B6359] mt-1">vs $69.60 yesterday</div>
+        </Card>
+        <Card className="!p-3">
+          <div className="text-[10px] text-[#6B6359] mb-1">Conversion Rate</div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-[20px] font-bold text-white">34%</span>
+            <span className="text-[10px] font-semibold text-[#00C27C]">+2.1%</span>
+          </div>
+          <Spark data={[29,31,30,33,32,34,34]} color="#00C27C" w={60} h={16} />
+          <div className="text-[9px] text-[#6B6359] mt-1">vs 31.9% yesterday</div>
+        </Card>
+      </div>
+
+      {/* Revenue Trend — 7-day bar chart */}
+      <Card className="!p-3.5 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[12px] font-semibold text-white">Revenue — Last 7 Days</span>
+          <span className="text-[10px] text-[#00C27C] font-medium">$348.1K total</span>
+        </div>
+        <div className="flex items-end gap-1.5 h-[80px]">
+          {dailyRevenue.map((d, i) => {
+            const h = (d.rev / maxRev) * 100;
+            const isToday = i === 1;
+            return (
+              <div key={d.day} className="flex-1 flex flex-col items-center gap-1">
+                <span className="text-[8px] text-[#6B6359]">${(d.rev / 1000).toFixed(0)}K</span>
+                <div className="w-full rounded-t" style={{ height: `${h}%`, background: isToday ? '#D4A03A' : '#38332B', minHeight: 4 }} />
+                <span className={`text-[9px] font-medium ${isToday ? 'text-[#D4A03A]' : 'text-[#6B6359]'}`}>{d.day}</span>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* Hourly Traffic */}
+      <Card className="!p-3.5 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[12px] font-semibold text-white">Hourly Traffic</span>
+          <span className="text-[10px] text-[#6B6359]">8AM — 11PM</span>
+        </div>
+        <div className="flex items-end gap-[3px] h-[50px]">
+          {hourlyTraffic.map((v, i) => {
+            const h = (v / maxTraffic) * 100;
+            const isPeak = v >= maxTraffic * 0.9;
+            const isNow = i === 8; // ~4pm
+            return (
+              <div key={i} className="flex-1 rounded-t transition-all" style={{ height: `${h}%`, background: isNow ? '#D4A03A' : isPeak ? '#E87068' : '#64A8E0', opacity: isNow ? 1 : 0.6, minHeight: 2 }} />
+            );
+          })}
+        </div>
+        <div className="flex justify-between mt-1 text-[8px] text-[#6B6359]">
+          <span>8am</span><span>12pm</span><span>4pm</span><span>8pm</span><span>11pm</span>
+        </div>
+      </Card>
+
+      {/* Top Products */}
+      <Card className="!p-3.5 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[12px] font-semibold text-white">Top Products Today</span>
+          <span className="text-[10px] text-[#6B6359]">by revenue</span>
+        </div>
+        <div className="space-y-2.5">
+          {topProducts.map((p, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <span className="text-[11px] font-bold text-[#6B6359] w-4">#{i + 1}</span>
+              <div className="flex-1 min-w-0">
+                <div className="text-[12px] font-medium text-white truncate">{p.name}</div>
+                <div className="text-[10px] text-[#6B6359]">{p.units} units &middot; {p.margin} margin</div>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <div className="text-[12px] font-semibold text-white">{p.rev}</div>
+                <div className={`text-[10px] font-medium ${p.trend.startsWith('+') ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{p.trend}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Category Mix */}
+      <Card className="!p-3.5 mb-4">
+        <div className="text-[12px] font-semibold text-white mb-3">Category Mix</div>
+        <div className="flex h-3 rounded-full overflow-hidden gap-[2px] mb-3">
+          {categories.map(c => (
+            <div key={c.name} style={{ width: `${c.pct}%`, background: c.color }} className="rounded-full" />
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1">
+          {categories.map(c => (
+            <div key={c.name} className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: c.color }} />
+              <span className="text-[10px] text-[#ADA599]">{c.name} <span className="font-semibold text-white">{c.pct}%</span></span>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Quick Comparisons */}
+      <div className="grid grid-cols-2 gap-2.5 mb-4">
+        <Card className="!p-3">
+          <div className="text-[10px] text-[#6B6359] mb-1.5">vs Yesterday</div>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#ADA599]">Revenue</span>
+              <span className="text-[11px] font-semibold text-[#00C27C]">+7.1%</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#ADA599]">Transactions</span>
+              <span className="text-[11px] font-semibold text-[#00C27C]">+4.0%</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#ADA599]">AOV</span>
+              <span className="text-[11px] font-semibold text-[#D4A03A]">-1.7%</span>
+            </div>
+          </div>
+        </Card>
+        <Card className="!p-3">
+          <div className="text-[10px] text-[#6B6359] mb-1.5">vs Last Week</div>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#ADA599]">Revenue</span>
+              <span className="text-[11px] font-semibold text-[#00C27C]">+11.3%</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#ADA599]">Transactions</span>
+              <span className="text-[11px] font-semibold text-[#00C27C]">+8.5%</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#ADA599]">AOV</span>
+              <span className="text-[11px] font-semibold text-[#00C27C]">+5.8%</span>
+            </div>
+          </div>
+        </Card>
       </div>
     </div>
   );
@@ -1214,7 +1420,7 @@ function ScreenActions({ vault, transfers, showToast, onNav }) {
   const sections = [
     {
       title: 'Inventory', items: [
-        { icon: ArrowRightLeft, color: '#E87068', title: 'Transfer Vault → Floor', sub: `${oosCount} out of stock, vault available`, action: () => onNav('floor') },
+        { icon: ArrowRightLeft, color: '#E87068', title: 'Transfer Vault → Floor', sub: `${oosCount} out of stock, vault available`, action: () => onNav('alerts') },
         { icon: Truck, color: '#64A8E0', title: 'Receive Shipment', sub: 'Jeeter — 42 SKUs arriving 2:30 PM', action: () => showToast('Receiving checklist opened for Jeeter shipment') },
         { icon: Clipboard, color: '#D4A03A', title: 'Cycle Count', sub: 'Last completed: Yesterday 4:45 PM', action: () => showToast('Cycle count started for Logan Square') },
         { icon: Shield, color: '#B598E8', title: 'METRC Reconciliation', sub: 'Last sync: 4 min ago · 2 discrepancies', action: () => showToast('METRC reconciliation started — resolving 2 discrepancies') },
@@ -1408,18 +1614,25 @@ export default function NexusMobileWeb() {
       showToast(`${alert.title.split('—')[0].trim()} launched!`);
       setAlerts(prev => prev.filter(a => a.id !== alert.id));
     } else if (alert.actionType === 'promo') {
-      showToast('BOGO Edibles promotion discontinued');
+      const promoName = alert.title.split('—')[0].trim();
+      showToast(`${promoName} discontinued — savings will reflect in tomorrow's report`);
       setAlerts(prev => prev.filter(a => a.id !== alert.id));
     } else if (alert.actionType === 'price') {
-      showToast('Price adjustment applied');
+      const productName = alert.title.split('—')[0].split('priced')[0].trim();
+      showToast(`Price updated for ${productName}`);
       setAlerts(prev => prev.filter(a => a.id !== alert.id));
     } else if (alert.actionType === 'compliance') {
-      showToast('Compliance action started');
+      showToast(`${alert.action}: ${alert.title}`);
       setAlerts(prev => prev.filter(a => a.id !== alert.id));
     } else if (alert.actionType === 'receive') {
-      showToast('Receiving checklist opened for Jeeter shipment');
+      showToast(`Receiving checklist opened — ${alert.title}`);
+    } else if (alert.actionType === 'staffing') {
+      showToast(`Schedule opened — ${alert.title}`);
+    } else if (alert.actionType === 'loyalty') {
+      showToast('Loyalty segments loaded — 23 at-risk VIPs identified');
+      setAlerts(prev => prev.filter(a => a.id !== alert.id));
     } else {
-      showToast('Details loaded', 'info');
+      showToast(alert.title, 'info');
     }
   }, [navigate, showToast]);
 
@@ -1441,6 +1654,7 @@ export default function NexusMobileWeb() {
         {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} persona={persona} onPersonaTap={() => setPersonaSwitcherOpen(true)} />}
         {screen === 'alerts' && <ScreenAlerts alerts={alerts} onAction={handleAlertAction} onNav={navigate} />}
         {screen === 'floor' && <ScreenFloor vault={vault} transfers={transfers} onTransfer={handleVaultTransfer} showToast={showToast} />}
+        {screen === 'reports' && <ScreenReports />}
         {screen === 'chat' && <MobileChatScreen persona={persona} />}
         {screen === 'actions' && <ScreenActions vault={vault} transfers={transfers} showToast={showToast} onNav={navigate} />}
       </div>
