@@ -556,7 +556,7 @@ function SentimentTile({ onOpenNexus }) {
         title="Consumer Sentiment"
         subtitle={`${Math.round(NEXUS_DATA.unifiedPipeline.totalSignals * dateMultiplier).toLocaleString()} signals across ${NEXUS_DATA.unifiedPipeline.channelScores.length} channels — ${rangeLabel}`}
         iconBg="bg-[#00C27C]/10 text-[#00C27C]"
-        action={() => onOpenNexus && onOpenNexus('Give me a deep dive on consumer sentiment — top themes, trends, and areas needing attention')}
+        action={() => onOpenNexus && onOpenNexus('<<nexus_action:sentiment_overview>> Give me a deep dive on consumer sentiment')}
         actionLabel="Deep Dive"
         badge={{ count: 2, color: 'bg-[#D4A03A]' }}
       />
@@ -721,7 +721,7 @@ function SentimentTile({ onOpenNexus }) {
                   <p className="text-sm text-[#F0EDE8]">{item.action}</p>
                   <p className="mt-0.5 text-xs text-[#6B6359] font-medium">{item.impact}</p>
                 </div>
-                <button onClick={() => onOpenNexus && onOpenNexus(item.action)} className="flex-shrink-0 rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-1.5 text-xs font-semibold text-[#F0EDE8] hover:bg-[#282724] transition-colors">
+                <button onClick={() => onOpenNexus && onOpenNexus(`<<nexus_action:sentiment_overview>> ${item.action}`)} className="flex-shrink-0 rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-1.5 text-xs font-semibold text-[#F0EDE8] hover:bg-[#282724] transition-colors">
                   Execute
                 </button>
               </div>
@@ -756,7 +756,7 @@ function OmnichannelTile({ onOpenNexus }) {
         title="Omnichannel Sentiment Collection"
         subtitle={`Proprietary first-party signals — ${rangeLabel.toLowerCase()}`}
         iconBg="bg-[rgba(163,113,247,0.12)] text-[#B598E8]"
-        action={() => onOpenNexus && onOpenNexus('Show me omnichannel sentiment collection configuration and response rates')}
+        action={() => onOpenNexus && onOpenNexus('<<nexus_action:sentiment_overview>> Show me omnichannel sentiment and response rates')}
         actionLabel="Configure Channels"
       />
       <div className="p-6">
@@ -1225,7 +1225,7 @@ function InventoryTile({ onOpenNexus }) {
         title="Inventory & Reordering"
         subtitle={`${scaledAlerts} low-stock alerts — ${selectionLabel}`}
         iconBg="bg-[rgba(255,166,87,0.12)] text-[#FFA657]"
-        action={() => onOpenNexus && onOpenNexus('Draft a reorder for low-stock products based on current inventory levels and sales velocity')}
+        action={() => onOpenNexus && onOpenNexus('<<nexus_action:rebalance>> Draft a reorder for low-stock products')}
         actionLabel="Draft Reorder"
         badge={{ count: scaledRisk, color: 'bg-[#E87068]' }}
       />
@@ -2063,44 +2063,44 @@ function LiveTicker() {
 
 const COMMAND_ACTIONS_BY_PERSONA = {
   ceo: [
-    { key: 'portfolio', label: 'Portfolio Summary', desc: 'All stores overview', query: 'Give me a portfolio summary across all 39 stores', icon: Building2, color: '#D4A03A' },
-    { key: 'revenue', label: 'Revenue by State', desc: 'State comparisons', query: 'Compare revenue across all 7 states', icon: BarChart3, color: '#00C27C' },
-    { key: 'compliance', label: 'Compliance Status', desc: 'All state systems', query: 'Show compliance status across all states', icon: Shield, color: '#64A8E0' },
-    { key: 'brands', label: 'Brand Performance', desc: 'Top brands MSO-wide', query: 'Which brands are performing best across the portfolio?', icon: Star, color: '#B598E8' },
-    { key: 'inventory', label: 'Inventory Valuation', desc: 'Portfolio inventory', query: 'Show total inventory valuation and aging across all stores', icon: Package, color: '#0EA5E9' },
-    { key: 'expansion', label: 'Expansion Analysis', desc: 'Growth opportunities', query: 'What markets should we expand into based on current performance?', icon: Rocket, color: '#EC4899' },
+    { key: 'portfolio', action: 'portfolio', label: 'Portfolio Summary', desc: 'All stores overview', query: 'Give me a portfolio summary across all 39 stores', icon: Building2, color: '#D4A03A' },
+    { key: 'revenue', action: 'revenue_state', label: 'Revenue by State', desc: 'State comparisons', query: 'Compare revenue across all 7 states', icon: BarChart3, color: '#00C27C' },
+    { key: 'compliance', action: 'compliance_all', label: 'Operations Health', desc: 'All state systems', query: 'Show operations health across all states', icon: Shield, color: '#64A8E0' },
+    { key: 'brands', action: 'brand_perf', label: 'Brand Performance', desc: 'Top brands MSO-wide', query: 'Which brands are performing best across the portfolio?', icon: Star, color: '#B598E8' },
+    { key: 'inventory', action: 'rebalance', label: 'Inventory & Rebalance', desc: 'Stock levels & OOS', query: 'Show inventory status and rebalancing opportunities', icon: Package, color: '#0EA5E9' },
+    { key: 'expansion', action: 'compare', label: 'State Comparison', desc: 'Market analysis', query: 'Compare performance across our top states', icon: Rocket, color: '#EC4899' },
   ],
   vp_retail: [
-    { key: 'regional', label: 'Regional Performance', desc: 'IL, MI, OH overview', query: 'Show me regional performance across IL, MI, and OH', icon: Globe, color: '#D4A03A' },
-    { key: 'rankings', label: 'Store Rankings', desc: 'Compare all stores', query: 'Rank all stores in my region by performance', icon: BarChart3, color: '#00C27C' },
-    { key: 'rebalance', label: 'Rebalance Inventory', desc: 'Cross-store transfers', query: 'Which products need rebalancing across my stores?', icon: ArrowRightLeft, color: '#64A8E0' },
-    { key: 'staffing', label: 'Staffing Overview', desc: 'Labor & overtime', query: 'Show staffing metrics and overtime across my region', icon: Users, color: '#B598E8' },
-    { key: 'pricing', label: 'Pricing Strategy', desc: 'Regional pricing', query: 'How do our prices compare across IL, MI, and OH?', icon: DollarSign, color: '#0EA5E9' },
-    { key: 'practices', label: 'Best Practices', desc: 'Share what works', query: 'What best practices from top stores can be shared?', icon: Sparkles, color: '#EC4899' },
+    { key: 'regional', action: 'revenue_state', label: 'Regional Performance', desc: 'IL, MI, OH overview', query: 'Show me regional performance across IL, MI, and OH', icon: Globe, color: '#D4A03A' },
+    { key: 'rankings', action: 'rankings', label: 'Store Rankings', desc: 'Compare all stores', query: 'Rank all stores in my region by performance', icon: BarChart3, color: '#00C27C' },
+    { key: 'rebalance', action: 'rebalance', label: 'Rebalance Inventory', desc: 'Cross-store transfers', query: 'Which products need rebalancing across my stores?', icon: ArrowRightLeft, color: '#64A8E0' },
+    { key: 'staffing', action: 'labor', label: 'Staffing Overview', desc: 'Labor & overtime', query: 'Show staffing metrics and overtime across my region', icon: Users, color: '#B598E8' },
+    { key: 'pricing', action: 'market_prices', label: 'Pricing Strategy', desc: 'Regional pricing', query: 'How do our prices compare across IL, MI, and OH?', icon: DollarSign, color: '#0EA5E9' },
+    { key: 'practices', action: 'practices', label: 'Best Practices', desc: 'Share what works', query: 'What best practices from top stores can be shared?', icon: Sparkles, color: '#EC4899' },
   ],
   regional_mgr: [
-    { key: 'transfers', label: 'Transfer Status', desc: 'IL vault transfers', query: 'Show all pending vault-to-floor transfers for Illinois', icon: ArrowRightLeft, color: '#D4A03A' },
-    { key: 'close', label: 'Daily Close Reports', desc: 'End of day numbers', query: 'Show daily close reports for all IL stores', icon: FileText, color: '#00C27C' },
-    { key: 'delivery', label: 'Receive Delivery', desc: 'Incoming shipments', query: 'What deliveries are expected today across IL stores?', icon: Truck, color: '#64A8E0' },
-    { key: 'labor', label: 'Labor Dashboard', desc: 'Staff scheduling', query: 'Show labor metrics for Illinois stores', icon: Users, color: '#B598E8' },
-    { key: 'reorder', label: 'Reorder Inventory', desc: 'IL stock levels', query: 'Which products need reordering across IL stores?', icon: Package, color: '#0EA5E9' },
-    { key: 'compliance', label: 'Compliance Check', desc: 'METRC status', query: 'Run compliance check for all Illinois stores', icon: Shield, color: '#EC4899' },
+    { key: 'transfers', action: 'transfers', label: 'Transfer Status', desc: 'IL vault transfers', query: 'Show all pending vault-to-floor transfers for Illinois', icon: ArrowRightLeft, color: '#D4A03A' },
+    { key: 'close', action: 'close', label: 'Daily Close Reports', desc: 'End of day numbers', query: 'Show daily close reports for all IL stores', icon: FileText, color: '#00C27C' },
+    { key: 'delivery', action: 'delivery', label: 'Receive Delivery', desc: 'Incoming shipments', query: 'What deliveries are expected today across IL stores?', icon: Truck, color: '#64A8E0' },
+    { key: 'labor', action: 'labor', label: 'Labor Dashboard', desc: 'Staff scheduling', query: 'Show labor metrics for Illinois stores', icon: Users, color: '#B598E8' },
+    { key: 'reorder', action: 'rebalance', label: 'Reorder Inventory', desc: 'IL stock levels', query: 'Which products need reordering across IL stores?', icon: Package, color: '#0EA5E9' },
+    { key: 'compliance', action: 'audit', label: 'Store Readiness', desc: 'Readiness score', query: 'Show store readiness score for Illinois', icon: Shield, color: '#EC4899' },
   ],
   store_mgr: [
-    { key: 'vault', label: 'Vault to Floor', desc: 'Transfer inventory', query: 'Show items that need vault-to-floor transfer at Logan Square', icon: ArrowRightLeft, color: '#D4A03A' },
-    { key: 'reorder', label: 'Reorder Stock', desc: 'Low inventory items', query: 'What inventory needs reordering at Logan Square?', icon: ShoppingCart, color: '#00C27C' },
-    { key: 'promos', label: "Today's Promos", desc: 'Active promotions', query: 'What promotions are running at Logan Square today?', icon: Megaphone, color: '#64A8E0' },
-    { key: 'customers', label: 'Customer Flow', desc: 'Traffic & queues', query: 'Show current customer flow and queue status', icon: Users, color: '#B598E8' },
-    { key: 'sales', label: 'Sales Summary', desc: "Today's numbers", query: 'Give me today\'s sales summary for Logan Square', icon: BarChart3, color: '#0EA5E9' },
-    { key: 'eod', label: 'End of Day', desc: 'Close procedures', query: 'Start end-of-day closing procedures for Logan Square', icon: CheckCircle2, color: '#EC4899' },
+    { key: 'vault', action: 'vault_transfer', label: 'Vault to Floor', desc: 'Transfer inventory', query: 'Show items that need vault-to-floor transfer at Logan Square', icon: ArrowRightLeft, color: '#D4A03A' },
+    { key: 'reorder', action: 'market_prices', label: 'Reorder Stock', desc: 'Low inventory items', query: 'What inventory needs reordering at Logan Square?', icon: ShoppingCart, color: '#00C27C' },
+    { key: 'promos', action: 'winback_campaign', label: 'Campaigns', desc: 'Active campaigns', query: 'Show active campaigns and win-back opportunities', icon: Megaphone, color: '#64A8E0' },
+    { key: 'customers', action: 'sentiment_overview', label: 'Customer Sentiment', desc: 'Reviews & feedback', query: 'Show customer sentiment and feedback', icon: Users, color: '#B598E8' },
+    { key: 'sales', action: 'close', label: 'Sales Summary', desc: "Today's numbers", query: 'Give me today\'s sales summary for Logan Square', icon: BarChart3, color: '#0EA5E9' },
+    { key: 'eod', action: 'close', label: 'End of Day', desc: 'Close procedures', query: 'Start end-of-day closing procedures for Logan Square', icon: CheckCircle2, color: '#EC4899' },
   ],
   compliance: [
-    { key: 'sync', label: 'Sync Status', desc: 'All state systems', query: 'Show track-and-trace sync status for all states', icon: RefreshCw, color: '#D4A03A' },
-    { key: 'discrepancy', label: 'Discrepancy Queue', desc: 'Open items', query: 'Show all open inventory discrepancies sorted by age', icon: AlertTriangle, color: '#E87068' },
-    { key: 'license', label: 'License Tracker', desc: 'Expiration dates', query: 'Show license status and upcoming expirations', icon: Clipboard, color: '#64A8E0' },
-    { key: 'audit', label: 'Audit Prep', desc: 'Readiness check', query: 'Run audit readiness check for upcoming IL audit', icon: Eye, color: '#B598E8' },
-    { key: 'regulatory', label: 'Regulatory Updates', desc: 'State changes', query: 'What regulatory changes are coming in our operating states?', icon: FileText, color: '#0EA5E9' },
-    { key: 'report', label: 'Generate Report', desc: 'Compliance report', query: 'Generate a compliance report across all states', icon: BarChart3, color: '#EC4899' },
+    { key: 'sync', action: 'sync_status', label: 'Sync Health', desc: 'All state systems', query: 'Show inventory sync health for all states', icon: RefreshCw, color: '#D4A03A' },
+    { key: 'discrepancy', action: 'discrepancy', label: 'Exceptions Queue', desc: 'Open items', query: 'Show all inventory exceptions sorted by age', icon: AlertTriangle, color: '#E87068' },
+    { key: 'license', action: 'regulatory', label: 'Industry Updates', desc: 'Upcoming changes', query: 'Show upcoming industry changes and deadlines', icon: Clipboard, color: '#64A8E0' },
+    { key: 'audit', action: 'audit', label: 'Store Readiness', desc: 'Readiness check', query: 'Run store readiness check for upcoming IL review', icon: Eye, color: '#B598E8' },
+    { key: 'regulatory', action: 'compliance_all', label: 'Operations Health', desc: 'All states', query: 'Show operations health across all states', icon: FileText, color: '#0EA5E9' },
+    { key: 'report', action: 'compliance_all', label: 'Health Report', desc: 'Full overview', query: 'Generate an operations health report across all states', icon: BarChart3, color: '#EC4899' },
   ],
 };
 
@@ -2136,7 +2136,7 @@ function NexusCommandBar({ onAction }) {
         </form>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 stagger-grid">
           {COMMAND_ACTIONS.map(a => (
-            <button key={a.key} onClick={() => onAction(a.query)} className="group text-left rounded-xl border border-[#38332B] hover:border-[rgba(212,160,58,0.15)] bg-[#141210] p-3 transition-all hover:brightness-110 hover:scale-[1.01] active:scale-[0.98]">
+            <button key={a.key} onClick={() => onAction(a.action ? `<<nexus_action:${a.action}>> ${a.query}` : a.query)} className="group text-left rounded-xl border border-[#38332B] hover:border-[rgba(212,160,58,0.15)] bg-[#141210] p-3 transition-all hover:brightness-110 hover:scale-[1.01] active:scale-[0.98]">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${a.color}14` }}>
                   <a.icon className="w-3 h-3" style={{ color: a.color }} />
@@ -2426,7 +2426,15 @@ function SmartAlertsFeed({ onAction }) {
   /* ── Standard alert action handler ── */
   const handleAction = (alertId, action, alertTitle) => {
     setActionDone(prev => ({ ...prev, [`${alertId}-${action}`]: true }));
-    if (onAction) onAction(`${alertTitle}: ${action}`);
+    // Route alert actions to relevant data cards instead of KB
+    const alertActionMap = {
+      'ceo-1': 'revenue_state', 'ceo-2': 'portfolio', 'ceo-3': 'rebalance', 'ceo-4': 'revenue_state', 'ceo-5': 'brand_perf',
+      'vp-1': 'rankings', 'vp-2': 'rebalance', 'vp-3': 'labor', 'vp-4': 'practices', 'vp-5': 'market_prices',
+      'reg-2': 'transfers', 'reg-3': 'delivery', 'reg-4': 'close', 'reg-5': 'labor',
+      'comp-1': 'sync_status', 'comp-2': 'discrepancy', 'comp-3': 'regulatory', 'comp-4': 'compliance_all', 'comp-5': 'audit', 'comp-6': 'regulatory',
+    };
+    const nexusAction = alertActionMap[alertId] || 'portfolio';
+    if (onAction) onAction(`<<nexus_action:${nexusAction}>> ${alertTitle}: ${action}`);
   };
 
   const toggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
@@ -2651,7 +2659,7 @@ function CrossStoreIntelligence({ onOpenNexus }) {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="text-[10px] text-[#00C27C] font-semibold">{item.estRevRecovery}</p>
-                  <button onClick={() => onOpenNexus && onOpenNexus(`Initiate transfer of ${item.recTransfer} units of ${item.product} from ${item.from} to ${item.to}`)} className="mt-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white bg-[#64A8E0] hover:brightness-110 transition-colors">
+                  <button onClick={() => onOpenNexus && onOpenNexus(`<<nexus_action:transfers>> Transfer ${item.recTransfer} units of ${item.product} from ${item.from} to ${item.to}`)} className="mt-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white bg-[#64A8E0] hover:brightness-110 transition-colors">
                     Transfer {item.recTransfer}
                   </button>
                 </div>
@@ -2674,7 +2682,7 @@ function CrossStoreIntelligence({ onOpenNexus }) {
                   <span className="text-[10px] text-[#6B6359]">vs avg {bp.avg}</span>
                 </div>
                 <p className="text-[10px] text-[#ADA599]">{bp.insight}</p>
-                <button onClick={() => onOpenNexus && onOpenNexus(`${bp.action} — ${bp.store} has ${bp.metric}: ${bp.value} vs avg ${bp.avg}. ${bp.insight}`)} className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#00C27C] bg-[#00C27C]/10 border border-[#00C27C]/20 hover:bg-[#00C27C]/20 transition-colors">
+                <button onClick={() => onOpenNexus && onOpenNexus(`<<nexus_action:practices>> ${bp.action} — ${bp.store} has ${bp.metric}: ${bp.value}`)} className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#00C27C] bg-[#00C27C]/10 border border-[#00C27C]/20 hover:bg-[#00C27C]/20 transition-colors">
                   {bp.action}
                 </button>
               </div>
@@ -2846,7 +2854,7 @@ function StoreHealthMatrix({ onOpenNexus }) {
           const color = s.composite >= 75 ? '#00C27C' : s.composite >= 55 ? '#D4A03A' : '#E87068';
           const deg = s.composite * 3.6;
           return (
-            <div key={s.name} onClick={() => onOpenNexus && onOpenNexus(`Show me a deep dive on ${s.name} store — health score ${s.composite}, sentiment ${s.sentimentDelta >= 0 ? '+' : ''}${s.sentimentDelta}%, ${s.alerts} alerts`)} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
+            <div key={s.name} onClick={() => onOpenNexus && onOpenNexus(`<<nexus_action:rankings>> Deep dive on ${s.name} — score ${s.composite}, ${s.alerts} alerts`)} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
               <div className="w-11 h-11 rounded-full mx-auto mb-2 flex items-center justify-center" style={{ background: `conic-gradient(${color} ${deg}deg, #38332B 0deg)` }}>
                 <div className="w-8 h-8 rounded-full bg-[#141210] flex items-center justify-center text-xs font-bold" style={{ color }}>{s.composite}</div>
               </div>

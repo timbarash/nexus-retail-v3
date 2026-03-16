@@ -2504,6 +2504,20 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
   };
 
   const processMessage = async (text) => {
+    // Check for direct nexus action prefix from command bar buttons
+    const actionMatch = text.match(/^<<nexus_action:(\w+)>>\s*(.*)/);
+    if (actionMatch) {
+      const actionKey = actionMatch[1];
+      const displayText = actionMatch[2] || text;
+      setMessages(prev => [...prev, { role: 'user', text: displayText }]);
+      setThinkingStatus('Running action...');
+      await new Promise(r => setTimeout(r, 800));
+      setThinkingStatus(null);
+      const data = getNexusActionData(actionKey);
+      setMessages(prev => [...prev, { role: 'nexus', text: data.summary, responseType: 'nexus_action', actionData: data }]);
+      return;
+    }
+
     // Add user message
     setMessages(prev => [...prev, { role: 'user', text }]);
     setThinkingStatus('Understanding your question...');
