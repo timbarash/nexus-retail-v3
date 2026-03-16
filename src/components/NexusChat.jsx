@@ -48,7 +48,7 @@ export default function NexusChat({ isOpen, onClose, initialQuery }) {
       {/* Header with gradient */}
       <div
         className="flex items-center justify-between px-6 py-4 border-b border-[#38332B] flex-shrink-0"
-        style={{ background: 'linear-gradient(135deg, #141210 0%, #0F1923 50%, #141210 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #141210 0%, #1A1710 50%, #141210 100%)' }}
       >
         <div className="flex items-center gap-3">
           <div

@@ -585,7 +585,24 @@ function ScreenFloor({ vault, transfers, onTransfer, showToast }) {
    SCREEN: CHAT — Mobile-Optimized Nexus AI Assistant
    ═══════════════════════════════════════════════════════════════════════════ */
 
-function ScreenChat({ vault, showToast, onNav }) {
+// Brand → image map for chat product cards
+const BRAND_IMG = {
+  'Jeeter': 'brands/jeeter-baby-churros.webp',
+  'STIIIZY': 'brands/stiiizy-pods.png',
+  'Kiva': 'brands/kiva-camino.jpg',
+  'Raw Garden': 'brands/raw-garden-cart.webp',
+  'PLUS': 'brands/plus-gummies.jpg',
+  'Alien Labs': 'brands/alien-xeno.png',
+  'Cookies': 'brands/cookies-gary-payton.png',
+  'Wyld': 'brands/wyld-elderberry.png',
+  'Papa & Barkley': 'brands/papa-barkley-balm.jpg',
+};
+const brandImgUrl = (brand) => {
+  const path = BRAND_IMG[brand];
+  return path ? `${import.meta.env.BASE_URL || '/'}${path}` : null;
+};
+
+function ScreenChat({ vault, showToast, onNav, onTransfer }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -625,7 +642,7 @@ function ScreenChat({ vault, showToast, onNav }) {
           id: `a-${Date.now()}`, role: 'assistant', type: 'inventory',
           content: `I found ${oosItems.length} out-of-stock products and ${vault.filter(v => v.floor > 0 && v.floor <= 5).length} running low. Here's what needs attention:`,
           items: vault.filter(v => v.urgency === 'critical' || v.urgency === 'high').map(v => ({
-            name: v.name, brand: v.brand, floor: v.floor, vault: v.vault,
+            vaultId: v.id, name: v.name, brand: v.brand, floor: v.floor, vault: v.vault,
             daysOOS: v.daysOOS, avgWeekly: v.avgWeekly, store: v.store,
             action: v.floor === 0 ? 'Transfer Now' : 'Restock Soon',
           })),
@@ -710,25 +727,48 @@ function ScreenChat({ vault, showToast, onNav }) {
         <div>
           <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
           <div className="space-y-2">
-            {msg.items.map((item, i) => (
-              <div key={i} className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
-                <div className="flex justify-between items-start mb-1.5">
-                  <div>
-                    <div className="text-[13px] font-semibold text-white">{item.name}</div>
-                    <div className="text-[10px] text-[#6B6359]">{item.brand} &middot; {item.store}</div>
+            {msg.items.map((item, i) => {
+              const img = brandImgUrl(item.brand);
+              const recQty = Math.min(item.vault, Math.max(item.avgWeekly, 10));
+              return (
+                <div key={i} className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
+                  <div className="flex gap-3 mb-2">
+                    {img && (
+                      <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-[#1C1B1A]">
+                        <img src={img} alt={item.brand} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-[13px] font-semibold text-white">{item.name}</div>
+                          <div className="text-[10px] text-[#6B6359]">{item.brand} &middot; {item.store}</div>
+                        </div>
+                        {item.daysOOS > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#E87068]/15 text-[#E87068] font-bold">{item.daysOOS}d OOS</span>}
+                      </div>
+                    </div>
                   </div>
-                  {item.daysOOS > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#E87068]/15 text-[#E87068] font-bold">{item.daysOOS}d OOS</span>}
+                  <div className="flex gap-4 text-[11px] mb-2">
+                    <span className="text-[#6B6359]">Floor: <span className={item.floor === 0 ? 'text-[#E87068] font-bold' : 'text-white'}>{item.floor}</span></span>
+                    <span className="text-[#6B6359]">Vault: <span className="text-[#00C27C] font-bold">{item.vault}</span></span>
+                    <span className="text-[#6B6359]">Wk Avg: <span className="text-white">{item.avgWeekly}</span></span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (item.vaultId && onTransfer) {
+                        onTransfer(item.vaultId, recQty);
+                        showToast(`Transferred ${recQty} units of ${item.name} to floor`);
+                      } else {
+                        showToast(`${item.name} — ${recQty} units queued for transfer`);
+                      }
+                    }}
+                    className="w-full py-2 rounded-lg text-[11px] font-semibold bg-[#D4A03A]/10 text-[#D4A03A] border border-[#D4A03A]/20 flex items-center justify-center gap-1.5">
+                    <ArrowRightLeft className="w-3 h-3" />
+                    Transfer {recQty} units to Floor
+                  </button>
                 </div>
-                <div className="flex gap-4 text-[11px] mb-2">
-                  <span className="text-[#6B6359]">Floor: <span className={item.floor === 0 ? 'text-[#E87068] font-bold' : 'text-white'}>{item.floor}</span></span>
-                  <span className="text-[#6B6359]">Vault: <span className="text-[#00C27C] font-bold">{item.vault}</span></span>
-                  <span className="text-[#6B6359]">Wk Avg: <span className="text-white">{item.avgWeekly}</span></span>
-                </div>
-                <button onClick={() => onNav('floor')} className="w-full py-2 rounded-lg text-[11px] font-semibold bg-[#D4A03A]/10 text-[#D4A03A] border border-[#D4A03A]/20">
-                  {item.action}
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       );
@@ -867,19 +907,31 @@ function ScreenChat({ vault, showToast, onNav }) {
         <div>
           <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
           <div className="space-y-2">
-            {msg.products.map((p, i) => (
-              <div key={i} className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
-                <div className="flex justify-between items-start mb-1">
-                  <div>
-                    <div className="text-[12px] font-semibold text-white">{p.name}</div>
-                    <div className="text-[10px] text-[#6B6359]">{p.brand} &middot; {p.cat}</div>
+            {msg.products.map((p, i) => {
+              const img = brandImgUrl(p.brand);
+              return (
+                <div key={i} className="p-3 rounded-xl bg-[#141210] border border-[#38332B]">
+                  <div className="flex gap-3 mb-1">
+                    {img && (
+                      <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-[#1C1B1A]">
+                        <img src={img} alt={p.brand} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-[12px] font-semibold text-white">{p.name}</div>
+                          <div className="text-[10px] text-[#6B6359]">{p.brand} &middot; {p.cat}</div>
+                        </div>
+                        <span className="text-[10px] font-bold text-[#00C27C] bg-[#00C27C]/10 px-1.5 py-0.5 rounded">{p.growth}</span>
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-[10px] font-bold text-[#00C27C] bg-[#00C27C]/10 px-1.5 py-0.5 rounded">{p.growth}</span>
+                  <div className="text-[10px] text-[#6B6359] mb-1">Margin: <span className="text-white">{p.margin}</span></div>
+                  <div className="text-[11px] text-[#A39B8D]">{p.rec}</div>
                 </div>
-                <div className="text-[10px] text-[#6B6359] mb-1">Margin: <span className="text-white">{p.margin}</span></div>
-                <div className="text-[11px] text-[#A39B8D]">{p.rec}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       );
@@ -1199,7 +1251,7 @@ export default function NexusMobileWeb() {
       {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} />}
       {screen === 'alerts' && <ScreenAlerts alerts={alerts} onAction={handleAlertAction} onNav={navigate} />}
       {screen === 'floor' && <ScreenFloor vault={vault} transfers={transfers} onTransfer={handleVaultTransfer} showToast={showToast} />}
-      {screen === 'chat' && <ScreenChat vault={vault} showToast={showToast} onNav={navigate} />}
+      {screen === 'chat' && <ScreenChat vault={vault} showToast={showToast} onNav={navigate} onTransfer={handleVaultTransfer} />}
       {screen === 'actions' && <ScreenActions vault={vault} transfers={transfers} showToast={showToast} onNav={navigate} />}
 
       <BottomNav active={screen} onNavigate={navigate} alertCount={alerts.length} />

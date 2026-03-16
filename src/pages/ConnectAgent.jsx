@@ -9,6 +9,7 @@ import {
   PackageCheck, PackageX, TrendingDown, CircleDollarSign, Shield
 } from 'lucide-react';
 import { generateConnectResponse, generateConnectAnalysis, isGeminiAvailable } from '../utils/gemini';
+import { brandImg } from '../utils/helpers';
 
 /* ═══════════════════════════════════════════════════════════════════
    ICON MAP & RESOLVER
@@ -61,7 +62,7 @@ const OUT_OF_STOCK_PRODUCTS = [
     supplier: 'STIIIZY Direct',
     leadTime: '2-3 days',
     brandColor: '#1a1a1a',
-    image: '/brands/stiiizy-pods.png',
+    image: brandImg('/brands/stiiizy-pods.png'),
     recommendedQty: 36,
   },
   {
@@ -77,7 +78,7 @@ const OUT_OF_STOCK_PRODUCTS = [
     supplier: 'Kiva Sales Inc.',
     leadTime: '3-5 days',
     brandColor: '#8B4513',
-    image: '/brands/kiva-camino.jpg',
+    image: brandImg('/brands/kiva-camino.jpg'),
     recommendedQty: 24,
   },
   {
@@ -93,7 +94,7 @@ const OUT_OF_STOCK_PRODUCTS = [
     supplier: 'Raw Garden LLC',
     leadTime: '3-4 days',
     brandColor: '#4CAF50',
-    image: '/brands/raw-garden-cart.webp',
+    image: brandImg('/brands/raw-garden-cart.webp'),
     recommendedQty: 18,
   },
   {
@@ -109,7 +110,7 @@ const OUT_OF_STOCK_PRODUCTS = [
     supplier: 'Wyld Distribution',
     leadTime: '4-5 days',
     brandColor: '#E91E63',
-    image: '/brands/wyld-elderberry.png',
+    image: brandImg('/brands/wyld-elderberry.png'),
     recommendedQty: 18,
   },
   {
@@ -126,7 +127,7 @@ const OUT_OF_STOCK_PRODUCTS = [
     leadTime: '2-3 days',
     note: 'Low stock — 8 units remaining',
     brandColor: '#7B2D8E',
-    image: '/brands/jeeter-baby-churros.webp',
+    image: brandImg('/brands/jeeter-baby-churros.webp'),
     recommendedQty: 48,
   },
 ];
@@ -145,7 +146,7 @@ const NEW_PRODUCTS = [
     rating: 4.8,
     brandColor: '#00BCD4',
     description: 'New live resin disposable. Top seller across CA dispensaries last 30 days.',
-    image: '/brands/alien-xeno.png',
+    image: brandImg('/brands/alien-xeno.png'),
   },
   {
     id: 'ck-new-001',
@@ -160,7 +161,7 @@ const NEW_PRODUCTS = [
     rating: 4.9,
     brandColor: '#2196F3',
     description: 'Iconic strain. Consistent top-5 seller in NYC metro dispensaries.',
-    image: '/brands/cookies-gary-payton.png',
+    image: brandImg('/brands/cookies-gary-payton.png'),
   },
   {
     id: 'ps-new-001',
@@ -175,7 +176,7 @@ const NEW_PRODUCTS = [
     rating: 4.6,
     brandColor: '#FF6B35',
     description: 'Two-flavor gummy pack. Great for cross-selling to edible customers.',
-    image: '/brands/plus-gummies.jpg',
+    image: brandImg('/brands/plus-gummies.jpg'),
   },
   {
     id: 'rg-new-001',
@@ -190,7 +191,7 @@ const NEW_PRODUCTS = [
     rating: 4.7,
     brandColor: '#4CAF50',
     description: 'New strain addition. Pairs well with existing Raw Garden inventory.',
-    image: '/brands/raw-garden-cart.webp',
+    image: brandImg('/brands/raw-garden-cart.webp'),
   },
   {
     id: 'wy-new-001',
@@ -205,7 +206,7 @@ const NEW_PRODUCTS = [
     rating: 4.9,
     brandColor: '#E91E63',
     description: 'America\'s #1 selling cannabis gummy. Real fruit, sativa-enhanced terpenes for uplifting energy.',
-    image: '/brands/wyld-raspberry.png',
+    image: brandImg('/brands/wyld-raspberry.png'),
   },
   {
     id: 'pb-new-001',
@@ -220,7 +221,7 @@ const NEW_PRODUCTS = [
     rating: 4.8,
     brandColor: '#2E7D32',
     description: 'Award-winning topical for deep muscle relief. Solventless, full-spectrum cannabis infusion.',
-    image: '/brands/papa-barkley-balm.jpg',
+    image: brandImg('/brands/papa-barkley-balm.jpg'),
   },
 ];
 

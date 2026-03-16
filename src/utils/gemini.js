@@ -5,6 +5,8 @@
  * Zero API keys in client-side code.
  */
 
+import { brandImg } from './helpers';
+
 const PROXY_URL = 'https://sa-gemini-proxy.dutchie-dev.workers.dev';
 
 /**
@@ -356,28 +358,28 @@ function normalizeMarketingPlan(raw) {
 
   // Resolve product images from available assets based on brand/name keywords
   const PRODUCT_IMAGE_MAP = [
-    { keywords: ['jeeter', 'churros'], image: '/brands/jeeter-baby-churros.webp' },
-    { keywords: ['jeeter', 'juice'], image: '/brands/jeeter-juice.webp' },
-    { keywords: ['jeeter', 'honeydew'], image: '/brands/jeeter-baby-honeydew.webp' },
-    { keywords: ['jeeter', 'horchata'], image: '/brands/jeeter-xl-horchata.webp' },
-    { keywords: ['jeeter', 'gelato'], image: '/brands/jeeter-baby-gelato.webp' },
-    { keywords: ['jeeter', 'cannon'], image: '/brands/jeeter-cannon.webp' },
-    { keywords: ['jeeter', 'vape'], image: '/brands/jeeter-vape.png' },
-    { keywords: ['jeeter'], image: '/brands/jeeter-baby-churros.webp' },
-    { keywords: ['wyld', 'elderberry'], image: '/brands/wyld-elderberry.png' },
-    { keywords: ['wyld', 'raspberry'], image: '/brands/wyld-raspberry.png' },
-    { keywords: ['wyld'], image: '/brands/wyld-elderberry.png' },
-    { keywords: ['stiiizy'], image: '/brands/stiiizy-pods.png' },
-    { keywords: ['kiva', 'camino'], image: '/brands/kiva-camino.jpg' },
-    { keywords: ['kiva'], image: '/brands/kiva-camino.jpg' },
-    { keywords: ['cookies', 'gary payton'], image: '/brands/cookies-gary-payton.png' },
-    { keywords: ['cookies'], image: '/brands/cookies-gary-payton.png' },
-    { keywords: ['raw garden'], image: '/brands/raw-garden-cart.webp' },
-    { keywords: ['alien labs', 'xeno'], image: '/brands/alien-xeno.png' },
-    { keywords: ['alien labs'], image: '/brands/alien-xeno.png' },
-    { keywords: ['plus', 'gummies'], image: '/brands/plus-gummies.jpg' },
-    { keywords: ['plus'], image: '/brands/plus-gummies.jpg' },
-    { keywords: ['papa', 'barkley'], image: '/brands/papa-barkley-balm.jpg' },
+    { keywords: ['jeeter', 'churros'], image: brandImg('/brands/jeeter-baby-churros.webp') },
+    { keywords: ['jeeter', 'juice'], image: brandImg('/brands/jeeter-juice.webp') },
+    { keywords: ['jeeter', 'honeydew'], image: brandImg('/brands/jeeter-baby-honeydew.webp') },
+    { keywords: ['jeeter', 'horchata'], image: brandImg('/brands/jeeter-xl-horchata.webp') },
+    { keywords: ['jeeter', 'gelato'], image: brandImg('/brands/jeeter-baby-gelato.webp') },
+    { keywords: ['jeeter', 'cannon'], image: brandImg('/brands/jeeter-cannon.webp') },
+    { keywords: ['jeeter', 'vape'], image: brandImg('/brands/jeeter-vape.png') },
+    { keywords: ['jeeter'], image: brandImg('/brands/jeeter-baby-churros.webp') },
+    { keywords: ['wyld', 'elderberry'], image: brandImg('/brands/wyld-elderberry.png') },
+    { keywords: ['wyld', 'raspberry'], image: brandImg('/brands/wyld-raspberry.png') },
+    { keywords: ['wyld'], image: brandImg('/brands/wyld-elderberry.png') },
+    { keywords: ['stiiizy'], image: brandImg('/brands/stiiizy-pods.png') },
+    { keywords: ['kiva', 'camino'], image: brandImg('/brands/kiva-camino.jpg') },
+    { keywords: ['kiva'], image: brandImg('/brands/kiva-camino.jpg') },
+    { keywords: ['cookies', 'gary payton'], image: brandImg('/brands/cookies-gary-payton.png') },
+    { keywords: ['cookies'], image: brandImg('/brands/cookies-gary-payton.png') },
+    { keywords: ['raw garden'], image: brandImg('/brands/raw-garden-cart.webp') },
+    { keywords: ['alien labs', 'xeno'], image: brandImg('/brands/alien-xeno.png') },
+    { keywords: ['alien labs'], image: brandImg('/brands/alien-xeno.png') },
+    { keywords: ['plus', 'gummies'], image: brandImg('/brands/plus-gummies.jpg') },
+    { keywords: ['plus'], image: brandImg('/brands/plus-gummies.jpg') },
+    { keywords: ['papa', 'barkley'], image: brandImg('/brands/papa-barkley-balm.jpg') },
   ];
 
   function resolveProductImage(product) {

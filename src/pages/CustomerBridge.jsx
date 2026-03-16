@@ -19,7 +19,7 @@ import { CampaignPlan, CAMPAIGNS } from './MarketingCampaigns';
 import { ReorderView, ExploreView, RecommendationsView } from './ConnectAgent';
 import { MarketComparisonView, PriceCostView, DiscountReviewView, PriceScenariosView, ChangePricesView, CreateDiscountView } from './PricingAgent';
 import { reviews as allReviews, sources as allSources, brands as allBrands, categories as allCategories } from '../data/mockData';
-import { avgSentiment, sentimentDistribution, monthlyTrend, calculateNPS, categorySentiment, groupBy, filterReviews } from '../utils/helpers';
+import { avgSentiment, sentimentDistribution, monthlyTrend, calculateNPS, categorySentiment, groupBy, filterReviews, brandImg } from '../utils/helpers';
 import NexusIcon from '../components/NexusIcon';
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -2510,43 +2510,43 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
           // Brand-specific product catalogs for featured product cards
           const BRAND_PRODUCTS = {
             wyld: [
-              { name: 'Wyld Elderberry Gummies', type: 'Indica · 10pk', strain: 'Elderberry', thc: '100mg', price: '$18.00', category: 'Edible', badgeColor: '#E91E63', badgeText: 'BEST SELLER', image: '/brands/wyld-elderberry.png' },
-              { name: 'Wyld Raspberry Gummies', type: 'Sativa · 10pk', strain: 'Raspberry', thc: '100mg', price: '$18.00', category: 'Edible', badgeColor: '#E91E63', badgeText: 'POPULAR', image: '/brands/wyld-raspberry.png' },
+              { name: 'Wyld Elderberry Gummies', type: 'Indica · 10pk', strain: 'Elderberry', thc: '100mg', price: '$18.00', category: 'Edible', badgeColor: '#E91E63', badgeText: 'BEST SELLER', image: brandImg('/brands/wyld-elderberry.png') },
+              { name: 'Wyld Raspberry Gummies', type: 'Sativa · 10pk', strain: 'Raspberry', thc: '100mg', price: '$18.00', category: 'Edible', badgeColor: '#E91E63', badgeText: 'POPULAR', image: brandImg('/brands/wyld-raspberry.png') },
               { name: 'Wyld Pear Gummies', type: 'CBN · 10pk', strain: 'Pear', thc: '50mg THC + 50mg CBN', price: '$20.00', category: 'Edible', badgeColor: '#16A34A', badgeText: 'SLEEP' },
               { name: 'Wyld Marionberry Gummies', type: 'Indica · 10pk', strain: 'Marionberry', thc: '100mg', price: '$18.00', category: 'Edible', badgeColor: '#7C3AED', badgeText: 'NEW' },
             ],
             stiiizy: [
-              { name: 'STIIIZY OG Kush Pod', type: 'Original · 1g', strain: 'OG Kush', thc: '89%', price: '$45.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: 'BEST SELLER', image: '/brands/stiiizy-pods.png' },
+              { name: 'STIIIZY OG Kush Pod', type: 'Original · 1g', strain: 'OG Kush', thc: '89%', price: '$45.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: 'BEST SELLER', image: brandImg('/brands/stiiizy-pods.png') },
               { name: 'STIIIZY Blue Dream Pod', type: 'Original · 1g', strain: 'Blue Dream', thc: '86%', price: '$45.00', category: 'Vape Pod', badgeColor: '#2563EB', badgeText: 'POPULAR' },
               { name: 'STIIIZY Strawnana Pod', type: 'Live Resin · 1g', strain: 'Strawnana', thc: '82%', price: '$55.00', category: 'Live Resin Pod', badgeColor: '#16A34A', badgeText: 'PREMIUM' },
               { name: 'STIIIZY Starter Kit', type: 'Device + Pod', strain: 'Biscotti', thc: '87%', price: '$60.00', category: 'Starter Kit', badgeColor: '#D4A03A', badgeText: 'BUNDLE' },
             ],
             kiva: [
-              { name: 'Kiva Camino Pineapple Habanero', type: 'Uplifting · 20pk', strain: 'Sativa Blend', thc: '100mg', price: '$22.00', category: 'Edible', badgeColor: '#EA580C', badgeText: 'BEST SELLER', image: '/brands/kiva-camino.jpg' },
+              { name: 'Kiva Camino Pineapple Habanero', type: 'Uplifting · 20pk', strain: 'Sativa Blend', thc: '100mg', price: '$22.00', category: 'Edible', badgeColor: '#EA580C', badgeText: 'BEST SELLER', image: brandImg('/brands/kiva-camino.jpg') },
               { name: 'Kiva Camino Midnight Blueberry', type: 'Sleep · 20pk', strain: 'CBN Blend', thc: '80mg THC + 40mg CBN', price: '$24.00', category: 'Edible', badgeColor: '#6366F1', badgeText: 'SLEEP' },
               { name: 'Kiva Lost Farm Gummies', type: 'Live Resin · 10pk', strain: 'Strawberry Lemonade', thc: '100mg', price: '$25.00', category: 'Edible', badgeColor: '#DC2626', badgeText: 'PREMIUM' },
               { name: 'Kiva Terra Bites', type: 'Espresso Beans · 20pk', strain: 'Espresso', thc: '100mg', price: '$22.00', category: 'Edible', badgeColor: '#8B4513', badgeText: 'CLASSIC' },
             ],
             cookies: [
-              { name: 'Cookies Gary Payton', type: 'Flower · 3.5g', strain: 'Gary Payton', thc: '28%', price: '$55.00', category: 'Flower', badgeColor: '#2196F3', badgeText: 'TOP SHELF', image: '/brands/cookies-gary-payton.png' },
+              { name: 'Cookies Gary Payton', type: 'Flower · 3.5g', strain: 'Gary Payton', thc: '28%', price: '$55.00', category: 'Flower', badgeColor: '#2196F3', badgeText: 'TOP SHELF', image: brandImg('/brands/cookies-gary-payton.png') },
               { name: 'Cookies Cereal Milk', type: 'Flower · 3.5g', strain: 'Cereal Milk', thc: '26%', price: '$55.00', category: 'Flower', badgeColor: '#2196F3', badgeText: 'POPULAR' },
               { name: 'Cookies Pancakes', type: 'Flower · 3.5g', strain: 'Pancakes', thc: '30%', price: '$58.00', category: 'Flower', badgeColor: '#D4A03A', badgeText: 'NEW' },
               { name: 'Cookies Collins Ave', type: 'Pre-Roll · 1g', strain: 'Collins Ave', thc: '25%', price: '$18.00', category: 'Pre-Roll', badgeColor: '#16A34A', badgeText: 'STAFF PICK' },
             ],
             'raw garden': [
-              { name: 'Raw Garden Slippery Susan', type: 'Live Resin Cart · 1g', strain: 'Slippery Susan', thc: '84%', price: '$40.00', category: 'Vape Cartridge', badgeColor: '#4CAF50', badgeText: 'BEST SELLER', image: '/brands/raw-garden-cart.webp' },
+              { name: 'Raw Garden Slippery Susan', type: 'Live Resin Cart · 1g', strain: 'Slippery Susan', thc: '84%', price: '$40.00', category: 'Vape Cartridge', badgeColor: '#4CAF50', badgeText: 'BEST SELLER', image: brandImg('/brands/raw-garden-cart.webp') },
               { name: 'Raw Garden Dojo Kush', type: 'Live Resin Cart · 1g', strain: 'Dojo Kush', thc: '82%', price: '$40.00', category: 'Vape Cartridge', badgeColor: '#4CAF50', badgeText: 'POPULAR' },
               { name: 'Raw Garden Lemon Haze', type: 'Refined Live Resin · 1g', strain: 'Lemon Haze', thc: '86%', price: '$45.00', category: 'Concentrate', badgeColor: '#D4A03A', badgeText: 'PREMIUM' },
               { name: 'Raw Garden Beach Party', type: 'Ready-to-Use · 0.5g', strain: 'Beach Party', thc: '80%', price: '$30.00', category: 'Disposable Vape', badgeColor: '#0EA5E9', badgeText: 'NEW' },
             ],
             'alien labs': [
-              { name: 'Alien Labs Xeno', type: 'Flower · 3.5g', strain: 'Xeno', thc: '31%', price: '$55.00', category: 'Flower', badgeColor: '#00BCD4', badgeText: 'NEW', image: '/brands/alien-xeno.png' },
+              { name: 'Alien Labs Xeno', type: 'Flower · 3.5g', strain: 'Xeno', thc: '31%', price: '$55.00', category: 'Flower', badgeColor: '#00BCD4', badgeText: 'NEW', image: brandImg('/brands/alien-xeno.png') },
               { name: 'Alien Labs Atomic Apple', type: 'Flower · 3.5g', strain: 'Atomic Apple', thc: '29%', price: '$50.00', category: 'Flower', badgeColor: '#00BCD4', badgeText: 'TOP SHELF' },
               { name: 'Alien Labs Bagio Punch', type: 'Live Resin Cart · 1g', strain: 'Bagio Punch', thc: '85%', price: '$52.00', category: 'Vape Cartridge', badgeColor: '#9333EA', badgeText: 'PREMIUM' },
               { name: 'Alien Labs Kryptochronic', type: 'Pre-Roll · 1.5g', strain: 'Kryptochronic', thc: '27%', price: '$22.00', category: 'Pre-Roll', badgeColor: '#16A34A', badgeText: 'STAFF PICK' },
             ],
             plus: [
-              { name: 'PLUS Sour Watermelon', type: 'Gummies · 20pk', strain: 'Sativa Blend', thc: '100mg', price: '$20.00', category: 'Edible', badgeColor: '#FF6B35', badgeText: 'BEST SELLER', image: '/brands/plus-gummies.jpg' },
+              { name: 'PLUS Sour Watermelon', type: 'Gummies · 20pk', strain: 'Sativa Blend', thc: '100mg', price: '$20.00', category: 'Edible', badgeColor: '#FF6B35', badgeText: 'BEST SELLER', image: brandImg('/brands/plus-gummies.jpg') },
               { name: 'PLUS Blackberry Lemon', type: 'Gummies · 20pk', strain: 'Indica Blend', thc: '100mg', price: '$20.00', category: 'Edible', badgeColor: '#7C3AED', badgeText: 'POPULAR' },
               { name: 'PLUS Uplift Citrus', type: 'Dual Chamber · 10pk', strain: 'THC + CBD', thc: '50mg THC + 50mg CBD', price: '$24.00', category: 'Edible', badgeColor: '#D4A03A', badgeText: 'NEW FORMAT' },
               { name: 'PLUS Sleep Cloudberry', type: 'Gummies · 20pk', strain: 'CBN Blend', thc: '80mg THC + 40mg CBN', price: '$22.00', category: 'Edible', badgeColor: '#6366F1', badgeText: 'SLEEP' },
@@ -2883,7 +2883,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
   const totalCount = Object.keys(products).length;
 
   const COMPACT_SUGGESTIONS = [
-    { key: 'ecomm_customize', label: 'Help me customize my ecomm look and feel', icon: Eye, gradient: 'from-cyan-600/20 to-blue-600/20', border: 'hover:border-cyan-500/40', tag: 'Support', tagColor: '#0EA5E9' },
+    { key: 'ecomm_customize', label: 'Help me customize my ecomm look and feel', icon: Eye, gradient: 'from-amber-600/20 to-orange-600/20', border: 'hover:border-amber-500/40', tag: 'Support', tagColor: '#D4A03A' },
     { key: 'menu_boards', label: 'Add Menu Boards to my Account', icon: Monitor, gradient: 'from-pink-600/20 to-rose-600/20', border: 'hover:border-pink-500/40', tag: 'Upgrade', tagColor: '#EC4899' },
     { key: 'winback', label: 'Set up a marketing win back campaign', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Marketing', tagColor: '#00C27C' },
   ];
@@ -2892,7 +2892,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
     { key: 'campaign', label: 'Run a marketing campaign for my top sellers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Marketing', tagColor: '#00C27C', confidence: 'medium' },
     { key: 'pricing_gap', label: 'Compare my prices vs the market', icon: DollarSign, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Pricing', tagColor: '#D4A03A' },
     { key: 'sentiment_check', label: "How's our customer sentiment this month?", icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Sentiment', tagColor: '#B598E8' },
-    { key: 'report', label: 'Give me a weekly sales performance summary', icon: BarChart3, gradient: 'from-cyan-600/20 to-sky-600/20', border: 'hover:border-cyan-500/40', tag: 'Reporting', tagColor: '#0EA5E9' },
+    { key: 'report', label: 'Give me a weekly sales performance summary', icon: BarChart3, gradient: 'from-emerald-600/20 to-teal-600/20', border: 'hover:border-emerald-500/40', tag: 'Reporting', tagColor: '#00C27C' },
     { key: 'explore', label: 'What trending products should I add to my menu?', icon: Rocket, gradient: 'from-pink-600/20 to-rose-600/20', border: 'hover:border-pink-500/40', tag: 'Products', tagColor: '#EC4899' },
   ];
 
@@ -2913,7 +2913,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
           {compact ? (
             <button
               onClick={() => navigate('/agents/bridge')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0EA5E9]/10 border border-[#0EA5E9]/20 hover:bg-[#0EA5E9]/20 transition-colors text-xs text-[#0EA5E9] font-medium"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D4A03A]/10 border border-[#D4A03A]/20 hover:bg-[#D4A03A]/20 transition-colors text-xs text-[#D4A03A] font-medium"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               Open Full Agent
@@ -2978,8 +2978,8 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
             <div className={`max-w-2xl ${msg.role === 'user' ? '' : ''}`}>
               <div className={`rounded-2xl px-5 py-3 text-sm leading-relaxed whitespace-pre-line ${
                 msg.role === 'user'
-                  ? 'bg-[#0EA5E9] text-white rounded-tr-sm'
-                  : 'bg-[#1C1B1A] border border-[#38332B] text-[#F0EDE8] rounded-tl-sm'
+                  ? 'bg-[#D4A03A]/15 border border-[#D4A03A]/20 text-[#F0EDE8] rounded-tr-sm'
+                  : 'bg-[#1C1B1A]/80 border border-[#38332B]/60 text-[#F0EDE8] rounded-tl-sm'
               }`}>
                 {msg.text}
               </div>
@@ -3148,7 +3148,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
                   </div>
                   <p className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-[#F0EDE8]`}>"{s.label}"</p>
                   {!compact && (
-                    <div className={`flex items-center gap-1 mt-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity ${nexusOverlay ? 'text-[#00C27C]' : 'text-[#0EA5E9]'}`}>
+                    <div className={`flex items-center gap-1 mt-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity ${nexusOverlay ? 'text-[#00C27C]' : 'text-[#D4A03A]'}`}>
                       <Zap className="w-3 h-3" /> Ask <ChevronRight className="w-3 h-3" />
                     </div>
                   )}
@@ -3163,7 +3163,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
 
       {/* input bar */}
       <form onSubmit={handleSubmit} className="sticky bottom-0 pb-2">
-        <div className={`flex items-center gap-3 bg-[#1C1B1A] border border-[#38332B] rounded-2xl ${compact ? 'px-3 py-2' : 'px-4 py-3'} focus-within:border-[#0EA5E9]/50 transition-colors`}>
+        <div className={`flex items-center gap-3 bg-[#1C1B1A] border border-[#38332B] rounded-2xl ${compact ? 'px-3 py-2' : 'px-4 py-3'} focus-within:border-[#D4A03A]/40 transition-colors`}>
           <Search className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} text-[#ADA599] flex-shrink-0`} />
           <input
             type="text"
@@ -3176,7 +3176,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
           <button
             type="submit"
             disabled={!inputValue.trim() || thinkingStatus !== null}
-            className={`${compact ? 'w-7 h-7' : 'w-8 h-8'} rounded-lg bg-[#0EA5E9] flex items-center justify-center text-white disabled:opacity-30 hover:bg-[#38BDF8] transition-colors disabled:hover:bg-[#0EA5E9]`}
+            className={`${compact ? 'w-7 h-7' : 'w-8 h-8'} rounded-lg bg-[#D4A03A]/80 flex items-center justify-center text-white disabled:opacity-30 hover:bg-[#D4A03A] transition-colors disabled:hover:bg-[#D4A03A]/80`}
           >
             <Send className={`${compact ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
           </button>
@@ -3187,13 +3187,13 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
               Nexus Chat uses intelligent intent recognition and 55+ knowledge articles to answer your questions.
             </p>
             <div className="flex items-center gap-1 text-[10px] text-[#6B6359] flex-wrap">
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#0EA5E9]" /> Support</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#D4A03A]" /> Support</span>
               <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#E87068]" /> Bug</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#EC4899]" /> Upsell</span>
+              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#D4A03A]" /> Upsell</span>
               <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#B598E8]" /> Factory</span>
               <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> Marketing</span>
               <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#64A8E0]" /> Connect</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#0EA5E9]" /> Reporting</span>
+              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> Reporting</span>
               <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> Sentiment</span>
               <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#B598E8]" /> Reviews</span>
             </div>

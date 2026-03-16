@@ -5,6 +5,7 @@
 
 import { CAMPAIGNS } from '../../pages/MarketingCampaigns';
 import { INTENT_ROUTING } from '../../data/dtchMockData';
+import { brandImg } from '../../utils/helpers';
 
 /* ─── Campaign Theme Definitions (for dynamic generation) ─── */
 
@@ -123,40 +124,40 @@ function buildCampaignFromPrompt(userText) {
   // Featured products per theme — real product images and data
   const FEATURED_PRODUCTS = {
     stiiizy: [
-      { name: 'STIIIZY OG Kush', type: 'Half Gram Pod', strain: 'OG Kush', thc: '86%', price: '$35.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: 'BEST SELLER', image: '/brands/stiiizy-pods.png' },
+      { name: 'STIIIZY OG Kush', type: 'Half Gram Pod', strain: 'OG Kush', thc: '86%', price: '$35.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: 'BEST SELLER', image: brandImg('/brands/stiiizy-pods.png') },
       { name: 'STIIIZY Blue Dream', type: 'Full Gram Pod', strain: 'Blue Dream', thc: '84%', price: '$55.00', category: 'Vape Pod', badgeColor: '#2563EB', badgeText: 'POPULAR' },
       { name: 'STIIIZY Starter Kit', type: 'Battery + Pod', strain: 'Skywalker OG', thc: '88%', price: '$45.00', category: 'Vape Kit', badgeColor: '#16A34A', badgeText: 'NEW' },
       { name: 'STIIIZY CDT Pod', type: 'Cannabis Derived Terps · 1g', strain: 'Biscotti', thc: '90%', price: '$60.00', category: 'Premium Pod', badgeColor: '#9333EA', badgeText: 'PREMIUM' },
     ],
     edibles: [
-      { name: 'Kiva Camino Gummies', type: 'Edible · 100mg', strain: 'Pineapple Habanero', thc: '5mg/pc', price: '$22.00', category: 'Gummies', badgeColor: '#D29922', badgeText: 'BEST SELLER', image: '/brands/kiva-camino.jpg' },
-      { name: 'Wyld Elderberry', type: 'Indica Gummies · 100mg', strain: 'Elderberry', thc: '10mg/pc', price: '$18.00', category: 'Gummies', badgeColor: '#E91E63', badgeText: 'POPULAR', image: '/brands/wyld-elderberry.png' },
-      { name: 'PLUS Dual Chamber', type: 'Uplift/Chill · 200mg', strain: 'Hybrid', thc: '10mg/pc', price: '$28.00', category: 'Gummies', badgeColor: '#FF6B35', badgeText: 'NEW', image: '/brands/plus-gummies.jpg' },
-      { name: 'Wyld Raspberry', type: 'Sativa Gummies · 100mg', strain: 'Raspberry', thc: '10mg/pc', price: '$22.00', category: 'Gummies', badgeColor: '#E91E63', badgeText: 'STAFF PICK', image: '/brands/wyld-raspberry.png' },
+      { name: 'Kiva Camino Gummies', type: 'Edible · 100mg', strain: 'Pineapple Habanero', thc: '5mg/pc', price: '$22.00', category: 'Gummies', badgeColor: '#D29922', badgeText: 'BEST SELLER', image: brandImg('/brands/kiva-camino.jpg') },
+      { name: 'Wyld Elderberry', type: 'Indica Gummies · 100mg', strain: 'Elderberry', thc: '10mg/pc', price: '$18.00', category: 'Gummies', badgeColor: '#E91E63', badgeText: 'POPULAR', image: brandImg('/brands/wyld-elderberry.png') },
+      { name: 'PLUS Dual Chamber', type: 'Uplift/Chill · 200mg', strain: 'Hybrid', thc: '10mg/pc', price: '$28.00', category: 'Gummies', badgeColor: '#FF6B35', badgeText: 'NEW', image: brandImg('/brands/plus-gummies.jpg') },
+      { name: 'Wyld Raspberry', type: 'Sativa Gummies · 100mg', strain: 'Raspberry', thc: '10mg/pc', price: '$22.00', category: 'Gummies', badgeColor: '#E91E63', badgeText: 'STAFF PICK', image: brandImg('/brands/wyld-raspberry.png') },
     ],
     flashsale: [
-      { name: 'Baby Jeeter Infused', type: '5pk Pre-Rolls · 2.5g', strain: 'Churros', thc: '46%', price: '$25.00', category: 'Pre-Roll', badgeColor: '#9333EA', badgeText: 'BEST SELLER', image: '/brands/jeeter-baby-churros.webp' },
-      { name: 'STIIIZY OG Kush', type: 'Half Gram Pod', strain: 'OG Kush', thc: '86%', price: '$35.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: 'TOP SELLER', image: '/brands/stiiizy-pods.png' },
-      { name: 'Kiva Camino Gummies', type: 'Edible · 100mg', strain: 'Pineapple Habanero', thc: '5mg/pc', price: '$22.00', category: 'Gummies', badgeColor: '#D29922', badgeText: 'POPULAR', image: '/brands/kiva-camino.jpg' },
-      { name: 'Alien Labs Xeno', type: 'Live Resin Disposable · 1g', strain: 'Xeno', thc: '88%', price: '$48.00', category: 'Disposable', badgeColor: '#00BCD4', badgeText: 'NEW', image: '/brands/alien-xeno.png' },
+      { name: 'Baby Jeeter Infused', type: '5pk Pre-Rolls · 2.5g', strain: 'Churros', thc: '46%', price: '$25.00', category: 'Pre-Roll', badgeColor: '#9333EA', badgeText: 'BEST SELLER', image: brandImg('/brands/jeeter-baby-churros.webp') },
+      { name: 'STIIIZY OG Kush', type: 'Half Gram Pod', strain: 'OG Kush', thc: '86%', price: '$35.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: 'TOP SELLER', image: brandImg('/brands/stiiizy-pods.png') },
+      { name: 'Kiva Camino Gummies', type: 'Edible · 100mg', strain: 'Pineapple Habanero', thc: '5mg/pc', price: '$22.00', category: 'Gummies', badgeColor: '#D29922', badgeText: 'POPULAR', image: brandImg('/brands/kiva-camino.jpg') },
+      { name: 'Alien Labs Xeno', type: 'Live Resin Disposable · 1g', strain: 'Xeno', thc: '88%', price: '$48.00', category: 'Disposable', badgeColor: '#00BCD4', badgeText: 'NEW', image: brandImg('/brands/alien-xeno.png') },
     ],
     seasonal: [
-      { name: 'Jeeter Juice', type: 'Liquid Diamonds · 1g Cart', strain: 'Blue Zkittlez', thc: '84%', price: '$45.00', category: 'Vape Cart', badgeColor: '#2563EB', badgeText: 'TRENDING', image: '/brands/jeeter-juice.webp' },
-      { name: 'Cookies Gary Payton', type: 'Flower · 3.5g', strain: 'Gary Payton', thc: '28%', price: '$55.00', category: 'Flower', badgeColor: '#2196F3', badgeText: 'ICONIC', image: '/brands/cookies-gary-payton.png' },
-      { name: 'Raw Garden Lemon Glaze', type: 'Refined Live Resin · 1g', strain: 'Lemon Glaze', thc: '85%', price: '$42.00', category: 'Vape Cart', badgeColor: '#4CAF50', badgeText: 'POPULAR', image: '/brands/raw-garden-cart.webp' },
-      { name: 'Wyld Elderberry', type: 'Indica Gummies · 100mg', strain: 'Elderberry', thc: '10mg/pc', price: '$18.00', category: 'Gummies', badgeColor: '#E91E63', badgeText: 'STAFF PICK', image: '/brands/wyld-elderberry.png' },
+      { name: 'Jeeter Juice', type: 'Liquid Diamonds · 1g Cart', strain: 'Blue Zkittlez', thc: '84%', price: '$45.00', category: 'Vape Cart', badgeColor: '#2563EB', badgeText: 'TRENDING', image: brandImg('/brands/jeeter-juice.webp') },
+      { name: 'Cookies Gary Payton', type: 'Flower · 3.5g', strain: 'Gary Payton', thc: '28%', price: '$55.00', category: 'Flower', badgeColor: '#2196F3', badgeText: 'ICONIC', image: brandImg('/brands/cookies-gary-payton.png') },
+      { name: 'Raw Garden Lemon Glaze', type: 'Refined Live Resin · 1g', strain: 'Lemon Glaze', thc: '85%', price: '$42.00', category: 'Vape Cart', badgeColor: '#4CAF50', badgeText: 'POPULAR', image: brandImg('/brands/raw-garden-cart.webp') },
+      { name: 'Wyld Elderberry', type: 'Indica Gummies · 100mg', strain: 'Elderberry', thc: '10mg/pc', price: '$18.00', category: 'Gummies', badgeColor: '#E91E63', badgeText: 'STAFF PICK', image: brandImg('/brands/wyld-elderberry.png') },
     ],
     _420: [
-      { name: 'Baby Jeeter Infused', type: '5pk Pre-Rolls · 2.5g', strain: 'Churros', thc: '46%', price: '$25.00', category: 'Pre-Roll', badgeColor: '#9333EA', badgeText: '4/20 DEAL', image: '/brands/jeeter-baby-churros.webp' },
-      { name: 'Jeeter XL Infused', type: 'Pre-Roll · 2g', strain: 'Horchata', thc: '38%', price: '$22.00', category: 'Pre-Roll', badgeColor: '#EA580C', badgeText: '4/20 DEAL', image: '/brands/jeeter-xl-horchata.webp' },
-      { name: 'STIIIZY OG Kush', type: 'Half Gram Pod', strain: 'OG Kush', thc: '86%', price: '$35.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: '4/20 DEAL', image: '/brands/stiiizy-pods.png' },
-      { name: 'Alien Labs Xeno', type: 'Live Resin Disposable · 1g', strain: 'Xeno', thc: '88%', price: '$48.00', category: 'Disposable', badgeColor: '#00BCD4', badgeText: '4/20 EXCLUSIVE', image: '/brands/alien-xeno.png' },
+      { name: 'Baby Jeeter Infused', type: '5pk Pre-Rolls · 2.5g', strain: 'Churros', thc: '46%', price: '$25.00', category: 'Pre-Roll', badgeColor: '#9333EA', badgeText: '4/20 DEAL', image: brandImg('/brands/jeeter-baby-churros.webp') },
+      { name: 'Jeeter XL Infused', type: 'Pre-Roll · 2g', strain: 'Horchata', thc: '38%', price: '$22.00', category: 'Pre-Roll', badgeColor: '#EA580C', badgeText: '4/20 DEAL', image: brandImg('/brands/jeeter-xl-horchata.webp') },
+      { name: 'STIIIZY OG Kush', type: 'Half Gram Pod', strain: 'OG Kush', thc: '86%', price: '$35.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: '4/20 DEAL', image: brandImg('/brands/stiiizy-pods.png') },
+      { name: 'Alien Labs Xeno', type: 'Live Resin Disposable · 1g', strain: 'Xeno', thc: '88%', price: '$48.00', category: 'Disposable', badgeColor: '#00BCD4', badgeText: '4/20 EXCLUSIVE', image: brandImg('/brands/alien-xeno.png') },
     ],
     general: [
-      { name: 'Baby Jeeter Infused', type: '5pk Pre-Rolls · 2.5g', strain: 'Churros', thc: '46%', price: '$25.00', category: 'Pre-Roll', badgeColor: '#9333EA', badgeText: 'BEST SELLER', image: '/brands/jeeter-baby-churros.webp' },
-      { name: 'Jeeter Juice', type: 'Liquid Diamonds · 1g Cart', strain: 'Blue Zkittlez', thc: '84%', price: '$45.00', category: 'Vape Cart', badgeColor: '#2563EB', badgeText: 'TRENDING', image: '/brands/jeeter-juice.webp' },
-      { name: 'STIIIZY OG Kush', type: 'Half Gram Pod', strain: 'OG Kush', thc: '86%', price: '$35.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: 'TOP SELLER', image: '/brands/stiiizy-pods.png' },
-      { name: 'Alien Labs Xeno', type: 'Live Resin Disposable · 1g', strain: 'Xeno', thc: '88%', price: '$48.00', category: 'Disposable', badgeColor: '#00BCD4', badgeText: 'NEW', image: '/brands/alien-xeno.png' },
+      { name: 'Baby Jeeter Infused', type: '5pk Pre-Rolls · 2.5g', strain: 'Churros', thc: '46%', price: '$25.00', category: 'Pre-Roll', badgeColor: '#9333EA', badgeText: 'BEST SELLER', image: brandImg('/brands/jeeter-baby-churros.webp') },
+      { name: 'Jeeter Juice', type: 'Liquid Diamonds · 1g Cart', strain: 'Blue Zkittlez', thc: '84%', price: '$45.00', category: 'Vape Cart', badgeColor: '#2563EB', badgeText: 'TRENDING', image: brandImg('/brands/jeeter-juice.webp') },
+      { name: 'STIIIZY OG Kush', type: 'Half Gram Pod', strain: 'OG Kush', thc: '86%', price: '$35.00', category: 'Vape Pod', badgeColor: '#1a1a1a', badgeText: 'TOP SELLER', image: brandImg('/brands/stiiizy-pods.png') },
+      { name: 'Alien Labs Xeno', type: 'Live Resin Disposable · 1g', strain: 'Xeno', thc: '88%', price: '$48.00', category: 'Disposable', badgeColor: '#00BCD4', badgeText: 'NEW', image: brandImg('/brands/alien-xeno.png') },
     ],
   };
 

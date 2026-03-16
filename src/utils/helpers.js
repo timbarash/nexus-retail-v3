@@ -1,6 +1,17 @@
 // Utility functions for the Ascend Sentiment Dashboard
 
 /**
+ * Resolve a brand image path using the Vite BASE_URL so assets load
+ * correctly when the app is deployed to a subpath (e.g. GitHub Pages).
+ * @param {string} path - Absolute path like '/brands/foo.png'
+ * @returns {string} Path prefixed with BASE_URL
+ */
+export function brandImg(path) {
+  const base = import.meta.env.BASE_URL || '/';
+  return base + path.replace(/^\//, '');
+}
+
+/**
  * Calculate average sentiment score from an array of reviews.
  * @param {Array} reviews - Array of review objects with sentimentScore
  * @returns {number} Average sentiment score, or 0 if no reviews

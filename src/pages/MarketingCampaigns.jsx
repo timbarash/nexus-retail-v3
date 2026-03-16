@@ -10,6 +10,7 @@ import {
   Layers, Filter, X, Check, RefreshCw, Package, AlertTriangle
 } from 'lucide-react';
 import { generateMarketingResponse, generateMarketingCampaignPlan, isGeminiAvailable } from '../utils/gemini';
+import { brandImg } from '../utils/helpers';
 
 /* ═══════════════════════════════════════════════════════════════════
    ICON MAP & RESOLVER
@@ -71,7 +72,7 @@ export const CAMPAIGNS = {
     heroGradient: 'from-purple-900/60 via-indigo-900/40 to-violet-900/60',
     heroBorder: 'border-purple-500/30',
     heroTag: 'Product Launch',
-    heroImage: '/brands/jeeter-infused-cover.webp',
+    heroImage: brandImg('/brands/jeeter-infused-cover.webp'),
     audience: {
       size: '12,847',
       description: 'Customers who have purchased Jeeter products in the past 90 days, browsed Jeeter products 3+ times, or have "pre-rolls" in their top 3 categories by spend.',
@@ -115,7 +116,7 @@ export const CAMPAIGNS = {
         category: 'Infused Pre-Roll',
         badgeColor: '#9333EA',
         badgeText: 'BEST SELLER',
-        image: '/brands/jeeter-baby-churros.webp',
+        image: brandImg('/brands/jeeter-baby-churros.webp'),
       },
       {
         name: 'Jeeter Juice',
@@ -126,7 +127,7 @@ export const CAMPAIGNS = {
         category: 'Vape Cartridge',
         badgeColor: '#2563EB',
         badgeText: 'NEW',
-        image: '/brands/jeeter-juice.webp',
+        image: brandImg('/brands/jeeter-juice.webp'),
       },
       {
         name: 'Baby Jeeter Infused',
@@ -137,7 +138,7 @@ export const CAMPAIGNS = {
         category: 'Infused Pre-Roll',
         badgeColor: '#16A34A',
         badgeText: 'POPULAR',
-        image: '/brands/jeeter-baby-honeydew.webp',
+        image: brandImg('/brands/jeeter-baby-honeydew.webp'),
       },
       {
         name: 'Jeeter XL Infused',
@@ -148,7 +149,7 @@ export const CAMPAIGNS = {
         category: 'Infused Pre-Roll',
         badgeColor: '#EA580C',
         badgeText: 'STAFF PICK',
-        image: '/brands/jeeter-xl-horchata.webp',
+        image: brandImg('/brands/jeeter-xl-horchata.webp'),
       },
     ],
     abTests: [
