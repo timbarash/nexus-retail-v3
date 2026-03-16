@@ -2395,6 +2395,18 @@ function getNexusActionData(action) {
       kpis:[{l:'Upcoming',v:'5',c:'#B598E8'},{l:'Critical',v:'1',c:'#E87068'},{l:'High Impact',v:'2',c:'#D4A03A'},{l:'Next Deadline',v:'Apr 1',c:'#64A8E0'}],
       cols:['Effective Date','State','Change','Impact','Action Required'],
       rows:[['Apr 1, 2026','Illinois','New potency testing for edibles','High','Update vendor COA process'],['Apr 15, 2026','New Jersey','Delivery license expansion','Medium','Evaluate delivery ops'],['May 1, 2026','Pennsylvania','Leaf Data API v3 migration','Critical','Dev team integration update'],['May 15, 2026','Ohio','Adult-use sales begin','High','Staff training + menu update'],['Jun 1, 2026','Maryland','Updated packaging requirements','Medium','Audit current packaging']]},
+    winback_campaign: { title:'Win-Back Campaign — Lapsed Customers', color:'#00C27C', summary:'Customers inactive 60+ days with high lifetime value, ready for re-engagement.',
+      kpis:[{l:'Lapsed (60d+)',v:'1,247',c:'#E87068'},{l:'Avg LTV',v:'$2,840',c:'#00C27C'},{l:'Win-Back Rate',v:'23%',c:'#D4A03A'},{l:'Est. Revenue',v:'$89K',c:'#0EA5E9'}],
+      cols:['Customer Segment','Count','Avg Last Visit','Avg LTV','Top Category','Recommended Channel'],
+      rows:[['High-Value VIP (>$5K LTV)',142,'72 days','$6,420','Flower','SMS + $25 credit'],['Regular Weekly (was 1x/wk)',384,'68 days','$3,180','Vapes','Email + 20% off'],['Monthly Bulk Buyers',218,'91 days','$2,650','Edibles','Push + BOGO'],['New-ish (3-6 purchases)',503,'85 days','$890','Pre-rolls','SMS + first-timer bundle']]},
+    market_prices: { title:'Price vs Market Comparison', color:'#D4A03A', summary:'Your top sellers compared to competitor and market average pricing.',
+      kpis:[{l:'Below Market',v:'12',c:'#00C27C'},{l:'At Market',v:'18',c:'#0EA5E9'},{l:'Above Market',v:'6',c:'#E87068'},{l:'Avg Gap',v:'-3.2%',c:'#00C27C'}],
+      cols:['Product','Your Price','Market Avg','Competitor Low','Gap','Recommendation'],
+      rows:[['Blue Dream 3.5g','$38','$42','$35','-9.5%','At optimal'],['STIIIZY OG Pod 1g','$52','$48','$45','+8.3%','Review — above market'],['Wyld Elderberry 10pk','$22','$24','$20','-8.3%','At optimal'],['Jeeter Baby Js 5pk','$45','$40','$38','+12.5%','Review — above market'],['Kiva Camino 20pk','$32','$30','$28','+6.7%','Review — slight premium'],['Raw Garden Sauce 1g','$28','$32','$25','-12.5%','Opportunity to raise']]},
+    sentiment_overview: { title:'Customer Sentiment — This Month', color:'#B598E8', summary:'Aggregated feedback from reviews, surveys, and support interactions.',
+      kpis:[{l:'NPS Score',v:'72',c:'#00C27C'},{l:'Avg Rating',v:'4.6★',c:'#D4A03A'},{l:'Reviews',v:'348',c:'#0EA5E9'},{l:'Trend',v:'+5 pts',c:'#00C27C'}],
+      cols:['Theme','Mentions','Sentiment','Trend','Sample Feedback'],
+      rows:[['Product Quality',89,'Positive','Balanced','Great flower selection, always fresh'],['Wait Times',64,'Warning','Review','Line was long on Saturday, but staff was friendly'],['Staff Knowledge',52,'Positive','Balanced','Budtender knew exactly what I needed'],['Price Value',47,'Warning','Review','Prices higher than shop down the street'],['Online Ordering',38,'Positive','Balanced','Pickup was super smooth, ready in 10 min']]},
   };
   return A[action] || { title:'Action', color:'#D4A03A', summary:'Processing your request...', kpis:[], cols:[], rows:[] };
 }
@@ -2944,7 +2956,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
   };
 
   const handleSuggestionClick = (key) => {
-    const all = [...SUGGESTIONS, ...COMPACT_SUGGESTIONS, ...NEXUS_SUGGESTIONS];
+    const all = [...NEXUS_SUGGESTIONS, ...COMPACT_SUGGESTIONS, ...SUGGESTIONS];
     const suggestion = all.find(s => s.key === key);
     if (!suggestion) return;
     // If the suggestion has a direct action, bypass intent detection
@@ -3087,9 +3099,9 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
     ],
     store_mgr: [
       { key: 'inventory', label: 'Show items that need vault-to-floor transfer', icon: ShoppingCart, gradient: 'from-blue-600/20 to-cyan-600/20', border: 'hover:border-blue-500/40', tag: 'Inventory', tagColor: '#64A8E0', confidence: 'high', action: 'vault_transfer' },
-      { key: 'campaign', label: 'Launch a win-back campaign for lapsed customers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Marketing', tagColor: '#00C27C' },
-      { key: 'pricing_gap', label: 'Compare my prices vs the market', icon: DollarSign, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Pricing', tagColor: '#D4A03A' },
-      { key: 'sentiment_check', label: "How's our customer sentiment this month?", icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Sentiment', tagColor: '#B598E8' },
+      { key: 'sm_campaign', label: 'Launch a win-back campaign for lapsed customers', icon: Megaphone, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Marketing', tagColor: '#00C27C', action: 'winback_campaign' },
+      { key: 'pricing_gap', label: 'Compare my prices vs the market', icon: DollarSign, gradient: 'from-amber-600/20 to-yellow-600/20', border: 'hover:border-amber-500/40', tag: 'Pricing', tagColor: '#D4A03A', action: 'market_prices' },
+      { key: 'sentiment_check', label: "How's our customer sentiment this month?", icon: Star, gradient: 'from-purple-600/20 to-violet-600/20', border: 'hover:border-purple-500/40', tag: 'Sentiment', tagColor: '#B598E8', action: 'sentiment_overview' },
     ],
     compliance: [
       { key: 'sync', label: 'Show track-and-trace sync status for all states', icon: RefreshCw, gradient: 'from-green-600/20 to-emerald-600/20', border: 'hover:border-green-500/40', tag: 'Sync', tagColor: '#00C27C', action: 'sync_status' },
