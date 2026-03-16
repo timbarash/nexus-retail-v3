@@ -1224,7 +1224,7 @@ function ScreenActions({ vault, transfers, showToast, onNav }) {
       title: 'Pricing', items: [
         { icon: BarChart3, color: '#D4A03A', title: 'Benchmark All Products', sub: `${pricingBelow} below market, ${pricingAbove} above, ${PRICING_PRODUCTS.length - pricingAbove - pricingBelow} competitive`, action: () => onNav('chat') },
         { icon: DollarSign, color: '#00C27C', title: 'Quick Price Editor', sub: '8 products loaded for review', action: () => showToast('Price editor opened — 8 products loaded') },
-        { icon: Percent, color: '#E87068', title: 'Manage Promotions', sub: `${PROMOTIONS.length} active: ${promoKeep} keep, ${promoKill} kill`, action: () => {} },
+        { icon: Percent, color: '#E87068', title: 'Manage Promotions', sub: `${PROMOTIONS.length} active: ${promoKeep} keep, ${promoKill} kill`, action: () => showToast(`${PROMOTIONS.length} promotions loaded — ${promoKeep} keep, ${promoKill} to review`) },
       ]
     },
     {

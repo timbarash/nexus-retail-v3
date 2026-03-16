@@ -514,6 +514,7 @@ function StatRow({ label, value, sub, trend, color }) {
 // ---------------------------------------------------------------------------
 
 function SentimentTile() {
+  const navigate = useNavigate();
   const { selectedStoreNames } = useStores();
   const { dateMultiplier, periodLabel, rangeLabel } = useDateRange();
 
@@ -555,7 +556,7 @@ function SentimentTile() {
         title="Consumer Sentiment"
         subtitle={`${Math.round(NEXUS_DATA.unifiedPipeline.totalSignals * dateMultiplier).toLocaleString()} signals across ${NEXUS_DATA.unifiedPipeline.channelScores.length} channels — ${rangeLabel}`}
         iconBg="bg-[#00C27C]/10 text-[#00C27C]"
-        action={() => {}}
+        action={() => navigate('/overview')}
         actionLabel="Deep Dive"
         badge={{ count: 2, color: 'bg-[#D4A03A]' }}
       />
@@ -720,7 +721,7 @@ function SentimentTile() {
                   <p className="text-sm text-[#F0EDE8]">{item.action}</p>
                   <p className="mt-0.5 text-xs text-[#6B6359] font-medium">{item.impact}</p>
                 </div>
-                <button className="flex-shrink-0 rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-1.5 text-xs font-semibold text-[#F0EDE8] hover:bg-[#282724] transition-colors">
+                <button onClick={() => navigate('/overview')} className="flex-shrink-0 rounded-lg bg-[#1C1B1A] border border-[#38332B] px-3 py-1.5 text-xs font-semibold text-[#F0EDE8] hover:bg-[#282724] transition-colors">
                   Execute
                 </button>
               </div>
@@ -737,6 +738,7 @@ function SentimentTile() {
 // ---------------------------------------------------------------------------
 
 function OmnichannelTile() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('sms');
   const { dateMultiplier, rangeLabel } = useDateRange();
   const dm = dateMultiplier;
@@ -754,7 +756,7 @@ function OmnichannelTile() {
         title="Omnichannel Sentiment Collection"
         subtitle={`Proprietary first-party signals — ${rangeLabel.toLowerCase()}`}
         iconBg="bg-[rgba(163,113,247,0.12)] text-[#B598E8]"
-        action={() => {}}
+        action={() => navigate('/overview')}
         actionLabel="Configure Channels"
       />
       <div className="p-6">
@@ -1212,6 +1214,7 @@ function UnifiedPipelineTile() {
    ═══════════════════════════════════════════════════════════════════ */
 
 function InventoryTile() {
+  const navigate = useNavigate();
   const { isAllSelected, selectionLabel } = useStores();
   const scaledAlerts = isAllSelected ? NEXUS_DATA.lowStockAlerts : Math.max(1, Math.round(NEXUS_DATA.lowStockAlerts * 0.5));
   const scaledRisk = isAllSelected ? NEXUS_DATA.stockoutRisk : Math.max(1, Math.round(NEXUS_DATA.stockoutRisk * 0.5));
@@ -1222,7 +1225,7 @@ function InventoryTile() {
         title="Inventory & Reordering"
         subtitle={`${scaledAlerts} low-stock alerts — ${selectionLabel}`}
         iconBg="bg-[rgba(255,166,87,0.12)] text-[#FFA657]"
-        action={() => {}}
+        action={() => navigate('/agents/connect')}
         actionLabel="Draft Reorder"
         badge={{ count: scaledRisk, color: 'bg-[#E87068]' }}
       />
@@ -1291,7 +1294,7 @@ function PricingTile() {
         title="Pricing & Discounts"
         subtitle={`Your price vs market — ${rangeLabel.toLowerCase()}`}
         iconBg="bg-[#00C27C]/10 text-[#00C27C]"
-        action={() => navigate('/pricing')}
+        action={() => navigate('/agents/pricing')}
         actionLabel="Optimize"
         badge={{ count: NEXUS_DATA.underperformingPromos, color: 'bg-[#D4A03A]' }}
       />
@@ -1306,7 +1309,7 @@ function PricingTile() {
         {/* Mini scatterplot — click navigates to full pricing page */}
         <div
           className="h-[180px] cursor-pointer rounded-lg hover:bg-[#282724] transition-colors"
-          onClick={() => navigate('/pricing')}
+          onClick={() => navigate('/agents/pricing')}
         >
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 8, right: 12, bottom: 16, left: 0 }}>
@@ -2145,7 +2148,7 @@ function NexusCommandBar({ onAction }) {
           ))}
         </div>
         <div className="mt-3 text-[10px] text-[#6B6359]">
-          Recent: <span className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Show me stockout report"</span> &middot; <span className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Reprice Blue Dream"</span>
+          Recent: <span onClick={() => onAction("Show me stockout report")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Show me stockout report"</span> &middot; <span onClick={() => onAction("Reprice Blue Dream")} className="text-[#ADA599] cursor-pointer hover:text-[#F0EDE8]">"Reprice Blue Dream"</span>
         </div>
       </div>
     </div>
@@ -2599,6 +2602,7 @@ function SmartAlertsFeed({ onAction }) {
 // ─── CROSS-STORE INTELLIGENCE ─── //
 
 function CrossStoreIntelligence() {
+  const navigate = useNavigate();
   const { showCrossStore } = usePersona();
   if (!showCrossStore) return null;
 
@@ -2647,7 +2651,7 @@ function CrossStoreIntelligence() {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="text-[10px] text-[#00C27C] font-semibold">{item.estRevRecovery}</p>
-                  <button className="mt-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white bg-[#64A8E0] hover:brightness-110 transition-colors">
+                  <button onClick={() => navigate('/agents/connect')} className="mt-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white bg-[#64A8E0] hover:brightness-110 transition-colors">
                     Transfer {item.recTransfer}
                   </button>
                 </div>
@@ -2670,7 +2674,7 @@ function CrossStoreIntelligence() {
                   <span className="text-[10px] text-[#6B6359]">vs avg {bp.avg}</span>
                 </div>
                 <p className="text-[10px] text-[#ADA599]">{bp.insight}</p>
-                <button className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#00C27C] bg-[#00C27C]/10 border border-[#00C27C]/20 hover:bg-[#00C27C]/20 transition-colors">
+                <button onClick={() => navigate('/overview')} className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#00C27C] bg-[#00C27C]/10 border border-[#00C27C]/20 hover:bg-[#00C27C]/20 transition-colors">
                   {bp.action}
                 </button>
               </div>
@@ -2706,6 +2710,7 @@ function CrossStoreIntelligence() {
 // ─── STORE HEALTH MATRIX ─── //
 
 function StoreHealthMatrix() {
+  const navigate = useNavigate();
   const { selectedStoreNames } = useStores();
   const { isStoreMgr, isCompliance, selectedPersona } = usePersona();
 
@@ -2841,7 +2846,7 @@ function StoreHealthMatrix() {
           const color = s.composite >= 75 ? '#00C27C' : s.composite >= 55 ? '#D4A03A' : '#E87068';
           const deg = s.composite * 3.6;
           return (
-            <div key={s.name} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
+            <div key={s.name} onClick={() => navigate('/overview')} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
               <div className="w-11 h-11 rounded-full mx-auto mb-2 flex items-center justify-center" style={{ background: `conic-gradient(${color} ${deg}deg, #38332B 0deg)` }}>
                 <div className="w-8 h-8 rounded-full bg-[#141210] flex items-center justify-center text-xs font-bold" style={{ color }}>{s.composite}</div>
               </div>
