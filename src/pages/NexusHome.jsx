@@ -2424,17 +2424,46 @@ function SmartAlertsFeed({ onAction }) {
   };
 
   /* ── Standard alert action handler ── */
+  /* Map each alert+action to a natural-language query that routes correctly through detectIntent */
   const handleAction = (alertId, action, alertTitle) => {
     setActionDone(prev => ({ ...prev, [`${alertId}-${action}`]: true }));
-    // Route alert actions to relevant data cards instead of KB
-    const alertActionMap = {
-      'ceo-1': 'revenue_state', 'ceo-2': 'portfolio', 'ceo-3': 'rebalance', 'ceo-4': 'revenue_state', 'ceo-5': 'brand_perf',
-      'vp-1': 'rankings', 'vp-2': 'rebalance', 'vp-3': 'labor', 'vp-4': 'practices', 'vp-5': 'market_prices',
-      'reg-2': 'transfers', 'reg-3': 'delivery', 'reg-4': 'close', 'reg-5': 'labor',
-      'comp-1': 'sync_status', 'comp-2': 'discrepancy', 'comp-3': 'regulatory', 'comp-4': 'compliance_all', 'comp-5': 'audit', 'comp-6': 'regulatory',
+    const alertActionQueries = {
+      // Store manager
+      'low-1::Transfer 18': 'Reorder Stiiizy Pod LR — running low, need to restock',
+      'promo-1::View Promo': 'Show me today\'s sales performance and promo results',
+      'queue-1::View Staffing': 'Show today\'s sales performance and staffing forecast',
+      // CEO
+      'ceo-1::View Details': 'Show me revenue performance across MI stores this week',
+      'ceo-1::Assign VP': 'Show me revenue performance across MI stores this week',
+      'ceo-2::View Status': 'Show me revenue and performance across all stores',
+      'ceo-3::Draft PO': 'Reorder Jeeter products for stores that don\'t carry them yet',
+      'ceo-3::View Data': 'Show me sales performance for Jeeter across all stores',
+      'ceo-4::View Breakdown': 'Show me inventory analysis for aging and dead stock',
+      'ceo-5::View Strategy': 'Show me revenue and margin performance across IL stores',
+      // VP Retail
+      'vp-1::View Stores': 'Show me sales performance across all stores this week',
+      'vp-1::Contact GM': 'Show me sales performance at Naperville this week',
+      'vp-2::Approve Transfer': 'Reorder Blue Dream — out of stock at Logan Square',
+      'vp-2::View Map': 'Check inventory levels for Blue Dream across all stores',
+      'vp-3::View Labor': 'Show me sales and staffing performance at Schaumburg',
+      'vp-4::Share Playbook': 'Show me top sellers and attach rates at Wicker Park',
+      'vp-5::View Pricing': 'Compare my pricing for Stiiizy Pod across IL and NJ',
+      // Regional
+      'reg-2::View All': 'Check inventory levels across all IL stores',
+      'reg-3::Prep Receiving': 'Check inventory and reorder status for Springfield',
+      'reg-4::Review': 'Show me sales performance at Schaumburg and Arlington Heights',
+      'reg-5::View Report': 'Show me revenue performance at Springfield this week',
+      // Compliance
+      'comp-1::Force Sync': 'Show me performance across OH stores',
+      'comp-1::Contact Store': 'Show me performance at Columbus store',
+      'comp-2::View Log': 'Show me performance across NJ stores',
+      'comp-3::Create Manifests': 'Check inventory for expiring products across all stores',
+      'comp-4::Full Dashboard': 'Show me performance across all stores',
+      'comp-5::View Tracker': 'Show me performance across all stores',
+      'comp-6::Read Brief': 'Show me performance across OH stores',
     };
-    const nexusAction = alertActionMap[alertId] || 'portfolio';
-    if (onAction) onAction(`${alertTitle}: ${action}`);
+    const query = alertActionQueries[`${alertId}::${action}`] || `Show me details about ${alertTitle}`;
+    if (onAction) onAction(query);
   };
 
   const toggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
