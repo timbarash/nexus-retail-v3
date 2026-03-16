@@ -2110,17 +2110,17 @@ function NexusCommandBar({ onAction }) {
   const COMMAND_ACTIONS = COMMAND_ACTIONS_BY_PERSONA[selectedPersonaId] || COMMAND_ACTIONS_BY_PERSONA.ceo;
   return (
     <div className="rounded-2xl border overflow-hidden animate-fade-up" style={{ background: '#1C1B1A', borderColor: 'rgba(212,160,58,0.12)', animationDelay: '200ms' }}>
-      <div className="px-5 py-4 border-b border-[#38332B] flex items-center gap-3" style={{ background: 'linear-gradient(135deg, #1C1B1A 0%, #1A1710 100%)' }}>
-        <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1A1710, #2A2318)', boxShadow: '0 0 14px rgba(212,160,58,0.25)', border: '1px solid rgba(212,160,58,0.2)' }}>
-          <NexusIcon size={17} />
+      <div className="px-4 py-3 border-b border-[#38332B]/60 flex items-center gap-2.5" style={{ background: '#1A1810' }}>
+        <div className="h-7 w-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(212,160,58,0.1)', border: '1px solid rgba(212,160,58,0.15)' }}>
+          <NexusIcon size={15} />
         </div>
         <div className="flex-1">
-          <span className="text-sm font-semibold text-[#F0EDE8]">Nexus AI</span>
-          <span className="text-[10px] text-[#6B6359] ml-2">11 agent lanes active</span>
+          <span className="text-sm font-semibold text-[#F0EDE8]">Nexus</span>
+          <span className="text-[10px] text-[#6B6359] ml-2">What can I help with?</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="relative flex h-1.5 w-1.5"><span className="absolute h-full w-full animate-ping rounded-full bg-[#00C27C] opacity-40" /><span className="h-1.5 w-1.5 rounded-full bg-[#00C27C]" /></span>
-          <span className="text-[10px] text-[#00C27C] font-medium">Online</span>
+          <span className="text-[10px] text-[#00C27C] font-medium">Ready</span>
         </div>
       </div>
       <div className="px-5 py-4">

@@ -46,44 +46,44 @@ export default function NexusChat({ isOpen, onClose, initialQuery }) {
 
   return (
     <div ref={containerRef} className="fixed inset-0 z-[9999] flex flex-col" style={{ backgroundColor: '#141210' }}>
-      {/* Header with gradient */}
+      {/* Header */}
       <div
-        className="flex items-center justify-between px-6 py-4 border-b border-[#38332B] flex-shrink-0"
-        style={{ background: 'linear-gradient(135deg, #141210 0%, #1A1710 50%, #141210 100%)' }}
+        className="flex items-center justify-between px-5 py-3 border-b border-[#38332B]/60 flex-shrink-0"
+        style={{ background: '#1A1810' }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <div
-            className="h-10 w-10 rounded-xl flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #1A1710 0%, #2A2318 100%)', boxShadow: '0 0 20px rgba(212,160,58,0.3), inset 0 1px 0 rgba(212,160,58,0.15)', border: '1px solid rgba(212,160,58,0.2)' }}
+            className="h-8 w-8 rounded-lg flex items-center justify-center"
+            style={{ background: 'rgba(212,160,58,0.1)', border: '1px solid rgba(212,160,58,0.15)' }}
           >
-            <NexusIcon size={22} />
+            <NexusIcon size={17} />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-[#F0EDE8]">Nexus AI</h2>
-            <p className="text-xs text-[#6B6359]">Retail operations agent</p>
+            <h2 className="text-sm font-semibold text-[#F0EDE8]">Nexus</h2>
+            <p className="text-[10px] text-[#6B6359]">Here to help</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => { querySent.current = false; setResetKey(k => k + 1); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#ADA599] hover:text-[#F0EDE8] hover:bg-white/[0.06] transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] text-[#ADA599] hover:text-[#F0EDE8] hover:bg-white/[0.06] transition-colors"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            New conversation
+            <RotateCcw className="w-3 h-3" />
+            New
           </button>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-[#ADA599] hover:text-[#F0EDE8] hover:bg-white/[0.06] transition-colors"
+            className="p-1.5 rounded-lg text-[#ADA599] hover:text-[#F0EDE8] hover:bg-white/[0.06] transition-colors"
             aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* CustomerBridge fills the rest */}
       <div className="flex-1 overflow-hidden px-0">
-        <div className="h-full max-w-5xl mx-auto px-6 py-4">
+        <div className="h-full max-w-5xl mx-auto px-5 py-3">
           <CustomerBridge nexusOverlay key={resetKey} />
         </div>
       </div>
