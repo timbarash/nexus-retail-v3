@@ -556,7 +556,7 @@ function SentimentTile({ onOpenNexus }) {
         title="Consumer Sentiment"
         subtitle={`${Math.round(NEXUS_DATA.unifiedPipeline.totalSignals * dateMultiplier).toLocaleString()} signals across ${NEXUS_DATA.unifiedPipeline.channelScores.length} channels — ${rangeLabel}`}
         iconBg="bg-[#00C27C]/10 text-[#00C27C]"
-        action={() => navigate('/overview')}
+        action={() => onOpenNexus && onOpenNexus('Give me a deep dive on consumer sentiment — top themes, trends, and areas needing attention')}
         actionLabel="Deep Dive"
         badge={{ count: 2, color: 'bg-[#D4A03A]' }}
       />
