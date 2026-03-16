@@ -41,6 +41,14 @@ export default function App() {
   const [nexusChatQuery, setNexusChatQuery] = useState(null);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
+  // Auto-redirect mobile devices to /mobile on initial load
+  useEffect(() => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    if (isMobile && location.pathname === '/') {
+      navigate('/mobile', { replace: true });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Cmd+K / Ctrl+K handler
   useEffect(() => {
     function handleKeyDown(e) {

@@ -1056,8 +1056,8 @@ function ScreenChat({ vault, showToast, onNav, onTransfer, persona }) {
 
       {/* Nothing here — tiles are inline now */}
 
-      {/* Input */}
-      <div className="px-4 pb-[env(safe-area-inset-bottom,8px)] pt-2 border-t border-[#38332B]" style={{ background: '#1C1B1A' }}>
+      {/* Input — sits above bottom nav */}
+      <div className="px-4 pb-[calc(env(safe-area-inset-bottom,8px)+64px)] pt-2 border-t border-[#38332B]" style={{ background: '#1C1B1A' }}>
         <div className="flex items-center gap-2">
           <input
             ref={inputRef}
@@ -1066,10 +1066,11 @@ function ScreenChat({ vault, showToast, onNav, onTransfer, persona }) {
             onKeyDown={e => e.key === 'Enter' && handleSend()}
             placeholder="Ask Nexus anything..."
             className="flex-1 bg-[#141210] border border-[#38332B] rounded-xl px-4 py-3 text-[14px] text-white placeholder-[#6B6359] outline-none focus:border-[#D4A03A]/40 min-h-[48px]"
+            style={{ fontSize: '16px' }}
           />
           <button
             onClick={() => handleSend()}
-            className="w-12 h-12 rounded-xl bg-[#D4A03A]/15 border border-[#D4A03A]/25 flex items-center justify-center flex-shrink-0"
+            className="w-12 h-12 rounded-xl bg-[#D4A03A]/15 border border-[#D4A03A]/25 flex items-center justify-center flex-shrink-0 active:scale-95 transition-transform"
             disabled={!input.trim()}>
             <Send className="w-5 h-5 text-[#D4A03A]" />
           </button>
@@ -1258,20 +1259,26 @@ export default function NexusMobileWeb() {
   }, [navigate, showToast]);
 
   return (
-    <div className="min-h-screen text-white" style={{ background: '#141210', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+    <div className="min-h-screen text-white" style={{ background: '#141210', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', WebkitTapHighlightColor: 'transparent', overscrollBehavior: 'none', touchAction: 'manipulation' }}>
       <style>{`
         @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .mobile-screen { animation: fadeIn 0.2s ease-out; }
+        html, body { overscroll-behavior: none; }
       `}</style>
 
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismissToast} key={toast.key} />}
 
-      {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} persona={persona} />}
-      {screen === 'alerts' && <ScreenAlerts alerts={alerts} onAction={handleAlertAction} onNav={navigate} />}
-      {screen === 'floor' && <ScreenFloor vault={vault} transfers={transfers} onTransfer={handleVaultTransfer} showToast={showToast} />}
-      {screen === 'chat' && <ScreenChat vault={vault} showToast={showToast} onNav={navigate} onTransfer={handleVaultTransfer} persona={persona} />}
-      {screen === 'actions' && <ScreenActions vault={vault} transfers={transfers} showToast={showToast} onNav={navigate} />}
+      <div className="mobile-screen" key={screen}>
+        {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} persona={persona} />}
+        {screen === 'alerts' && <ScreenAlerts alerts={alerts} onAction={handleAlertAction} onNav={navigate} />}
+        {screen === 'floor' && <ScreenFloor vault={vault} transfers={transfers} onTransfer={handleVaultTransfer} showToast={showToast} />}
+        {screen === 'chat' && <ScreenChat vault={vault} showToast={showToast} onNav={navigate} onTransfer={handleVaultTransfer} persona={persona} />}
+        {screen === 'actions' && <ScreenActions vault={vault} transfers={transfers} showToast={showToast} onNav={navigate} />}
+      </div>
 
       <BottomNav active={screen} onNavigate={navigate} alertCount={alerts.length} />
     </div>
