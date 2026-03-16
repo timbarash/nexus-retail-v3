@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo, useReducer } from 'react';
 import {
   Home, Bell, Zap, MessageSquare, LayoutGrid,
   ArrowLeft, Check, X, Sparkles, Send, Mic,
@@ -8,272 +8,164 @@ import {
   BarChart3, Store, Search, ArrowUpDown, Percent,
   Eye, Truck, Box, Clipboard, Camera, FileText,
   ArrowRightLeft, Lock, Megaphone, Rocket, Users,
+  Plus, Minus, ChevronDown, Filter, Flame, Target,
+  Calendar, Hash, AlertCircle, Info, Zap as ZapIcon,
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DATA MODEL — Pulled from the real desktop prototype files
+   DATA — Real prototype data from NexusHome, ConnectAgent, PricingAgent
    ═══════════════════════════════════════════════════════════════════════════ */
 
-// From NexusHome.jsx — NEXUS_DATA
 const NEXUS_DATA = {
-  todaySales: 454_700,
-  salesGoal: 500_000,
-  salesVsGoalPct: -8,
-  topStore: 'Logan Square',
-  topStoreRevenue: 750_000,
-  underperformer: 'Morenci, MI',
-  underperformerDelta: -23,
-  traffic: { today: 5_460, yesterday: 5_120, trend: 'up' },
-  lowStockAlerts: 7,
-  stockoutRisk: 3,
-  overallSentiment: 68,
-  sentimentTrend: 'up',
-  sentimentDelta: +4,
-  npsScore: 34,
-  npsDelta: +6,
-  topPositiveTopic: 'Staff Friendliness',
-  topNegativeTopic: 'Wait Times',
-  activeMembers: 18_420,
-  discountWaste: 127_400,
-  sentimentTopics: [
-    { topic: 'Staff Friendliness', score: 84, delta: +7 },
-    { topic: 'Product Quality', score: 76, delta: +2 },
-    { topic: 'Wait Times', score: 38, delta: -5 },
-    { topic: 'Online Ordering', score: 61, delta: +12 },
-  ],
+  todaySales: 47832, salesGoal: 52000, salesPct: 92,
+  traffic: { today: 847, yesterday: 791, trend: 'up', delta: '+7.1%' },
+  sentiment: { score: 4.2, nps: 72, delta: '+4' },
+  loyalty: { signupsToday: 23, activeMembers: 18420 },
+  activePromos: 5, pricingHealth: 78,
+  topStore: 'Logan Square', topStoreRev: '$48.2K',
+  underperformer: 'Morenci', underperformerDelta: '-23%',
 };
 
-// Store data — matches NexusHome STORE_METRICS for key stores
 const STORES = [
-  {
-    id: 'logan-square', name: 'Logan Square', state: 'IL', city: 'Chicago', score: 87,
-    revenue: 48200, transactions: 312, avgBasket: 154, margin: 52.1, sentimentScore: 78,
-    delta: '+12%', up: true, spark: [5,6,7,6,8,9,9],
-    kpis: [
-      { l: 'Revenue', v: '$48.2K', d: '+12%', up: true, spark: [4,5,6,6,7,8,9] },
-      { l: 'Transactions', v: '312', d: '+8%', up: true, spark: [3,4,4,5,5,6,7] },
-      { l: 'Avg Basket', v: '$154', d: '+3%', up: true, spark: [5,5,5,5,6,6,6] },
-      { l: 'Margin', v: '52.1%', d: '+0.4%', up: true, spark: [5,5,5,5,5,5,5] },
-    ],
-    hourly: [2,5,12,18,24,31,28,35,42,38,29,22,15,8],
-    topProducts: [
-      { name: 'Ozone Cake Mints', units: 47, rev: '$2,115' },
-      { name: 'Baby Jeeter Churros', units: 38, rev: '$1,330' },
-      { name: 'Stiiizy OG Kush', units: 31, rev: '$1,395' },
-      { name: 'Camino Gummies', units: 28, rev: '$616' },
-      { name: 'Simply Herb Pre-Roll', units: 24, rev: '$360' },
-    ],
-    sentiment: { score: 78, delta: '+6 pts', note: '"Staff Friendliness" trending up 12%' },
-  },
-  {
-    id: 'fort-lee', name: 'Fort Lee', state: 'NJ', city: 'Fort Lee', score: 79,
-    revenue: 41600, transactions: 267, avgBasket: 156, margin: 49.7, sentimentScore: 72,
-    delta: '+5%', up: true, spark: [4,4,5,5,6,5,6],
-    kpis: [
-      { l: 'Revenue', v: '$41.6K', d: '+5%', up: true, spark: [3,4,4,5,5,5,6] },
-      { l: 'Transactions', v: '267', d: '+3%', up: true, spark: [4,4,4,5,5,5,5] },
-      { l: 'Avg Basket', v: '$156', d: '+1.8%', up: true, spark: [5,5,5,5,5,6,6] },
-      { l: 'Margin', v: '49.7%', d: '-0.2%', up: false, spark: [5,5,5,5,5,5,4] },
-    ],
-    hourly: [1,3,9,14,20,26,24,30,35,32,25,18,12,6],
-    topProducts: [
-      { name: 'Stiiizy Pod LLR 1g', units: 42, rev: '$1,890' },
-      { name: 'Baby Jeeter Churros', units: 35, rev: '$1,225' },
-      { name: 'Ozone Gummies 100mg', units: 29, rev: '$725' },
-      { name: 'Blue Dream 3.5g', units: 24, rev: '$1,080' },
-      { name: 'Camino Gummies', units: 21, rev: '$462' },
-    ],
-    sentiment: { score: 71, delta: '+2 pts', note: '"Product Selection" rated 4.3 stars' },
-  },
-  {
-    id: 'springfield', name: 'Springfield', state: 'IL', city: 'Springfield', score: 74,
-    revenue: 52100, transactions: 386, avgBasket: 135, margin: 51.3, sentimentScore: 68,
-    delta: '+34%', up: true, spark: [3,4,4,5,6,8,10],
-    kpis: [
-      { l: 'Revenue', v: '$52.1K', d: '+34%', up: true, spark: [3,4,4,5,6,8,10] },
-      { l: 'Transactions', v: '386', d: '+28%', up: true, spark: [3,3,4,5,6,7,9] },
-      { l: 'Avg Basket', v: '$135', d: '+4.6%', up: true, spark: [4,4,4,5,5,5,6] },
-      { l: 'Margin', v: '51.3%', d: '+1.1%', up: true, spark: [4,4,5,5,5,5,6] },
-    ],
-    hourly: [3,7,15,22,28,34,32,38,45,42,33,26,18,10],
-    topProducts: [
-      { name: 'Baby Jeeter Churros', units: 52, rev: '$1,820' },
-      { name: 'Ozone Cake Mints', units: 44, rev: '$1,980' },
-      { name: 'Simply Herb Pre-Roll', units: 39, rev: '$585' },
-      { name: 'Camino Gummies', units: 33, rev: '$726' },
-      { name: 'Blue Dream 3.5g', units: 28, rev: '$1,260' },
-    ],
-    sentiment: { score: 68, delta: '+9 pts', note: '"Wait Times" improved by 18%' },
-  },
-  {
-    id: 'boston', name: 'Boston', state: 'MA', city: 'Boston', score: 65,
-    revenue: 29800, transactions: 198, avgBasket: 151, margin: 48.9, sentimentScore: 59,
-    delta: '-3%', up: false, spark: [6,5,5,4,5,4,4],
-    kpis: [
-      { l: 'Revenue', v: '$29.8K', d: '-3%', up: false, spark: [6,5,5,4,5,4,4] },
-      { l: 'Transactions', v: '198', d: '-5%', up: false, spark: [6,5,5,5,4,4,4] },
-      { l: 'Avg Basket', v: '$151', d: '+2.1%', up: true, spark: [5,5,5,5,5,6,6] },
-      { l: 'Margin', v: '48.9%', d: '-1.2%', up: false, spark: [6,5,5,5,5,5,4] },
-    ],
-    hourly: [1,2,7,11,16,20,18,22,28,24,19,14,9,5],
-    topProducts: [
-      { name: 'Tunnel Vision 5-Pack', units: 28, rev: '$840' },
-      { name: 'Blue Dream 3.5g', units: 22, rev: '$990' },
-      { name: 'Stiiizy OG Kush', units: 19, rev: '$855' },
-      { name: 'Ozone Cake Mints', units: 15, rev: '$675' },
-      { name: 'Camino Gummies', units: 12, rev: '$264' },
-    ],
-    sentiment: { score: 59, delta: '-2 pts', note: '"Parking Availability" rated 2.8 stars' },
-  },
-  {
-    id: 'morenci', name: 'Morenci', state: 'MI', city: 'Morenci', score: 48,
-    revenue: 12400, transactions: 89, avgBasket: 139, margin: 44.2, sentimentScore: 42,
-    delta: '-23%', up: false, spark: [7,6,5,4,3,3,2],
-    kpis: [
-      { l: 'Revenue', v: '$12.4K', d: '-23%', up: false, spark: [7,6,5,4,3,3,2] },
-      { l: 'Transactions', v: '89', d: '-18%', up: false, spark: [7,6,6,5,4,4,3] },
-      { l: 'Avg Basket', v: '$139', d: '-6%', up: false, spark: [6,6,5,5,5,4,4] },
-      { l: 'Margin', v: '44.2%', d: '-3.1%', up: false, spark: [7,6,6,5,5,4,4] },
-    ],
-    hourly: [0,1,3,5,8,11,10,13,16,14,10,7,4,2],
-    topProducts: [
-      { name: 'Simply Herb Pre-Roll', units: 14, rev: '$210' },
-      { name: 'Camino Gummies', units: 11, rev: '$242' },
-      { name: 'Blue Dream 3.5g', units: 9, rev: '$405' },
-      { name: 'Ozone Cake Mints', units: 7, rev: '$315' },
-      { name: 'Baby Jeeter Churros', units: 5, rev: '$175' },
-    ],
-    sentiment: { score: 42, delta: '-8 pts', note: '"Product Availability" rated 2.1 stars' },
-  },
+  { id: 'logan-square', name: 'Logan Square', state: 'IL', score: 87, revenue: 48200, txns: 312, basket: 154, margin: 52.1, delta: '+12%', up: true },
+  { id: 'fort-lee', name: 'Fort Lee', state: 'NJ', score: 79, revenue: 41600, txns: 267, basket: 156, margin: 49.7, delta: '+5%', up: true },
+  { id: 'springfield', name: 'Springfield', state: 'IL', score: 74, revenue: 52100, txns: 386, basket: 135, margin: 51.3, delta: '+34%', up: true },
+  { id: 'boston', name: 'Boston', state: 'MA', score: 65, revenue: 29800, txns: 198, basket: 151, margin: 48.9, delta: '-3%', up: false },
+  { id: 'morenci', name: 'Morenci', state: 'MI', score: 48, revenue: 12400, txns: 89, basket: 139, margin: 44.2, delta: '-23%', up: false },
 ];
 
-// From NexusHome.jsx — SMART_ALERTS
-const INITIAL_ALERTS = [
-  { id: 'a1', sev: 'CRITICAL', color: '#E87068', time: '2m', title: 'Blue Dream 3.5g out of stock at 4 stores', ai: 'Vendor has stock. Reorder 200 units for $2,840. Est. delivery: 2 days.', actions: ['Approve Reorder', 'Modify'], storeIds: ['logan-square','fort-lee','boston','morenci'] },
-  { id: 'a2', sev: 'WARNING', color: '#D4A03A', time: '15m', title: 'Stiiizy Pod LLR priced 18% above market avg', ai: 'Competitors at $42 avg. Suggest $44.99 (currently $52). Projected +23% velocity.', actions: ['Apply Price', 'View Comps'], storeIds: ['fort-lee'] },
-  { id: 'a3', sev: 'OPPORTUNITY', color: '#00C27C', time: '1h', title: 'Jeeter brand sentiment spike (+34% WoW)', ai: '2 stores don\'t stock it. Trending on social. Contact vendor for initial order?', actions: ['Draft PO', 'View Data'], storeIds: ['boston','morenci'] },
-  { id: 'a4', sev: 'INSIGHT', color: '#64A8E0', time: '3h', title: '62% of Tuesday sales happen after 4pm', ai: 'Consider shifting staff coverage to match peak traffic window.', actions: ['View Staffing'], storeIds: [] },
-];
-
-// From ConnectAgent.jsx — OUT_OF_STOCK_PRODUCTS
-const OUT_OF_STOCK_PRODUCTS = [
-  { id: 'stz-001', brand: 'STIIIZY', name: 'STIIIZY OG Kush Pod', type: 'Vape Pod 1g', urgency: 'high', supplier: 'STIIIZY Direct', leadTime: '2-3 days', recommendedQty: 36, daysOutOfStock: 3, avgWeeklySales: 42, lastPrice: 35 },
-  { id: 'kv-001', brand: 'Kiva', name: 'Camino Pineapple Habanero', type: 'Edible 100mg', urgency: 'high', supplier: 'Kiva Sales Inc.', leadTime: '3-5 days', recommendedQty: 24, daysOutOfStock: 1, avgWeeklySales: 38, lastPrice: 22 },
-  { id: 'rg-001', brand: 'Raw Garden', name: 'Slippery Susan Cart 1g', type: 'Vape Cart 1g', urgency: 'medium', supplier: 'Raw Garden LLC', leadTime: '3-4 days', recommendedQty: 18, daysOutOfStock: 5, avgWeeklySales: 28, lastPrice: 40 },
-  { id: 'wy-001', brand: 'Wyld', name: 'Elderberry Indica Gummies', type: 'Edible 100mg', urgency: 'medium', supplier: 'Wyld Distribution', leadTime: '4-5 days', recommendedQty: 18, daysOutOfStock: 2, avgWeeklySales: 22, lastPrice: 18 },
-  { id: 'jt-001', brand: 'Jeeter', name: 'Baby Jeeter Churros 5pk', type: 'Pre-Rolls 2.5g', urgency: 'low', supplier: 'DreamFields', leadTime: '2-3 days', recommendedQty: 48, daysOutOfStock: 0, avgWeeklySales: 56, lastPrice: 25 },
-];
-
-// From PricingAgent.jsx — PRICING_PRODUCTS
-const PRICING_PRODUCTS = [
-  { id: 'pp-1', brand: 'Jeeter', name: 'Baby Jeeter Churros', category: 'Pre-Rolls', grossPrice: 35, cost: 18, margin: 48.6, marketAvg: 33, marketLow: 30, marketHigh: 38, weeklyUnits: 62 },
-  { id: 'pp-2', brand: 'STIIIZY', name: 'OG Kush Pod 1g', category: 'Vapes', grossPrice: 45, cost: 24, margin: 46.7, marketAvg: 42, marketLow: 38, marketHigh: 48, weeklyUnits: 42 },
-  { id: 'pp-3', brand: 'Kiva', name: 'Camino Pineapple Habanero', category: 'Edibles', grossPrice: 22, cost: 10, margin: 54.5, marketAvg: 22, marketLow: 19, marketHigh: 25, weeklyUnits: 55 },
-  { id: 'pp-4', brand: 'Raw Garden', name: 'Slippery Susan Cart 1g', category: 'Vapes', grossPrice: 40, cost: 22, margin: 45.0, marketAvg: 38, marketLow: 35, marketHigh: 42, weeklyUnits: 28 },
-  { id: 'pp-5', brand: 'Wyld', name: 'Elderberry Indica Gummies', category: 'Edibles', grossPrice: 18, cost: 8, margin: 55.6, marketAvg: 18, marketLow: 16, marketHigh: 20, weeklyUnits: 35 },
-  { id: 'pp-6', brand: 'Cookies', name: 'Gary Payton 3.5g', category: 'Flower', grossPrice: 55, cost: 32, margin: 41.8, marketAvg: 52, marketLow: 48, marketHigh: 58, weeklyUnits: 18 },
-  { id: 'pp-7', brand: 'Alien Labs', name: 'Atomic Apple 3.5g', category: 'Flower', grossPrice: 50, cost: 28, margin: 44.0, marketAvg: 48, marketLow: 45, marketHigh: 55, weeklyUnits: 22 },
-  { id: 'pp-8', brand: 'PLUS', name: 'Sour Watermelon Gummies', category: 'Edibles', grossPrice: 20, cost: 9, margin: 55.0, marketAvg: 19, marketLow: 17, marketHigh: 22, weeklyUnits: 30 },
-];
-
-// From PricingAgent.jsx — PROMOTIONS
-const PROMOTIONS = [
-  { name: 'Happy Hour 15% Off', type: 'Time-based', spend: '$2,100', redemptions: 342, roi: 1.5, verdict: 'Keep' },
-  { name: 'First-Time 20% Off', type: 'New Customer', spend: '$3,400', redemptions: 189, roi: 2.4, verdict: 'Keep' },
-  { name: 'BOGO Edibles', type: 'Category', spend: '$4,800', redemptions: 156, roi: 0.3, verdict: 'Kill' },
-  { name: 'Loyalty 10% Off', type: 'Loyalty', spend: '$1,900', redemptions: 420, roi: 2.4, verdict: 'Keep' },
-  { name: 'Weekend Bundle', type: 'Bundle', spend: '$2,200', redemptions: 78, roi: 0.4, verdict: 'Optimize' },
-];
-
-// Cannabis-specific: Vault vs Floor inventory
 const VAULT_INVENTORY = [
-  { id: 'v1', name: 'Blue Dream 3.5g', floor: 0, vault: 47, store: 'Logan Square', category: 'Flower', urgency: 'critical' },
-  { id: 'v2', name: 'Stiiizy OG Kush Pod 1g', floor: 3, vault: 24, store: 'Fort Lee', category: 'Vapes', urgency: 'high' },
-  { id: 'v3', name: 'Ozone Cake Mints 3.5g', floor: 2, vault: 31, store: 'Logan Square', category: 'Flower', urgency: 'high' },
-  { id: 'v4', name: 'Camino Gummies 100mg', floor: 8, vault: 42, store: 'Springfield', category: 'Edibles', urgency: 'medium' },
-  { id: 'v5', name: 'Baby Jeeter Churros 5pk', floor: 5, vault: 38, store: 'Fort Lee', category: 'Pre-Rolls', urgency: 'medium' },
-  { id: 'v6', name: 'Tunnel Vision 5-Pack', floor: 1, vault: 19, store: 'Boston', category: 'Pre-Rolls', urgency: 'high' },
+  { id: 'v1', name: 'Blue Dream 3.5g', brand: 'Jeeter', category: 'Flower', floor: 0, vault: 45, avgWeekly: 38, daysOOS: 3, store: 'Logan Square', urgency: 'critical', metrc: 'METRC-1A40603-BD35' },
+  { id: 'v2', name: 'Stiiizy Live Resin Pod 1g', brand: 'STIIIZY', category: 'Vapes', floor: 2, vault: 30, avgWeekly: 24, daysOOS: 0, store: 'Fort Lee', urgency: 'high', metrc: 'METRC-1A40603-SL10' },
+  { id: 'v3', name: 'Kiva Lost Farm Gummies', brand: 'Kiva', category: 'Edibles', floor: 0, vault: 60, avgWeekly: 28, daysOOS: 2, store: 'Logan Square', urgency: 'critical', metrc: 'METRC-1A40603-KL60' },
+  { id: 'v4', name: 'Raw Garden LR Cart 1g', brand: 'Raw Garden', category: 'Vapes', floor: 3, vault: 48, avgWeekly: 18, daysOOS: 0, store: 'Springfield', urgency: 'high', metrc: 'METRC-1A40603-RG10' },
+  { id: 'v5', name: 'PLUS Sour Watermelon Gummies', brand: 'PLUS', category: 'Edibles', floor: 8, vault: 36, avgWeekly: 15, daysOOS: 0, store: 'Springfield', urgency: 'medium', metrc: 'METRC-1A40603-PS36' },
+  { id: 'v6', name: 'Alien Labs Baklava 3.5g', brand: 'Alien Labs', category: 'Flower', floor: 1, vault: 24, avgWeekly: 12, daysOOS: 0, store: 'Boston', urgency: 'high', metrc: 'METRC-1A40603-AL35' },
+  { id: 'v7', name: 'Cookies Gary Payton 3.5g', brand: 'Cookies', category: 'Flower', floor: 15, vault: 40, avgWeekly: 20, daysOOS: 0, store: 'Logan Square', urgency: 'ok', metrc: 'METRC-1A40603-CG35' },
+  { id: 'v8', name: 'Wyld Elderberry Gummies', brand: 'Wyld', category: 'Edibles', floor: 0, vault: 55, avgWeekly: 22, daysOOS: 1, store: 'Fort Lee', urgency: 'critical', metrc: 'METRC-1A40603-WE55' },
+  { id: 'v9', name: 'Papa & Barkley Releaf Balm', brand: 'Papa & Barkley', category: 'Topicals', floor: 12, vault: 20, avgWeekly: 8, daysOOS: 0, store: 'Boston', urgency: 'ok', metrc: 'METRC-1A40603-PB20' },
+  { id: 'v10', name: 'Jeeter Infused Pre-Roll', brand: 'Jeeter', category: 'Pre-Rolls', floor: 4, vault: 72, avgWeekly: 32, daysOOS: 0, store: 'Logan Square', urgency: 'high', metrc: 'METRC-1A40603-JI72' },
 ];
 
-// Compliance data
-const COMPLIANCE = {
-  licenseStatus: 'Active',
-  licenseExpiry: 'Sep 14, 2026',
-  metrcSync: 'Synced 4m ago',
-  metrcStatus: 'green',
-  idScansToday: 347,
-  cameraStatus: 'All Online',
-  cameras: 24,
-  lastAudit: 'Feb 28, 2026',
-  openViolations: 0,
+const PRICING_PRODUCTS = [
+  { id: 'pp1', brand: 'Jeeter', name: 'Baby Jeeter Churros', cat: 'Pre-Rolls', price: 35, cost: 18, margin: 48.6, mktAvg: 33, mktLow: 30, mktHigh: 38, units: 62, pos: 'above' },
+  { id: 'pp2', brand: 'STIIIZY', name: 'OG Kush Pod 1g', cat: 'Vapes', price: 45, cost: 24, margin: 46.7, mktAvg: 42, mktLow: 38, mktHigh: 48, units: 42, pos: 'above' },
+  { id: 'pp3', brand: 'Kiva', name: 'Camino Pineapple Habanero', cat: 'Edibles', price: 22, cost: 10, margin: 54.5, mktAvg: 22, mktLow: 19, mktHigh: 25, units: 55, pos: 'at' },
+  { id: 'pp4', brand: 'Raw Garden', name: 'Slippery Susan Cart 1g', cat: 'Vapes', price: 40, cost: 22, margin: 45.0, mktAvg: 38, mktLow: 35, mktHigh: 42, units: 28, pos: 'above' },
+  { id: 'pp5', brand: 'Wyld', name: 'Elderberry Indica Gummies', cat: 'Edibles', price: 18, cost: 8, margin: 55.6, mktAvg: 18, mktLow: 16, mktHigh: 20, units: 35, pos: 'at' },
+  { id: 'pp6', brand: 'Cookies', name: 'Gary Payton 3.5g', cat: 'Flower', price: 55, cost: 32, margin: 41.8, mktAvg: 52, mktLow: 48, mktHigh: 58, units: 18, pos: 'above' },
+  { id: 'pp7', brand: 'Alien Labs', name: 'Atomic Apple 3.5g', cat: 'Flower', price: 50, cost: 28, margin: 44.0, mktAvg: 48, mktLow: 45, mktHigh: 55, units: 22, pos: 'above' },
+  { id: 'pp8', brand: 'PLUS', name: 'Sour Watermelon Gummies', cat: 'Edibles', price: 20, cost: 9, margin: 55.0, mktAvg: 19, mktLow: 17, mktHigh: 22, units: 30, pos: 'above' },
+];
+
+const PROMOTIONS = [
+  { id: 'pr1', name: 'Happy Hour 15% Off', type: 'Time-based', spend: 2100, redemptions: 342, roi: 1.5, verdict: 'Keep', lift: '+23% afternoon traffic' },
+  { id: 'pr2', name: 'First-Time 20% Off', type: 'New Customer', spend: 3400, redemptions: 189, roi: 2.4, verdict: 'Keep', lift: '+34 new customers/wk' },
+  { id: 'pr3', name: 'BOGO Edibles', type: 'Category', spend: 4800, redemptions: 156, roi: 0.3, verdict: 'Kill', lift: 'Cannibalizing full-price gummy sales' },
+  { id: 'pr4', name: 'Loyalty 10% Off', type: 'Loyalty', spend: 1900, redemptions: 420, roi: 2.4, verdict: 'Keep', lift: '+12% repeat visits' },
+  { id: 'pr5', name: 'Weekend Bundle', type: 'Bundle', spend: 2200, redemptions: 78, roi: 0.4, verdict: 'Optimize', lift: 'Low uptake — needs repositioning' },
+];
+
+const CAMPAIGNS_READY = [
+  { id: 'c1', name: 'Win-Back Re-Engagement', target: '340 lapsed customers', channel: 'SMS + Email', projReturn: '12%', estRevenue: '$8,200', desc: 'Target customers with no visit in 30+ days with personalized 25% offer on their last-purchased category' },
+  { id: 'c2', name: 'Jeeter Brand Spotlight', target: '1,200 flower buyers', channel: 'Push + SMS', projReturn: '18%', estRevenue: '$4,600', desc: 'Capitalize on +34% Jeeter sentiment spike. Feature Baby Jeeter Churros and new Infused Pre-Rolls' },
+  { id: 'c3', name: 'Birthday/Loyalty Bonus', target: '89 members this month', channel: 'Email + In-App', projReturn: '45%', estRevenue: '$2,800', desc: 'Automated birthday rewards with double loyalty points and free pre-roll with $50+ purchase' },
+];
+
+const INITIAL_ALERTS = [
+  { id: 'a01', sev: 'CRITICAL', icon: 'vault', color: '#E87068', time: '2m ago', title: 'Blue Dream 3.5g — out of stock on floor', detail: 'Floor: 0 units | Vault: 45 units available. Lost ~$380 in sales today. Avg weekly: 38 units.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v1' },
+  { id: 'a02', sev: 'CRITICAL', icon: 'vault', color: '#E87068', time: '18m ago', title: 'Kiva Lost Farm Gummies — out of stock 2 days', detail: 'Floor: 0 units | Vault: 60 units. 2 days of lost sales (~$560). Customers asking at counter.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v3' },
+  { id: 'a03', sev: 'CRITICAL', icon: 'vault', color: '#E87068', time: '45m ago', title: 'Wyld Elderberry Gummies — out since yesterday', detail: 'Floor: 0 units | Vault: 55 units at Fort Lee. Avg weekly: 22 units. Transfer immediately.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v8' },
+  { id: 'a04', sev: 'WARNING', icon: 'vault', color: '#D4A03A', time: '1h ago', title: 'Stiiizy Live Resin Pod — low stock warning', detail: 'Floor: 2 units remaining | Vault: 30 units. At current velocity, floor depletes in ~3 hours.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v2' },
+  { id: 'a05', sev: 'WARNING', icon: 'vault', color: '#D4A03A', time: '1h ago', title: 'Jeeter Infused Pre-Roll running low', detail: 'Floor: 4 units | Vault: 72 units. Weekend rush approaching — avg 32/wk. Restock now.', action: 'Transfer to Floor', actionType: 'transfer', refId: 'v10' },
+  { id: 'a06', sev: 'WARNING', icon: 'price', color: '#D4A03A', time: '30m ago', title: 'Stiiizy Battery Kit priced 14% below market', detail: 'Your price: $29.99 | Market avg: $34.99. Opportunity to increase to $32.99 = +$450/wk margin.', action: 'Adjust Price', actionType: 'price' },
+  { id: 'a07', sev: 'WARNING', icon: 'price', color: '#D4A03A', time: '2h ago', title: 'Cookies Gary Payton 3.5g — 6% above market', detail: 'Your price: $55 | Market avg: $52 | Range: $48-$58. Sales velocity declining 8% WoW.', action: 'Review Pricing', actionType: 'price' },
+  { id: 'a08', sev: 'OPPORTUNITY', icon: 'campaign', color: '#00C27C', time: '1h ago', title: 'Win-Back campaign ready to launch', detail: '340 lapsed customers identified. Projected 12% return rate. Est. revenue: $8,200. One tap to launch.', action: 'Launch Campaign', actionType: 'campaign', refId: 'c1' },
+  { id: 'a09', sev: 'OPPORTUNITY', icon: 'campaign', color: '#00C27C', time: '2h ago', title: 'Happy Hour promo driving 23% traffic lift', detail: '156 redemptions this week. Afternoon traffic up 23%. ROI: 1.5x. Consider expanding hours.', action: 'View Details', actionType: 'info' },
+  { id: 'a10', sev: 'OPPORTUNITY', icon: 'price', color: '#00C27C', time: '3h ago', title: 'BOGO Edibles promo — recommend discontinuing', detail: 'ROI: 0.3x. Cannibalizing full-price gummy sales. $4,800 spend with minimal incremental revenue.', action: 'Kill Promo', actionType: 'promo' },
+  { id: 'a11', sev: 'INFO', icon: 'compliance', color: '#64A8E0', time: '4h ago', title: '3 products expiring within 30 days', detail: 'Ozone Cart batch #2847 (14 units), Camino Gummies batch #1923 (8 units), Simply Herb batch #3401 (22 units). METRC destruction manifest needed.', action: 'Create Manifest', actionType: 'compliance' },
+  { id: 'a12', sev: 'INFO', icon: 'compliance', color: '#64A8E0', time: '5h ago', title: 'Daily inventory reconciliation due by 5pm', detail: 'METRC reconciliation required. Last sync: 4 minutes ago. 2 discrepancies flagged for review.', action: 'Start Recon', actionType: 'compliance' },
+  { id: 'a13', sev: 'INFO', icon: 'ops', color: '#64A8E0', time: '6h ago', title: 'Jeeter shipment arriving 2:30 PM today', detail: '42 SKUs from DreamFields. Includes 48x Baby Jeeter Churros, 72x Infused Pre-Rolls. Receiving dock B.', action: 'Prep Receiving', actionType: 'receive' },
+  { id: 'a14', sev: 'INSIGHT', icon: 'insight', color: '#B598E8', time: '8h ago', title: 'Tuesday projected traffic: 920 customers', detail: 'Current staff covers 750 capacity. Gap of 170 customers. 62% of sales happen after 4pm.', action: 'View Staffing', actionType: 'info' },
+  { id: 'a15', sev: 'INSIGHT', icon: 'insight', color: '#B598E8', time: '12h ago', title: 'Jeeter brand sentiment surging +34% WoW', detail: 'Social mentions up significantly. 2 stores don\'t stock Jeeter yet. Trending in local market.', action: 'Draft PO', actionType: 'info' },
+];
+
+const COMPLIANCE_DATA = {
+  licenseStatus: 'Active', licenseExpiry: 'Sep 14, 2026',
+  metrcSync: 'Synced 4m ago', metrcStatus: 'green',
+  idScansToday: 347, cameraStatus: 'All 24 Online',
+  lastAudit: 'Feb 28, 2026', openViolations: 0,
+  expiringProducts: [
+    { name: 'Ozone Cart batch #2847', units: 14, expires: 'Apr 12, 2026' },
+    { name: 'Camino Gummies batch #1923', units: 8, expires: 'Apr 8, 2026' },
+    { name: 'Simply Herb batch #3401', units: 22, expires: 'Apr 15, 2026' },
+  ],
 };
 
-// Transfer log
 const INITIAL_TRANSFERS = [
-  { id: 't1', product: 'Ozone Reserve Cart 1g', qty: 12, from: 'Vault', to: 'Floor', by: 'Marcus T.', time: '10:42 AM', store: 'Logan Square' },
-  { id: 't2', product: 'Camino Gummies', qty: 8, from: 'Vault', to: 'Floor', by: 'Alex K.', time: '9:15 AM', store: 'Fort Lee' },
+  { id: 't1', product: 'Ozone Reserve Cart 1g', qty: 12, by: 'Marcus T.', time: '10:42 AM', store: 'Logan Square' },
+  { id: 't2', product: 'Camino Gummies', qty: 8, by: 'Alex K.', time: '9:15 AM', store: 'Fort Lee' },
 ];
 
-// Floor view data
-const FLOOR_DATA = {
-  hourlyVelocity: [
-    { hour: '9a', txns: 42, rev: 3528 },
-    { hour: '10a', txns: 68, rev: 5644 },
-    { hour: '11a', txns: 95, rev: 7885 },
-    { hour: '12p', txns: 112, rev: 9296 },
-    { hour: '1p', txns: 108, rev: 8964 },
-    { hour: '2p', txns: 89, rev: 7387 },
-    { hour: '3p', txns: 76, rev: 6308 },
-    { hour: '4p', txns: 94, rev: 7802 },
-    { hour: '5p', txns: 118, rev: 9794 },
-    { hour: '6p', txns: 102, rev: 8466 },
-  ],
-  currentHourIdx: 5,
-  topSellers: [
-    { name: 'Baby Jeeter Churros', units: 47, rev: '$1,645' },
-    { name: 'Ozone Cake Mints', units: 42, rev: '$1,890' },
-    { name: 'Stiiizy OG Kush Pod', units: 38, rev: '$1,710' },
-    { name: 'Camino Gummies', units: 33, rev: '$726' },
-    { name: 'Blue Dream 3.5g', units: 28, rev: '$1,260' },
-  ],
-  queue: { inStore: 14, avgWait: '4.2 min', budtendersActive: 6, budtendersTotal: 8 },
-  pulse: { txnsThisHour: 89, avgBasket: '$83', itemsPerTxn: 2.4 },
-};
-
+const CHAT_SUGGESTIONS = [
+  'Reorder out-of-stock inventory',
+  'Run a marketing campaign',
+  'Compare prices vs market',
+  'Customer sentiment this month',
+  'Weekly sales summary',
+  'Trending products to add',
+];
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SHARED UI COMPONENTS
    ═══════════════════════════════════════════════════════════════════════════ */
 
-function Spark({ data = [3,5,4,7,6,8,9], color = '#00C27C', w = 36, h = 12 }) {
-  const max = Math.max(...data), min = Math.min(...data), r = max - min || 1;
-  const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / r) * h}`).join(' ');
-  return <svg width={w} height={h}><polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-
 function Toast({ message, type = 'success', onDismiss }) {
-  useEffect(() => { const t = setTimeout(onDismiss, 2800); return () => clearTimeout(t); }, [onDismiss]);
-  const bg = type === 'success' ? '#00C27C' : type === 'warning' ? '#D4A03A' : '#64A8E0';
+  useEffect(() => { const t = setTimeout(onDismiss, 3200); return () => clearTimeout(t); }, [onDismiss]);
+  const bg = type === 'success' ? '#00C27C' : type === 'warning' ? '#D4A03A' : type === 'error' ? '#E87068' : '#64A8E0';
   return (
     <div className="fixed top-4 left-4 right-4 z-[10000] flex justify-center" style={{ animation: 'slideDown 0.3s ease-out' }}>
       <div className="flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl max-w-sm w-full" style={{ background: '#1E1D1B', border: `1px solid ${bg}40` }}>
         <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `${bg}20` }}>
           <Check className="w-3.5 h-3.5" style={{ color: bg }} />
         </div>
-        <span className="text-[12px] text-white font-medium flex-1">{message}</span>
+        <span className="text-[13px] text-white font-medium flex-1">{message}</span>
         <button onClick={onDismiss} className="p-0.5"><X className="w-3.5 h-3.5 text-[#6B6359]" /></button>
       </div>
     </div>
   );
 }
 
-function HealthRing({ score, size = 40 }) {
+function HealthRing({ score, size = 44 }) {
   const c = score >= 75 ? '#00C27C' : score >= 55 ? '#D4A03A' : '#E87068';
-  const inner = Math.round(size * 0.7);
+  const inner = Math.round(size * 0.72);
   return (
     <div className="rounded-full flex items-center justify-center flex-shrink-0" style={{ width: size, height: size, background: `conic-gradient(${c} ${score * 3.6}deg, #2A2722 0deg)` }}>
-      <div className="rounded-full bg-[#161514] flex items-center justify-center font-bold" style={{ width: inner, height: inner, color: c, fontSize: size * 0.25 }}>{score}</div>
+      <div className="rounded-full bg-[#161514] flex items-center justify-center font-bold" style={{ width: inner, height: inner, color: c, fontSize: size * 0.27 }}>{score}</div>
+    </div>
+  );
+}
+
+function SevBadge({ sev, color }) {
+  return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: `${color}20`, color }}>{sev}</span>;
+}
+
+function Spark({ data = [3,5,4,7,6,8,9], color = '#00C27C', w = 40, h = 14 }) {
+  const max = Math.max(...data), min = Math.min(...data), r = max - min || 1;
+  const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / r) * h}`).join(' ');
+  return <svg width={w} height={h}><polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+
+function PriceBar({ price, mktLow, mktHigh, mktAvg }) {
+  const range = mktHigh - mktLow || 1;
+  const yourPos = Math.max(0, Math.min(100, ((price - mktLow) / range) * 100));
+  const avgPos = Math.max(0, Math.min(100, ((mktAvg - mktLow) / range) * 100));
+  return (
+    <div className="relative h-2 rounded-full bg-[#2A2722] w-full mt-1">
+      <div className="absolute top-0 h-2 rounded-full" style={{ left: 0, width: '100%', background: 'linear-gradient(90deg, #00C27C, #D4A03A, #E87068)' , opacity: 0.3 }} />
+      <div className="absolute -top-0.5 w-1 h-3 rounded bg-[#6B6359]" style={{ left: `${avgPos}%` }} title="Market Avg" />
+      <div className="absolute -top-1 w-2.5 h-4 rounded-sm bg-white border border-[#0D0C0A]" style={{ left: `calc(${yourPos}% - 5px)` }} title="Your Price" />
     </div>
   );
 }
@@ -282,7 +174,7 @@ function BottomNav({ active = 'home', onNavigate, alertCount = 0 }) {
   const tabs = [
     { id: 'home', icon: Home, label: 'Home' },
     { id: 'alerts', icon: Bell, label: 'Alerts', badge: alertCount },
-    { id: 'floor', icon: Activity, label: 'Floor' },
+    { id: 'floor', icon: ArrowRightLeft, label: 'Floor' },
     { id: 'chat', icon: MessageSquare, label: 'Chat' },
     { id: 'actions', icon: LayoutGrid, label: 'Actions' },
   ];
@@ -293,12 +185,12 @@ function BottomNav({ active = 'home', onNavigate, alertCount = 0 }) {
           const Icon = t.icon;
           const on = t.id === active;
           return (
-            <button key={t.id} onClick={() => onNavigate(t.id)} className="flex flex-col items-center gap-[2px] outline-none relative">
+            <button key={t.id} onClick={() => onNavigate(t.id)} className="flex flex-col items-center gap-[2px] outline-none relative min-w-[48px] min-h-[48px] justify-center">
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${on ? 'bg-[#D4A03A]/15' : ''}`}>
-                <Icon className={`w-[16px] h-[16px] ${on ? 'text-[#D4A03A]' : 'text-[#6B6359]'}`} />
-                {t.badge > 0 && <span className="absolute -top-0.5 right-0 w-4 h-4 rounded-full bg-[#E87068] flex items-center justify-center text-[8px] font-bold text-white">{t.badge}</span>}
+                <Icon className={`w-[17px] h-[17px] ${on ? 'text-[#D4A03A]' : 'text-[#6B6359]'}`} />
+                {t.badge > 0 && <span className="absolute -top-0.5 right-0.5 w-[18px] h-[18px] rounded-full bg-[#E87068] flex items-center justify-center text-[9px] font-bold text-white">{t.badge > 9 ? '9+' : t.badge}</span>}
               </div>
-              <span className={`text-[8px] font-semibold ${on ? 'text-[#D4A03A]' : 'text-[#6B6359]'}`}>{t.label}</span>
+              <span className={`text-[9px] font-medium ${on ? 'text-[#D4A03A]' : 'text-[#6B6359]'}`}>{t.label}</span>
             </button>
           );
         })}
@@ -307,1042 +199,969 @@ function BottomNav({ active = 'home', onNavigate, alertCount = 0 }) {
   );
 }
 
-function fmtK(v) { return v >= 1000 ? `$${(v/1000).toFixed(1)}K` : `$${v}`; }
+const Card = ({ children, className = '', style = {} }) => (
+  <div className={`rounded-2xl p-4 ${className}`} style={{ background: '#161514', border: '1px solid #2A2722', ...style }}>{children}</div>
+);
 
+const Section = ({ title, action, onAction, children }) => (
+  <div className="mb-5">
+    <div className="flex items-center justify-between mb-2.5 px-1">
+      <span className="text-[13px] font-semibold text-[#A39B8D] uppercase tracking-wider">{title}</span>
+      {action && <button onClick={onAction} className="text-[12px] text-[#D4A03A] font-medium">{action}</button>}
+    </div>
+    {children}
+  </div>
+);
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   TAB 1: HOME — Portfolio Pulse
+   SCREEN: HOME — Executive Dashboard
    ═══════════════════════════════════════════════════════════════════════════ */
-function ScreenHome({ stores, alerts, onNavigate, onSelectStore }) {
-  const totalRev = stores.reduce((s, st) => s + st.revenue, 0);
-  const goalPct = Math.round((NEXUS_DATA.todaySales / NEXUS_DATA.salesGoal) * 100);
-  const healthy = stores.filter(s => s.score >= 75).length;
-  const watch = stores.filter(s => s.score >= 55 && s.score < 75).length;
-  const critical = stores.filter(s => s.score < 55).length;
-  const criticalAlerts = alerts.filter(a => a.sev === 'CRITICAL').length;
+
+function ScreenHome({ data, alerts, vault, stores, onNav, showToast }) {
+  const critAlerts = alerts.filter(a => a.sev === 'CRITICAL').length;
+  const oosCount = vault.filter(v => v.floor === 0).length;
+  const pricingIssues = PRICING_PRODUCTS.filter(p => Math.abs(p.price - p.mktAvg) / p.mktAvg > 0.08).length;
 
   return (
-    <div className="px-4 pt-2 pb-24">
+    <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-24">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between pt-3 pb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#D4A03A]/15 flex items-center justify-center">
+            <NexusIcon className="w-4 h-4 text-[#D4A03A]" />
+          </div>
+          <div>
+            <div className="text-[15px] font-bold text-white">Nexus Mobile</div>
+            <div className="text-[11px] text-[#6B6359]">All Stores &middot; Today</div>
+          </div>
+        </div>
         <div className="flex items-center gap-2">
-          <NexusIcon size={16} />
-          <span className="text-[12px] font-bold text-white">Nexus</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <button className="relative" onClick={() => onNavigate('alerts')}>
-            <Bell className="w-4 h-4 text-[#ADA599]" />
-            {alerts.length > 0 && <div className="absolute -top-0.5 -right-0.5 w-[7px] h-[7px] rounded-full bg-[#E87068] border border-[#0A0908]" />}
-          </button>
-          <div className="w-6 h-6 rounded-full bg-[#D4A03A]/20 flex items-center justify-center"><User className="w-3 h-3 text-[#D4A03A]" /></div>
-        </div>
-      </div>
-
-      {/* AI Briefing */}
-      <div className="rounded-2xl p-3.5 mb-4" style={{ background: 'linear-gradient(135deg, rgba(212,160,58,0.10), rgba(212,160,58,0.03))', border: '1px solid rgba(212,160,58,0.18)' }}>
-        <div className="flex items-center gap-1.5 mb-2">
-          <Sparkles className="w-3 h-3 text-[#D4A03A]" />
-          <span className="text-[8px] font-bold text-[#D4A03A] uppercase tracking-[1.5px]">AI Briefing</span>
-        </div>
-        <p className="text-[10px] text-[#C8C3BA] leading-[1.6] italic mb-2.5">
-          {`"${goalPct >= 100 ? 'On target!' : `${goalPct}% to daily goal.`} ${NEXUS_DATA.topStore} leads revenue. ${NEXUS_DATA.underperformer} needs attention at ${NEXUS_DATA.underperformerDelta}%. ${criticalAlerts > 0 ? `${criticalAlerts} critical alert${criticalAlerts > 1 ? 's' : ''} require action.` : 'No critical alerts.'}"`}
-        </p>
-        <div className="flex gap-4">
-          {[
-            { l: 'Revenue', v: fmtK(NEXUS_DATA.todaySales), t: `${goalPct}% of goal`, up: goalPct >= 90 },
-            { l: 'Traffic', v: NEXUS_DATA.traffic.today.toLocaleString(), t: `+${Math.round(((NEXUS_DATA.traffic.today - NEXUS_DATA.traffic.yesterday) / NEXUS_DATA.traffic.yesterday) * 100)}%`, up: true },
-            { l: 'Alerts', v: String(alerts.length), t: criticalAlerts > 0 ? `${criticalAlerts} critical` : 'none critical', up: criticalAlerts === 0 },
-          ].map(m => (
-            <div key={m.l}>
-              <p className="text-[7px] uppercase tracking-[1px] text-[#6B6359] font-bold">{m.l}</p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-[13px] font-extrabold text-white" style={{ fontVariantNumeric: 'tabular-nums' }}>{m.v}</span>
-                <span className={`text-[8px] font-bold ${m.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{m.t}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Revenue vs Goal bar */}
-      <div className="rounded-xl border border-[#2A2722] bg-[#161514] p-3 mb-3">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1px]">Today vs Goal</span>
-          <span className="text-[10px] font-bold text-white">{fmtK(NEXUS_DATA.todaySales)} / {fmtK(NEXUS_DATA.salesGoal)}</span>
-        </div>
-        <div className="h-[6px] rounded-full bg-[#2A2722] overflow-hidden">
-          <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, goalPct)}%`, background: goalPct >= 100 ? '#00C27C' : goalPct >= 80 ? '#D4A03A' : '#E87068' }} />
-        </div>
-      </div>
-
-      {/* Health buckets */}
-      <div className="flex gap-2 mb-3">
-        {[{ n: healthy, l: 'Healthy', c: '#00C27C' }, { n: watch, l: 'Watch', c: '#D4A03A' }, { n: critical, l: 'Critical', c: '#E87068' }].map(s => (
-          <div key={s.l} className="flex-1 rounded-xl p-2 text-center" style={{ background: `${s.c}0D`, border: `1px solid ${s.c}25` }}>
-            <p className="text-[14px] font-extrabold" style={{ color: s.c }}>{s.n}</p>
-            <p className="text-[7px] font-semibold" style={{ color: `${s.c}99` }}>{s.l}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Stores — worst first */}
-      <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Stores — worst first</p>
-      <div className="space-y-2">
-        {[...stores].sort((a, b) => a.score - b.score).map(s => {
-          const c = s.score >= 75 ? '#00C27C' : s.score >= 55 ? '#D4A03A' : '#E87068';
-          const storeAlerts = alerts.filter(al => al.storeIds?.includes(s.id)).length;
-          return (
-            <button key={s.id} onClick={() => onSelectStore(s)} className="w-full rounded-xl border border-[#2A2722] bg-[#161514] p-3 flex items-center gap-3 text-left active:scale-[0.98] transition-transform">
-              <HealthRing score={s.score} size={40} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-semibold text-white truncate">{s.name}</span>
-                  <span className="text-[9px] text-[#6B6359]">{s.state}</span>
-                  {storeAlerts > 0 && <span className="ml-auto w-[18px] h-[18px] rounded-full bg-[#E87068] flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0">{storeAlerts}</span>}
-                </div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[10px] font-bold text-white">{fmtK(s.revenue)}</span>
-                  <span className={`text-[9px] font-semibold ${s.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{s.delta}</span>
-                  <Spark data={s.spark} color={s.up ? '#00C27C' : '#E87068'} />
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-[#38332B] flex-shrink-0" />
+          {critAlerts > 0 && (
+            <button onClick={() => onNav('alerts')} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#E87068]/10 border border-[#E87068]/20">
+              <AlertTriangle className="w-3.5 h-3.5 text-[#E87068]" />
+              <span className="text-[11px] font-bold text-[#E87068]">{critAlerts}</span>
             </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   STORE DETAIL sub-screen
-   ═══════════════════════════════════════════════════════════════════════════ */
-function ScreenStoreDetail({ store, onBack }) {
-  if (!store) return null;
-  const c = store.score >= 75 ? '#00C27C' : store.score >= 55 ? '#D4A03A' : '#E87068';
-  const maxH = Math.max(...store.hourly);
-
-  return (
-    <div className="px-4 pt-2 pb-24">
-      <div className="flex items-center gap-3 mb-4">
-        <button onClick={onBack}><ArrowLeft className="w-4 h-4 text-[#ADA599]" /></button>
-        <div className="flex-1">
-          <p className="text-[13px] font-bold text-white">{store.name}</p>
-          <p className="text-[9px] text-[#6B6359]">{store.city}, {store.state}</p>
+          )}
         </div>
-        <HealthRing score={store.score} size={44} />
       </div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 gap-2 mb-4">
-        {store.kpis.map(k => (
-          <div key={k.l} className="rounded-xl border border-[#2A2722] bg-[#161514] p-3">
-            <p className="text-[8px] text-[#6B6359] uppercase tracking-[1px] font-bold mb-1">{k.l}</p>
-            <div className="flex items-end justify-between">
-              <div><span className="text-[15px] font-extrabold text-white">{k.v}</span><span className={`text-[9px] font-bold ml-1 ${k.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{k.d}</span></div>
-              <Spark data={k.spark} color={k.up ? '#00C27C' : '#E87068'} w={32} h={14} />
+      {/* Sales Ring + KPIs */}
+      <Card className="mb-4">
+        <div className="flex items-center gap-4">
+          <HealthRing score={data.salesPct} size={64} />
+          <div className="flex-1">
+            <div className="text-[22px] font-bold text-white">${data.todaySales.toLocaleString()}</div>
+            <div className="text-[12px] text-[#6B6359]">of ${data.salesGoal.toLocaleString()} goal</div>
+            <div className="flex items-center gap-1 mt-1">
+              <TrendingUp className="w-3 h-3 text-[#00C27C]" />
+              <span className="text-[11px] text-[#00C27C]">{data.traffic.delta} vs yesterday</span>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Hourly chart */}
-      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5 mb-4">
-        <p className="text-[9px] font-bold text-[#ADA599] uppercase tracking-[1px] mb-3">Hourly Transactions</p>
-        <div className="flex items-end gap-[4px] h-[50px]">
-          {store.hourly.map((v, i) => (
-            <div key={i} className="flex-1 rounded-t-sm transition-all" style={{ height: `${Math.max(4, (v / maxH) * 100)}%`, background: i === store.hourly.indexOf(maxH) ? '#D4A03A' : v > maxH * 0.7 ? '#00C27C' : '#2A2722' }} />
-          ))}
         </div>
-        <div className="flex justify-between mt-1.5 text-[7px] text-[#6B6359]"><span>8am</span><span>12pm</span><span>4pm</span><span>9pm</span></div>
-      </div>
-
-      {/* Top Products */}
-      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5 mb-4">
-        <p className="text-[9px] font-bold text-[#ADA599] uppercase tracking-[1px] mb-2">Top Products Today</p>
-        {store.topProducts.map((p, i) => (
-          <div key={i} className="flex items-center py-1.5 border-b border-[#2A2722]/60 last:border-0">
-            <span className="w-4 text-[9px] font-bold text-[#6B6359]">{i + 1}</span>
-            <span className="text-[10px] text-white flex-1">{p.name}</span>
-            <span className="text-[9px] font-bold text-white">{p.rev}</span>
-            <span className="text-[8px] text-[#6B6359] ml-2 w-7 text-right">{p.units}u</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Sentiment */}
-      <div className="rounded-2xl border p-3.5" style={{ borderColor: `${c}25`, background: `${c}08` }}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2"><Star className="w-3.5 h-3.5" style={{ color: c }} /><span className="text-[10px] font-bold text-white">Sentiment: {store.sentiment.score}</span></div>
-          <span className="text-[9px] font-semibold" style={{ color: c }}>{store.sentiment.delta}</span>
-        </div>
-        <p className="text-[9px] text-[#ADA599] mt-1">{store.sentiment.note}</p>
-      </div>
-    </div>
-  );
-}
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   TAB 2: ALERTS — Smart Alerts + Vault-to-Floor + Low Stock
-   ═══════════════════════════════════════════════════════════════════════════ */
-function ScreenAlerts({ alerts, resolvedAlerts, inventory, vaultItems, onAlertAction, onVaultTransfer, onReorder, showToast }) {
-  const lowStock = inventory.filter(i => i.status !== 'ordered');
-  const orderedItems = inventory.filter(i => i.status === 'ordered');
-  const vaultAvailable = vaultItems.filter(v => v.floor <= 3 && v.vault > 0);
-
-  return (
-    <div className="px-4 pt-2 pb-24">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div><p className="text-[14px] font-bold text-white">Smart Alerts</p><p className="text-[9px] text-[#6B6359]">Tap actions to resolve</p></div>
-        <span className="text-[9px] font-bold text-[#E87068] bg-[#E87068]/10 px-2.5 py-1 rounded-full">{alerts.length} active</span>
-      </div>
-
-      {/* Active alerts */}
-      {alerts.length === 0 ? (
-        <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-8 text-center mb-4">
-          <Check className="w-10 h-10 text-[#00C27C] mx-auto mb-3" />
-          <p className="text-[14px] font-bold text-white mb-1">All Clear</p>
-          <p className="text-[11px] text-[#6B6359]">No active alerts</p>
-        </div>
-      ) : (
-        <div className="space-y-2.5 mb-4">
-          {alerts.map((a, i) => (
-            <div key={a.id} className="rounded-2xl border overflow-hidden" style={{ borderColor: i === 0 ? `${a.color}50` : '#2A2722', background: i === 0 ? `${a.color}08` : '#161514' }}>
-              <div className="p-3.5">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[8px] font-bold px-2 py-[3px] rounded-full" style={{ color: a.color, background: `${a.color}18`, border: `1px solid ${a.color}30` }}>{a.sev}</span>
-                  <span className="text-[8px] text-[#6B6359]">{a.time} ago</span>
-                </div>
-                <p className="text-[11px] font-semibold text-white mb-2">{a.title}</p>
-                <div className="rounded-xl px-3 py-2 mb-3" style={{ background: `${a.color}08`, border: `1px solid ${a.color}12` }}>
-                  <div className="flex items-start gap-1.5">
-                    <Sparkles className="w-2.5 h-2.5 mt-0.5 flex-shrink-0" style={{ color: a.color }} />
-                    <p className="text-[9px] text-[#C8C3BA] italic leading-[1.5]">{a.ai}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {a.actions.map((act, j) => (
-                    <button key={j} onClick={() => onAlertAction(a.id, act)} className={`flex-1 py-2 rounded-xl text-[10px] font-bold transition-all active:scale-[0.97] ${j === 0 ? 'text-white' : 'text-[#ADA599] border border-[#38332B]'}`} style={j === 0 ? { background: a.color } : undefined}>{act}</button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Vault-to-Floor section */}
-      {vaultAvailable.length > 0 && (
-        <>
-          <div className="flex items-center gap-2 mb-2">
-            <ArrowRightLeft className="w-3.5 h-3.5 text-[#B598E8]" />
-            <p className="text-[8px] font-bold text-[#B598E8] uppercase tracking-[1.5px]">Vault to Floor</p>
-            <span className="text-[8px] font-medium text-[#B598E8]/70 bg-[#B598E8]/10 px-1.5 py-0.5 rounded-full">{vaultAvailable.length} items</span>
-          </div>
-          <div className="space-y-2 mb-4">
-            {vaultAvailable.map(v => (
-              <div key={v.id} className="rounded-xl border border-[#B598E8]/20 bg-[#B598E8]/5 p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="text-[10px] font-semibold text-white">{v.name}</p>
-                    <p className="text-[8px] text-[#6B6359]">{v.store} -- {v.category}</p>
-                  </div>
-                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${v.urgency === 'critical' ? 'text-[#E87068] bg-[#E87068]/15' : v.urgency === 'high' ? 'text-[#D4A03A] bg-[#D4A03A]/15' : 'text-[#64A8E0] bg-[#64A8E0]/15'}`}>{v.urgency}</span>
-                </div>
-                <div className="flex items-center gap-3 mb-2.5">
-                  <div className="flex-1 text-center rounded-lg bg-[#161514] py-1.5">
-                    <p className="text-[8px] text-[#6B6359]">Floor</p>
-                    <p className={`text-[12px] font-extrabold ${v.floor === 0 ? 'text-[#E87068]' : 'text-[#D4A03A]'}`}>{v.floor}</p>
-                  </div>
-                  <ArrowRightLeft className="w-3 h-3 text-[#6B6359]" />
-                  <div className="flex-1 text-center rounded-lg bg-[#161514] py-1.5">
-                    <p className="text-[8px] text-[#6B6359]">Vault</p>
-                    <p className="text-[12px] font-extrabold text-[#00C27C]">{v.vault}</p>
-                  </div>
-                </div>
-                <button onClick={() => onVaultTransfer(v.id)} className="w-full py-2 rounded-xl bg-[#B598E8] text-[10px] font-bold text-white active:scale-[0.97] transition-transform">Transfer to Floor</button>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Low Stock items */}
-      {lowStock.length > 0 && (
-        <>
-          <div className="flex items-center gap-2 mb-2">
-            <Package className="w-3.5 h-3.5 text-[#D4A03A]" />
-            <p className="text-[8px] font-bold text-[#D4A03A] uppercase tracking-[1.5px]">Low Stock</p>
-          </div>
-          <div className="space-y-2 mb-4">
-            {lowStock.map(it => {
-              const c = it.sev === 'critical' ? '#E87068' : it.sev === 'warning' ? '#D4A03A' : '#64A8E0';
-              return (
-                <div key={it.id} className="rounded-xl border bg-[#161514] p-3" style={{ borderColor: it.sev === 'critical' ? `${c}40` : '#2A2722' }}>
-                  <div className="flex items-start justify-between mb-2">
-                    <div><p className="text-[10px] font-semibold text-white">{it.name}</p><p className="text-[8px] text-[#6B6359]">{it.store}</p></div>
-                    <div className="text-right"><p className="text-[12px] font-extrabold" style={{ color: c }}>{it.hours}h</p><p className="text-[7px] text-[#6B6359]">until out</p></div>
-                  </div>
-                  <div className="h-[5px] rounded-full bg-[#2A2722] overflow-hidden mb-2">
-                    <div className="h-full rounded-full" style={{ width: `${Math.max(8, 100 - (it.hours / 96) * 100)}%`, background: c }} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] text-[#ADA599]">{it.cost}</span>
-                    <button onClick={() => onReorder(it.id)} className="px-3 py-1.5 rounded-lg text-[9px] font-bold text-white active:scale-[0.97]" style={{ background: c }}>Reorder</button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {/* Ordered items */}
-      {orderedItems.length > 0 && (
-        <div className="mb-4">
-          <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Ordered</p>
-          {orderedItems.map(it => (
-            <div key={it.id} className="rounded-xl border border-[#00C27C]/20 bg-[#00C27C]/5 p-3 flex items-center gap-2 mb-1.5">
-              <Check className="w-3 h-3 text-[#00C27C] flex-shrink-0" />
-              <div className="flex-1"><p className="text-[10px] font-semibold text-white">{it.name}</p><p className="text-[8px] text-[#6B6359]">{it.store}</p></div>
-              <span className="text-[8px] font-semibold text-[#00C27C]">Ordered</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Auto-resolved */}
-      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5">
-        <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Auto-Resolved</p>
-        {resolvedAlerts.map((r, i) => (
-          <div key={i} className="flex items-center gap-2 text-[9px] text-[#00C27C] mb-1 last:mb-0"><Check className="w-3 h-3 flex-shrink-0" /> {r}</div>
-        ))}
-        {['Register sync -- fixed', 'March campaign -- launched', 'Stiiizy Pods -- auto-reordered'].map(r => (
-          <div key={r} className="flex items-center gap-2 text-[9px] text-[#ADA599] mb-1 last:mb-0"><Check className="w-3 h-3 text-[#00C27C] flex-shrink-0" /> {r}</div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   TAB 3: FLOOR — Live Floor View
-   ═══════════════════════════════════════════════════════════════════════════ */
-function ScreenFloor({ floor, onNavigate }) {
-  const maxTxns = Math.max(...floor.hourlyVelocity.map(h => h.txns));
-
-  return (
-    <div className="px-4 pt-2 pb-24">
-      <div className="flex items-center justify-between mb-4">
-        <div><p className="text-[14px] font-bold text-white">Live Floor</p><p className="text-[9px] text-[#6B6359]">Real-time dispensary view</p></div>
-        <div className="flex items-center gap-1"><div className="w-[6px] h-[6px] rounded-full bg-[#00C27C] animate-pulse" /><span className="text-[8px] text-[#00C27C] font-medium">Live</span></div>
-      </div>
-
-      {/* Pulse metrics */}
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {[
-          { l: 'This Hour', v: String(floor.pulse.txnsThisHour), sub: 'transactions', c: '#00C27C' },
-          { l: 'Avg Basket', v: floor.pulse.avgBasket, sub: 'per txn', c: '#64A8E0' },
-          { l: 'Items/Txn', v: String(floor.pulse.itemsPerTxn), sub: 'average', c: '#B598E8' },
-        ].map(m => (
-          <div key={m.l} className="rounded-xl border border-[#2A2722] bg-[#161514] p-2.5 text-center">
-            <p className="text-[7px] text-[#6B6359] uppercase tracking-[1px] font-bold">{m.l}</p>
-            <p className="text-[14px] font-extrabold" style={{ color: m.c }}>{m.v}</p>
-            <p className="text-[7px] text-[#6B6359]">{m.sub}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Hourly velocity bar chart */}
-      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5 mb-4">
-        <p className="text-[9px] font-bold text-[#ADA599] uppercase tracking-[1px] mb-3">Hourly Sales Velocity</p>
-        <div className="flex items-end gap-[5px] h-[60px]">
-          {floor.hourlyVelocity.map((h, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center">
-              <div className="w-full rounded-t-sm transition-all" style={{ height: `${Math.max(4, (h.txns / maxTxns) * 100)}%`, background: i === floor.currentHourIdx ? '#D4A03A' : i < floor.currentHourIdx ? '#00C27C' : '#2A2722' }} />
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-between mt-1.5">
-          {floor.hourlyVelocity.map((h, i) => (
-            <span key={i} className={`text-[6px] flex-1 text-center ${i === floor.currentHourIdx ? 'text-[#D4A03A] font-bold' : 'text-[#6B6359]'}`}>{h.hour}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* Top sellers right now */}
-      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5 mb-4">
-        <p className="text-[9px] font-bold text-[#ADA599] uppercase tracking-[1px] mb-2">Top Sellers Right Now</p>
-        {floor.topSellers.map((p, i) => (
-          <div key={i} className="flex items-center py-1.5 border-b border-[#2A2722]/60 last:border-0">
-            <span className="w-4 text-[9px] font-bold" style={{ color: i === 0 ? '#D4A03A' : i < 3 ? '#ADA599' : '#6B6359' }}>{i + 1}</span>
-            <span className="text-[10px] text-white flex-1">{p.name}</span>
-            <span className="text-[9px] font-bold text-white">{p.rev}</span>
-            <span className="text-[8px] text-[#6B6359] ml-2 w-7 text-right">{p.units}u</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Queue & wait */}
-      <div className="rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5 mb-4">
-        <p className="text-[9px] font-bold text-[#ADA599] uppercase tracking-[1px] mb-2.5">Queue & Staffing</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-4 gap-3 mt-4 pt-3 border-t border-[#2A2722]">
           {[
-            { l: 'In Store', v: String(floor.queue.inStore), icon: Users, c: '#64A8E0' },
-            { l: 'Avg Wait', v: floor.queue.avgWait, icon: Clock, c: '#D4A03A' },
-            { l: 'Active', v: `${floor.queue.budtendersActive}/${floor.queue.budtendersTotal}`, icon: User, c: '#00C27C' },
-            { l: 'Utilization', v: `${Math.round((floor.queue.budtendersActive / floor.queue.budtendersTotal) * 100)}%`, icon: Activity, c: '#B598E8' },
-          ].map(m => {
-            const Icon = m.icon;
+            { label: 'Traffic', value: data.traffic.today, sub: data.traffic.delta, up: true },
+            { label: 'Sentiment', value: `${data.sentiment.score}/5`, sub: `NPS ${data.sentiment.nps}`, up: true },
+            { label: 'Loyalty', value: data.loyalty.signupsToday, sub: 'signups', up: true },
+            { label: 'Promos', value: data.activePromos, sub: 'active', up: true },
+          ].map(k => (
+            <div key={k.label} className="text-center">
+              <div className="text-[14px] font-bold text-white">{k.value}</div>
+              <div className="text-[9px] text-[#6B6359]">{k.sub}</div>
+              <div className="text-[9px] text-[#6B6359] mt-0.5">{k.label}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Smart Briefing */}
+      <Section title="Smart Briefing">
+        <div className="space-y-2.5">
+          {[
+            { icon: AlertTriangle, color: '#E87068', text: `${oosCount} products out of stock on floor — vault inventory available for all. Transfer now to recover ~$940/day in lost sales.`, action: 'Transfer All', onAction: () => onNav('floor') },
+            { icon: DollarSign, color: '#D4A03A', text: `${pricingIssues} products priced >8% from market avg. Stiiizy Battery Kit 14% below = $450/wk margin opportunity.`, action: 'Review Pricing', onAction: () => onNav('actions') },
+            { icon: Megaphone, color: '#00C27C', text: 'Win-Back campaign ready: 340 lapsed customers, projected $8,200 revenue. Jeeter sentiment surging +34%.', action: 'Launch', onAction: () => showToast('Win-Back campaign launched to 340 customers') },
+            { icon: Clock, color: '#64A8E0', text: 'Jeeter shipment arriving 2:30 PM (42 SKUs). Tuesday peak traffic expected after 4pm — ensure coverage.', action: null },
+          ].map((b, i) => (
+            <Card key={i} className="!p-3">
+              <div className="flex gap-3">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${b.color}15` }}>
+                  <b.icon className="w-3.5 h-3.5" style={{ color: b.color }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[12px] text-[#C4BDB2] leading-[1.5]">{b.text}</div>
+                  {b.action && (
+                    <button onClick={b.onAction} className="mt-2 text-[11px] font-semibold text-[#D4A03A] flex items-center gap-1">
+                      {b.action} <ChevronRight className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      {/* Pricing Snapshot */}
+      <Section title="Pricing Benchmark" action="See All" onAction={() => onNav('actions')}>
+        <Card className="!p-3">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <HealthRing score={data.pricingHealth} size={36} />
+              <div>
+                <div className="text-[13px] font-bold text-white">Pricing Health</div>
+                <div className="text-[10px] text-[#6B6359]">5 competitive, 2 above, 1 below market</div>
+              </div>
+            </div>
+          </div>
+          {PRICING_PRODUCTS.slice(0, 4).map(p => {
+            const diff = ((p.price - p.mktAvg) / p.mktAvg * 100).toFixed(0);
+            const diffColor = Math.abs(diff) <= 5 ? '#00C27C' : Math.abs(diff) <= 10 ? '#D4A03A' : '#E87068';
             return (
-              <div key={m.l} className="flex items-center gap-2">
-                <Icon className="w-3.5 h-3.5 flex-shrink-0" style={{ color: m.c }} />
-                <div><p className="text-[8px] text-[#6B6359]">{m.l}</p><p className="text-[11px] font-bold text-white">{m.v}</p></div>
+              <div key={p.id} className="flex items-center justify-between py-2 border-t border-[#2A2722]/50">
+                <div className="flex-1 min-w-0">
+                  <div className="text-[12px] text-white truncate">{p.name}</div>
+                  <div className="text-[10px] text-[#6B6359]">{p.brand} &middot; {p.margin}% margin</div>
+                </div>
+                <div className="text-right ml-3">
+                  <div className="text-[12px] font-bold text-white">${p.price}</div>
+                  <div className="text-[10px] font-medium" style={{ color: diffColor }}>{diff > 0 ? '+' : ''}{diff}% vs mkt</div>
+                </div>
               </div>
             );
           })}
+        </Card>
+      </Section>
+
+      {/* Store Performance */}
+      <Section title="Store Performance" action="All Stores">
+        <div className="space-y-2">
+          {stores.map(s => (
+            <Card key={s.id} className="!p-3 flex items-center gap-3">
+              <HealthRing score={s.score} size={38} />
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-semibold text-white">{s.name}</div>
+                <div className="text-[10px] text-[#6B6359]">{s.state} &middot; ${(s.revenue / 1000).toFixed(1)}K today</div>
+              </div>
+              <div className="text-right">
+                <div className={`text-[12px] font-bold ${s.up ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{s.delta}</div>
+                <div className="text-[10px] text-[#6B6359]">{s.txns} txns</div>
+              </div>
+            </Card>
+          ))}
         </div>
+      </Section>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCREEN: ALERTS — Actionable, Categorized Alerts
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function ScreenAlerts({ alerts, onAction, onNav }) {
+  const [filter, setFilter] = useState('all');
+  const filters = [
+    { id: 'all', label: 'All', count: alerts.length },
+    { id: 'CRITICAL', label: 'Critical', count: alerts.filter(a => a.sev === 'CRITICAL').length },
+    { id: 'WARNING', label: 'Warning', count: alerts.filter(a => a.sev === 'WARNING').length },
+    { id: 'OPPORTUNITY', label: 'Opportunity', count: alerts.filter(a => a.sev === 'OPPORTUNITY').length },
+    { id: 'INFO', label: 'Info', count: alerts.filter(a => a.sev === 'INFO').length },
+    { id: 'INSIGHT', label: 'Insight', count: alerts.filter(a => a.sev === 'INSIGHT').length },
+  ];
+  const shown = filter === 'all' ? alerts : alerts.filter(a => a.sev === filter);
+
+  return (
+    <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-24">
+      <div className="flex items-center justify-between pt-3 pb-3">
+        <div className="text-[17px] font-bold text-white">Alerts</div>
+        <span className="text-[11px] text-[#6B6359]">{alerts.length} active</span>
       </div>
 
-      {/* Quick actions grid */}
-      <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Quick Actions</p>
-      <div className="grid grid-cols-2 gap-2">
-        {[
-          { l: 'Vault Transfer', icon: ArrowRightLeft, c: '#B598E8', screen: 'actions' },
-          { l: 'Price Check', icon: DollarSign, c: '#D4A03A', screen: 'actions' },
-          { l: 'Compliance', icon: Shield, c: '#00C27C', screen: 'actions' },
-          { l: 'Staff Schedule', icon: Users, c: '#64A8E0', screen: null },
-        ].map(a => {
-          const Icon = a.icon;
-          return (
-            <button key={a.l} onClick={() => a.screen && onNavigate(a.screen)} className="rounded-xl border border-[#2A2722] bg-[#161514] p-3 flex items-center gap-2.5 active:scale-[0.97] transition-transform">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${a.c}15` }}><Icon className="w-4 h-4" style={{ color: a.c }} /></div>
-              <span className="text-[10px] font-semibold text-white">{a.l}</span>
-            </button>
-          );
-        })}
+      {/* Filter chips */}
+      <div className="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4 scrollbar-hide">
+        {filters.map(f => (
+          <button key={f.id} onClick={() => setFilter(f.id)}
+            className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${filter === f.id ? 'bg-[#D4A03A]/15 text-[#D4A03A] border border-[#D4A03A]/30' : 'bg-[#161514] text-[#6B6359] border border-[#2A2722]'}`}>
+            {f.label} ({f.count})
+          </button>
+        ))}
+      </div>
+
+      {/* Alert list */}
+      <div className="space-y-2.5">
+        {shown.map(a => (
+          <Card key={a.id} className="!p-3.5">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: `${a.color}15` }}>
+                {a.icon === 'vault' && <ArrowRightLeft className="w-4 h-4" style={{ color: a.color }} />}
+                {a.icon === 'price' && <DollarSign className="w-4 h-4" style={{ color: a.color }} />}
+                {a.icon === 'campaign' && <Megaphone className="w-4 h-4" style={{ color: a.color }} />}
+                {a.icon === 'compliance' && <Shield className="w-4 h-4" style={{ color: a.color }} />}
+                {a.icon === 'ops' && <Truck className="w-4 h-4" style={{ color: a.color }} />}
+                {a.icon === 'insight' && <Sparkles className="w-4 h-4" style={{ color: a.color }} />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <SevBadge sev={a.sev} color={a.color} />
+                  <span className="text-[10px] text-[#6B6359]">{a.time}</span>
+                </div>
+                <div className="text-[13px] font-semibold text-white leading-snug mb-1">{a.title}</div>
+                <div className="text-[11px] text-[#A39B8D] leading-relaxed mb-2.5">{a.detail}</div>
+                <button
+                  onClick={() => onAction(a)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12px] font-semibold min-h-[36px]"
+                  style={{ background: `${a.color}15`, color: a.color, border: `1px solid ${a.color}25` }}>
+                  {a.actionType === 'transfer' && <ArrowRightLeft className="w-3.5 h-3.5" />}
+                  {a.actionType === 'price' && <DollarSign className="w-3.5 h-3.5" />}
+                  {a.actionType === 'campaign' && <Rocket className="w-3.5 h-3.5" />}
+                  {a.actionType === 'compliance' && <Shield className="w-3.5 h-3.5" />}
+                  {a.actionType === 'receive' && <Truck className="w-3.5 h-3.5" />}
+                  {a.actionType === 'promo' && <X className="w-3.5 h-3.5" />}
+                  {a.actionType === 'info' && <Eye className="w-3.5 h-3.5" />}
+                  {a.action}
+                </button>
+              </div>
+            </div>
+          </Card>
+        ))}
       </div>
     </div>
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCREEN: FLOOR — Vault-to-Floor Transfer System
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function ScreenFloor({ vault, transfers, onTransfer, showToast }) {
+  const [selectedId, setSelectedId] = useState(null);
+  const [transferQty, setTransferQty] = useState(0);
+  const [tab, setTab] = useState('inventory'); // inventory | transfers
+  const selected = vault.find(v => v.id === selectedId);
+
+  const sorted = useMemo(() => {
+    return [...vault].sort((a, b) => {
+      const urgMap = { critical: 0, high: 1, medium: 2, ok: 3 };
+      return (urgMap[a.urgency] || 3) - (urgMap[b.urgency] || 3);
+    });
+  }, [vault]);
+
+  const oosCount = vault.filter(v => v.floor === 0).length;
+  const lowCount = vault.filter(v => v.floor > 0 && v.floor <= 5).length;
+
+  const handleTransfer = () => {
+    if (!selected || transferQty <= 0) return;
+    onTransfer(selectedId, transferQty);
+    setSelectedId(null);
+    setTransferQty(0);
+  };
+
+  const statusColor = (v) => v.floor === 0 ? '#E87068' : v.floor <= 5 ? '#D4A03A' : '#00C27C';
+  const statusLabel = (v) => v.floor === 0 ? 'OUT OF STOCK' : v.floor <= 5 ? 'LOW STOCK' : 'OK';
+
+  return (
+    <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-24">
+      <div className="flex items-center justify-between pt-3 pb-3">
+        <div>
+          <div className="text-[17px] font-bold text-white">Floor Management</div>
+          <div className="text-[11px] text-[#6B6359]">Vault → Floor Transfers</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] px-2 py-1 rounded-md bg-[#E87068]/10 text-[#E87068] font-bold">{oosCount} OOS</span>
+          <span className="text-[10px] px-2 py-1 rounded-md bg-[#D4A03A]/10 text-[#D4A03A] font-bold">{lowCount} Low</span>
+        </div>
+      </div>
+
+      {/* Tab toggle */}
+      <div className="flex bg-[#161514] rounded-xl p-1 mb-4 border border-[#2A2722]">
+        {['inventory', 'transfers'].map(t => (
+          <button key={t} onClick={() => setTab(t)}
+            className={`flex-1 py-2 rounded-lg text-[12px] font-semibold transition-all ${tab === t ? 'bg-[#2A2722] text-white' : 'text-[#6B6359]'}`}>
+            {t === 'inventory' ? `Inventory (${vault.length})` : `Log (${transfers.length})`}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'inventory' && (
+        <div className="space-y-2">
+          {sorted.map(v => (
+            <Card key={v.id} className="!p-3" style={selectedId === v.id ? { border: '1px solid #D4A03A40' } : {}}>
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-[7px] font-bold px-1.5 py-0.5 rounded" style={{ background: `${statusColor(v)}15`, color: statusColor(v) }}>{statusLabel(v)}</span>
+                    <span className="text-[9px] text-[#6B6359]">{v.category}</span>
+                  </div>
+                  <div className="text-[13px] font-semibold text-white">{v.name}</div>
+                  <div className="text-[10px] text-[#6B6359]">{v.brand} &middot; {v.store}</div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-2 mb-2.5 py-2 bg-[#0D0C0A] rounded-lg px-2">
+                <div className="text-center">
+                  <div className="text-[14px] font-bold" style={{ color: statusColor(v) }}>{v.floor}</div>
+                  <div className="text-[8px] text-[#6B6359]">Floor</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[14px] font-bold text-[#00C27C]">{v.vault}</div>
+                  <div className="text-[8px] text-[#6B6359]">Vault</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[14px] font-bold text-white">{v.avgWeekly}</div>
+                  <div className="text-[8px] text-[#6B6359]">Wk Avg</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[14px] font-bold text-white">{v.daysOOS > 0 ? v.daysOOS : '—'}</div>
+                  <div className="text-[8px] text-[#6B6359]">Days OOS</div>
+                </div>
+              </div>
+
+              {selectedId === v.id ? (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] text-[#A39B8D]">Transfer quantity:</span>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => setTransferQty(q => Math.max(1, q - 1))} className="w-8 h-8 rounded-lg bg-[#2A2722] flex items-center justify-center">
+                        <Minus className="w-3.5 h-3.5 text-white" />
+                      </button>
+                      <span className="text-[16px] font-bold text-white w-8 text-center">{transferQty}</span>
+                      <button onClick={() => setTransferQty(q => Math.min(v.vault, q + 1))} className="w-8 h-8 rounded-lg bg-[#2A2722] flex items-center justify-center">
+                        <Plus className="w-3.5 h-3.5 text-white" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 mb-2.5 text-[9px] text-[#6B6359]">
+                    <Shield className="w-3 h-3" />
+                    <span>Chain of custody logged to {v.metrc}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setSelectedId(null); setTransferQty(0); }} className="flex-1 py-2.5 rounded-xl text-[12px] font-semibold bg-[#2A2722] text-[#6B6359]">Cancel</button>
+                    <button onClick={handleTransfer} className="flex-1 py-2.5 rounded-xl text-[12px] font-semibold bg-[#D4A03A]/15 text-[#D4A03A] border border-[#D4A03A]/25">
+                      Confirm Transfer
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => { setSelectedId(v.id); setTransferQty(Math.min(v.vault, Math.ceil(v.avgWeekly / 2))); }}
+                  className="w-full py-2.5 rounded-xl text-[12px] font-semibold flex items-center justify-center gap-1.5"
+                  style={{ background: v.vault > 0 ? '#D4A03A15' : '#2A2722', color: v.vault > 0 ? '#D4A03A' : '#6B6359', border: v.vault > 0 ? '1px solid #D4A03A25' : '1px solid #2A2722' }}
+                  disabled={v.vault <= 0}>
+                  <ArrowRightLeft className="w-3.5 h-3.5" />
+                  {v.vault > 0 ? 'Transfer to Floor' : 'No Vault Stock'}
+                </button>
+              )}
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {tab === 'transfers' && (
+        <div className="space-y-2">
+          {transfers.length === 0 ? (
+            <Card className="!p-6 text-center">
+              <div className="text-[13px] text-[#6B6359]">No transfers today yet</div>
+            </Card>
+          ) : transfers.map(t => (
+            <Card key={t.id} className="!p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#00C27C]/10 flex items-center justify-center flex-shrink-0">
+                <Check className="w-4 h-4 text-[#00C27C]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[12px] font-semibold text-white">{t.product}</div>
+                <div className="text-[10px] text-[#6B6359]">{t.qty} units &middot; {t.by} &middot; {t.time}</div>
+              </div>
+              <div className="text-[10px] text-[#6B6359]">{t.store}</div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   TAB 4: CHAT — Mobile Nexus AI (matches CustomerBridge suggestions)
+   SCREEN: CHAT — Mobile-Optimized Nexus AI Assistant
    ═══════════════════════════════════════════════════════════════════════════ */
-function ScreenChat({ alerts, inventory, vaultItems, oosProducts, pricingProducts, promos, onReorderAll, showToast, onNavigate }) {
-  const [messages, setMessages] = useState([]);
+
+function ScreenChat({ vault, showToast, onNav }) {
+  const [messages, setMessages] = useState([
+    { id: 'welcome', role: 'assistant', content: "Hey! I'm Nexus, your AI retail assistant. I can help you reorder inventory, launch campaigns, analyze pricing, check customer sentiment, pull sales summaries, and more.\n\nWhat do you need?", type: 'text' }
+  ]);
   const [input, setInput] = useState('');
-  const [typing, setTyping] = useState(false);
-  const [typingStatus, setTypingStatus] = useState('');
-  const scrollRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const chatRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages, typing]);
+    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  }, [messages, isTyping]);
 
-  // Desktop NEXUS_SUGGESTIONS mapped to mobile
-  const suggestions = [
-    { key: 'inventory', label: 'Reorder out-of-stock inventory', icon: ShoppingCart, c: '#64A8E0' },
-    { key: 'campaign', label: 'Run a marketing campaign', icon: Megaphone, c: '#00C27C' },
-    { key: 'pricing', label: 'Compare prices vs market', icon: DollarSign, c: '#D4A03A' },
-    { key: 'sentiment', label: 'Customer sentiment this month', icon: Star, c: '#B598E8' },
-    { key: 'report', label: 'Weekly sales summary', icon: BarChart3, c: '#0EA5E9' },
-    { key: 'trending', label: 'Trending products to add', icon: Rocket, c: '#EC4899' },
-  ];
-
-  const processMessage = useCallback((text) => {
-    if (!text.trim()) return;
-    const msg = text.trim();
-    setMessages(prev => [...prev, { from: 'user', text: msg }]);
+  const handleSend = useCallback((text) => {
+    const msg = text || input.trim();
+    if (!msg) return;
     setInput('');
-    setTyping(true);
+    setMessages(prev => [...prev, { id: `u-${Date.now()}`, role: 'user', content: msg, type: 'text' }]);
+    setIsTyping(true);
 
-    const lower = msg.toLowerCase();
-    let status = 'Thinking...';
-    let delay = 800;
-    let reply;
-
-    if (lower.includes('reorder') || lower.includes('inventory') || lower.includes('stock')) {
-      status = 'Searching inventory...';
-      delay = 1200;
-      const active = oosProducts.filter(p => p.urgency === 'high' || p.urgency === 'medium');
-      const totalCost = active.reduce((s, p) => s + p.lastPrice * p.recommendedQty, 0);
-      reply = {
-        from: 'ai', text: `Found **${oosProducts.length} products** needing reorder. ${active.length} are urgent. Total recommended reorder: **$${totalCost.toLocaleString()}**.`,
-        reorderCards: oosProducts.slice(0, 3),
-        showReorderAll: true,
-        totalCost,
-      };
-    } else if (lower.includes('campaign') || lower.includes('marketing')) {
-      status = 'Analyzing top sellers...';
-      delay = 1000;
-      reply = {
-        from: 'ai', text: 'Based on current momentum, I recommend a **"Weekend Jeeter Fest"** campaign. Baby Jeeter Churros are your #1 seller with 62 units/week.\n\nProjected impact: **+$4,200 revenue** over 3 days with a 15% targeted discount to loyalty members.',
-        campaignCard: { name: 'Weekend Jeeter Fest', brand: 'Jeeter', discount: '15% off', target: 'Loyalty Members', projected: '+$4,200', duration: 'Fri-Sun' },
-      };
-    } else if (lower.includes('price') || lower.includes('pricing') || lower.includes('market')) {
-      status = 'Analyzing prices...';
-      delay = 1100;
-      const aboveMarket = pricingProducts.filter(p => p.grossPrice > p.marketAvg * 1.05);
-      const belowMarket = pricingProducts.filter(p => p.grossPrice < p.marketAvg * 0.95);
-      reply = {
-        from: 'ai', text: `Across ${pricingProducts.length} tracked products: **${aboveMarket.length} above market** and **${belowMarket.length} below market**. Your weighted avg margin is **48.3%**.`,
-        priceCards: pricingProducts.slice(0, 4).map(p => ({
-          name: p.name, brand: p.brand, yours: p.grossPrice, market: p.marketAvg,
-          gap: `${((p.grossPrice - p.marketAvg) / p.marketAvg * 100).toFixed(1)}%`,
-          rec: p.grossPrice > p.marketAvg * 1.08 ? 'Lower' : p.grossPrice < p.marketAvg * 0.95 ? 'Raise' : 'Keep',
-        })),
-      };
-    } else if (lower.includes('sentiment') || lower.includes('customer') || lower.includes('review')) {
-      status = 'Analyzing sentiment...';
-      delay = 1000;
-      reply = {
-        from: 'ai', text: `Overall sentiment: **${NEXUS_DATA.overallSentiment}/100** (${NEXUS_DATA.sentimentDelta >= 0 ? '+' : ''}${NEXUS_DATA.sentimentDelta} pts). NPS: **${NEXUS_DATA.npsScore}** (${NEXUS_DATA.npsDelta >= 0 ? '+' : ''}${NEXUS_DATA.npsDelta}).`,
-        sentimentCard: {
-          score: NEXUS_DATA.overallSentiment, delta: NEXUS_DATA.sentimentDelta,
-          nps: NEXUS_DATA.npsScore, npsDelta: NEXUS_DATA.npsDelta,
-          topPos: NEXUS_DATA.topPositiveTopic, topNeg: NEXUS_DATA.topNegativeTopic,
-          topics: NEXUS_DATA.sentimentTopics,
-        },
-      };
-    } else if (lower.includes('weekly') || lower.includes('summary') || lower.includes('report') || lower.includes('sales')) {
-      status = 'Generating report...';
-      delay = 1000;
-      const topStore = STORES.reduce((a, b) => a.revenue > b.revenue ? a : b);
-      const worstStore = STORES.reduce((a, b) => a.revenue < b.revenue ? a : b);
-      reply = {
-        from: 'ai', text: `**Weekly Summary:**\n- Total revenue: **${fmtK(STORES.reduce((s, st) => s + st.revenue, 0))}** across ${STORES.length} stores\n- Best: **${topStore.name}** at ${fmtK(topStore.revenue)} (${topStore.delta})\n- Needs attention: **${worstStore.name}** at ${fmtK(worstStore.revenue)} (${worstStore.delta})\n- Avg basket: **$${Math.round(STORES.reduce((s, st) => s + st.avgBasket, 0) / STORES.length)}**\n- ${alerts.length} active alerts, ${inventory.filter(i => i.status === 'ordered').length} items on order`,
-      };
-    } else if (lower.includes('trending') || lower.includes('products') || lower.includes('add') || lower.includes('menu')) {
-      status = 'Scanning market trends...';
-      delay = 1100;
-      reply = {
-        from: 'ai', text: '**3 trending products** worth adding to your menu:\n\n1. **Alien Labs Xeno Disposable** - Live resin, 88% THC, $48 retail, 42% margin. Top seller in CA last 30 days.\n2. **Wyld Raspberry Sativa Gummies** - America\'s #1 selling gummy. $22 retail, 50% margin.\n3. **Cookies Gary Payton 3.5g** - Iconic strain, $55 retail, 42% margin. Top-5 in NYC metro.',
-      };
-    } else {
-      reply = {
-        from: 'ai', text: `I can help with that! Across your ${STORES.length} stores, the average health score is **${Math.round(STORES.reduce((s, st) => s + st.score, 0) / STORES.length)}**. You have ${alerts.length} active alerts and ${vaultItems.filter(v => v.floor <= 3).length} items needing vault-to-floor transfers. What would you like to dig into?`,
-      };
-    }
-
-    setTypingStatus(status);
     setTimeout(() => {
-      setMessages(prev => [...prev, reply]);
-      setTyping(false);
-      setTypingStatus('');
-    }, delay + Math.random() * 400);
-  }, [alerts, inventory, oosProducts, pricingProducts, vaultItems]);
+      const lower = msg.toLowerCase();
+      let response;
 
-  return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 60px)' }}>
-      {/* Header */}
-      <div className="px-4 pt-2 flex items-center gap-2.5 mb-3 flex-shrink-0">
-        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1A1710, #2A2318)', border: '1px solid rgba(212,160,58,0.2)' }}>
-          <NexusIcon size={16} />
-        </div>
+      // Intent detection
+      if (lower.includes('reorder') || lower.includes('out of stock') || lower.includes('inventory') || lower.includes('stock')) {
+        const oosItems = vault.filter(v => v.floor === 0);
+        response = {
+          id: `a-${Date.now()}`, role: 'assistant', type: 'inventory',
+          content: `I found ${oosItems.length} out-of-stock products and ${vault.filter(v => v.floor > 0 && v.floor <= 5).length} running low. Here's what needs attention:`,
+          items: vault.filter(v => v.urgency === 'critical' || v.urgency === 'high').map(v => ({
+            name: v.name, brand: v.brand, floor: v.floor, vault: v.vault,
+            daysOOS: v.daysOOS, avgWeekly: v.avgWeekly, store: v.store,
+            action: v.floor === 0 ? 'Transfer Now' : 'Restock Soon',
+          })),
+        };
+      } else if (lower.includes('campaign') || lower.includes('marketing') || lower.includes('win-back') || lower.includes('promote')) {
+        response = {
+          id: `a-${Date.now()}`, role: 'assistant', type: 'campaigns',
+          content: `I've prepared ${CAMPAIGNS_READY.length} campaigns ready to launch:`,
+          campaigns: CAMPAIGNS_READY,
+        };
+      } else if (lower.includes('pric') || lower.includes('market') || lower.includes('benchmark') || lower.includes('margin')) {
+        const aboveMarket = PRICING_PRODUCTS.filter(p => p.price > p.mktAvg * 1.05);
+        const belowMarket = PRICING_PRODUCTS.filter(p => p.price < p.mktAvg * 0.95);
+        response = {
+          id: `a-${Date.now()}`, role: 'assistant', type: 'pricing',
+          content: `Pricing analysis across ${PRICING_PRODUCTS.length} key products:\n\n${aboveMarket.length} priced above market, ${belowMarket.length} below, ${PRICING_PRODUCTS.length - aboveMarket.length - belowMarket.length} competitive.`,
+          products: PRICING_PRODUCTS,
+        };
+      } else if (lower.includes('sentiment') || lower.includes('review') || lower.includes('nps') || lower.includes('customer')) {
+        response = {
+          id: `a-${Date.now()}`, role: 'assistant', type: 'sentiment',
+          content: "Here's your customer sentiment overview:",
+          data: {
+            nps: 72, satisfaction: '4.2/5', delta: '+4 pts this month',
+            positive: ['Staff Friendliness (84/100, +7)', 'Product Quality (76/100, +2)', 'Online Ordering (61/100, +12)'],
+            negative: ['Wait Times (38/100, -5)'],
+            topReview: '"Love the new Jeeter selection! Staff was super helpful picking the right strain for my needs." — Google, 2 days ago',
+          },
+        };
+      } else if (lower.includes('sales') || lower.includes('summary') || lower.includes('revenue') || lower.includes('performance')) {
+        response = {
+          id: `a-${Date.now()}`, role: 'assistant', type: 'sales',
+          content: "Today's sales summary across all stores:",
+          data: {
+            total: '$47,832', goal: '$52,000', pct: '92%',
+            topSellers: [
+              { name: 'Baby Jeeter Churros', units: 52, rev: '$1,820' },
+              { name: 'Ozone Cake Mints', units: 44, rev: '$1,980' },
+              { name: 'Stiiizy OG Kush Pod', units: 38, rev: '$1,710' },
+              { name: 'Camino Gummies', units: 33, rev: '$726' },
+              { name: 'Blue Dream 3.5g', units: 28, rev: '$1,260' },
+            ],
+            byCategory: [
+              { cat: 'Flower', pct: 34, rev: '$16,263' },
+              { cat: 'Vapes', pct: 28, rev: '$13,393' },
+              { cat: 'Edibles', pct: 22, rev: '$10,523' },
+              { cat: 'Pre-Rolls', pct: 12, rev: '$5,740' },
+              { cat: 'Topicals', pct: 4, rev: '$1,913' },
+            ],
+          },
+        };
+      } else if (lower.includes('trending') || lower.includes('trend') || lower.includes('hot') || lower.includes('popular') || lower.includes('add')) {
+        response = {
+          id: `a-${Date.now()}`, role: 'assistant', type: 'trending',
+          content: "Here are 5 trending products in your market worth considering:",
+          products: [
+            { name: 'Stiiizy CDT Pod Skywalker OG', brand: 'STIIIZY', cat: 'Vapes', growth: '+42%', margin: '48%', rec: 'High demand, pairs with existing STIIIZY line' },
+            { name: 'Jeeter Liquid Diamonds Cart', brand: 'Jeeter', cat: 'Vapes', growth: '+38%', margin: '51%', rec: 'Capitalize on Jeeter sentiment surge' },
+            { name: 'Kiva Midnight Blueberry CBN', brand: 'Kiva', cat: 'Edibles', growth: '+35%', margin: '56%', rec: 'Sleep/wellness trending — complements Lost Farm' },
+            { name: 'Raw Garden Refined LR 2g', brand: 'Raw Garden', cat: 'Vapes', growth: '+28%', margin: '44%', rec: 'Larger format = higher basket size' },
+            { name: 'Wyld Huckleberry Hybrid', brand: 'Wyld', cat: 'Edibles', growth: '+24%', margin: '54%', rec: 'Top 3 gummy in adjacent markets' },
+          ],
+        };
+      } else {
+        response = {
+          id: `a-${Date.now()}`, role: 'assistant', type: 'text',
+          content: `I can help with:\n\n• **Inventory** — Check stock levels, reorder products, find out-of-stock items\n• **Marketing** — Launch campaigns, view performance, target segments\n• **Pricing** — Benchmark against market, review margins, optimize promos\n• **Sentiment** — NPS scores, review analysis, customer feedback\n• **Sales** — Today's summary, top sellers, category breakdown\n• **Trends** — Hot products, market growth, new additions\n\nTry asking something like "Which products should I reorder?" or "How are my prices vs market?"`,
+        };
+      }
+
+      setIsTyping(false);
+      setMessages(prev => [...prev, response]);
+    }, 1200 + Math.random() * 800);
+  }, [input, vault]);
+
+  const renderMessage = (msg) => {
+    if (msg.type === 'text') {
+      return <div className="text-[14px] text-[#E8E3DA] leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: msg.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') }} />;
+    }
+    if (msg.type === 'inventory') {
+      return (
         <div>
-          <span className="text-[12px] font-bold text-white">Nexus AI</span>
-          <div className="flex items-center gap-1"><span className="w-[5px] h-[5px] rounded-full bg-[#00C27C]" /><span className="text-[8px] text-[#00C27C] font-medium">Online</span></div>
-        </div>
-      </div>
-
-      {/* Suggestions (only show when no messages) */}
-      {messages.length === 0 && (
-        <div className="px-4 mb-3 flex-shrink-0">
-          <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Suggested</p>
-          <div className="grid grid-cols-2 gap-1.5">
-            {suggestions.map(s => {
-              const Icon = s.icon;
-              return (
-                <button key={s.key} onClick={() => processMessage(s.label)} className="rounded-xl border border-[#2A2722] bg-[#161514] p-2.5 text-left active:scale-[0.97] transition-transform">
-                  <Icon className="w-3.5 h-3.5 mb-1" style={{ color: s.c }} />
-                  <p className="text-[9px] text-white leading-[1.4]">{s.label}</p>
+          <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
+          <div className="space-y-2">
+            {msg.items.map((item, i) => (
+              <div key={i} className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+                <div className="flex justify-between items-start mb-1.5">
+                  <div>
+                    <div className="text-[13px] font-semibold text-white">{item.name}</div>
+                    <div className="text-[10px] text-[#6B6359]">{item.brand} &middot; {item.store}</div>
+                  </div>
+                  {item.daysOOS > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#E87068]/15 text-[#E87068] font-bold">{item.daysOOS}d OOS</span>}
+                </div>
+                <div className="flex gap-4 text-[11px] mb-2">
+                  <span className="text-[#6B6359]">Floor: <span className={item.floor === 0 ? 'text-[#E87068] font-bold' : 'text-white'}>{item.floor}</span></span>
+                  <span className="text-[#6B6359]">Vault: <span className="text-[#00C27C] font-bold">{item.vault}</span></span>
+                  <span className="text-[#6B6359]">Wk Avg: <span className="text-white">{item.avgWeekly}</span></span>
+                </div>
+                <button onClick={() => onNav('floor')} className="w-full py-2 rounded-lg text-[11px] font-semibold bg-[#D4A03A]/10 text-[#D4A03A] border border-[#D4A03A]/20">
+                  {item.action}
                 </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (msg.type === 'campaigns') {
+      return (
+        <div>
+          <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
+          <div className="space-y-2">
+            {msg.campaigns.map((c, i) => (
+              <div key={i} className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+                <div className="text-[13px] font-semibold text-white mb-1">{c.name}</div>
+                <div className="text-[11px] text-[#A39B8D] mb-2">{c.desc}</div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-[#6B6359] mb-2.5">
+                  <span>Target: <span className="text-white">{c.target}</span></span>
+                  <span>Channel: <span className="text-white">{c.channel}</span></span>
+                  <span>Est. Rev: <span className="text-[#00C27C] font-bold">{c.estRevenue}</span></span>
+                </div>
+                <button onClick={() => showToast(`${c.name} campaign launched!`)} className="w-full py-2 rounded-lg text-[11px] font-semibold bg-[#00C27C]/10 text-[#00C27C] border border-[#00C27C]/20">
+                  <Rocket className="w-3 h-3 inline mr-1" />Launch Campaign
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (msg.type === 'pricing') {
+      return (
+        <div>
+          <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3 whitespace-pre-wrap">{msg.content}</div>
+          <div className="space-y-2">
+            {msg.products.map((p, i) => {
+              const diff = ((p.price - p.mktAvg) / p.mktAvg * 100).toFixed(0);
+              const diffColor = Math.abs(diff) <= 5 ? '#00C27C' : Math.abs(diff) <= 10 ? '#D4A03A' : '#E87068';
+              return (
+                <div key={i} className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+                  <div className="flex justify-between items-start mb-1">
+                    <div>
+                      <div className="text-[12px] font-semibold text-white">{p.name}</div>
+                      <div className="text-[10px] text-[#6B6359]">{p.brand} &middot; {p.cat}</div>
+                    </div>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: `${diffColor}15`, color: diffColor }}>
+                      {diff > 0 ? '+' : ''}{diff}%
+                    </span>
+                  </div>
+                  <div className="flex gap-3 text-[10px] mt-1.5 mb-1">
+                    <span className="text-[#6B6359]">You: <span className="text-white font-bold">${p.price}</span></span>
+                    <span className="text-[#6B6359]">Mkt: <span className="text-white">${p.mktAvg}</span></span>
+                    <span className="text-[#6B6359]">Range: ${p.mktLow}-${p.mktHigh}</span>
+                    <span className="text-[#6B6359]">Margin: <span className="text-[#00C27C]">{p.margin}%</span></span>
+                  </div>
+                  <PriceBar price={p.price} mktLow={p.mktLow} mktHigh={p.mktHigh} mktAvg={p.mktAvg} />
+                </div>
               );
             })}
           </div>
         </div>
-      )}
+      );
+    }
+    if (msg.type === 'sentiment') {
+      const d = msg.data;
+      return (
+        <div>
+          <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
+          <div className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722] mb-2">
+            <div className="flex gap-4 mb-3">
+              <div className="text-center">
+                <div className="text-[22px] font-bold text-[#00C27C]">{d.nps}</div>
+                <div className="text-[9px] text-[#6B6359]">NPS Score</div>
+              </div>
+              <div className="text-center">
+                <div className="text-[22px] font-bold text-white">{d.satisfaction}</div>
+                <div className="text-[9px] text-[#6B6359]">Satisfaction</div>
+              </div>
+              <div className="flex-1 text-right">
+                <div className="text-[13px] font-bold text-[#00C27C]">{d.delta}</div>
+                <div className="text-[9px] text-[#6B6359]">This Month</div>
+              </div>
+            </div>
+            <div className="text-[11px] text-[#A39B8D] mb-1.5">Top themes:</div>
+            {d.positive.map((p, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-[11px] text-[#00C27C] mb-0.5"><TrendingUp className="w-3 h-3" />{p}</div>
+            ))}
+            {d.negative.map((n, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-[11px] text-[#E87068] mb-0.5"><TrendingDown className="w-3 h-3" />{n}</div>
+            ))}
+          </div>
+          <div className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+            <div className="text-[10px] text-[#6B6359] mb-1">Recent Review</div>
+            <div className="text-[12px] text-[#E8E3DA] italic leading-relaxed">{d.topReview}</div>
+          </div>
+        </div>
+      );
+    }
+    if (msg.type === 'sales') {
+      const d = msg.data;
+      return (
+        <div>
+          <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
+          <div className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722] mb-2">
+            <div className="flex justify-between items-center mb-3">
+              <div>
+                <div className="text-[22px] font-bold text-white">{d.total}</div>
+                <div className="text-[10px] text-[#6B6359]">{d.pct} of {d.goal} goal</div>
+              </div>
+              <HealthRing score={92} size={44} />
+            </div>
+            <div className="text-[11px] text-[#A39B8D] mb-2">Top Sellers Today</div>
+            {d.topSellers.map((s, i) => (
+              <div key={i} className="flex justify-between py-1.5 border-t border-[#2A2722]/50 text-[11px]">
+                <span className="text-white">{i + 1}. {s.name}</span>
+                <span className="text-[#6B6359]">{s.units}u &middot; {s.rev}</span>
+              </div>
+            ))}
+          </div>
+          <div className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+            <div className="text-[11px] text-[#A39B8D] mb-2">Revenue by Category</div>
+            {d.byCategory.map((c, i) => (
+              <div key={i} className="mb-2">
+                <div className="flex justify-between text-[11px] mb-0.5">
+                  <span className="text-white">{c.cat}</span>
+                  <span className="text-[#6B6359]">{c.rev} ({c.pct}%)</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-[#2A2722]">
+                  <div className="h-1.5 rounded-full bg-[#D4A03A]" style={{ width: `${c.pct}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (msg.type === 'trending') {
+      return (
+        <div>
+          <div className="text-[14px] text-[#E8E3DA] leading-relaxed mb-3">{msg.content}</div>
+          <div className="space-y-2">
+            {msg.products.map((p, i) => (
+              <div key={i} className="p-3 rounded-xl bg-[#0D0C0A] border border-[#2A2722]">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <div className="text-[12px] font-semibold text-white">{p.name}</div>
+                    <div className="text-[10px] text-[#6B6359]">{p.brand} &middot; {p.cat}</div>
+                  </div>
+                  <span className="text-[10px] font-bold text-[#00C27C] bg-[#00C27C]/10 px-1.5 py-0.5 rounded">{p.growth}</span>
+                </div>
+                <div className="text-[10px] text-[#6B6359] mb-1">Margin: <span className="text-white">{p.margin}</span></div>
+                <div className="text-[11px] text-[#A39B8D]">{p.rec}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return <div className="text-[14px] text-[#E8E3DA]">{msg.content}</div>;
+  };
 
-      {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 space-y-3">
-        {messages.map((msg, idx) => msg.from === 'user' ? (
-          <div key={idx} className="flex justify-end">
-            <div className="rounded-2xl rounded-br-md bg-[#D4A03A]/12 border border-[#D4A03A]/20 px-3.5 py-2 max-w-[85%]">
-              <p className="text-[10px] text-white">{msg.text}</p>
+  return (
+    <div className="flex flex-col h-screen" style={{ background: '#0D0C0A' }}>
+      {/* Chat Header */}
+      <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-2 border-b border-[#2A2722]" style={{ background: '#161514' }}>
+        <div className="flex items-center gap-2.5 py-2">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#D4A03A] to-[#B8860B] flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <div className="text-[14px] font-bold text-white">Nexus Chat</div>
+            <div className="text-[10px] text-[#00C27C] flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> Online
             </div>
           </div>
-        ) : (
-          <div key={idx} className="flex gap-2">
-            <div className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 mt-1" style={{ background: 'rgba(212,160,58,0.1)' }}>
-              <NexusIcon size={10} />
-            </div>
-            <div className="rounded-2xl rounded-bl-md bg-[#161514] border border-[#2A2722] px-3.5 py-2.5 max-w-[85%]">
-              <p className="text-[10px] text-[#C8C3BA] leading-[1.6] mb-2 whitespace-pre-line" dangerouslySetInnerHTML={{ __html: msg.text.replace(/\*\*(.*?)\*\*/g, '<span class="font-bold text-white">$1</span>') }} />
+        </div>
+      </div>
 
-              {/* Reorder cards */}
-              {msg.reorderCards && msg.reorderCards.map(p => (
-                <div key={p.id} className="flex items-center justify-between py-1.5 border-b border-[#2A2722]/60 last:border-0">
-                  <div>
-                    <p className="text-[9px] font-semibold text-white">{p.name}</p>
-                    <p className="text-[8px] text-[#6B6359]">{p.brand} -- {p.urgency}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[9px] font-bold text-white">{p.recommendedQty} units</p>
-                    <p className="text-[8px] text-[#6B6359]">${(p.lastPrice * p.recommendedQty).toLocaleString()}</p>
-                  </div>
-                </div>
-              ))}
-              {msg.showReorderAll && (
-                <button onClick={onReorderAll} className="mt-2.5 w-full py-2 rounded-xl bg-[#00C27C] text-[10px] font-bold text-white active:scale-[0.97]">
-                  Approve All Reorders -- ${msg.totalCost?.toLocaleString()}
-                </button>
-              )}
-
-              {/* Price cards */}
-              {msg.priceCards && msg.priceCards.map((p, i) => (
-                <div key={i} className="flex items-center justify-between py-1.5 border-b border-[#2A2722]/60 last:border-0">
-                  <div><p className="text-[9px] font-semibold text-white">{p.name}</p><p className="text-[8px] text-[#6B6359]">{p.brand}</p></div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] text-white">${p.yours}</span>
-                    <span className="text-[8px] text-[#6B6359]">vs ${p.market}</span>
-                    <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${p.rec === 'Lower' ? 'text-[#E87068] bg-[#E87068]/15' : p.rec === 'Raise' ? 'text-[#00C27C] bg-[#00C27C]/15' : 'text-[#ADA599] bg-[#ADA599]/10'}`}>{p.rec}</span>
-                  </div>
-                </div>
-              ))}
-
-              {/* Sentiment card */}
-              {msg.sentimentCard && (
-                <div className="mt-2 rounded-xl bg-[#0D0C0A] border border-[#2A2722] p-3">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="text-center">
-                      <p className="text-[18px] font-extrabold text-[#B598E8]">{msg.sentimentCard.score}</p>
-                      <p className="text-[7px] text-[#6B6359]">SENTIMENT</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[18px] font-extrabold text-[#64A8E0]">{msg.sentimentCard.nps}</p>
-                      <p className="text-[7px] text-[#6B6359]">NPS</p>
-                    </div>
-                    <div className="flex-1" />
-                    <div className="text-right">
-                      <p className={`text-[9px] font-bold ${msg.sentimentCard.delta >= 0 ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{msg.sentimentCard.delta >= 0 ? '+' : ''}{msg.sentimentCard.delta} pts</p>
-                      <p className="text-[7px] text-[#6B6359]">vs last month</p>
-                    </div>
-                  </div>
-                  {msg.sentimentCard.topics.map(t => (
-                    <div key={t.topic} className="flex items-center justify-between py-1 border-b border-[#2A2722]/40 last:border-0">
-                      <span className="text-[9px] text-[#ADA599]">{t.topic}</span>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[9px] font-bold text-white">{t.score}</span>
-                        <span className={`text-[8px] font-bold ${t.delta >= 0 ? 'text-[#00C27C]' : 'text-[#E87068]'}`}>{t.delta >= 0 ? '+' : ''}{t.delta}</span>
-                      </div>
-                    </div>
-                  ))}
+      {/* Messages */}
+      <div ref={chatRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4" style={{ paddingBottom: '140px' }}>
+        {messages.map(msg => (
+          <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[88%] rounded-2xl px-4 py-3 ${
+              msg.role === 'user'
+                ? 'bg-[#D4A03A]/15 border border-[#D4A03A]/20'
+                : 'bg-[#161514] border border-[#2A2722]'
+            }`}>
+              {msg.role === 'assistant' && (
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Sparkles className="w-3 h-3 text-[#D4A03A]" />
+                  <span className="text-[10px] font-semibold text-[#D4A03A]">Nexus</span>
                 </div>
               )}
-
-              {/* Campaign card */}
-              {msg.campaignCard && (
-                <div className="mt-2 rounded-xl bg-[#00C27C]/8 border border-[#00C27C]/20 p-3">
-                  <p className="text-[10px] font-bold text-white mb-1">{msg.campaignCard.name}</p>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div><p className="text-[7px] text-[#6B6359]">Discount</p><p className="text-[9px] font-bold text-[#00C27C]">{msg.campaignCard.discount}</p></div>
-                    <div><p className="text-[7px] text-[#6B6359]">Target</p><p className="text-[9px] font-bold text-white">{msg.campaignCard.target}</p></div>
-                    <div><p className="text-[7px] text-[#6B6359]">Projected</p><p className="text-[9px] font-bold text-[#00C27C]">{msg.campaignCard.projected}</p></div>
-                  </div>
-                  <button className="mt-2 w-full py-1.5 rounded-lg bg-[#00C27C] text-[9px] font-bold text-white active:scale-[0.97]" onClick={() => showToast('Campaign scheduled for Friday')}>Launch Campaign</button>
-                </div>
-              )}
+              {renderMessage(msg)}
             </div>
           </div>
         ))}
-
-        {/* Typing indicator */}
-        {typing && (
-          <div className="flex gap-2">
-            <div className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 mt-1" style={{ background: 'rgba(212,160,58,0.1)' }}>
-              <NexusIcon size={10} />
-            </div>
-            <div className="rounded-2xl rounded-bl-md bg-[#161514] border border-[#2A2722] px-3.5 py-2.5">
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '300ms' }} />
-                </div>
-                {typingStatus && <span className="text-[8px] text-[#6B6359] italic">{typingStatus}</span>}
+        {isTyping && (
+          <div className="flex justify-start">
+            <div className="bg-[#161514] border border-[#2A2722] rounded-2xl px-4 py-3">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Sparkles className="w-3 h-3 text-[#D4A03A]" />
+                <span className="text-[10px] font-semibold text-[#D4A03A]">Nexus</span>
+              </div>
+              <div className="flex gap-1.5 items-center h-5">
+                <span className="w-2 h-2 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 rounded-full bg-[#6B6359] animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Quick suggestion pills (when there are messages) */}
-      {messages.length > 0 && (
-        <div className="px-4 pt-2 flex-shrink-0">
-          <div className="flex gap-1.5 overflow-x-auto pb-1">
-            {['Reorder inventory', 'Price check', 'Sentiment', 'Weekly summary'].map(s => (
-              <button key={s} onClick={() => processMessage(s)} className="px-2.5 py-1 rounded-full text-[9px] font-medium text-[#D4A03A] border border-[#D4A03A]/25 bg-[#D4A03A]/5 active:scale-[0.95] flex-shrink-0">{s}</button>
+      {/* Suggestions */}
+      {messages.length <= 1 && (
+        <div className="px-4 pb-2">
+          <div className="flex flex-wrap gap-2">
+            {CHAT_SUGGESTIONS.map((s, i) => (
+              <button key={i} onClick={() => handleSend(s)}
+                className="px-3.5 py-2.5 rounded-xl text-[12px] font-medium bg-[#161514] border border-[#2A2722] text-[#A39B8D] active:bg-[#2A2722] min-h-[40px]">
+                {s}
+              </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* Input bar */}
-      <div className="px-4 pb-20 pt-2 flex-shrink-0">
-        <div className="flex items-center gap-2 bg-[#161514] border border-[#2A2722] rounded-2xl px-3.5 py-2.5">
-          <NexusIcon size={12} />
+      {/* Input */}
+      <div className="px-4 pb-[env(safe-area-inset-bottom,8px)] pt-2 border-t border-[#2A2722]" style={{ background: '#161514' }}>
+        <div className="flex items-center gap-2">
           <input
-            type="text" value={input} onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && processMessage(input)}
+            ref={inputRef}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSend()}
             placeholder="Ask Nexus anything..."
-            className="text-[10px] text-white placeholder-[#6B6359] bg-transparent outline-none flex-1"
+            className="flex-1 bg-[#0D0C0A] border border-[#2A2722] rounded-xl px-4 py-3 text-[14px] text-white placeholder-[#6B6359] outline-none focus:border-[#D4A03A]/40 min-h-[48px]"
           />
-          <Mic className="w-4 h-4 text-[#6B6359]" />
-          <button onClick={() => processMessage(input)} className="active:scale-90 transition-transform"><Send className="w-4 h-4 text-[#D4A03A]" /></button>
+          <button
+            onClick={() => handleSend()}
+            className="w-12 h-12 rounded-xl bg-[#D4A03A]/15 border border-[#D4A03A]/25 flex items-center justify-center flex-shrink-0"
+            disabled={!input.trim()}>
+            <Send className="w-5 h-5 text-[#D4A03A]" />
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   TAB 5: ACTIONS — Quick Actions Hub
+   SCREEN: ACTIONS — Quick Actions Hub
    ═══════════════════════════════════════════════════════════════════════════ */
-function ScreenActions({ vaultItems, transfers, pricingProducts, promos, compliance, onVaultTransfer, showToast }) {
-  const [activeAction, setActiveAction] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
 
-  // Vault Transfer sub-view
-  if (activeAction === 'vault') {
-    const available = vaultItems.filter(v => v.vault > 0);
-    return (
-      <div className="px-4 pt-2 pb-24">
-        <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => setActiveAction(null)}><ArrowLeft className="w-4 h-4 text-[#ADA599]" /></button>
-          <div><p className="text-[14px] font-bold text-white">Vault to Floor</p><p className="text-[9px] text-[#6B6359]">Chain-of-custody transfer</p></div>
-        </div>
-        <div className="space-y-2.5">
-          {available.map(v => (
-            <div key={v.id} className="rounded-xl border border-[#2A2722] bg-[#161514] p-3.5">
-              <div className="flex items-center justify-between mb-2">
-                <div><p className="text-[10px] font-semibold text-white">{v.name}</p><p className="text-[8px] text-[#6B6359]">{v.store} -- {v.category}</p></div>
-                <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${v.urgency === 'critical' ? 'text-[#E87068] bg-[#E87068]/15' : v.urgency === 'high' ? 'text-[#D4A03A] bg-[#D4A03A]/15' : 'text-[#64A8E0] bg-[#64A8E0]/15'}`}>{v.urgency}</span>
-              </div>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex-1 text-center rounded-lg bg-[#0D0C0A] py-2">
-                  <p className="text-[7px] text-[#6B6359] uppercase">Floor Qty</p>
-                  <p className={`text-[14px] font-extrabold ${v.floor === 0 ? 'text-[#E87068]' : v.floor <= 3 ? 'text-[#D4A03A]' : 'text-white'}`}>{v.floor}</p>
-                </div>
-                <ArrowRightLeft className="w-4 h-4 text-[#6B6359]" />
-                <div className="flex-1 text-center rounded-lg bg-[#0D0C0A] py-2">
-                  <p className="text-[7px] text-[#6B6359] uppercase">Vault Qty</p>
-                  <p className="text-[14px] font-extrabold text-[#00C27C]">{v.vault}</p>
-                </div>
-              </div>
-              <button onClick={() => onVaultTransfer(v.id)} className="w-full py-2 rounded-xl bg-[#B598E8] text-[10px] font-bold text-white active:scale-[0.97] flex items-center justify-center gap-1.5">
-                <ArrowRightLeft className="w-3 h-3" /> Transfer to Floor
-              </button>
-            </div>
-          ))}
-        </div>
-        {transfers.length > 0 && (
-          <div className="mt-4">
-            <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Transfer Log</p>
-            {transfers.map(t => (
-              <div key={t.id} className="flex items-center gap-2 py-2 border-b border-[#2A2722]/60 last:border-0">
-                <Check className="w-3 h-3 text-[#00C27C] flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-[9px] text-white">{t.product} x{t.qty}</p>
-                  <p className="text-[8px] text-[#6B6359]">{t.by} -- {t.time} -- {t.store}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
+function ScreenActions({ vault, transfers, showToast, onNav }) {
+  const oosCount = vault.filter(v => v.floor === 0).length;
+  const pricingAbove = PRICING_PRODUCTS.filter(p => p.price > p.mktAvg * 1.05).length;
+  const pricingBelow = PRICING_PRODUCTS.filter(p => p.price < p.mktAvg * 0.95).length;
+  const promoKeep = PROMOTIONS.filter(p => p.verdict === 'Keep').length;
+  const promoKill = PROMOTIONS.filter(p => p.verdict === 'Kill').length;
 
-  // Price Check sub-view
-  if (activeAction === 'price') {
-    const filtered = searchQuery ? pricingProducts.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.brand.toLowerCase().includes(searchQuery.toLowerCase())) : pricingProducts;
-    return (
-      <div className="px-4 pt-2 pb-24">
-        <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => { setActiveAction(null); setSearchQuery(''); }}><ArrowLeft className="w-4 h-4 text-[#ADA599]" /></button>
-          <div><p className="text-[14px] font-bold text-white">Price Check</p><p className="text-[9px] text-[#6B6359]">Your price vs market</p></div>
-        </div>
-        <div className="flex items-center gap-2 bg-[#161514] border border-[#2A2722] rounded-xl px-3 py-2 mb-3">
-          <Search className="w-3.5 h-3.5 text-[#6B6359]" />
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search product or brand..." className="text-[10px] text-white placeholder-[#6B6359] bg-transparent outline-none flex-1" />
-        </div>
-        <div className="space-y-2">
-          {filtered.map(p => {
-            const gap = ((p.grossPrice - p.marketAvg) / p.marketAvg * 100);
-            const rec = gap > 5 ? 'Above' : gap < -5 ? 'Below' : 'At Market';
-            const recC = gap > 5 ? '#E87068' : gap < -5 ? '#64A8E0' : '#00C27C';
-            return (
-              <div key={p.id} className="rounded-xl border border-[#2A2722] bg-[#161514] p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <div><p className="text-[10px] font-semibold text-white">{p.name}</p><p className="text-[8px] text-[#6B6359]">{p.brand} -- {p.category}</p></div>
-                  <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style={{ color: recC, background: `${recC}15` }}>{rec}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-[#0D0C0A] rounded-lg p-2 text-center">
-                    <p className="text-[7px] text-[#6B6359]">Your Price</p>
-                    <p className="text-[12px] font-bold text-white">${p.grossPrice}</p>
-                  </div>
-                  <div className="flex-1 bg-[#0D0C0A] rounded-lg p-2 text-center">
-                    <p className="text-[7px] text-[#6B6359]">Market Avg</p>
-                    <p className="text-[12px] font-bold text-[#ADA599]">${p.marketAvg}</p>
-                  </div>
-                  <div className="flex-1 bg-[#0D0C0A] rounded-lg p-2 text-center">
-                    <p className="text-[7px] text-[#6B6359]">Range</p>
-                    <p className="text-[10px] font-bold text-[#6B6359]">${p.marketLow}-${p.marketHigh}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-[8px] text-[#6B6359]">Margin: {p.margin}% -- {p.weeklyUnits} units/wk</span>
-                  <span className={`text-[9px] font-bold`} style={{ color: recC }}>{gap >= 0 ? '+' : ''}{gap.toFixed(1)}%</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // Compliance sub-view
-  if (activeAction === 'compliance') {
-    return (
-      <div className="px-4 pt-2 pb-24">
-        <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => setActiveAction(null)}><ArrowLeft className="w-4 h-4 text-[#ADA599]" /></button>
-          <div><p className="text-[14px] font-bold text-white">Compliance Status</p><p className="text-[9px] text-[#6B6359]">License, METRC, security</p></div>
-        </div>
-        <div className="space-y-2.5">
-          {[
-            { l: 'License Status', v: compliance.licenseStatus, sub: `Expires ${compliance.licenseExpiry}`, icon: FileText, c: '#00C27C', ok: true },
-            { l: 'METRC Sync', v: compliance.metrcSync, sub: compliance.metrcStatus === 'green' ? 'All packages tracked' : 'Sync issue', icon: RefreshCw, c: compliance.metrcStatus === 'green' ? '#00C27C' : '#E87068', ok: compliance.metrcStatus === 'green' },
-            { l: 'ID Scans Today', v: String(compliance.idScansToday), sub: '100% compliance rate', icon: Shield, c: '#64A8E0', ok: true },
-            { l: 'Camera System', v: compliance.cameraStatus, sub: `${compliance.cameras} cameras active`, icon: Camera, c: '#00C27C', ok: true },
-            { l: 'Last Audit', v: compliance.lastAudit, sub: `${compliance.openViolations} open violations`, icon: Clipboard, c: compliance.openViolations === 0 ? '#00C27C' : '#E87068', ok: compliance.openViolations === 0 },
-          ].map(item => {
-            const Icon = item.icon;
-            return (
-              <div key={item.l} className="rounded-xl border bg-[#161514] p-3.5 flex items-center gap-3" style={{ borderColor: item.ok ? '#2A2722' : '#E87068' + '40' }}>
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${item.c}15` }}>
-                  <Icon className="w-4 h-4" style={{ color: item.c }} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[8px] text-[#6B6359] uppercase tracking-[1px] font-bold">{item.l}</p>
-                  <p className="text-[11px] font-bold text-white">{item.v}</p>
-                  <p className="text-[8px] text-[#6B6359]">{item.sub}</p>
-                </div>
-                <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: item.ok ? '#00C27C20' : '#E8706820' }}>
-                  {item.ok ? <Check className="w-3 h-3 text-[#00C27C]" /> : <AlertTriangle className="w-3 h-3 text-[#E87068]" />}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // Promotions sub-view
-  if (activeAction === 'promos') {
-    const verdictC = { Keep: '#00C27C', Optimize: '#D4A03A', Kill: '#E87068' };
-    return (
-      <div className="px-4 pt-2 pb-24">
-        <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => setActiveAction(null)}><ArrowLeft className="w-4 h-4 text-[#ADA599]" /></button>
-          <div><p className="text-[14px] font-bold text-white">Active Promotions</p><p className="text-[9px] text-[#6B6359]">{promos.length} running</p></div>
-        </div>
-        <div className="space-y-2.5">
-          {promos.map((p, i) => {
-            const vc = verdictC[p.verdict] || '#ADA599';
-            return (
-              <div key={i} className="rounded-xl border border-[#2A2722] bg-[#161514] p-3.5">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] font-semibold text-white">{p.name}</p>
-                  <span className="text-[8px] font-bold px-2 py-0.5 rounded-full" style={{ color: vc, background: `${vc}18` }}>{p.verdict}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-center mb-2">
-                  <div className="bg-[#0D0C0A] rounded-lg py-1.5">
-                    <p className="text-[7px] text-[#6B6359]">Spend</p>
-                    <p className="text-[10px] font-bold text-white">{p.spend}</p>
-                  </div>
-                  <div className="bg-[#0D0C0A] rounded-lg py-1.5">
-                    <p className="text-[7px] text-[#6B6359]">Redemptions</p>
-                    <p className="text-[10px] font-bold text-white">{p.redemptions}</p>
-                  </div>
-                  <div className="bg-[#0D0C0A] rounded-lg py-1.5">
-                    <p className="text-[7px] text-[#6B6359]">ROI</p>
-                    <p className={`text-[10px] font-bold ${p.roi >= 1.5 ? 'text-[#00C27C]' : p.roi < 1 ? 'text-[#E87068]' : 'text-[#D4A03A]'}`}>{p.roi}x</p>
-                  </div>
-                </div>
-                <p className="text-[8px] text-[#6B6359]">{p.type}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // Main actions hub
-  const actionCards = [
-    { id: 'vault', l: 'Vault Transfer', desc: 'Move product from vault to floor', icon: ArrowRightLeft, c: '#B598E8', badge: vaultItems.filter(v => v.floor <= 3 && v.vault > 0).length },
-    { id: 'price', l: 'Price Check', desc: 'Your price vs market', icon: DollarSign, c: '#D4A03A' },
-    { id: 'compliance', l: 'Compliance', desc: 'License, METRC, security', icon: Shield, c: '#00C27C' },
-    { id: 'promos', l: 'Active Promos', desc: `${promos.length} running promotions`, icon: Percent, c: '#EC4899' },
+  const sections = [
+    {
+      title: 'Inventory', items: [
+        { icon: ArrowRightLeft, color: '#E87068', title: 'Transfer Vault → Floor', sub: `${oosCount} out of stock, vault available`, action: () => onNav('floor') },
+        { icon: Truck, color: '#64A8E0', title: 'Receive Shipment', sub: 'Jeeter — 42 SKUs arriving 2:30 PM', action: () => showToast('Receiving checklist opened for Jeeter shipment') },
+        { icon: Clipboard, color: '#D4A03A', title: 'Cycle Count', sub: 'Last completed: Yesterday 4:45 PM', action: () => showToast('Cycle count started for Logan Square') },
+        { icon: Shield, color: '#B598E8', title: 'METRC Reconciliation', sub: 'Last sync: 4 min ago · 2 discrepancies', action: () => showToast('METRC reconciliation started — resolving 2 discrepancies') },
+      ]
+    },
+    {
+      title: 'Pricing', items: [
+        { icon: BarChart3, color: '#D4A03A', title: 'Benchmark All Products', sub: `${pricingBelow} below market, ${pricingAbove} above, ${PRICING_PRODUCTS.length - pricingAbove - pricingBelow} competitive`, action: () => onNav('chat') },
+        { icon: DollarSign, color: '#00C27C', title: 'Quick Price Editor', sub: '8 products loaded for review', action: () => showToast('Price editor opened — 8 products loaded') },
+        { icon: Percent, color: '#E87068', title: 'Manage Promotions', sub: `${PROMOTIONS.length} active: ${promoKeep} keep, ${promoKill} kill`, action: () => {} },
+      ]
+    },
+    {
+      title: 'Marketing', items: [
+        { icon: Rocket, color: '#00C27C', title: 'Launch Campaign', sub: `${CAMPAIGNS_READY.length} ready-to-go templates`, action: () => onNav('chat') },
+        { icon: BarChart3, color: '#64A8E0', title: 'Campaign Performance', sub: 'Happy Hour: +23% lift, BOGO: 0.3x ROI', action: () => showToast('Campaign performance dashboard loaded') },
+        { icon: Users, color: '#B598E8', title: 'Customer Segments', sub: '340 lapsed, 89 birthdays, 18.4K active', action: () => showToast('Segment builder opened') },
+      ]
+    },
+    {
+      title: 'Compliance', items: [
+        { icon: Clipboard, color: '#00C27C', title: 'Daily Reconciliation', sub: `${COMPLIANCE_DATA.idScansToday} ID scans today · Due by 5pm`, action: () => showToast('Daily reconciliation checklist opened') },
+        { icon: AlertTriangle, color: '#D4A03A', title: 'Expiring Products', sub: `${COMPLIANCE_DATA.expiringProducts.length} items within 30 days — manifest needed`, action: () => showToast('METRC destruction manifest created for 3 batches') },
+        { icon: Camera, color: '#64A8E0', title: 'ID Verification Log', sub: `${COMPLIANCE_DATA.cameraStatus} · ${COMPLIANCE_DATA.idScansToday} scans`, action: () => showToast('ID verification log opened') },
+      ]
+    },
+    {
+      title: 'Operations', items: [
+        { icon: Users, color: '#64A8E0', title: "Today's Schedule", sub: '6 of 8 budtenders active · Peak at 5pm', action: () => showToast('Staff schedule loaded') },
+        { icon: Activity, color: '#D4A03A', title: 'Traffic Forecast', sub: '920 projected today · 62% after 4pm', action: () => showToast('Traffic forecast loaded') },
+      ]
+    },
   ];
 
   return (
-    <div className="px-4 pt-2 pb-24">
-      <div className="flex items-center justify-between mb-4">
-        <div><p className="text-[14px] font-bold text-white">Quick Actions</p><p className="text-[9px] text-[#6B6359]">One-tap mobile actions</p></div>
+    <div className="px-4 pt-[env(safe-area-inset-top,12px)] pb-24">
+      <div className="flex items-center justify-between pt-3 pb-4">
+        <div className="text-[17px] font-bold text-white">Quick Actions</div>
       </div>
-      <div className="space-y-2.5">
-        {actionCards.map(a => {
-          const Icon = a.icon;
-          return (
-            <button key={a.id} onClick={() => setActiveAction(a.id)} className="w-full rounded-xl border border-[#2A2722] bg-[#161514] p-4 flex items-center gap-3 text-left active:scale-[0.98] transition-transform">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${a.c}15` }}>
-                <Icon className="w-5 h-5" style={{ color: a.c }} />
-              </div>
-              <div className="flex-1">
-                <p className="text-[11px] font-semibold text-white">{a.l}</p>
-                <p className="text-[9px] text-[#6B6359]">{a.desc}</p>
-              </div>
-              {a.badge > 0 && <span className="w-5 h-5 rounded-full bg-[#E87068] flex items-center justify-center text-[8px] font-bold text-white flex-shrink-0">{a.badge}</span>}
-              <ChevronRight className="w-4 h-4 text-[#38332B] flex-shrink-0" />
-            </button>
-          );
-        })}
-      </div>
+
+      {/* Promos Section */}
+      <Section title="Active Promotions">
+        <div className="space-y-2">
+          {PROMOTIONS.map(p => {
+            const vColor = p.verdict === 'Keep' ? '#00C27C' : p.verdict === 'Kill' ? '#E87068' : '#D4A03A';
+            return (
+              <Card key={p.id} className="!p-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-[13px] font-semibold text-white">{p.name}</span>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: `${vColor}15`, color: vColor }}>{p.verdict}</span>
+                    </div>
+                    <div className="text-[10px] text-[#6B6359]">{p.type} &middot; {p.redemptions} redemptions &middot; ROI {p.roi}x</div>
+                    <div className="text-[10px] text-[#A39B8D] mt-0.5">{p.lift}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[12px] font-bold text-white">${(p.spend).toLocaleString()}</div>
+                    <div className="text-[9px] text-[#6B6359]">spend</div>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      </Section>
+
+      {sections.map(sec => (
+        <Section key={sec.title} title={sec.title}>
+          <div className="space-y-2">
+            {sec.items.map((item, i) => (
+              <button key={i} onClick={item.action} className="w-full text-left">
+                <Card className="!p-3.5 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${item.color}12` }}>
+                    <item.icon className="w-5 h-5" style={{ color: item.color }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-semibold text-white">{item.title}</div>
+                    <div className="text-[10px] text-[#6B6359] leading-snug">{item.sub}</div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-[#2A2722] flex-shrink-0" />
+                </Card>
+              </button>
+            ))}
+          </div>
+        </Section>
+      ))}
     </div>
   );
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   MAIN APP — Centralized state, connected data & actions
+   MAIN COMPONENT — State Management & Routing
    ═══════════════════════════════════════════════════════════════════════════ */
+
 export default function NexusMobileWeb() {
   const [screen, setScreen] = useState('home');
-  const [history, setHistory] = useState([]);
-  const [selectedStore, setSelectedStore] = useState(null);
-  const [alerts, setAlerts] = useState(INITIAL_ALERTS);
-  const [resolvedAlerts, setResolvedAlerts] = useState([]);
   const [toast, setToast] = useState(null);
-  const [vaultItems, setVaultItems] = useState(VAULT_INVENTORY);
+  const [alerts, setAlerts] = useState(INITIAL_ALERTS);
+  const [vault, setVault] = useState(VAULT_INVENTORY);
   const [transfers, setTransfers] = useState(INITIAL_TRANSFERS);
-  const [inventory, setInventory] = useState([
-    { id: 'blue-dream', name: 'Blue Dream 3.5g', store: '4 stores', hours: 12, cost: '$2,840', sev: 'critical', status: 'active' },
-    { id: 'ozone-gummies', name: 'Ozone Gummies 100mg', store: 'Fort Lee', hours: 36, cost: '$675', sev: 'warning', status: 'active' },
-    { id: 'tunnel-vision', name: 'Tunnel Vision 5-Pack', store: 'Boston', hours: 48, cost: '$420', sev: 'warning', status: 'active' },
-    { id: 'stiiizy-pod', name: 'Stiiizy Pod LLR 1g', store: 'Hoboken', hours: 72, cost: '$1,125', sev: 'low', status: 'active' },
-  ]);
-  const [oosProducts, setOosProducts] = useState(OUT_OF_STOCK_PRODUCTS);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type, key: Date.now() });
   }, []);
-
   const dismissToast = useCallback(() => setToast(null), []);
 
-  const navigate = useCallback((id, data) => {
-    setHistory(prev => [...prev, screen]);
-    if (id === 'store-detail' && data) setSelectedStore(data);
-    setScreen(id);
+  const navigate = useCallback((s) => {
+    setScreen(s);
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [screen]);
+  }, []);
 
-  const goBack = useCallback(() => {
-    const prev = history[history.length - 1] || 'home';
-    setHistory(h => h.slice(0, -1));
-    setScreen(prev);
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [history]);
+  // Handle vault transfer with connected state
+  const handleVaultTransfer = useCallback((vaultId, qty) => {
+    const item = vault.find(v => v.id === vaultId);
+    if (!item || qty <= 0 || qty > item.vault) return;
 
-  const handleSelectStore = useCallback((store) => {
-    navigate('store-detail', store);
-  }, [navigate]);
+    // Update vault inventory
+    setVault(prev => prev.map(v => v.id === vaultId ? {
+      ...v,
+      floor: v.floor + qty,
+      vault: v.vault - qty,
+      urgency: (v.floor + qty) > 5 ? 'ok' : (v.floor + qty) > 0 ? 'medium' : v.urgency,
+      daysOOS: (v.floor + qty) > 0 ? 0 : v.daysOOS,
+    } : v));
 
-  // Alert action handler
-  const handleAlertAction = useCallback((alertId, action) => {
-    const alert = alerts.find(a => a.id === alertId);
-    if (!alert) return;
+    // Add to transfer log
+    setTransfers(prev => [{
+      id: `t-${Date.now()}`, product: item.name, qty,
+      by: 'You', time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+      store: item.store,
+    }, ...prev]);
 
-    if (action === 'Approve Reorder') {
-      setAlerts(prev => prev.filter(a => a.id !== alertId));
-      setInventory(prev => prev.map(i => i.id === 'blue-dream' ? { ...i, status: 'ordered' } : i));
-      setResolvedAlerts(prev => [`${alert.title} -- reorder approved`, ...prev]);
-      showToast('Reorder approved -- delivery in 2 days');
-    } else if (action === 'Apply Price') {
-      setAlerts(prev => prev.filter(a => a.id !== alertId));
-      setResolvedAlerts(prev => [`${alert.title} -- price adjusted to $44.99`, ...prev]);
-      showToast('Price updated to $44.99');
-    } else if (action === 'Draft PO') {
-      setAlerts(prev => prev.filter(a => a.id !== alertId));
-      setResolvedAlerts(prev => [`${alert.title} -- PO drafted`, ...prev]);
-      showToast('Purchase order drafted for Jeeter');
-    } else if (action === 'View Staffing' || action === 'View Data' || action === 'View Comps' || action === 'Modify') {
-      showToast(`Opening ${action.toLowerCase()}...`, 'info');
+    // Remove related alerts
+    setAlerts(prev => prev.filter(a => a.refId !== vaultId));
+
+    showToast(`Transferred ${qty}x ${item.name} to floor — Chain of custody logged`);
+  }, [vault, showToast]);
+
+  // Handle alert actions
+  const handleAlertAction = useCallback((alert) => {
+    if (alert.actionType === 'transfer') {
+      navigate('floor');
+    } else if (alert.actionType === 'campaign') {
+      showToast(`${alert.title.split('—')[0].trim()} launched!`);
+      setAlerts(prev => prev.filter(a => a.id !== alert.id));
+    } else if (alert.actionType === 'promo') {
+      showToast('BOGO Edibles promotion discontinued');
+      setAlerts(prev => prev.filter(a => a.id !== alert.id));
+    } else if (alert.actionType === 'price') {
+      showToast('Price adjustment applied');
+      setAlerts(prev => prev.filter(a => a.id !== alert.id));
+    } else if (alert.actionType === 'compliance') {
+      showToast('Compliance action started');
+      setAlerts(prev => prev.filter(a => a.id !== alert.id));
+    } else if (alert.actionType === 'receive') {
+      showToast('Receiving checklist opened for Jeeter shipment');
+    } else {
+      showToast('Details loaded', 'info');
     }
-  }, [alerts, showToast]);
-
-  // Vault transfer handler
-  const handleVaultTransfer = useCallback((vaultId) => {
-    const item = vaultItems.find(v => v.id === vaultId);
-    if (!item || item.vault <= 0) return;
-    const transferQty = Math.min(item.vault, 12);
-    setVaultItems(prev => prev.map(v => v.id === vaultId ? { ...v, floor: v.floor + transferQty, vault: v.vault - transferQty } : v));
-    setTransfers(prev => [{ id: `t-${Date.now()}`, product: item.name, qty: transferQty, from: 'Vault', to: 'Floor', by: 'You', time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), store: item.store }, ...prev]);
-    showToast(`Transferred ${transferQty}x ${item.name} to floor`);
-  }, [vaultItems, showToast]);
-
-  // Inventory reorder handler
-  const handleReorder = useCallback((itemId) => {
-    setInventory(prev => prev.map(i => i.id === itemId ? { ...i, status: 'ordered' } : i));
-    showToast('Reorder placed -- delivery in 2-3 days');
-  }, [showToast]);
-
-  // Reorder all handler
-  const handleReorderAll = useCallback(() => {
-    setInventory(prev => prev.map(i => i.status === 'active' ? { ...i, status: 'ordered' } : i));
-    showToast('All items reordered successfully');
-  }, [showToast]);
-
-  // Current tab for bottom nav (ignore sub-screens)
-  const activeTab = screen === 'store-detail' ? 'home' : screen;
+  }, [navigate, showToast]);
 
   return (
     <div className="min-h-screen text-white" style={{ background: '#0D0C0A', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-      <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+      <style>{`
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
 
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={dismissToast} key={toast.key} />}
 
-      {screen === 'home' && <ScreenHome stores={STORES} alerts={alerts} onNavigate={navigate} onSelectStore={handleSelectStore} />}
-      {screen === 'store-detail' && <ScreenStoreDetail store={selectedStore} onBack={goBack} />}
-      {screen === 'alerts' && <ScreenAlerts alerts={alerts} resolvedAlerts={resolvedAlerts} inventory={inventory} vaultItems={vaultItems} onAlertAction={handleAlertAction} onVaultTransfer={handleVaultTransfer} onReorder={handleReorder} showToast={showToast} />}
-      {screen === 'floor' && <ScreenFloor floor={FLOOR_DATA} onNavigate={navigate} />}
-      {screen === 'chat' && <ScreenChat alerts={alerts} inventory={inventory} vaultItems={vaultItems} oosProducts={oosProducts} pricingProducts={PRICING_PRODUCTS} promos={PROMOTIONS} onReorderAll={handleReorderAll} showToast={showToast} onNavigate={navigate} />}
-      {screen === 'actions' && <ScreenActions vaultItems={vaultItems} transfers={transfers} pricingProducts={PRICING_PRODUCTS} promos={PROMOTIONS} compliance={COMPLIANCE} onVaultTransfer={handleVaultTransfer} showToast={showToast} />}
+      {screen === 'home' && <ScreenHome data={NEXUS_DATA} alerts={alerts} vault={vault} stores={STORES} onNav={navigate} showToast={showToast} />}
+      {screen === 'alerts' && <ScreenAlerts alerts={alerts} onAction={handleAlertAction} onNav={navigate} />}
+      {screen === 'floor' && <ScreenFloor vault={vault} transfers={transfers} onTransfer={handleVaultTransfer} showToast={showToast} />}
+      {screen === 'chat' && <ScreenChat vault={vault} showToast={showToast} onNav={navigate} />}
+      {screen === 'actions' && <ScreenActions vault={vault} transfers={transfers} showToast={showToast} onNav={navigate} />}
 
-      {screen !== 'chat' && <BottomNav active={activeTab} onNavigate={(id) => { setHistory([]); setScreen(id); window.scrollTo({ top: 0, behavior: 'instant' }); }} alertCount={alerts.length} />}
-      {screen === 'chat' && <BottomNav active="chat" onNavigate={(id) => { setHistory([]); setScreen(id); window.scrollTo({ top: 0, behavior: 'instant' }); }} alertCount={alerts.length} />}
+      <BottomNav active={screen} onNavigate={navigate} alertCount={alerts.length} />
     </div>
   );
 }
