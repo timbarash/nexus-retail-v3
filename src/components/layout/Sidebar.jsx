@@ -35,7 +35,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
       {/* Logo */}
       <div className="flex items-center justify-between px-5 py-5 border-b border-white/[0.08]">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, #1A1710 0%, #2A2318 100%)', boxShadow: '0 0 20px rgba(212,160,58,0.3), inset 0 1px 0 rgba(212,160,58,0.15)', border: '1px solid rgba(212,160,58,0.2)' }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, #0A2E1E 0%, #153D2A 100%)', boxShadow: '0 0 20px rgba(0,194,124,0.2), inset 0 1px 0 rgba(0,194,124,0.1)', border: '1px solid rgba(0,194,124,0.2)' }}>
             <NexusIcon size={22} />
           </div>
           <div>
@@ -59,7 +59,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
           { label: 'Help', items: HELP_ITEMS },
         ].map(({ label: groupLabel, items, icon: GroupIcon }, gi) => (
           <Fragment key={groupLabel}>
-            <p className={`px-3 ${gi > 0 ? 'mt-6' : ''} mb-2 text-[11px] font-semibold text-white/25 uppercase tracking-widest flex items-center gap-2`}>
+            <p className={`px-3 ${gi > 0 ? 'mt-6' : ''} mb-2 text-[11px] font-semibold text-[#00C27C]/30 uppercase tracking-widest flex items-center gap-2`}>
               {GroupIcon && <GroupIcon className="w-3 h-3" />}
               {groupLabel}
             </p>
@@ -72,14 +72,14 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
                 className={({ isActive }) =>
                   `group flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-150 ${
                     isActive
-                      ? 'bg-[#00C27C]/[0.12] text-white'
-                      : 'text-white/60 hover:bg-[#00C27C]/[0.06] hover:text-white/90'
+                      ? 'bg-sidebar-hover text-[#00E08E] shadow-sm'
+                      : 'text-white/60 hover:bg-sidebar-hover/60 hover:text-white/90'
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-colors duration-150 ${isActive ? 'text-white/90' : 'text-white/40 group-hover:text-white/70'}`} strokeWidth={isActive ? 2.2 : 1.8} />
+                    <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-colors duration-150 ${isActive ? 'text-[#00E08E]' : 'text-white/40 group-hover:text-white/70'}`} strokeWidth={isActive ? 2.2 : 1.8} />
                     <span>{label}</span>
                     {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00C27C]" />}
                   </>
@@ -120,7 +120,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
       {/* Tenant badge */}
       <div className="px-4 py-4 border-t border-white/[0.08]">
         <div className="flex items-center gap-3 rounded-lg bg-white/[0.06] px-3 py-3 transition-colors duration-150 hover:bg-white/[0.10] cursor-pointer">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4A03A] to-[#E8C06A] flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#00C27C] to-[#00E08E] flex items-center justify-center flex-shrink-0">
             <span className="text-white font-bold text-xs">A</span>
           </div>
           <div className="min-w-0">
@@ -160,7 +160,7 @@ export default function Sidebar({ open, onClose, onSlackOpen, onDtchOpen }) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-[#141210] border-r border-white/[0.08] z-30">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-sidebar-bg border-r border-sidebar-border z-30">
         <SidebarContent onSlackOpen={onSlackOpen} onDtchOpen={onDtchOpen} />
       </aside>
       <div className="hidden lg:block lg:w-64 lg:flex-shrink-0" />
@@ -169,7 +169,7 @@ export default function Sidebar({ open, onClose, onSlackOpen, onDtchOpen }) {
       {open && (
         <>
           <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden" onClick={onClose} aria-hidden="true" />
-          <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-[#141210] shadow-2xl lg:hidden animate-slide-in">
+          <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-sidebar-bg shadow-2xl lg:hidden animate-slide-in">
             <SidebarContent onClose={onClose} onSlackOpen={onSlackOpen} onDtchOpen={onDtchOpen} />
           </aside>
         </>
