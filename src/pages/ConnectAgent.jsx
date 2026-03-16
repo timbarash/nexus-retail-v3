@@ -6,7 +6,7 @@ import {
   ChevronDown, ChevronUp, Check, X, Search, Filter, Store,
   Layers, Box, ShoppingCart, Award, Percent, Heart, Eye,
   Building2, Phone, Mail, Globe, MapPin, Calendar, ArrowRight,
-  PackageCheck, PackageX, TrendingDown, CircleDollarSign, Shield
+  PackageCheck, PackageX, TrendingDown, CircleDollarSign
 } from 'lucide-react';
 import { generateConnectResponse, generateConnectAnalysis, isGeminiAvailable } from '../utils/gemini';
 import { brandImg } from '../utils/helpers';
@@ -232,17 +232,11 @@ const REORDER_RECOMMENDATIONS = [
   { brand: 'Wyld', product: 'Elderberry Indica Gummies', qty: 18, reason: '2 days out of stock', unitPrice: 11.00, avgWeeklySales: 22 },
 ];
 
-/* Brand Funded Discounts — derive from product brand so discounts always match */
+/* Brand Funded Discounts — only brands with active co-op programs */
 const BRAND_DISCOUNT_RATES = {
   'Jeeter':       15,
-  'STIIIZY':      10,
   'Kiva':          8,
-  'Raw Garden':   10,
   'Wyld':         12,
-  'Cookies':      10,
-  'Alien Labs':    8,
-  'PLUS':         10,
-  'Papa & Barkley': 8,
 };
 
 function getBrandDiscount(brand) {
@@ -736,32 +730,6 @@ export function ReorderView({ data, onBack }) {
           ))}
         </div>
       </Section>
-
-      {/* Compliance Check */}
-      <div className="mt-4 p-3 rounded-xl border border-[#38332B] bg-[#141210]">
-        <div className="flex items-center gap-2 mb-2">
-          <Shield className="w-4 h-4 text-[#64A8E0]" />
-          <span className="text-xs font-semibold text-[#64A8E0]">Compliance Check</span>
-        </div>
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-xs">
-            <div className="w-3.5 h-3.5 rounded-full bg-[#00C27C]/20 flex items-center justify-center"><span className="text-[8px] text-[#00C27C]">✓</span></div>
-            <span className="text-[#F0EDE8]">All vendors licensed in state</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <div className="w-3.5 h-3.5 rounded-full bg-[#00C27C]/20 flex items-center justify-center"><span className="text-[8px] text-[#00C27C]">✓</span></div>
-            <span className="text-[#F0EDE8]">Order quantity within daily receiving limit</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <div className="w-3.5 h-3.5 rounded-full bg-[#00C27C]/20 flex items-center justify-center"><span className="text-[8px] text-[#00C27C]">✓</span></div>
-            <span className="text-[#F0EDE8]">Products match approved manifest categories</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <div className="w-3.5 h-3.5 rounded-full bg-[#64A8E0]/20 flex items-center justify-center"><span className="text-[8px] text-[#64A8E0]">i</span></div>
-            <span className="text-[#ADA599]">METRC transfer manifest auto-generated on receipt</span>
-          </div>
-        </div>
-      </div>
 
       {/* order CTA */}
       <div className="bg-[#1C1B1A] rounded-xl border border-[#38332B] p-6">

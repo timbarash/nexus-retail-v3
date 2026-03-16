@@ -156,13 +156,6 @@ export const CAMPAIGNS = {
       { variant: 'A', subject: 'The Jeeter Drop You\'ve Been Waiting For 🔥', split: 50 },
       { variant: 'B', subject: 'New Baby Jeeter Churros Just Landed — 15% Off', split: 50 },
     ],
-    compliance: [
-      { label: 'Age gate verified (21+)', status: 'pass' },
-      { label: 'Opt-in consent validated', status: 'pass' },
-      { label: 'State cannabis advertising rules', status: 'pass' },
-      { label: 'Disclaimer & fine print included', status: 'pass' },
-      { label: 'Unsubscribe mechanism present', status: 'pass' },
-    ],
     projections: {
       revenue: '$18,400 — $24,200',
       orders: '340 — 480',
@@ -191,7 +184,7 @@ export const CAMPAIGNS = {
     heroTag: 'Re-Engagement',
     audience: {
       size: '4,312',
-      description: 'Customers with 2+ orders and AOV above $40 who haven\'t purchased in 60-120 days. Excludes opted-out, customers outside delivery range, and those with pending compliance holds.',
+      description: 'Customers with 2+ orders and AOV above $40 who haven\'t purchased in 60-120 days. Excludes opted-out and customers outside delivery range.',
       segments: [
         { name: '60-90 Day Lapsed', count: '2,840', desc: 'Avg previous AOV: $58' },
         { name: '90-120 Day Lapsed', count: '1,472', desc: 'Avg previous AOV: $64' },
@@ -230,14 +223,6 @@ export const CAMPAIGNS = {
       { variant: 'A', subject: 'It\'s Been a While — We Saved Something for You', split: 33 },
       { variant: 'B', subject: 'Your 20% Off is About to Expire ⏰', split: 33 },
       { variant: 'C', subject: '{first_name}, We Miss You at Ascend', split: 34 },
-    ],
-    compliance: [
-      { label: 'Age gate verified (21+)', status: 'pass' },
-      { label: 'Opt-in consent validated', status: 'pass' },
-      { label: 'State cannabis advertising rules', status: 'pass' },
-      { label: 'Disclaimer & fine print included', status: 'pass' },
-      { label: 'Unsubscribe mechanism present', status: 'pass' },
-      { label: 'Suppression list applied', status: 'pass' },
     ],
     projections: {
       revenue: '$9,800 — $14,600',
@@ -306,13 +291,6 @@ export const CAMPAIGNS = {
     abTests: [
       { variant: 'A', subject: 'Happy Birthday, {first_name}! 🎂 Your Gift is Ready', split: 50 },
       { variant: 'B', subject: '🎁 {first_name}, Unwrap Your Birthday Reward', split: 50 },
-    ],
-    compliance: [
-      { label: 'Age gate verified (21+)', status: 'pass' },
-      { label: 'Opt-in consent validated', status: 'pass' },
-      { label: 'State cannabis advertising rules', status: 'pass' },
-      { label: 'Birthday data PII handling', status: 'pass' },
-      { label: 'Unsubscribe mechanism present', status: 'pass' },
     ],
     projections: {
       revenue: '$6,200 — $8,400/mo',
@@ -1390,9 +1368,9 @@ export default function MarketingCampaigns() {
           <p className="text-[10px] text-[#ADA599]">Win-Back Re-Engagement</p>
         </div>
         <div className="p-3 rounded-xl border border-[#38332B] bg-[#1C1B1A]">
-          <p className="text-[10px] uppercase tracking-wider text-[#ADA599] mb-1">Compliance</p>
-          <p className="text-xl font-bold text-[#00C27C]">All Clear</p>
-          <p className="text-[10px] text-[#00C27C]">All campaigns passing</p>
+          <p className="text-[10px] uppercase tracking-wider text-[#ADA599] mb-1">Avg ROI</p>
+          <p className="text-xl font-bold text-[#00C27C]">6.2x</p>
+          <p className="text-[10px] text-[#00C27C]">Across active campaigns</p>
         </div>
       </div>
 
