@@ -334,7 +334,7 @@ function ScreenHome({ data, alerts, vault, stores, onNav, showToast }) {
       </Section>
 
       {/* Store Performance */}
-      <Section title="Store Performance" action="All Stores">
+      <Section title="Store Performance" action="All Stores" onAction={() => onNav('actions')}>
         <div className="space-y-2">
           {stores.map(s => (
             <Card key={s.id} className="!p-3 flex items-center gap-3">
@@ -607,6 +607,7 @@ function ScreenChat({ vault, showToast, onNav, onTransfer }) {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showTiles, setShowTiles] = useState(true);
+  const [launchedCampaigns, setLaunchedCampaigns] = useState(new Set());
   const chatRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -787,9 +788,15 @@ function ScreenChat({ vault, showToast, onNav, onTransfer }) {
                   <span>Channel: <span className="text-white">{c.channel}</span></span>
                   <span>Est. Rev: <span className="text-[#00C27C] font-bold">{c.estRevenue}</span></span>
                 </div>
-                <button onClick={() => showToast(`${c.name} campaign launched!`)} className="w-full py-2 rounded-lg text-[11px] font-semibold bg-[#00C27C]/10 text-[#00C27C] border border-[#00C27C]/20">
-                  <Rocket className="w-3 h-3 inline mr-1" />Launch Campaign
-                </button>
+                {launchedCampaigns.has(c.name) ? (
+                  <button disabled className="w-full py-2 rounded-lg text-[11px] font-semibold bg-[#00C27C]/20 text-[#00C27C] border border-[#00C27C]/30 opacity-80 cursor-default">
+                    <Check className="w-3 h-3 inline mr-1" />Campaign Launched
+                  </button>
+                ) : (
+                  <button onClick={() => { setLaunchedCampaigns(prev => new Set([...prev, c.name])); showToast(`${c.name} campaign launched!`); }} className="w-full py-2 rounded-lg text-[11px] font-semibold bg-[#00C27C]/10 text-[#00C27C] border border-[#00C27C]/20">
+                    <Rocket className="w-3 h-3 inline mr-1" />Launch Campaign
+                  </button>
+                )}
               </div>
             ))}
           </div>

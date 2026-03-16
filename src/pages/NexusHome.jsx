@@ -15,7 +15,7 @@ import {
   MapPin, ThumbsUp, ThumbsDown, Mic, AlertCircle, ArrowUpRight,
   ArrowDownRight, Minus, CheckCircle2, Smartphone, QrCode, Monitor,
   Layers, Radio, Activity, Percent, Receipt, Store,
-  Megaphone, ShoppingCart, ChevronDown, Rocket,
+  Megaphone, ShoppingCart, ChevronDown, Rocket, ArrowRightLeft, Check, Lock,
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
 
@@ -1205,6 +1205,156 @@ function UnifiedPipelineTile() {
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   VAULT-TO-FLOOR — Items OOS/low on floor with vault inventory ready
+   ═══════════════════════════════════════════════════════════════════ */
+
+const VAULT_FLOOR_ITEMS = [
+  { id: 'vf1', name: 'Blue Dream 3.5g', brand: 'Jeeter', store: 'Logan Square', floor: 0, vault: 45, avgWeekly: 38, daysOOS: 3, lostRev: '$1,140', urgency: 'critical', metrc: 'METRC-1A40603-BD35', img: 'brands/jeeter-baby-churros.webp' },
+  { id: 'vf2', name: 'Kiva Lost Farm Gummies', brand: 'Kiva', store: 'Logan Square', floor: 0, vault: 60, avgWeekly: 28, daysOOS: 2, lostRev: '$560', urgency: 'critical', metrc: 'METRC-1A40603-KL60', img: 'brands/kiva-camino.jpg' },
+  { id: 'vf3', name: 'Wyld Elderberry Gummies', brand: 'Wyld', store: 'Fort Lee', floor: 0, vault: 55, avgWeekly: 22, daysOOS: 1, lostRev: '$198', urgency: 'critical', metrc: 'METRC-1A40603-WE55', img: 'brands/wyld-elderberry.png' },
+  { id: 'vf4', name: 'Stiiizy Live Resin Pod 1g', brand: 'STIIIZY', store: 'Fort Lee', floor: 2, vault: 30, avgWeekly: 24, daysOOS: 0, lostRev: null, urgency: 'high', metrc: 'METRC-1A40603-SL10', img: 'brands/stiiizy-pods.png' },
+  { id: 'vf5', name: 'Jeeter Infused Pre-Roll', brand: 'Jeeter', store: 'Logan Square', floor: 4, vault: 72, avgWeekly: 32, daysOOS: 0, lostRev: null, urgency: 'high', metrc: 'METRC-1A40603-JI72', img: 'brands/jeeter-baby-churros.webp' },
+  { id: 'vf6', name: 'Alien Labs Baklava 3.5g', brand: 'Alien Labs', store: 'Boston', floor: 1, vault: 24, avgWeekly: 12, daysOOS: 0, lostRev: null, urgency: 'high', metrc: 'METRC-1A40603-AL35', img: 'brands/alien-xeno.png' },
+];
+
+function VaultToFloorTile({ onAction }) {
+  const [transferred, setTransferred] = useState({});
+  const oosCount = VAULT_FLOOR_ITEMS.filter(v => v.floor === 0).length;
+  const lowCount = VAULT_FLOOR_ITEMS.filter(v => v.floor > 0 && v.floor <= 5).length;
+  const totalLostRev = VAULT_FLOOR_ITEMS.filter(v => v.lostRev).reduce((sum, v) => sum + parseInt(v.lostRev.replace(/[^0-9]/g, '')), 0);
+  const base = import.meta.env.BASE_URL || '/';
+
+  const handleTransfer = (item) => {
+    const qty = Math.min(item.vault, Math.max(item.avgWeekly, 10));
+    setTransferred(prev => ({ ...prev, [item.id]: qty }));
+  };
+
+  const handleTransferAll = () => {
+    const batch = {};
+    VAULT_FLOOR_ITEMS.filter(v => v.urgency === 'critical' && !transferred[v.id]).forEach(v => {
+      batch[v.id] = Math.min(v.vault, Math.max(v.avgWeekly, 10));
+    });
+    setTransferred(prev => ({ ...prev, ...batch }));
+  };
+
+  return (
+    <NexusTile className="animate-fade-up" style={{ animationDelay: '350ms' }}>
+      <div className="flex items-start justify-between border-b border-[#38332B] px-6 py-4">
+        <div className="flex items-center gap-3">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-[#E87068]/10 text-[#E87068]">
+            <ArrowRightLeft size={20} />
+            <span className="absolute -top-1.5 -right-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-white bg-[#E87068]">
+              {oosCount}
+            </span>
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-[#F0EDE8]">Vault → Floor Transfers</h3>
+            <p className="text-xs text-[#6B6359]">{oosCount} out of stock, {lowCount} running low — vault inventory ready</p>
+          </div>
+        </div>
+        <button
+          onClick={handleTransferAll}
+          className="flex items-center gap-1 rounded-lg bg-[#E87068] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#D4605A]"
+        >
+          Transfer All Critical
+          <ChevronRight size={14} />
+        </button>
+      </div>
+
+      {/* Lost revenue callout */}
+      <div className="mx-6 mt-4 mb-3 flex items-center gap-3 rounded-xl bg-[#E87068]/8 border border-[#E87068]/15 px-4 py-3">
+        <AlertTriangle size={18} className="text-[#E87068] flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-[#F0EDE8]">${totalLostRev.toLocaleString()} in estimated lost revenue</p>
+          <p className="text-xs text-[#ADA599]">from {oosCount} products sitting in vault while floor is empty</p>
+        </div>
+      </div>
+
+      {/* Item list */}
+      <div className="px-6 pb-5 space-y-2">
+        {VAULT_FLOOR_ITEMS.map(item => {
+          const isTransferred = !!transferred[item.id];
+          const recQty = Math.min(item.vault, Math.max(item.avgWeekly, 10));
+          const statusColor = item.floor === 0 ? '#E87068' : '#D4A03A';
+          const statusLabel = item.floor === 0 ? 'OUT OF STOCK' : 'LOW';
+
+          return (
+            <div key={item.id} className={`flex items-center gap-4 rounded-xl border px-4 py-3 transition-all ${
+              isTransferred
+                ? 'border-[#00C27C]/25 bg-[#00C27C]/5'
+                : `border-[${statusColor}]/20 bg-[${statusColor}]/[0.04]`
+            }`} style={!isTransferred ? { borderColor: `${statusColor}30`, background: `${statusColor}08` } : undefined}>
+              {/* Product image */}
+              <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-[#282724]">
+                <img src={`${base}${item.img}`} alt={item.brand} className="w-full h-full object-cover" />
+              </div>
+
+              {/* Product info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-sm font-semibold text-[#F0EDE8] truncate">{item.name}</span>
+                  <span className="text-[8px] font-bold px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: `${statusColor}18`, color: statusColor }}>
+                    {statusLabel}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-[#6B6359]">
+                  <span>{item.brand}</span>
+                  <span className="text-[#38332B]">|</span>
+                  <span>{item.store}</span>
+                  {item.daysOOS > 0 && (
+                    <>
+                      <span className="text-[#38332B]">|</span>
+                      <span className="text-[#E87068] font-medium">{item.daysOOS}d out of stock</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Stock numbers */}
+              <div className="flex items-center gap-4 text-xs flex-shrink-0">
+                <div className="text-center">
+                  <p className={`text-sm font-bold ${item.floor === 0 ? 'text-[#E87068]' : 'text-[#D4A03A]'}`}>{item.floor}</p>
+                  <p className="text-[10px] text-[#6B6359]">Floor</p>
+                </div>
+                <div className="text-[#38332B]">→</div>
+                <div className="text-center">
+                  <p className="text-sm font-bold text-[#00C27C]">{item.vault}</p>
+                  <p className="text-[10px] text-[#6B6359]">Vault</p>
+                </div>
+              </div>
+
+              {/* Transfer action */}
+              <div className="flex-shrink-0 w-[140px]">
+                {isTransferred ? (
+                  <div className="flex items-center gap-1.5 justify-center py-2 rounded-lg bg-[#00C27C]/12 text-[#00C27C] text-xs font-semibold">
+                    <Check size={14} />
+                    {transferred[item.id]} units transferred
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleTransfer(item)}
+                    className="w-full flex items-center gap-1.5 justify-center py-2 rounded-lg bg-[#D4A03A]/12 text-[#D4A03A] text-xs font-semibold border border-[#D4A03A]/20 hover:bg-[#D4A03A]/20 transition-colors"
+                  >
+                    <ArrowRightLeft size={12} />
+                    Transfer {recQty}
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* METRC compliance note */}
+        <div className="flex items-center gap-2 mt-2 px-1">
+          <Lock size={12} className="text-[#6B6359]" />
+          <p className="text-[10px] text-[#6B6359]">All transfers auto-logged to METRC with package tag tracking</p>
+        </div>
+      </div>
+    </NexusTile>
+  );
+}
+
 function InventoryTile() {
   const { isAllSelected, selectionLabel } = useStores();
   const scaledAlerts = isAllSelected ? NEXUS_DATA.lowStockAlerts : Math.max(1, Math.round(NEXUS_DATA.lowStockAlerts * 0.5));
@@ -2188,6 +2338,9 @@ export default function NexusHome({ onOpenNexus }) {
 
       {/* 4. Smart Alerts */}
       <SmartAlertsFeed onAction={(q) => onOpenNexus && onOpenNexus(q)} />
+
+      {/* 5. Vault → Floor Transfers */}
+      <VaultToFloorTile onAction={(q) => onOpenNexus && onOpenNexus(q)} />
 
       {/* 6. Store Health Matrix */}
       <StoreHealthMatrix />

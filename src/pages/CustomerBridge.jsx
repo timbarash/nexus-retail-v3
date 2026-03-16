@@ -515,7 +515,7 @@ export function KBArticleCard({ article }) {
           {/* Step-by-step instructions */}
           {article.steps && article.steps.length > 0 && (
             <div className="bg-[#1C1B1A] rounded-lg p-3 border border-[#38332B]">
-              <p className="text-[10px] text-[#6B6359] uppercase tracking-wider font-medium mb-2">Step-by-Step</p>
+              <p className="text-[10px] font-semibold text-[#6B6359] mb-2">Step-by-Step</p>
               <div className="space-y-1.5">
                 {article.steps.map((step, i) => (
                   <div key={i} className="flex items-start gap-2.5">
@@ -557,6 +557,7 @@ export function KBArticleCard({ article }) {
 function UpsellCard({ productKey, product, onActivate, onDemoRequest }) {
   const [requesting, setRequesting] = useState(false);
   const [requested, setRequested] = useState(false);
+  const [showLearnMore, setShowLearnMore] = useState(false);
 
   const handleActivate = () => {
     setRequesting(true);
@@ -611,9 +612,22 @@ function UpsellCard({ productKey, product, onActivate, onDemoRequest }) {
                   <><Rocket className="w-4 h-4" /> Request Demo & Pricing</>
                 )}
               </button>
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-[#ADA599] hover:text-[#F0EDE8] hover:bg-[#1C1B1A]/5 transition-colors">
-                <FileText className="w-3.5 h-3.5" /> Learn More
+              <button
+                onClick={() => setShowLearnMore(prev => !prev)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-[#ADA599] hover:text-[#F0EDE8] hover:bg-[#1C1B1A]/5 transition-colors"
+              >
+                <FileText className="w-3.5 h-3.5" /> {showLearnMore ? 'Show Less' : 'Learn More'}
               </button>
+            </div>
+          )}
+          {showLearnMore && (
+            <div className="mt-3 p-3 rounded-lg bg-[#1C1B1A] border border-[#38332B] text-sm text-[#ADA599] leading-relaxed">
+              <p className="mb-2">{product.description}</p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#38332B] text-[#F0EDE8]">{product.tier}</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00C27C]/10 text-[#00C27C]">{product.savings}</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#0EA5E9]/10 text-[#0EA5E9]">{product.monthlyFee}</span>
+              </div>
             </div>
           )}
         </div>
@@ -636,14 +650,14 @@ export function BugReportCard({ userMessage, ticketId }) {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-sm font-semibold text-[#F0EDE8]">Support Ticket Created</h3>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#D4A03A]/15 text-[#D4A03A] font-medium">{ticketId}</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-[#D4A03A]/15 text-[#D4A03A] font-medium">{ticketId}</span>
           </div>
           <p className="text-xs text-[#ADA599]">Routed to the Product Engineering team</p>
         </div>
       </div>
       <div className="space-y-3">
         <div className="bg-[#1C1B1A] rounded-lg p-3 border border-[#38332B]">
-          <p className="text-[10px] text-[#6B6359] mb-1 uppercase tracking-wider font-medium">Issue Description</p>
+          <p className="text-[10px] font-medium text-[#ADA599] mb-1">Issue Description</p>
           <p className="text-xs text-[#F0EDE8]">"{userMessage}"</p>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -662,7 +676,7 @@ export function BugReportCard({ userMessage, ticketId }) {
         </div>
         <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-[#0EA5E9]/5 border border-[#0EA5E9]/10">
           <Sparkles className="w-3.5 h-3.5 text-[#0EA5E9] flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-[#0EA5E9]">We'll email you at <span className="font-medium">admin@ascendwellness.com</span> when an engineer picks this up. You can reference <span className="font-mono font-medium">{ticketId}</span> in any follow-up.</p>
+          <p className="text-xs text-[#0EA5E9]">We'll email you at <span className="font-medium">admin@ascendwellness.com</span> when an engineer picks this up. You can reference <span className="font-medium">{ticketId}</span> in any follow-up.</p>
         </div>
       </div>
     </div>
@@ -731,7 +745,7 @@ export function BugDetailGatherer({ userMessage, onSubmit }) {
       </div>
 
       <div className="bg-[#1C1B1A] rounded-lg p-3 border border-[#38332B]">
-        <p className="text-[10px] text-[#6B6359] mb-1 uppercase tracking-wider font-medium">Your Report</p>
+        <p className="text-[10px] font-medium text-[#ADA599] mb-1">Your Report</p>
         <p className="text-xs text-[#F0EDE8]">"{userMessage}"</p>
       </div>
 
@@ -992,7 +1006,7 @@ function FeatureDetailGatherer({ userMessage, onSubmit }) {
       </div>
 
       <div className="bg-[#1C1B1A] rounded-lg p-3 border border-[#38332B]">
-        <p className="text-[10px] text-[#6B6359] mb-1 uppercase tracking-wider font-medium">Your Idea</p>
+        <p className="text-[10px] font-medium text-[#ADA599] mb-1">Your Idea</p>
         <p className="text-xs text-[#F0EDE8]">"{userMessage}"</p>
       </div>
 
@@ -1117,19 +1131,19 @@ function FeatureRequestCard({ userMessage, ticketId }) {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-sm font-semibold text-[#F0EDE8]">Feature Request Submitted</h3>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#B598E8]/15 text-[#B598E8] font-medium">{ticketId}</span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-[#B598E8]/15 text-[#B598E8] font-medium">{ticketId}</span>
           </div>
           <p className="text-xs text-[#ADA599]">Sent to the Software Factory for triage</p>
         </div>
       </div>
       <div className="space-y-3">
         <div className="bg-[#1C1B1A] rounded-lg p-3 border border-[#38332B]">
-          <p className="text-[10px] text-[#6B6359] mb-1 uppercase tracking-wider font-medium">Feature Request</p>
+          <p className="text-[10px] font-medium text-[#ADA599] mb-1">Feature Request</p>
           <p className="text-xs text-[#F0EDE8]">"{userMessage}"</p>
         </div>
         {/* Sprint pipeline */}
         <div className="bg-[#1C1B1A] rounded-lg p-4 border border-[#38332B]">
-          <p className="text-[10px] text-[#6B6359] mb-3 uppercase tracking-wider font-medium">Development Pipeline</p>
+          <p className="text-[10px] font-medium text-[#ADA599] mb-3">Development Pipeline</p>
           <div className="flex items-center gap-2">
             {[
               { key: 'queued', label: 'Queued', icon: Clock },
@@ -1398,8 +1412,8 @@ function ReviewFeed({ data }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono px-2 py-1 rounded-full" style={{ backgroundColor: `${scoreColor(data.avgScore)}15`, color: scoreColor(data.avgScore) }}>
-            avg {data.avgScore.toFixed(2)}
+          <span className="text-[10px] font-medium px-2 py-1 rounded-full" style={{ backgroundColor: `${scoreColor(data.avgScore)}15`, color: scoreColor(data.avgScore) }}>
+            avg {data.avgScore.toFixed(1)}
           </span>
         </div>
       </div>
@@ -1475,7 +1489,7 @@ function ReviewCard({ review: r, scoreColor, sentBg }) {
       {/* Bottom row — sentiment badge, score, categories, author */}
       <div className="flex items-center gap-2 flex-wrap">
         <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${sentBg(r.sentiment)}`}>
-          {r.sentiment === 'positive' ? '↑' : r.sentiment === 'negative' ? '↓' : '→'} {r.sentimentScore.toFixed(2)}
+          {r.sentiment === 'positive' ? '↑' : r.sentiment === 'negative' ? '↓' : '→'} {r.sentimentScore.toFixed(1)}
         </span>
         {r.brand && (
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#B598E8]/10 text-[#B598E8]">{r.brand}</span>
@@ -1646,26 +1660,26 @@ function SentimentSnippet({ data }) {
       </div>
 
       {/* KPI row */}
-      <div className="grid grid-cols-4 divide-x divide-[#30363D] border-b border-[#38332B]">
+      <div className="grid grid-cols-4 gap-4 border-b border-[#38332B] px-4 py-1">
         {[
-          { label: 'Avg Score', value: data.avg.toFixed(2), sub: `${data.normalizedScore}/100`, color: gaugeColor },
+          { label: 'Avg Score', value: data.avg.toFixed(1), sub: `${data.normalizedScore}/100`, color: gaugeColor },
           { label: 'NPS', value: data.nps > 0 ? `+${data.nps}` : `${data.nps}`, sub: data.nps >= 30 ? 'Great' : data.nps >= 0 ? 'OK' : 'Needs Work', color: npsColor },
           { label: 'Positive', value: `${Math.round((data.dist.positive / data.total) * 100)}%`, sub: `${data.dist.positive} reviews`, color: '#00C27C' },
           { label: 'Negative', value: `${Math.round((data.dist.negative / data.total) * 100)}%`, sub: `${data.dist.negative} reviews`, color: '#E87068' },
         ].map(kpi => (
           <div key={kpi.label} className="px-4 py-3 text-center">
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-1">{kpi.label}</p>
-            <p className="text-base font-bold font-mono" style={{ color: kpi.color }}>{kpi.value}</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-1">{kpi.label}</p>
+            <p className="text-base font-bold" style={{ color: kpi.color }}>{kpi.value}</p>
             <p className="text-[10px] text-[#6B6359]">{kpi.sub}</p>
           </div>
         ))}
       </div>
 
       {/* Donut + Category breakdown side by side */}
-      <div className="grid grid-cols-2 divide-x divide-[#30363D] border-b border-[#38332B]">
+      <div className="grid grid-cols-2 gap-4 border-b border-[#38332B] px-4">
         {/* Donut */}
         <div className="px-4 py-3">
-          <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-1 font-medium">Distribution</p>
+          <p className="text-[10px] font-medium text-[#ADA599] mb-1">Distribution</p>
           <div style={{ width: '100%', height: 140 }}>
             <ResponsiveContainer>
               <PieChart>
@@ -1688,7 +1702,7 @@ function SentimentSnippet({ data }) {
 
         {/* Top categories */}
         <div className="px-4 py-3">
-          <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium">By Category</p>
+          <p className="text-[10px] font-medium text-[#ADA599] mb-2">By Category</p>
           <div className="space-y-1.5">
             {data.catSentiment.map(cat => {
               const catTotal = cat.positive + cat.neutral + cat.negative;
@@ -1699,7 +1713,7 @@ function SentimentSnippet({ data }) {
                 <div key={cat.category}>
                   <div className="flex items-center justify-between mb-0.5">
                     <span className="text-[10px] text-[#F0EDE8] truncate">{cat.category}</span>
-                    <span className="text-[10px] font-mono text-[#ADA599] ml-2">{cat.avg.toFixed(2)}</span>
+                    <span className="text-[10px] text-[#ADA599] ml-2">{cat.avg.toFixed(1)}</span>
                   </div>
                   <div className="flex h-2 rounded-full overflow-hidden bg-[#1C1B1A]">
                     <div style={{ width: `${posPct}%`, backgroundColor: '#00C27C' }} />
@@ -1715,7 +1729,7 @@ function SentimentSnippet({ data }) {
 
       {/* Trend chart */}
       <div className="px-5 pt-3 pb-2 border-b border-[#38332B]">
-        <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium">Sentiment Trend — 12 Months</p>
+        <p className="text-[10px] font-medium text-[#ADA599] mb-2">Sentiment Trend — 12 Months</p>
         <div style={{ width: '100%', height: 130 }}>
           <ResponsiveContainer>
             <AreaChart data={data.trend} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
@@ -1740,7 +1754,7 @@ function SentimentSnippet({ data }) {
         {/* Sources */}
         {(data.focus === 'overview' || data.focus === 'sources') && (
           <div className={data.focus === 'overview' && !expanded ? '' : ''}>
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium">By Source</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-2">By Source</p>
             <div className="grid grid-cols-2 gap-2">
               {data.sourceStats.map(src => {
                 const srcColor = src.avg >= 0.15 ? '#00C27C' : src.avg >= -0.15 ? '#D4A03A' : '#E87068';
@@ -1748,7 +1762,7 @@ function SentimentSnippet({ data }) {
                   <div key={src.name} className="bg-[#1C1B1A] rounded-lg p-2.5 border border-[#38332B]">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-medium text-[#F0EDE8]">{src.name}</span>
-                      <span className="text-[10px] font-mono font-semibold" style={{ color: srcColor }}>{src.avg.toFixed(2)}</span>
+                      <span className="text-[10px] font-semibold" style={{ color: srcColor }}>{src.avg.toFixed(1)}</span>
                     </div>
                     <p className="text-[10px] text-[#6B6359]">{src.count} reviews</p>
                     <div className="flex gap-2 mt-1 text-[10px]">
@@ -1766,7 +1780,7 @@ function SentimentSnippet({ data }) {
         {/* Brands */}
         {(data.focus === 'brands') && (
           <div>
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium">Brand Sentiment</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-2">Brand Sentiment</p>
             <div className="space-y-1.5">
               {data.brandStats.map(brand => {
                 const brandColor = brand.normalized >= 65 ? '#00C27C' : brand.normalized >= 40 ? '#D4A03A' : '#E87068';
@@ -1799,23 +1813,23 @@ function SentimentSnippet({ data }) {
         {/* Negative deep dive */}
         {data.focus === 'negative' && (
           <div>
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium">Worst-Rated Areas</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-2">Worst-Rated Areas</p>
             <div className="space-y-1.5 mb-3">
               {data.categoryRanked.slice(0, 3).map(cat => (
                 <div key={cat.category} className="flex items-center gap-2 bg-[#1C1B1A] rounded-lg px-3 py-2 border border-[#E87068]/15">
                   <AlertTriangle className="w-3.5 h-3.5 text-[#E87068] flex-shrink-0" />
                   <div className="flex-1">
                     <p className="text-xs font-medium text-[#F0EDE8]">{cat.category}</p>
-                    <p className="text-[10px] text-[#6B6359]">Avg: {cat.avg.toFixed(2)} · {cat.negative} negative of {cat.positive + cat.neutral + cat.negative}</p>
+                    <p className="text-[10px] text-[#6B6359]">Avg: {cat.avg.toFixed(1)} · {cat.negative} negative of {cat.positive + cat.neutral + cat.negative}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium">Most Critical Reviews</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-2">Most Critical Reviews</p>
             {data.negativeReviews.map(r => (
               <div key={r.id} className="bg-[#1C1B1A] rounded-lg p-3 border border-[#38332B] mb-1.5">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#E87068]/10 text-[#E87068] font-semibold">{r.sentimentScore.toFixed(2)}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#E87068]/10 text-[#E87068] font-semibold">{r.sentimentScore.toFixed(1)}</span>
                   <span className="text-[10px] text-[#6B6359]">{r.source} · {r.location}</span>
                 </div>
                 <p className="text-xs text-[#F0EDE8] leading-relaxed">&ldquo;{r.text.slice(0, 150)}{r.text.length > 150 ? '...' : ''}&rdquo;</p>
@@ -1827,7 +1841,7 @@ function SentimentSnippet({ data }) {
         {/* Word cloud */}
         {data.focus === 'words' && (
           <div>
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-3 font-medium">Top Mentions</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-3">Top Mentions</p>
             <div className="flex flex-wrap gap-1.5">
               {data.topWords.map((w, i) => {
                 const size = Math.max(11, Math.min(18, 11 + (w.value / data.topWords[0].value) * 7));
@@ -1860,14 +1874,14 @@ function SentimentSnippet({ data }) {
         {data.focus === 'overview' && expanded && (
           <div className="mt-3 space-y-3">
             <div>
-              <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium">Brand Sentiment</p>
+              <p className="text-[10px] font-medium text-[#ADA599] mb-2">Brand Sentiment</p>
               <div className="space-y-1.5">
                 {data.brandStats.map(brand => {
                   const brandColor = brand.normalized >= 65 ? '#00C27C' : brand.normalized >= 40 ? '#D4A03A' : '#E87068';
                   return (
                     <div key={brand.name} className="flex items-center gap-3 bg-[#1C1B1A] rounded-lg px-3 py-2 border border-[#38332B]">
                       <p className="text-xs font-medium text-[#F0EDE8] flex-1">{brand.name}</p>
-                      <span className="text-[10px] font-mono" style={{ color: brandColor }}>{brand.normalized}/100</span>
+                      <span className="text-[10px] font-medium" style={{ color: brandColor }}>{brand.normalized}/100</span>
                       <div className="w-16 h-2 rounded-full overflow-hidden bg-[#282724] flex">
                         <div style={{ width: `${Math.round((brand.positive / brand.count) * 100)}%`, backgroundColor: '#00C27C' }} />
                         <div style={{ width: `${Math.round((brand.neutral / brand.count) * 100)}%`, backgroundColor: '#D4A03A' }} />
@@ -2041,7 +2055,7 @@ function ReportSnippet({ data }) {
       </div>
 
       {/* KPI row */}
-      <div className="grid grid-cols-4 divide-x divide-[#30363D] border-b border-[#38332B]">
+      <div className="grid grid-cols-4 gap-4 border-b border-[#38332B] px-4 py-1">
         {[
           { label: 'Revenue', value: formatCurrency(data.revenue), icon: DollarSign, color: '#00C27C' },
           { label: 'Orders', value: data.orders.toLocaleString(), icon: ShoppingCart, color: '#0EA5E9' },
@@ -2051,16 +2065,16 @@ function ReportSnippet({ data }) {
           <div key={kpi.label} className="px-4 py-3 text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
               <kpi.icon className="w-3 h-3" style={{ color: kpi.color }} />
-              <p className="text-[10px] text-[#6B6359] uppercase tracking-wider">{kpi.label}</p>
+              <p className="text-[10px] font-medium text-[#ADA599]">{kpi.label}</p>
             </div>
-            <p className="text-base font-bold text-[#F0EDE8] font-mono">{kpi.value}</p>
+            <p className="text-base font-bold text-[#F0EDE8]">{kpi.value}</p>
           </div>
         ))}
       </div>
 
       {/* Revenue trend chart */}
       <div className="px-5 pt-4 pb-2">
-        <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium">Revenue Trend — Current vs Prior Period</p>
+        <p className="text-[10px] font-medium text-[#ADA599] mb-2">Revenue Trend — Current vs Prior Period</p>
         <div style={{ width: '100%', height: 160 }}>
           <ResponsiveContainer>
             <AreaChart data={data.trendData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -2089,7 +2103,7 @@ function ReportSnippet({ data }) {
       <div className="px-5 pb-4">
         {(data.focus === 'overview' || data.focus === 'top_products') && (
           <div>
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium mt-2">Top Sellers</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-2 mt-2">Top Sellers</p>
             <div className="space-y-1.5">
               {data.topProducts.map((p, i) => (
                 <div key={p.name} className="flex items-center gap-3 bg-[#1C1B1A] rounded-lg px-3 py-2 border border-[#38332B]">
@@ -2098,7 +2112,7 @@ function ReportSnippet({ data }) {
                     <p className="text-xs font-medium text-[#F0EDE8] truncate">{p.name}</p>
                     <p className="text-[10px] text-[#6B6359]">{p.category} · {p.units} units</p>
                   </div>
-                  <p className="text-xs font-mono font-semibold text-[#00C27C]">{formatCurrency(p.revenue)}</p>
+                  <p className="text-xs font-semibold text-[#00C27C]">{formatCurrency(p.revenue)}</p>
                 </div>
               ))}
             </div>
@@ -2107,7 +2121,7 @@ function ReportSnippet({ data }) {
 
         {(data.focus === 'overview' || data.focus === 'categories') && (
           <div className={data.focus === 'overview' && !expanded ? 'hidden' : ''}>
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium mt-3">Revenue by Category</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-2 mt-3">Revenue by Category</p>
             <div className="space-y-1.5">
               {data.categoryData.map(cat => (
                 <div key={cat.name} className="flex items-center gap-3">
@@ -2115,7 +2129,7 @@ function ReportSnippet({ data }) {
                   <div className="flex-1 h-5 bg-[#1C1B1A] rounded-full overflow-hidden border border-[#38332B]">
                     <div className="h-full rounded-full transition-all duration-700" style={{ width: `${cat.pct}%`, backgroundColor: cat.color, opacity: 0.7 }} />
                   </div>
-                  <p className="text-[10px] font-mono text-[#ADA599] w-14 text-right">{formatCurrency(cat.revenue)}</p>
+                  <p className="text-[10px] text-[#ADA599] w-14 text-right">{formatCurrency(cat.revenue)}</p>
                   <p className="text-[10px] text-[#6B6359] w-8 text-right">{cat.pct}%</p>
                 </div>
               ))}
@@ -2125,7 +2139,7 @@ function ReportSnippet({ data }) {
 
         {data.focus === 'locations' && (
           <div>
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium mt-2">By Location</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-2 mt-2">By Location</p>
             <div className="grid grid-cols-2 gap-2">
               {data.locationData.map(loc => (
                 <div key={loc.name} className="bg-[#1C1B1A] rounded-lg p-3 border border-[#38332B]">
@@ -2133,7 +2147,7 @@ function ReportSnippet({ data }) {
                     <MapPin className="w-3 h-3 text-[#0EA5E9]" />
                     <p className="text-xs font-medium text-[#F0EDE8]">{loc.name}</p>
                   </div>
-                  <p className="text-sm font-bold font-mono text-[#F0EDE8]">{formatCurrency(loc.revenue)}</p>
+                  <p className="text-sm font-bold text-[#F0EDE8]">{formatCurrency(loc.revenue)}</p>
                   <p className="text-[10px] text-[#6B6359]">{loc.orders.toLocaleString()} orders · AOV ${loc.aov.toFixed(2)}</p>
                 </div>
               ))}
@@ -2143,7 +2157,7 @@ function ReportSnippet({ data }) {
 
         {data.focus === 'market' && (
           <div>
-            <p className="text-[10px] text-[#6B6359] uppercase tracking-wider mb-2 font-medium mt-2">You vs Market Average</p>
+            <p className="text-[10px] font-medium text-[#ADA599] mb-2 mt-2">You vs Market Average</p>
             <div className="space-y-2">
               {Object.values(data.marketData).map(m => {
                 const pctDiff = (((m.yours - m.market) / m.market) * 100).toFixed(0);
@@ -2164,14 +2178,14 @@ function ReportSnippet({ data }) {
                         <div className="flex-1 h-3 bg-[#141210] rounded-full overflow-hidden">
                           <div className="h-full rounded-full bg-[#0EA5E9]" style={{ width: `${yoursWidth}%` }} />
                         </div>
-                        <span className="text-[10px] font-mono text-[#F0EDE8] w-12 text-right">{m.format(m.yours)}</span>
+                        <span className="text-[10px] font-medium text-[#F0EDE8] w-12 text-right">{m.format(m.yours)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-[#ADA599] w-12">Market</span>
                         <div className="flex-1 h-3 bg-[#141210] rounded-full overflow-hidden">
                           <div className="h-full rounded-full bg-[#8B949E]/50" style={{ width: `${marketWidth}%` }} />
                         </div>
-                        <span className="text-[10px] font-mono text-[#ADA599] w-12 text-right">{m.format(m.market)}</span>
+                        <span className="text-[10px] text-[#ADA599] w-12 text-right">{m.format(m.market)}</span>
                       </div>
                     </div>
                   </div>
@@ -2226,7 +2240,7 @@ function ThinkingIndicator({ status }) {
           <div className="flex items-center gap-2.5">
             <div className="relative w-4 h-4 flex-shrink-0">
               <div className="absolute inset-0 rounded-full border-2 border-[#38332B]" />
-              <div className="absolute inset-0 rounded-full border-2 border-t-[#0EA5E9] animate-spin" />
+              <div className="absolute inset-0 rounded-full border-2 border-t-[#D4A03A] animate-spin" />
             </div>
             <span className="text-[#ADA599] text-sm thinking-shimmer">{status}</span>
             {elapsed > 2 && <span className="text-[#6B6359] text-xs ml-auto">{elapsed}s</span>}
@@ -2943,7 +2957,7 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
         {/* welcome — minimal centered spiral */}
         {messages.length === 0 && !thinkingStatus && !compact && (
           <div className="flex flex-col items-center justify-center py-10" style={{ minHeight: nexusOverlay ? 'calc(100% - 2rem)' : 320 }}>
-            <div className="w-[72px] h-[72px] rounded-[22px] flex items-center justify-center mb-6" style={{ background: 'linear-gradient(135deg, #1A1710 0%, #2A2318 100%)', boxShadow: '0 0 48px rgba(212,160,58,0.25), 0 0 16px rgba(212,160,58,0.15)', border: '1px solid rgba(212,160,58,0.2)' }}>
+            <div className="w-[72px] h-[72px] rounded-[22px] flex items-center justify-center mb-6" style={{ background: 'linear-gradient(135deg, #1A1710 0%, #2A2318 100%)', boxShadow: '0 0 24px rgba(212,160,58,0.15), 0 0 8px rgba(212,160,58,0.1)', border: '1px solid rgba(212,160,58,0.2)' }}>
               <NexusIcon size={36} />
             </div>
             <h2 className="text-[26px] font-bold text-[#F0EDE8] mb-2 text-center">How can I help?</h2>
@@ -3186,16 +3200,10 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false }
             <p className="text-[10px] text-[#6B6359]">
               Nexus Chat uses intelligent intent recognition and 55+ knowledge articles to answer your questions.
             </p>
-            <div className="flex items-center gap-1 text-[10px] text-[#6B6359] flex-wrap">
+            <div className="flex items-center gap-3 text-[10px] text-[#6B6359]">
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#D4A03A]" /> Support</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#E87068]" /> Bug</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#D4A03A]" /> Upsell</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#B598E8]" /> Factory</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> Marketing</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#64A8E0]" /> Connect</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> Reporting</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> Sentiment</span>
-              <span className="flex items-center gap-1 ml-2"><span className="w-1.5 h-1.5 rounded-full bg-[#B598E8]" /> Reviews</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#00C27C]" /> Marketing</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-[#64A8E0]" /> Connect</span>
             </div>
           </div>
         )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, RotateCcw } from 'lucide-react';
 import CustomerBridge from '../pages/CustomerBridge';
 import NexusIcon from './NexusIcon';
@@ -12,6 +12,7 @@ import NexusIcon from './NexusIcon';
 export default function NexusChat({ isOpen, onClose, initialQuery }) {
   const containerRef = useRef(null);
   const querySent = useRef(false);
+  const [resetKey, setResetKey] = useState(0);
 
   // Auto-send initialQuery by programmatically filling the input and submitting
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function NexusChat({ isOpen, onClose, initialQuery }) {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => { querySent.current = false; setResetKey(k => k + 1); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#ADA599] hover:text-[#F0EDE8] hover:bg-white/[0.06] transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -83,7 +84,7 @@ export default function NexusChat({ isOpen, onClose, initialQuery }) {
       {/* CustomerBridge fills the rest */}
       <div className="flex-1 overflow-hidden px-0">
         <div className="h-full max-w-5xl mx-auto px-6 py-4">
-          <CustomerBridge nexusOverlay />
+          <CustomerBridge nexusOverlay key={resetKey} />
         </div>
       </div>
     </div>
