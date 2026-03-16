@@ -514,6 +514,9 @@ export default function MobileDesignReview() {
                   </div>
                 ))}
               </div>
+              <a href="#/mobile" className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl text-base font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, #D4A03A, #B8860B)', boxShadow: '0 8px 32px rgba(212,160,58,0.3)' }}>
+                <Smartphone className="w-5 h-5" /> Launch Mobile App
+              </a>
             </div>
             {/* Hero phone */}
             <div className="flex justify-center lg:justify-end">
@@ -774,6 +777,22 @@ export default function MobileDesignReview() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* ████ LAUNCH CTA ████ */}
+      <div className="py-24 text-center relative overflow-hidden">
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,160,58,0.08) 0%, transparent 70%)' }} />
+        <div className="relative max-w-2xl mx-auto px-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#00C27C]/20 bg-[#00C27C]/5 mb-6">
+            <Zap className="w-4 h-4 text-[#00C27C]" />
+            <span className="text-sm font-bold text-[#00C27C]">Interactive Prototype</span>
+          </div>
+          <h2 className="text-4xl lg:text-5xl font-black text-white mb-4">Try it now.</h2>
+          <p className="text-lg text-[#ADA599] mb-10">Experience the full Nexus Mobile app with working navigation, all six screens, and real interaction patterns.</p>
+          <a href="#/mobile" className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-lg font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, #D4A03A, #B8860B)', boxShadow: '0 12px 40px rgba(212,160,58,0.35)' }}>
+            <Smartphone className="w-6 h-6" /> Launch Mobile App
+          </a>
         </div>
       </div>
 

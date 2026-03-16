@@ -666,7 +666,7 @@ const MOBILE_APP_HTML = `
   <div class="nma-proto nma-fade-in">
     <div class="nma-badge">INTERACTIVE</div>
     <h2>Try the Prototype</h2>
-    <p>Click through the tabs to explore each screen</p>
+    <p>Click through the tabs to explore each screen, or <a href="#/mobile" style="color:#D4A03A;font-weight:700;text-decoration:underline">launch the full mobile app</a></p>
     <div class="nma-proto-tabs">
       <div class="nma-proto-tab active" data-tab="briefing">Briefing</div>
       <div class="nma-proto-tab" data-tab="alerts">Alerts</div>
@@ -720,10 +720,12 @@ const MOBILE_APP_HTML = `
 
   <!-- CTA -->
   <div class="nma-cta nma-fade-in">
-    <div class="nma-badge">COMING IN PHASE 3</div>
-    <h2>The Floor is Your Office</h2>
-    <p>Nexus Mobile brings the command center to where dispensary operators actually work — on their feet, with their team.</p>
-    <a href="/design-review#ideas-beyond" class="nma-cta-link">← Back to Full Design Review</a>
+    <div class="nma-badge" style="background: rgba(0,194,124,0.12); color: #00C27C; border-color: rgba(0,194,124,0.3);">INTERACTIVE PROTOTYPE</div>
+    <h2>Try Nexus Mobile</h2>
+    <p>Experience the full mobile app with working navigation, all six screens, and real interaction patterns.</p>
+    <a href="#/mobile" class="nma-cta-link" style="background: linear-gradient(135deg, #D4A03A, #B8860B);">Launch Mobile App →</a>
+    <br/><br/>
+    <a href="#/mobile-review" class="nma-cta-link" style="background: transparent; border: 1px solid #38332B; font-size: 14px; padding: 10px 24px;">View Design Review</a>
   </div>
 `;
 
