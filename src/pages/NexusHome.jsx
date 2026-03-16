@@ -1929,10 +1929,10 @@ function MorningBriefing() {
 
   const briefingText = useMemo(() => {
     if (isCEO) return '"Your MSO generated $2.8M across 39 stores yesterday. IL drove 42% of portfolio revenue. Springfield up 34% WoW. 2 compliance items need attention across OH and NJ. Portfolio margin holding steady at 48.2%."';
-    if (isVP) return '"Your 23 stores across IL, MI, OH generated $1.4M yesterday. Logan Square was top performer at $48.2K. Morenci down 23% — staffing review recommended. 1 METRC sync delay in OH (auto-resolved). Regional margin: 47.8%."';
+    if (isVP) return '"Your 23 stores across IL, MI, OH generated $1.4M yesterday. Logan Square was top performer at $48.2K. Morenci down 23% — staffing review recommended. OH METRC sync delay cleared, no issues. Regional margin: 47.8%."';
     if (isRegional) return '"Your 10 Illinois stores generated $680K yesterday. Springfield up 18% WoW with a basket size increase to $135. 2 vault transfers pending at Naperville. METRC reconciliation complete — 0 discrepancies. Next state audit: Mar 24."';
     if (isStoreMgr) return '"Logan Square generated $34.2K yesterday, 8% above target. Blue Dream 3.5g is OOS on floor — 45 units in vault ready for transfer. Afternoon traffic expected +15% vs last Tuesday. 3 promos active today."';
-    if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ BioTrack sync delayed 12 min at Newark — auto-resolved. 3 product batches expiring within 30 days. Next scheduled audit: IL Mar 24."';
+    if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ BioTrack sync delay cleared at Newark (12 min, no data loss). 3 product batches expiring within 30 days. Next scheduled audit: IL Mar 24."';
     return '"Yesterday was your best Friday this quarter. Springfield IL drove 34% of revenue. 3 items need reordering."';
   }, [isCEO, isVP, isRegional, isStoreMgr, isCompliance]);
 
@@ -2318,7 +2318,7 @@ const COMPLIANCE_ALERTS = [
   },
   {
     id: 'comp-2', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '12m ago',
-    title: 'NJ BioTrack: Newark sync delayed 12 min — auto-resolved',
+    title: 'NJ BioTrack: Newark sync delay cleared (12 min, no data loss)',
     ai: 'BioTrack API timeout at 8:42 AM. System auto-retried at 8:54 AM. All 4 NJ stores now green. No data loss detected.',
     actions: ['View Log'],
   },
@@ -2359,34 +2359,34 @@ function getAlertsForPersona(personaId) {
   }
 }
 
-const AUTO_RESOLVED_BY_PERSONA = {
+const STATUS_UPDATES_BY_PERSONA = {
   ceo: [
-    { text: 'NJ BioTrack sync delay auto-resolved at Newark (12 min)', icon: 'compliance' },
-    { text: 'Campaign "March Madness" auto-launched across 12 stores', icon: 'campaign' },
-    { text: 'Portfolio METRC reconciliation — 0 discrepancies across 39 stores', icon: 'compliance' },
-    { text: 'Auto-rebalanced Stiiizy Pods: IL → MI (120 units)', icon: 'reorder' },
+    { text: 'NJ BioTrack sync delay cleared at Newark (12 min, no action needed)', icon: 'compliance' },
+    { text: 'METRC reconciliation passed — 0 discrepancies across 39 stores', icon: 'compliance' },
+    { text: 'March Madness campaign performing +18% above forecast', icon: 'campaign' },
+    { text: 'IL wholesale delivery received on schedule — 42 SKUs checked in', icon: 'reorder' },
   ],
   vp_retail: [
-    { text: 'Vault → Floor: 24 Alien Labs Baklava transferred at Springfield IL', icon: 'transfer' },
-    { text: 'Staffing alert at Morenci resolved — coverage backfilled', icon: 'campaign' },
-    { text: 'METRC reconciliation completed — 0 discrepancies (IL+MI+OH)', icon: 'compliance' },
-    { text: 'Price optimization applied: Stiiizy Pod adjusted at 3 OH stores', icon: 'reorder' },
+    { text: 'Springfield receiving complete — all packages verified in METRC', icon: 'transfer' },
+    { text: 'Morenci staffing gap filled — coverage confirmed for evening shift', icon: 'campaign' },
+    { text: 'METRC reconciliation passed — 0 discrepancies (IL+MI+OH)', icon: 'compliance' },
+    { text: 'Naperville foot traffic recovering — up 6% vs yesterday', icon: 'reorder' },
   ],
   regional_mgr: [
-    { text: 'Vault → Floor: 24 Alien Labs Baklava transferred at Springfield (METRC logged)', icon: 'transfer' },
-    { text: 'METRC reconciliation completed — 0 discrepancies across IL', icon: 'compliance' },
-    { text: 'Auto-reordered 50 Stiiizy Pods for Schaumburg IL', icon: 'reorder' },
+    { text: 'Springfield receiving complete — 42 SKUs verified in METRC', icon: 'transfer' },
+    { text: 'METRC reconciliation passed — 0 discrepancies across IL', icon: 'compliance' },
+    { text: 'Schaumburg afternoon rush cleared — no stockouts reported', icon: 'reorder' },
   ],
   store_mgr: [
-    { text: 'Vault → Floor: 24 Alien Labs Baklava transferred (METRC logged)', icon: 'transfer' },
-    { text: 'Campaign "March Madness" auto-launched', icon: 'campaign' },
-    { text: 'METRC reconciliation completed — 0 discrepancies', icon: 'compliance' },
+    { text: 'Morning METRC reconciliation passed — 0 discrepancies', icon: 'compliance' },
+    { text: 'March Madness promo active — 23 redemptions so far today', icon: 'campaign' },
+    { text: 'Yesterday\'s cash close balanced — all drawers within tolerance', icon: 'transfer' },
   ],
   compliance: [
-    { text: 'NJ BioTrack sync delay auto-resolved at Newark (12 min latency)', icon: 'compliance' },
-    { text: 'METRC reconciliation completed across all IL stores — 0 discrepancies', icon: 'compliance' },
+    { text: 'NJ BioTrack sync delay cleared at Newark (12 min, no data loss)', icon: 'compliance' },
+    { text: 'METRC reconciliation passed across all IL stores — 0 discrepancies', icon: 'compliance' },
     { text: 'PA Leaf Data sync verified — all 3 stores green', icon: 'compliance' },
-    { text: 'Auto-flagged batch #2847 approaching 30-day expiry', icon: 'reorder' },
+    { text: 'Batch #2847 approaching 30-day expiry — flagged for review', icon: 'reorder' },
   ],
 };
 
@@ -2619,10 +2619,10 @@ function SmartAlertsFeed({ onAction }) {
         {SMART_ALERTS.map(a => a.type === 'transfer' ? renderTransferAlert(a) : renderStandardAlert(a))}
       </div>
 
-      {/* Auto-resolved footer */}
+      {/* Status updates footer */}
       <div className="px-4 py-2 border-t border-[#38332B]" style={{ background: 'rgba(0,194,124,0.03)' }}>
-        <p className="text-[10px] font-medium text-[#6B6359] mb-1">Auto-Resolved Today</p>
-        {(AUTO_RESOLVED_BY_PERSONA[selectedPersonaId] || AUTO_RESOLVED_BY_PERSONA.store_mgr).map((r, i) => (
+        <p className="text-[10px] font-medium text-[#6B6359] mb-1">Status Updates</p>
+        {(STATUS_UPDATES_BY_PERSONA[selectedPersonaId] || STATUS_UPDATES_BY_PERSONA.store_mgr).map((r, i) => (
           <div key={i} className="flex items-center gap-1.5 text-[10px] text-[#ADA599] mb-0.5">
             {r.icon === 'transfer' && <ArrowRightLeft className="w-3 h-3 text-[#00C27C]" />}
             {r.icon === 'campaign' && <Rocket className="w-3 h-3 text-[#00C27C]" />}
