@@ -19,6 +19,7 @@ import ConnectAgent from './pages/ConnectAgent';
 import CustomerBridge from './pages/CustomerBridge';
 import PricingAgent from './pages/PricingAgent';
 import CustomerPortal from './pages/CustomerPortal';
+import InventoryAnalytics from './pages/InventoryAnalytics';
 import NexusLanding from './pages/NexusLanding';
 import { reviews as allReviews } from './data/mockData';
 import { filterReviews } from './utils/helpers';
@@ -118,6 +119,7 @@ export default function App() {
             <Route path="/proto/qr" element={<ProtoQR />} />
             <Route path="/agents/marketing" element={<MarketingCampaigns />} />
             <Route path="/agents/connect" element={<ConnectAgent />} />
+            <Route path="/inventory" element={<InventoryAnalytics />} />
             <Route path="/agents/bridge" element={<CustomerBridge />} />
             <Route path="/portal" element={<CustomerPortal />} />
             <Route path="/agents/pricing" element={<PricingAgent mode="agent" />} />

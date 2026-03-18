@@ -18,7 +18,7 @@ const CUSTOMERS_ITEMS = [
 ];
 
 const OPERATIONS_ITEMS = [
-  { to: '/agents/connect', label: 'Inventory & Reordering', icon: ShoppingCart },
+  { to: '/inventory', label: 'Inventory & Reordering', icon: ShoppingCart },
   { to: '/agents/pricing', label: 'Pricing & Margins', icon: CircleDollarSign },
   { to: '/agents/marketing', label: 'Marketing Campaigns', icon: Megaphone },
 ];
