@@ -434,11 +434,16 @@ function Section({ title, icon: Icon, iconColor, children, defaultOpen = true, b
 export function ReorderView({ data, onBack }) {
   const products = data?.products || OUT_OF_STOCK_PRODUCTS;
   const recommendations = data?.recommendations || REORDER_RECOMMENDATIONS;
+  const newBrandItems = data?.newBrandItems || [];
 
   const [selected, setSelected] = useState(() => new Set(products.filter(p => p.urgency === 'high').map(p => p.id)));
   const [ordering, setOrdering] = useState(false);
   const [ordered, setOrdered] = useState(false);
   const [daysOfCoverage, setDaysOfCoverage] = useState(14);
+
+  // New brand items: track which are added to PO and their quantities
+  const [newItemsAdded, setNewItemsAdded] = useState(() => new Set());
+  const [newItemQtys, setNewItemQtys] = useState(() => newBrandItems.reduce((acc, _, i) => ({ ...acc, [i]: 12 }), {}));
 
   // Per-product brand discount toggles (default on for eligible items)
   const [discountsApplied, setDiscountsApplied] = useState(() => {
@@ -523,11 +528,23 @@ export function ReorderView({ data, onBack }) {
       }
     });
 
-    const totalSavings = productsSavings + recsSavings;
-    const grandTotal = productsSubtotal + recsSubtotal;
+    // New brand items subtotal (always get brand-funded discount)
+    let newItemsSubtotal = 0;
+    let newItemsSavings = 0;
+    newBrandItems.forEach((item, i) => {
+      if (!newItemsAdded.has(i)) return;
+      const raw = (item.wholesalePrice || 0) * (newItemQtys[i] || 0);
+      // New items always get a 15% brand-funded intro discount
+      const saving = raw * 0.15;
+      newItemsSavings += saving;
+      newItemsSubtotal += raw - saving;
+    });
 
-    return { productsSubtotal, recsSubtotal, totalSavings, grandTotal };
-  }, [products, selected, quantities, discountsApplied, recommendations, recQuantities, recDiscountsApplied]);
+    const totalSavings = productsSavings + recsSavings + newItemsSavings;
+    const grandTotal = productsSubtotal + recsSubtotal + newItemsSubtotal;
+
+    return { productsSubtotal, recsSubtotal, newItemsSubtotal, totalSavings, grandTotal, newItemsSavings };
+  }, [products, selected, quantities, discountsApplied, recommendations, recQuantities, recDiscountsApplied, newBrandItems, newItemsAdded, newItemQtys]);
 
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -712,6 +729,12 @@ export function ReorderView({ data, onBack }) {
             <span className="text-[11px] text-[#ADA599]">Recommended ({recommendations.length})</span>
             <span className="text-[11px] text-[#F0EDE8]">${costBreakdown.recsSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
+          {costBreakdown.newItemsSubtotal > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-[#B598E8]">New items ({newItemsAdded.size})</span>
+              <span className="text-[11px] text-[#F0EDE8]">${costBreakdown.newItemsSubtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+          )}
           {costBreakdown.totalSavings > 0 && (
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-emerald-400 flex items-center gap-1">
@@ -726,6 +749,76 @@ export function ReorderView({ data, onBack }) {
           </div>
         </div>
       </Section>}
+
+      {/* New brand items the store doesn't carry */}
+      {newBrandItems.length > 0 && (
+        <Section
+          title={`New from ${newBrandItems[0]?.brand || 'Brand'} — Start Carrying`}
+          icon={Sparkles}
+          iconColor="#B598E8"
+          badge="Brand Funded"
+          defaultOpen={true}
+        >
+          <p className="text-[10px] text-[#ADA599] mb-3">
+            {newBrandItems[0]?.brand} products not currently in your store. Add them to this PO with a <span className="text-emerald-400 font-semibold">15% brand-funded intro discount</span>.
+          </p>
+          <div className="space-y-2">
+            {newBrandItems.map((item, i) => {
+              const isAdded = newItemsAdded.has(i);
+              const qty = newItemQtys[i] || 12;
+              const lineCost = (item.wholesalePrice || 0) * qty;
+              const discounted = lineCost * 0.85;
+              const margin = item.retailPrice > 0 ? Math.round(((item.retailPrice - item.wholesalePrice * 0.85) / item.retailPrice) * 100) : 0;
+              return (
+                <div key={i} className={`bg-[#141210] rounded-lg p-3 border transition-all ${isAdded ? 'border-[#B598E8]/40 bg-[#B598E8]/5' : 'border-[#38332B]'}`}>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-[18px] h-[18px] rounded border flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors ${
+                        isAdded ? 'bg-[#B598E8] border-[#B598E8]' : 'border-[#38332B]'
+                      }`}
+                      onClick={() => setNewItemsAdded(prev => { const next = new Set(prev); if (next.has(i)) next.delete(i); else next.add(i); return next; })}
+                    >
+                      {isAdded && <Check className="w-2.5 h-2.5 text-white" />}
+                    </div>
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-[#B598E8]/10 flex-shrink-0">
+                      <Package className="w-3.5 h-3.5 text-[#B598E8]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-[11px] font-medium text-[#F0EDE8]">{item.name}</p>
+                        <span className="text-[9px] px-1.5 py-px rounded-full bg-[#B598E8]/15 text-[#B598E8] font-medium border border-[#B598E8]/20">NEW</span>
+                        <span className="text-[9px] px-1.5 py-px rounded-full bg-emerald-500/15 text-emerald-400 font-medium border border-emerald-500/20 flex items-center gap-0.5">
+                          <Percent className="w-2 h-2" />15% Brand Funded
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-[#ADA599]">{item.category} · Retail ${item.retailPrice} · Wholesale ${item.wholesalePrice.toFixed(2)} · <span className="text-emerald-400">{margin}% margin</span></p>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {isAdded && (
+                        <div className="flex items-center gap-0.5">
+                          <button onClick={() => setNewItemQtys(prev => ({ ...prev, [i]: Math.max(1, (prev[i] || 12) - 1) }))} className="w-5 h-5 rounded border border-[#38332B] text-[#ADA599] hover:text-[#F0EDE8] flex items-center justify-center text-xs transition-colors">−</button>
+                          <input type="number" value={qty} onChange={(e) => setNewItemQtys(prev => ({ ...prev, [i]: Math.max(1, parseInt(e.target.value) || 1) }))} className="w-10 h-5 text-center text-[11px] font-bold text-[#F0EDE8] bg-[#1C1B1A] border border-[#38332B] rounded focus:border-[#B598E8] focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                          <button onClick={() => setNewItemQtys(prev => ({ ...prev, [i]: (prev[i] || 12) + 1 }))} className="w-5 h-5 rounded border border-[#38332B] text-[#ADA599] hover:text-[#F0EDE8] flex items-center justify-center text-xs transition-colors">+</button>
+                        </div>
+                      )}
+                      <div className="text-right w-16">
+                        {isAdded ? (
+                          <>
+                            <p className="text-[11px] font-medium text-[#F0EDE8]">${discounted.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                            <p className="text-[9px] text-emerald-400">-15%</p>
+                          </>
+                        ) : (
+                          <p className="text-[10px] text-[#6B6359]">${lineCost.toFixed(2)}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Section>
+      )}
 
       {/* supplier info */}
       <Section title="Supplier Details" icon={Building2} iconColor="#64A8E0" defaultOpen={false}>
@@ -1144,26 +1237,38 @@ export default function ConnectAgent() {
         avgWeeklySales: item.avgWeekly || 10,
       }));
 
+      // Map new brand items the store doesn't carry yet
+      const newItems = (ns.newBrandItems || []).map(item => ({
+        name: item.name,
+        brand: item.brand,
+        category: item.category,
+        retailPrice: item.price,
+        wholesalePrice: Math.round(item.price * 0.55 * 100) / 100,
+        suggestedQty: 12,
+      }));
+
       const focusedAnalysis = {
         title: `Reorder PO — ${ns.product}`,
         lostRevenue: lostPerWeek > 0 ? `$${lostPerWeek.toLocaleString()}/week` : 'N/A',
         products: [focusedProduct],
         recommendations: sameBrandRecs,
+        newBrandItems: newItems,
       };
 
       const otherCount = sameBrandRecs.length;
+      const newCount = newItems.length;
       const contextMsg = `Draft a reorder PO for ${ns.product} (${ns.brand}) at ${ns.store}`;
       setMessages([{ role: 'user', text: contextMsg }]);
       setView('typing');
       setActiveView('reorder');
       setAiAnalysis(focusedAnalysis);
       setTimeout(() => {
-        const otherMsg = otherCount > 0
-          ? ` I also found **${otherCount} other ${ns.brand} item${otherCount > 1 ? 's' : ''}** that ${otherCount > 1 ? 'are' : 'is'} low or out of stock — you can include ${otherCount > 1 ? 'them' : 'it'} in this PO below.`
-          : '';
+        let extraMsg = '';
+        if (otherCount > 0) extraMsg += ` I also found **${otherCount} other ${ns.brand} item${otherCount > 1 ? 's' : ''}** that ${otherCount > 1 ? 'are' : 'is'} low or out of stock.`;
+        if (newCount > 0) extraMsg += ` Plus **${newCount} ${ns.brand} product${newCount > 1 ? 's' : ''}** you don't currently carry — with brand-funded discounts available.`;
         setMessages(prev => [...prev, {
           role: 'agent',
-          text: `I've prepared a focused reorder PO for **${ns.product}** (${ns.brand}) at **${ns.store}**. Suggested quantity: **${suggestedQty} units** (2-week supply based on ${ns.avgWeekly || '~10'}/wk avg sales).${otherMsg} Adjust quantities and days of coverage below, then submit.`
+          text: `I've prepared a focused reorder PO for **${ns.product}** (${ns.brand}) at **${ns.store}**. Suggested quantity: **${suggestedQty} units** (2-week supply based on ${ns.avgWeekly || '~10'}/wk avg sales).${extraMsg} Adjust quantities and days of coverage below, then submit.`
         }]);
         setView('result');
       }, 1500);

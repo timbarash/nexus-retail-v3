@@ -468,13 +468,21 @@ export default function InventoryAnalytics() {
   }, []);
 
   // Navigate to Inventory Agent with full product context for focused PO
-  // Also include other low/OOS items from the same brand across all visible stores
+  // Also include other low/OOS items from the same brand + new catalog items the store doesn't carry
   const handleReorder = useCallback((store, product) => {
     const sameBrandItems = visibleStores.flatMap(s =>
       s.products
         .filter(p => p.brand === product.brand && p.name !== product.name && ['oos', 'critical', 'low'].includes(p.status))
         .map(p => ({ ...p, storeName: s.name }))
     );
+
+    // Find catalog items from same brand that this store doesn't currently carry
+    const storeData = visibleStores.find(s => s.name === store.name);
+    const storeProductNames = new Set(storeData ? storeData.products.map(p => p.name) : []);
+    const newBrandItems = PRODUCT_CATALOG
+      .filter(p => p.brand === product.brand && !storeProductNames.has(p.name))
+      .map(p => ({ name: p.name, brand: p.brand, category: p.category, price: p.price }));
+
     navigate('/agents/connect', { state: {
       product: product.name,
       store: store.name,
@@ -489,6 +497,7 @@ export default function InventoryAnalytics() {
       status: product.status,
       metrcPkg: product.metrcPkg,
       sameBrandItems,
+      newBrandItems,
     } });
   }, [navigate, visibleStores]);
 
