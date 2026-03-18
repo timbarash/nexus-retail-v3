@@ -3003,12 +3003,20 @@ function StoreHealthMatrix({ onOpenNexus }) {
       const revScore = Math.min(100, Math.round((s.revenue / 750) * 100));
       const sentScore = s.sentimentScore;
       const mktScore = Math.round(50 + rng() * 40);
-      const scoreBars = [
-        { label: 'Revenue', score: revScore, weight: '30%', color: '#00C27C' },
-        { label: 'Sentiment', score: sentScore, weight: '25%', color: '#64A8E0' },
-        { label: 'Stock', score: s.stockScore, weight: '20%', color: '#D4A03A' },
-        { label: 'Compliance', score: s.compScore, weight: '15%', color: '#B598E8' },
-        { label: 'Marketing', score: mktScore, weight: '10%', color: '#0EA5E9' },
+      const oosCount = Math.round((100 - s.stockScore) / 10);
+      const staffOn = Math.round(4 + rng() * 5);
+      const staffTotal = staffOn + Math.round(1 + rng() * 3);
+      const waitMin = (2 + rng() * 6).toFixed(1);
+      const syncAgo = Math.round(1 + rng() * 15);
+      const topProduct = ['Blue Dream 3.5g', 'Stiiizy Pod 1g', 'Jeeter Baby Js', 'Wyld Gummies', 'Kiva Camino'][Math.floor(rng() * 5)];
+      const topUnits = Math.round(12 + rng() * 30);
+      const opsStats = [
+        { icon: '🏆', label: 'Top Seller', value: `${topProduct} — ${topUnits} units`, query: `What are the top selling products at ${s.name}?` },
+        { icon: '⏱', label: 'Avg Wait', value: `${waitMin} min`, warn: parseFloat(waitMin) > 5, query: `Show me customer wait time data for ${s.name}` },
+        { icon: '👥', label: 'Staff On Shift', value: `${staffOn} of ${staffTotal}`, query: `Show me budtender performance at ${s.name}` },
+        { icon: '📦', label: 'Out of Stock', value: oosCount > 0 ? `${oosCount} products` : 'Fully stocked', warn: oosCount > 2, query: `Which products are out of stock at ${s.name}?` },
+        { icon: '🔗', label: 'METRC Sync', value: `${syncAgo}m ago`, warn: syncAgo > 10, query: `Show METRC compliance status for ${s.name}` },
+        { icon: '📊', label: 'vs Target', value: revScore >= 80 ? `+${revScore - 75}% ahead` : `${75 - revScore}% behind`, warn: revScore < 75, query: `Show me ${s.name} performance vs target` },
       ];
       return (
         <>
@@ -3045,17 +3053,22 @@ function StoreHealthMatrix({ onOpenNexus }) {
               ))}
             </div>
 
-            {/* Score Breakdown */}
+            {/* Operations Snapshot */}
             <div className="px-5 pt-4">
-              <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-wider mb-2">Score Breakdown</p>
-              <div className="space-y-2">
-                {scoreBars.map(bar => (
-                  <div key={bar.label} className="flex items-center gap-3">
-                    <span className="text-[10px] text-[#ADA599] w-20">{bar.label} <span className="text-[#6B6359]">({bar.weight})</span></span>
-                    <div className="flex-1 h-2 rounded-full bg-[#282724] overflow-hidden">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${bar.score}%`, background: bar.color }} />
+              <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-wider mb-2">Right Now</p>
+              <div className="grid grid-cols-2 gap-1.5">
+                {opsStats.map(op => (
+                  <div
+                    key={op.label}
+                    onClick={() => { setSelectedStore(null); onOpenNexus?.(op.query); }}
+                    className="flex items-center gap-2 rounded-lg border border-[#38332B] bg-[#141210] px-2.5 py-2 hover:bg-white/[0.03] transition-colors cursor-pointer"
+                  >
+                    <span className="text-sm flex-shrink-0">{op.icon}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[9px] text-[#6B6359] uppercase">{op.label}</p>
+                      <p className={`text-[11px] font-semibold truncate ${op.warn ? 'text-[#E87068]' : 'text-[#ADA599]'}`}>{op.value}</p>
                     </div>
-                    <span className="text-[10px] font-bold w-7 text-right" style={{ color: bar.color }}>{bar.score}</span>
+                    <ChevronRight size={10} className="text-[#38332B] flex-shrink-0" />
                   </div>
                 ))}
               </div>
