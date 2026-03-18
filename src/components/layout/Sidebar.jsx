@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { NavLink } from 'react-router-dom';
-import { BarChart3, Tag, MapPin, MessageSquare, Trophy, X, Zap, Bot, Megaphone, ShoppingCart, CircleDollarSign, Waypoints, Hash, Globe, Briefcase } from 'lucide-react';
+import { BarChart3, Tag, MapPin, MessageSquare, Trophy, X, Zap, Bot, Megaphone, ShoppingCart, CircleDollarSign, Waypoints, Hash, Globe, Briefcase, Package } from 'lucide-react';
 import { CHANNELS } from '../../data/slackMockData';
 import { useStores } from '../../contexts/StoreContext';
 import NexusIcon from '../NexusIcon';
@@ -18,7 +18,8 @@ const CUSTOMERS_ITEMS = [
 ];
 
 const OPERATIONS_ITEMS = [
-  { to: '/inventory', label: 'Inventory & Reordering', icon: ShoppingCart },
+  { to: '/agents/connect', label: 'Inventory Agent', icon: ShoppingCart },
+  { to: '/inventory', label: 'Inventory Analytics', icon: Package },
   { to: '/agents/pricing', label: 'Pricing & Margins', icon: CircleDollarSign },
   { to: '/agents/marketing', label: 'Marketing Campaigns', icon: Megaphone },
 ];
