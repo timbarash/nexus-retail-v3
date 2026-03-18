@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
@@ -13,6 +13,7 @@ import {
   ArrowRight, TrendingDown, Shield, Clock, Layers, Plus
 } from 'lucide-react';
 import { generatePricingResponse, generatePricingAnalysis, generateMarketingCampaignPlan, isGeminiAvailable } from '../utils/gemini';
+import ConfirmationDrawer from '../components/common/ConfirmationDrawer';
 import { CampaignPlan } from './MarketingCampaigns';
 import { useStores } from '../contexts/StoreContext';
 import { locations } from '../data/mockData';
@@ -535,6 +536,7 @@ export function ChangePricesView({ data, onBack }) {
 
   const [selected, setSelected] = useState(new Set(initialChanges.map(c => c.id)));
   const [applied, setApplied] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const activeChanges = initialChanges.filter(c => selected.has(c.id));
   const totalRevenueImpact = data?.totalRevenueImpact || (() => {
@@ -638,10 +640,29 @@ export function ChangePricesView({ data, onBack }) {
           <span className="text-[#00C27C] font-bold text-sm">Est. {totalRevenueImpact} revenue</span>
         </div>
         {!applied ? (
-          <button onClick={() => setApplied(true)} disabled={activeChanges.length === 0}
-            className="px-5 py-2 rounded-lg text-sm font-semibold bg-[#00C27C] text-white hover:bg-[#00A868] transition-colors disabled:opacity-50">
-            Apply Changes
-          </button>
+          <>
+            <button onClick={() => setShowConfirm(true)} disabled={activeChanges.length === 0}
+              className="px-5 py-2 rounded-lg text-sm font-semibold bg-[#00C27C] text-white hover:bg-[#00A868] transition-colors disabled:opacity-50">
+              Apply Changes
+            </button>
+            <ConfirmationDrawer
+              open={showConfirm}
+              onCancel={() => setShowConfirm(false)}
+              onConfirm={() => { setShowConfirm(false); setApplied(true); }}
+              title="Confirm Price Changes"
+              description={`Updating prices for ${activeChanges.length} products across all stores`}
+              icon={DollarSign}
+              confirmLabel="Apply Price Changes"
+              confirmColor="#00C27C"
+              details={[
+                { label: 'Products', value: `${activeChanges.length} selected` },
+                { label: 'Est. Revenue Impact', value: totalRevenueImpact },
+                ...activeChanges.slice(0, 3).map(c => ({ label: `${c.brand} ${c.name}`, value: `$${c.currentPrice} → $${c.newPrice} (${c.changePercent})` })),
+                ...(activeChanges.length > 3 ? [{ label: 'And more...', value: `+${activeChanges.length - 3} products` }] : []),
+              ]}
+              warning="Price changes will be pushed to POS systems at all locations immediately."
+            />
+          </>
         ) : (
           <span className="flex items-center gap-2 text-[#00C27C] font-semibold text-sm">
             <CheckCircle2 className="w-4 h-4" /> Prices Updated

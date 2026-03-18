@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Bot, Sparkles, Send, ArrowLeft, Megaphone, UserX, Cake, Clock,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { generateMarketingResponse, generateMarketingCampaignPlan, isGeminiAvailable } from '../utils/gemini';
 import { brandImg } from '../utils/helpers';
+import ConfirmationDrawer from '../components/common/ConfirmationDrawer';
 
 /* ═══════════════════════════════════════════════════════════════════
    ICON MAP & RESOLVER
@@ -159,7 +160,7 @@ export const CAMPAIGNS = {
     projections: {
       revenue: '$18,400 — $24,200',
       orders: '340 — 480',
-      roi: '6.2x',
+      roi: '2.8x',
       reactivated: '~120 lapsed customers',
       aov: '$52.40',
       redemptionRate: '14.2%',
@@ -227,7 +228,7 @@ export const CAMPAIGNS = {
     projections: {
       revenue: '$9,800 — $14,600',
       orders: '210 — 340',
-      roi: '4.8x',
+      roi: '2.2x',
       reactivated: '~280 customers',
       aov: '$48.20',
       redemptionRate: '11.8%',
@@ -295,7 +296,7 @@ export const CAMPAIGNS = {
     projections: {
       revenue: '$6,200 — $8,400/mo',
       orders: '180 — 260/mo',
-      roi: '8.1x',
+      roi: '3.5x',
       reactivated: '~45 first-time loyalty redemptions/mo',
       aov: '$62.30',
       redemptionRate: '34.5%',
@@ -319,7 +320,7 @@ const CAMPAIGN_BASELINES = {
     baseAudienceSize: 12847,
     baseRevenueLow: 18400, baseRevenueHigh: 24200,
     baseOrdersLow: 340, baseOrdersHigh: 480,
-    baseROI: 6.2, baseTotalCost: 186.40, baseAOV: 52.40,
+    baseROI: 2.8, baseTotalCost: 186.40, baseAOV: 52.40,
     channelCosts: { SMS: 0.015, Email: 0.003, Push: 0 },
     channelReach: { SMS: 0.716, Email: 0.887, Push: 0.475 },
     channelConversionRate: { SMS: 0.038, Email: 0.012, Push: 0.006 },
@@ -329,7 +330,7 @@ const CAMPAIGN_BASELINES = {
     baseAudienceSize: 4312,
     baseRevenueLow: 9800, baseRevenueHigh: 14600,
     baseOrdersLow: 210, baseOrdersHigh: 340,
-    baseROI: 4.8, baseTotalCost: 124.60, baseAOV: 48.20,
+    baseROI: 2.2, baseTotalCost: 124.60, baseAOV: 48.20,
     channelCosts: { SMS: 0.015, Email: 0.003, Push: 0 },
     channelReach: { SMS: 0.881, Email: 0.950, Push: 0.510 },
     channelConversionRate: { SMS: 0.032, Email: 0.009, Push: 0.004 },
@@ -339,7 +340,7 @@ const CAMPAIGN_BASELINES = {
     baseAudienceSize: 890,
     baseRevenueLow: 6200, baseRevenueHigh: 8400,
     baseOrdersLow: 180, baseOrdersHigh: 260,
-    baseROI: 8.1, baseTotalCost: 42.80, baseAOV: 62.30,
+    baseROI: 3.5, baseTotalCost: 42.80, baseAOV: 62.30,
     channelCosts: { SMS: 0.015, Email: 0.003, Push: 0 },
     channelReach: { SMS: 0.921, Email: 0.978, Push: 0.607 },
     channelConversionRate: { SMS: 0.042, Email: 0.018, Push: 0.008 },
@@ -657,6 +658,8 @@ export function CampaignPlan({ data, onBack }) {
       noLocations: selectedLocations.length === 0,
     };
   }, [editAudienceSize, enabledChannels, selectedLocations, budgetDaily, baseline]);
+
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleSend = () => {
     setSending(true);
@@ -1114,7 +1117,7 @@ export function CampaignPlan({ data, onBack }) {
                   {testSent ? <><Check className="w-4 h-4 text-[#00C27C]" /> Test Sent</> : <><Eye className="w-4 h-4" /> Send Test</>}
                 </button>
                 <button
-                  onClick={handleSend}
+                  onClick={() => setShowConfirm(true)}
                   disabled={sending || dynamicProjections.noChannels || dynamicProjections.noLocations}
                   className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-white transition-all hover:scale-105 active:scale-95 disabled:opacity-70 disabled:hover:scale-100 shadow-lg"
                   style={{ background: `linear-gradient(135deg, ${c.accentFrom}, ${c.accentTo})` }}
@@ -1125,6 +1128,24 @@ export function CampaignPlan({ data, onBack }) {
                     <><Send className="w-4 h-4" /> Launch Campaign</>
                   )}
                 </button>
+                <ConfirmationDrawer
+                  open={showConfirm}
+                  onCancel={() => setShowConfirm(false)}
+                  onConfirm={() => { setShowConfirm(false); handleSend(); }}
+                  title={`Launch: ${c.name}`}
+                  description={`Queue messages to ${editAudienceSize.toLocaleString()} customers`}
+                  icon={Send}
+                  confirmLabel="Launch Campaign"
+                  confirmColor={c.accentFrom}
+                  details={[
+                    { label: 'Audience', value: `${editAudienceSize.toLocaleString()} customers` },
+                    { label: 'Channels', value: [...enabledChannels].join(', ') || 'None' },
+                    { label: 'Locations', value: `${selectedLocations.length} stores` },
+                    { label: 'Est. Cost', value: dynamicProjections.totalCost },
+                    { label: 'Projected ROI', value: `${dynamicProjections.roi}` },
+                  ]}
+                  warning="Messages will begin sending immediately. You can pause the campaign from the dashboard after launch."
+                />
               </div>
             </div>
             <p className="text-[10px] text-[#6B6359]">
@@ -1369,7 +1390,7 @@ export default function MarketingCampaigns() {
         </div>
         <div className="p-3 rounded-xl border border-[#38332B] bg-[#1C1B1A]">
           <p className="text-[10px] uppercase tracking-wider text-[#ADA599] mb-1">Avg ROI</p>
-          <p className="text-xl font-bold text-[#00C27C]">6.2x</p>
+          <p className="text-xl font-bold text-[#00C27C]">2.8x</p>
           <p className="text-[10px] text-[#00C27C]">Across active campaigns</p>
         </div>
       </div>

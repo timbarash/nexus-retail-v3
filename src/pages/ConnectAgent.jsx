@@ -9,6 +9,7 @@ import {
   PackageCheck, PackageX, TrendingDown, CircleDollarSign
 } from 'lucide-react';
 import { generateConnectResponse, generateConnectAnalysis, isGeminiAvailable } from '../utils/gemini';
+import ConfirmationDrawer from '../components/common/ConfirmationDrawer';
 import { brandImg } from '../utils/helpers';
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -55,12 +56,13 @@ const OUT_OF_STOCK_PRODUCTS = [
     name: 'STIIIZY OG Kush Pod',
     type: 'Vape Pod · 1g',
     thc: '86%',
-    lastPrice: '$35.00',
+    lastPrice: '$45.00',
     avgWeeklySales: 42,
     daysOutOfStock: 3,
     urgency: 'high',
     supplier: 'STIIIZY Direct',
     leadTime: '2-3 days',
+    paymentTerms: 'Net 15',
     brandColor: '#1a1a1a',
     image: brandImg('/brands/stiiizy-pods.png'),
     recommendedQty: 36,
@@ -72,11 +74,12 @@ const OUT_OF_STOCK_PRODUCTS = [
     type: 'Edible · 100mg',
     thc: '10mg/pc',
     lastPrice: '$22.00',
-    avgWeeklySales: 38,
+    avgWeeklySales: 55,
     daysOutOfStock: 1,
     urgency: 'high',
     supplier: 'Kiva Sales Inc.',
     leadTime: '3-5 days',
+    paymentTerms: 'Net 30',
     brandColor: '#8B4513',
     image: brandImg('/brands/kiva-camino.jpg'),
     recommendedQty: 24,
@@ -93,6 +96,7 @@ const OUT_OF_STOCK_PRODUCTS = [
     urgency: 'medium',
     supplier: 'Raw Garden LLC',
     leadTime: '3-4 days',
+    paymentTerms: 'COD',
     brandColor: '#4CAF50',
     image: brandImg('/brands/raw-garden-cart.webp'),
     recommendedQty: 18,
@@ -104,11 +108,12 @@ const OUT_OF_STOCK_PRODUCTS = [
     type: 'Edible · 100mg',
     thc: '10mg/pc',
     lastPrice: '$18.00',
-    avgWeeklySales: 22,
+    avgWeeklySales: 35,
     daysOutOfStock: 2,
     urgency: 'medium',
     supplier: 'Wyld Distribution',
     leadTime: '4-5 days',
+    paymentTerms: 'Net 30',
     brandColor: '#E91E63',
     image: brandImg('/brands/wyld-elderberry.png'),
     recommendedQty: 18,
@@ -119,12 +124,13 @@ const OUT_OF_STOCK_PRODUCTS = [
     name: 'Baby Jeeter Infused — Churros',
     type: '5pk Pre-Rolls · 2.5g',
     thc: '46%',
-    lastPrice: '$25.00',
-    avgWeeklySales: 56,
+    lastPrice: '$35.00',
+    avgWeeklySales: 62,
     daysOutOfStock: 0,
     urgency: 'low',
     supplier: 'DreamFields (Jeeter)',
     leadTime: '2-3 days',
+    paymentTerms: 'Net 7',
     note: 'Low stock — 8 units remaining',
     brandColor: '#7B2D8E',
     image: brandImg('/brands/jeeter-baby-churros.webp'),
@@ -226,10 +232,10 @@ const NEW_PRODUCTS = [
 ];
 
 const REORDER_RECOMMENDATIONS = [
-  { brand: 'Jeeter', product: 'Baby Jeeter Churros 5pk', qty: 48, reason: 'Sells out within 4 days avg', unitPrice: 15.00, avgWeeklySales: 56 },
-  { brand: 'STIIIZY', product: 'OG Kush Pod 1g', qty: 36, reason: 'Currently out of stock, high demand', unitPrice: 21.00, avgWeeklySales: 42 },
-  { brand: 'Kiva', product: 'Camino Pineapple Habanero', qty: 24, reason: '1 day out of stock, trending up', unitPrice: 13.00, avgWeeklySales: 38 },
-  { brand: 'Wyld', product: 'Elderberry Indica Gummies', qty: 18, reason: '2 days out of stock', unitPrice: 11.00, avgWeeklySales: 22 },
+  { brand: 'Jeeter', product: 'Baby Jeeter Churros 5pk', qty: 48, reason: 'Sells out within 4 days avg', unitPrice: 18.00, avgWeeklySales: 62 },
+  { brand: 'STIIIZY', product: 'OG Kush Pod 1g', qty: 36, reason: 'Currently out of stock, high demand', unitPrice: 24.00, avgWeeklySales: 42 },
+  { brand: 'Kiva', product: 'Camino Pineapple Habanero', qty: 24, reason: '1 day out of stock, trending up', unitPrice: 10.00, avgWeeklySales: 55 },
+  { brand: 'Wyld', product: 'Elderberry Indica Gummies', qty: 18, reason: '2 days out of stock', unitPrice: 8.00, avgWeeklySales: 35 },
 ];
 
 /* Brand Funded Discounts — only brands with active co-op programs */
@@ -522,6 +528,8 @@ export function ReorderView({ data, onBack }) {
     return { productsSubtotal, recsSubtotal, totalSavings, grandTotal };
   }, [products, selected, quantities, discountsApplied, recommendations, recQuantities, recDiscountsApplied]);
 
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const handleOrder = () => {
     setOrdering(true);
     setTimeout(() => { setOrdering(false); setOrdered(true); }, 2200);
@@ -720,6 +728,9 @@ export function ReorderView({ data, onBack }) {
                   <Truck className="w-3 h-3" /> Lead time: {p.leadTime}
                 </div>
                 <div className="flex items-center gap-2 text-[11px] text-[#ADA599]">
+                  <DollarSign className="w-3 h-3" /> Payment terms: {p.paymentTerms}
+                </div>
+                <div className="flex items-center gap-2 text-[11px] text-[#ADA599]">
                   <Phone className="w-3 h-3" /> Account rep on file
                 </div>
                 <div className="flex items-center gap-2 text-[11px] text-[#ADA599]">
@@ -750,7 +761,7 @@ export function ReorderView({ data, onBack }) {
               </p>
             </div>
             <button
-              onClick={handleOrder}
+              onClick={() => setShowConfirm(true)}
               disabled={ordering || selected.size === 0}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-[#64A8E0] to-[#2563EB] transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shadow-lg"
             >
@@ -760,6 +771,23 @@ export function ReorderView({ data, onBack }) {
                 <><ShoppingCart className="w-4 h-4" /> Place Orders — ${costBreakdown.grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</>
               )}
             </button>
+            <ConfirmationDrawer
+              open={showConfirm}
+              onCancel={() => setShowConfirm(false)}
+              onConfirm={() => { setShowConfirm(false); handleOrder(); }}
+              title="Confirm Purchase Orders"
+              description={`Sending POs to ${[...new Map(products.filter(p => selected.has(p.id)).map(p => [p.supplier, p])).values()].length} suppliers`}
+              icon={ShoppingCart}
+              confirmLabel={`Place Orders — $${costBreakdown.grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              confirmColor="#2563EB"
+              details={[
+                { label: 'Items', value: `${selected.size} selected + ${recommendations.length} recommended` },
+                { label: 'Subtotal', value: `$${costBreakdown.grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                ...(costBreakdown.totalSavings > 0 ? [{ label: 'Brand Discounts', value: `-$${costBreakdown.totalSavings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` }] : []),
+                { label: 'Est. Delivery', value: '2-5 business days' },
+              ]}
+              warning="Purchase orders will be sent to suppliers immediately upon confirmation."
+            />
           </div>
         )}
       </div>

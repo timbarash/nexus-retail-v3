@@ -17,9 +17,10 @@ import {
   ArrowDownRight, Minus, CheckCircle2, Smartphone, QrCode, Monitor,
   Layers, Radio, Activity, Percent, Receipt, Store, Globe, Shield,
   Megaphone, ShoppingCart, ChevronDown, Rocket, ArrowRightLeft, Check, Lock,
-  Building2, Truck, Users, RefreshCw, FileText, Clipboard, Target, Eye,
+  Building2, Truck, Users, RefreshCw, FileText, Clipboard, Target, Eye, Calendar,
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
+import ConfirmationDrawer from '../components/common/ConfirmationDrawer';
 
 // ---------------------------------------------------------------------------
 // Per-store metrics — deterministically generated for all 39 Ascend stores
@@ -1931,8 +1932,8 @@ function MorningBriefing() {
     if (isCEO) return '"Portfolio revenue $2.8M yesterday, +6.8% same-store growth vs last year. IL and NJ leading at +9% and +7% SSG. MI flat — 3 stores dragging avg. Inventory turnover at 4.2x (target 5x). 87 SKUs currently out of stock across 8 stores — estimated $112K in missed sales yesterday. Margin holding at 48.2%."';
     if (isVP) return '"Your 23 stores did $1.4M yesterday. Same-store growth +5.1% YoY. Logan Square top performer at $48.2K. Morenci down 23% — foot traffic declining 3 weeks straight, may need local campaign. 34 out-of-stock SKUs across your region — $48K in estimated missed sales. Avg basket $118, up $4 WoW."';
     if (isRegional) return '"IL revenue $680K yesterday, +4.2% WoW. Springfield leading at +18%. 2 vault-to-floor transfers pending at Naperville — Kiva Gummies and Stiiizy Pods both have demand on floor. 34 SKUs received yesterday, all checked in. Schaumburg running a flash promo today (15% off 3-6 PM)."';
-    if (isStoreMgr) return '"Logan Square did $34.2K yesterday, 8% above target. 2 products out of stock on floor — Blue Dream 3.5g (45 units in vault, ready to transfer) and Kiva Gummies (60 in vault). Stiiizy Pod LR down to 4 units on floor, transfer before afternoon rush. Happy Hour promo starts at 3 PM. No pending reorders to review."';
-    if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ BioTrack sync delay cleared at Newark (12 min, no data loss). 3 product batches expiring within 30 days need destruction manifests. Next scheduled audit: IL Mar 24."';
+    if (isStoreMgr) return '"Logan Square did $48.2K yesterday, 8% above target. 2 products out of stock on floor — Blue Dream 3.5g (45 units in vault, ready to transfer) and Kiva Gummies (60 in vault). Stiiizy Pod LR down to 4 units on floor, transfer before afternoon rush. Happy Hour promo starts at 3 PM. No pending reorders to review."';
+    if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ METRC sync delay cleared at Newark (12 min, no data loss). 3 product batches expiring within 30 days need destruction manifests. Next scheduled audit: IL Mar 24."';
     return '"Yesterday was your best Friday this quarter. Springfield IL drove 34% of revenue. 3 items need reordering."';
   }, [isCEO, isVP, isRegional, isStoreMgr, isCompliance]);
 
@@ -1956,7 +1957,7 @@ function MorningBriefing() {
       { label: 'Promos Today', value: '1 active', trend: 'Schaumburg', up: true },
     ];
     if (isStoreMgr) return [
-      { label: 'Revenue', value: '$34.2K', trend: '+8% vs target', up: true },
+      { label: 'Revenue', value: '$48.2K', trend: '+8% vs target', up: true },
       { label: 'OOS Floor', value: '2 items', trend: 'Vault ready', up: false },
       { label: 'Low Stock', value: '1 item', trend: '4 units left', up: false },
       { label: 'Promo', value: '3 PM', trend: 'Happy Hour', up: true },
@@ -2318,19 +2319,19 @@ const COMPLIANCE_ALERTS = [
   },
   {
     id: 'comp-2', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '12m ago',
-    title: 'NJ BioTrack: Newark sync delay cleared (12 min, no data loss)',
-    ai: 'BioTrack API timeout at 8:42 AM. Retried at 8:54 AM. All 4 NJ stores now green. No data loss detected.',
+    title: 'NJ METRC: Newark sync delay cleared (12 min, no data loss)',
+    ai: 'METRC API timeout at 8:42 AM. Retried at 8:54 AM. All 4 NJ stores now green. No data loss detected.',
     actions: ['View NJ Stores'],
   },
   {
     id: 'comp-3', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '1h ago',
     title: '3 product batches expiring within 30 days across 3 states',
-    ai: 'Ozone Cart batch #2847 (14 units, IL), Camino Gummies batch #1923 (8 units, NJ), Simply Herb batch #3401 (22 units, MA). METRC/BioTrack destruction manifests needed.',
+    ai: 'Ozone Cart batch #2847 (14 units, IL), Camino Gummies batch #1923 (8 units, NJ), Simply Herb batch #3401 (22 units, MA). METRC/METRC destruction manifests needed.',
     actions: ['View Inventory'],
   },
   {
     id: 'comp-4', type: 'standard', severity: 'OPPORTUNITY', color: '#00C27C', time: '2h ago',
-    title: 'State sync status: IL METRC ✓, NJ BioTrack ✓, OH METRC ⚠, MA METRC ✓, MD METRC ✓, MI METRC ✓, PA Leaf Data ✓',
+    title: 'State sync status: IL METRC ✓, NJ METRC ✓, OH METRC ⚠, MA METRC ✓, MD METRC ✓, MI METRC ✓, PA Leaf Data ✓',
     ai: '38/39 stores fully synced. Only Columbus OH has a pending item. All other states green. Average sync latency: 3.2 minutes.',
     actions: ['View All Stores'],
   },
@@ -2361,7 +2362,7 @@ function getAlertsForPersona(personaId) {
 
 const STATUS_UPDATES_BY_PERSONA = {
   ceo: [
-    { text: 'NJ BioTrack sync delay cleared at Newark (12 min, no action needed)', icon: 'compliance' },
+    { text: 'NJ METRC sync delay cleared at Newark (12 min, no action needed)', icon: 'compliance' },
     { text: 'METRC reconciliation passed — 0 discrepancies across 39 stores', icon: 'compliance' },
     { text: 'March Madness campaign performing +18% above forecast', icon: 'campaign' },
     { text: 'IL wholesale delivery received on schedule — 42 SKUs checked in', icon: 'reorder' },
@@ -2383,7 +2384,7 @@ const STATUS_UPDATES_BY_PERSONA = {
     { text: 'Yesterday\'s cash close balanced — all drawers within tolerance', icon: 'transfer' },
   ],
   compliance: [
-    { text: 'NJ BioTrack sync delay cleared at Newark (12 min, no data loss)', icon: 'compliance' },
+    { text: 'NJ METRC sync delay cleared at Newark (12 min, no data loss)', icon: 'compliance' },
     { text: 'METRC reconciliation passed across all IL stores — 0 discrepancies', icon: 'compliance' },
     { text: 'PA Leaf Data sync verified — all 3 stores green', icon: 'compliance' },
     { text: 'Batch #2847 approaching 30-day expiry — flagged for review', icon: 'reorder' },
@@ -2394,6 +2395,7 @@ function SmartAlertsFeed({ onAction }) {
   const [transferState, setTransferState] = useState({});
   const [expanded, setExpanded] = useState({});
   const [actionDone, setActionDone] = useState({});
+  const [confirmTransfer, setConfirmTransfer] = useState(null); // alert object or 'bulk'
   const { selectedPersonaId, selectedPersona } = usePersona();
 
   const SMART_ALERTS = useMemo(() => getAlertsForPersona(selectedPersonaId), [selectedPersonaId]);
@@ -2491,7 +2493,7 @@ function SmartAlertsFeed({ onAction }) {
               <span>{a.store}</span>
               <span>Floor: <span className="font-semibold" style={{ color: a.floor === 0 ? '#E87068' : '#D4A03A' }}>{a.floor}</span></span>
               <span>Vault: <span className="font-semibold text-[#00C27C]">{a.vault}</span></span>
-              {a.trackSystem && <span className="px-1 py-px rounded text-[8px] font-bold" style={{ background: a.trackSystem === 'BioTrack' ? 'rgba(100,168,224,0.15)' : 'rgba(0,194,124,0.15)', color: a.trackSystem === 'BioTrack' ? '#64A8E0' : '#00C27C' }}>{a.trackSystem}</span>}
+              {a.trackSystem && <span className="px-1 py-px rounded text-[8px] font-bold" style={{ background: a.trackSystem === 'METRC' ? 'rgba(100,168,224,0.15)' : 'rgba(0,194,124,0.15)', color: a.trackSystem === 'METRC' ? '#64A8E0' : '#00C27C' }}>{a.trackSystem}</span>}
               <span className="flex items-center gap-0.5"><Lock size={8} />{a.metrcPkg.slice(-8)}</span>
             </div>
           </div>
@@ -2509,7 +2511,7 @@ function SmartAlertsFeed({ onAction }) {
                 <Check size={11} />Confirm
               </button>
             ) : (
-              <button onClick={() => startTransfer(a.id)} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#D4A03A] bg-[#D4A03A]/10 border border-[#D4A03A]/20 hover:bg-[#D4A03A]/20 transition-colors">
+              <button onClick={() => setConfirmTransfer(a)} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#D4A03A] bg-[#D4A03A]/10 border border-[#D4A03A]/20 hover:bg-[#D4A03A]/20 transition-colors">
                 <ArrowRightLeft size={11} />Transfer {a.recQty}
               </button>
             )}
@@ -2605,7 +2607,7 @@ function SmartAlertsFeed({ onAction }) {
           <span className="text-[10px] text-[#6B6359]">{SMART_ALERTS.length} active &middot; {selectedPersona.shortLabel}</span>
         </div>
         {oosCount > 0 && (
-          <button onClick={handleBulkTransfer} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#E87068] bg-[#E87068]/10 border border-[#E87068]/20 hover:bg-[#E87068]/15 transition-colors">
+          <button onClick={() => setConfirmTransfer('bulk')} className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#E87068] bg-[#E87068]/10 border border-[#E87068]/20 hover:bg-[#E87068]/15 transition-colors">
             <ArrowRightLeft size={11} /> Transfer {oosCount} OOS
           </button>
         )}
@@ -2628,6 +2630,45 @@ function SmartAlertsFeed({ onAction }) {
           </div>
         ))}
       </div>
+      {/* Transfer confirmation drawer */}
+      {confirmTransfer && confirmTransfer !== 'bulk' && (
+        <ConfirmationDrawer
+          open={true}
+          onCancel={() => setConfirmTransfer(null)}
+          onConfirm={() => { const id = confirmTransfer.id; setConfirmTransfer(null); startTransfer(id); }}
+          title="Confirm Vault-to-Floor Transfer"
+          description={`Move ${confirmTransfer.product} to sales floor`}
+          icon={ArrowRightLeft}
+          confirmLabel={`Transfer ${confirmTransfer.recQty} Units`}
+          confirmColor="#D4A03A"
+          details={[
+            { label: 'Product', value: confirmTransfer.product },
+            { label: 'Store', value: confirmTransfer.store },
+            { label: 'Quantity', value: `${confirmTransfer.recQty} units` },
+            { label: 'From → To', value: `${confirmTransfer.metrcSrc} → ${confirmTransfer.metrcDest}` },
+            { label: 'METRC Package', value: confirmTransfer.metrcPkg },
+            { label: 'Days OOS', value: `${confirmTransfer.daysOOS} days` },
+          ]}
+          warning="This will create a METRC manifest and update inventory records."
+        />
+      )}
+      {confirmTransfer === 'bulk' && (
+        <ConfirmationDrawer
+          open={true}
+          onCancel={() => setConfirmTransfer(null)}
+          onConfirm={() => { setConfirmTransfer(null); handleBulkTransfer(); }}
+          title="Confirm Bulk Transfer"
+          description={`Transfer ${oosCount} out-of-stock items from vault to floor`}
+          icon={ArrowRightLeft}
+          confirmLabel={`Transfer All ${oosCount} Items`}
+          confirmColor="#E87068"
+          details={transferAlerts.filter(a => a.floor === 0 && !transferState[a.id]).map(a => ({
+            label: a.product,
+            value: `${a.recQty} units · ${a.metrcPkg.slice(-8)}`,
+          }))}
+          warning="This will create METRC manifests for all items and update inventory records."
+        />
+      )}
     </NexusTile>
   );
 }
@@ -2808,13 +2849,13 @@ function StoreHealthMatrix({ onOpenNexus }) {
   // Compliance Officer: compliance status grid per state
   if (isCompliance) {
     const stateCompliance = [
-      { state: 'IL', system: 'METRC', stores: 10, synced: 10, lastSync: '4m ago', status: 'green', discrepancies: 0, nextAudit: 'Mar 24' },
-      { state: 'NJ', system: 'BioTrack', stores: 6, synced: 6, lastSync: '8m ago', status: 'green', discrepancies: 0, nextAudit: 'Apr 12' },
+      { state: 'IL', system: 'METRC', stores: 8, synced: 8, lastSync: '4m ago', status: 'green', discrepancies: 0, nextAudit: 'Mar 24' },
+      { state: 'NJ', system: 'METRC', stores: 5, synced: 5, lastSync: '8m ago', status: 'green', discrepancies: 0, nextAudit: 'Apr 12' },
       { state: 'OH', system: 'METRC', stores: 6, synced: 5, lastSync: '28h ago', status: 'warning', discrepancies: 1, nextAudit: 'May 1' },
-      { state: 'MA', system: 'METRC', stores: 5, synced: 5, lastSync: '6m ago', status: 'green', discrepancies: 0, nextAudit: 'Jun 15' },
-      { state: 'MI', system: 'METRC', stores: 6, synced: 6, lastSync: '3m ago', status: 'green', discrepancies: 0, nextAudit: 'Apr 30' },
-      { state: 'MD', system: 'METRC', stores: 3, synced: 3, lastSync: '5m ago', status: 'green', discrepancies: 0, nextAudit: 'Jun 30' },
-      { state: 'PA', system: 'Leaf Data', stores: 3, synced: 3, lastSync: '7m ago', status: 'green', discrepancies: 0, nextAudit: 'May 15' },
+      { state: 'MA', system: 'METRC', stores: 4, synced: 4, lastSync: '6m ago', status: 'green', discrepancies: 0, nextAudit: 'Jun 15' },
+      { state: 'MI', system: 'METRC', stores: 7, synced: 7, lastSync: '3m ago', status: 'green', discrepancies: 0, nextAudit: 'Apr 30' },
+      { state: 'MD', system: 'METRC', stores: 4, synced: 4, lastSync: '5m ago', status: 'green', discrepancies: 0, nextAudit: 'Jun 30' },
+      { state: 'PA', system: 'MJ Freeway', stores: 5, synced: 5, lastSync: '7m ago', status: 'green', discrepancies: 0, nextAudit: 'May 15' },
     ];
     return (
       <NexusTile className="animate-fade-up" style={{ animationDelay: '400ms' }}>
@@ -2897,6 +2938,142 @@ function StoreHealthMatrix({ onOpenNexus }) {
   );
 }
 
+// ─── COMPLIANCE COMMAND CENTER ─── //
+
+const COMPLIANCE_TIMELINE = [
+  { date: 'Mar 20', state: 'OH', label: 'METRC reconciliation deadline', status: 'overdue', detail: 'Columbus store 28h behind — 4 packages pending' },
+  { date: 'Mar 24', state: 'IL', label: 'Scheduled audit — all IL stores', status: 'upcoming', detail: '8 stores, all passing readiness checks' },
+  { date: 'Apr 1', state: 'IL', label: 'New edible potency testing rules', status: 'action', detail: 'Update vendor intake process for edibles' },
+  { date: 'Apr 12', state: 'NJ', label: 'Scheduled audit — NJ stores', status: 'upcoming', detail: '5 stores, all synced with METRC' },
+  { date: 'Apr 15', state: 'IL', label: 'License renewal due', status: 'action', detail: '80% of renewal paperwork complete' },
+  { date: 'May 1', state: 'PA', label: 'MJ Freeway API v3 migration', status: 'action', detail: 'Dev team integration update needed' },
+  { date: 'May 1', state: 'OH', label: 'Scheduled audit — OH stores', status: 'upcoming', detail: '6 stores, adult-use sales launching' },
+  { date: 'Jun 30', state: 'MD', label: 'License renewal due', status: 'action', detail: 'Renewal paperwork not started' },
+];
+
+const COMPLIANCE_STATES = [
+  { state: 'IL', system: 'METRC', stores: 8, synced: 8, lastSync: '4m', status: 'green', discrepancies: 0 },
+  { state: 'NJ', system: 'METRC', stores: 5, synced: 5, lastSync: '8m', status: 'green', discrepancies: 0 },
+  { state: 'OH', system: 'METRC', stores: 6, synced: 5, lastSync: '28h', status: 'red', discrepancies: 1 },
+  { state: 'MI', system: 'METRC', stores: 7, synced: 7, lastSync: '3m', status: 'green', discrepancies: 0 },
+  { state: 'PA', system: 'MJ Freeway', stores: 5, synced: 5, lastSync: '7m', status: 'green', discrepancies: 0 },
+  { state: 'MA', system: 'METRC', stores: 4, synced: 4, lastSync: '6m', status: 'green', discrepancies: 0 },
+  { state: 'MD', system: 'METRC', stores: 4, synced: 4, lastSync: '5m', status: 'green', discrepancies: 0 },
+];
+
+function ComplianceCommandCenter({ onOpenNexus }) {
+  const [timelineOpen, setTimelineOpen] = useState(false);
+
+  const statusColor = (s) => s === 'green' ? '#00C27C' : s === 'warning' ? '#D4A03A' : '#E87068';
+  const totalSynced = COMPLIANCE_STATES.reduce((s, c) => s + c.synced, 0);
+  const totalStores = COMPLIANCE_STATES.reduce((s, c) => s + c.stores, 0);
+  const totalDisc = COMPLIANCE_STATES.reduce((s, c) => s + c.discrepancies, 0);
+  const hasIssue = COMPLIANCE_STATES.some(c => c.status !== 'green');
+
+  const actionItems = [
+    { label: 'Discrepancies', value: totalDisc > 0 ? `${totalDisc}` : '0', sub: totalDisc > 0 ? 'Needs review' : 'All clear', color: totalDisc > 0 ? '#E87068' : '#00C27C', query: 'Show me inventory discrepancies that need fixing' },
+    { label: 'Expiring', value: '3', sub: 'Within 30 days', color: '#D4A03A', query: 'Which product batches are expiring soon?' },
+    { label: 'Untagged Pkgs', value: '14', sub: 'Avg 12 min', color: '#D4A03A', query: 'Show me the METRC package queue' },
+    { label: 'License Due', value: 'IL Apr 15', sub: '28 days', color: '#64A8E0', query: 'What regulatory changes and license renewals are coming up?' },
+  ];
+
+  return (
+    <NexusTile className="animate-fade-up" style={{ animationDelay: '350ms' }}>
+      {/* Header */}
+      <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
+        <div className="flex items-center gap-2">
+          <Shield className="w-4 h-4 text-[#64A8E0]" />
+          <span className="text-xs font-semibold text-[#F0EDE8]">Compliance Command Center</span>
+        </div>
+        <span className={`text-[10px] font-semibold ${hasIssue ? 'text-[#D4A03A]' : 'text-[#00C27C]'}`}>
+          {totalSynced}/{totalStores} stores synced
+        </span>
+      </div>
+
+      {/* Band 1: State Sync Strip */}
+      <div className="px-5 py-3 flex gap-2 overflow-x-auto">
+        {COMPLIANCE_STATES.map(sc => {
+          const c = statusColor(sc.status);
+          return (
+            <div key={sc.state} className="flex-shrink-0 rounded-xl border px-3 py-2 min-w-[90px] cursor-pointer hover:brightness-110 transition-all"
+              style={{ borderColor: `${c}30`, background: `${c}06` }}
+              onClick={() => onOpenNexus?.(`Show me compliance status for ${sc.state} stores`)}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-bold text-[#F0EDE8]">{sc.state}</span>
+                <div className="w-2 h-2 rounded-full" style={{ background: c }} />
+              </div>
+              <div className="text-[10px] text-[#6B6359]">{sc.synced}/{sc.stores} &middot; {sc.lastSync}</div>
+              <div className="text-[9px] font-medium mt-0.5" style={{ color: c === '#00C27C' ? '#6B6359' : c }}>
+                {sc.system}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Band 2: Action Items Counter */}
+      <div className="px-5 pb-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {actionItems.map((item, i) => (
+            <div key={i}
+              className="rounded-xl border border-[#38332B] bg-[#141210] px-3 py-2.5 cursor-pointer hover:brightness-125 transition-all"
+              onClick={() => onOpenNexus?.(item.query)}
+            >
+              <p className="text-[9px] text-[#6B6359] uppercase tracking-wider">{item.label}</p>
+              <p className="text-sm font-bold mt-0.5" style={{ color: item.color }}>{item.value}</p>
+              <p className="text-[9px] text-[#6B6359]">{item.sub}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Band 3: Timeline Rail (expandable) */}
+      <div className="border-t border-[#38332B]">
+        <button
+          onClick={() => setTimelineOpen(!timelineOpen)}
+          className="w-full px-5 py-2 flex items-center justify-between text-[10px] text-[#6B6359] hover:text-[#ADA599] transition-colors"
+        >
+          <div className="flex items-center gap-1.5">
+            <Calendar size={11} />
+            <span>Compliance Timeline — Next 90 Days</span>
+            {COMPLIANCE_TIMELINE.some(t => t.status === 'overdue') && (
+              <span className="px-1.5 py-px rounded-full text-[8px] font-bold bg-[#E87068]/15 text-[#E87068]">1 OVERDUE</span>
+            )}
+          </div>
+          <ChevronDown size={11} className={`transition-transform ${timelineOpen ? 'rotate-180' : ''}`} />
+        </button>
+
+        {timelineOpen && (
+          <div className="px-5 pb-4">
+            <div className="relative ml-3 border-l border-[#38332B] pl-4 space-y-3">
+              {COMPLIANCE_TIMELINE.map((evt, i) => {
+                const dotColor = evt.status === 'overdue' ? '#E87068' : evt.status === 'action' ? '#D4A03A' : '#00C27C';
+                return (
+                  <div key={i} className="relative">
+                    <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full border-2" style={{ background: dotColor, borderColor: '#1C1B1A' }} />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold" style={{ color: dotColor }}>{evt.date}</span>
+                          <span className="px-1.5 py-px rounded text-[8px] font-bold" style={{ background: `${dotColor}15`, color: dotColor }}>{evt.state}</span>
+                          {evt.status === 'overdue' && <span className="text-[8px] font-bold text-[#E87068] animate-pulse">OVERDUE</span>}
+                        </div>
+                        <p className="text-[11px] text-[#F0EDE8] mt-0.5">{evt.label}</p>
+                        <p className="text-[10px] text-[#6B6359]">{evt.detail}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </NexusTile>
+  );
+}
+
 // ─── MAIN v3 LAYOUT ─── //
 
 export default function NexusHome({ onOpenNexus }) {
@@ -2915,6 +3092,9 @@ export default function NexusHome({ onOpenNexus }) {
 
       {/* 4. Store Health Matrix */}
       <StoreHealthMatrix onOpenNexus={onOpenNexus} />
+
+      {/* 4.5 Compliance Command Center */}
+      <ComplianceCommandCenter onOpenNexus={onOpenNexus} />
 
       {/* 5. Cross-Store Intelligence (CEO/VP/Regional only) */}
       <CrossStoreIntelligence onOpenNexus={onOpenNexus} />

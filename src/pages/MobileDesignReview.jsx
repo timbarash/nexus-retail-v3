@@ -218,10 +218,10 @@ function ScreenAlerts() {
           </div>
         ))}
       </div>
-      {/* Auto-resolved */}
+      {/* Status updates */}
       <div className="mt-3 rounded-2xl border border-[#2A2722] bg-[#161514] p-3.5">
-        <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Auto-Resolved</p>
-        {['Register sync — fixed', 'March campaign — launched', 'Stiiizy Pods — auto-reordered'].map(r => (
+        <p className="text-[8px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mb-2">Status Updates</p>
+        {['Register sync — restored', 'March campaign — live', 'STIIIZY Pods — back in stock'].map(r => (
           <div key={r} className="flex items-center gap-2 text-[9px] text-[#ADA599] mb-1 last:mb-0">
             <Check className="w-3 h-3 text-[#00C27C] flex-shrink-0" /> {r}
           </div>

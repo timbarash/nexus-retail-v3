@@ -2338,14 +2338,14 @@ const SUGGESTIONS = [
 function getNexusActionData(action) {
   const A = {
     portfolio: { title:'Portfolio Summary', color:'#D4A03A', summary:'Here\'s your portfolio overview across all 39 stores in 7 states.',
-      kpis:[{l:'Total Revenue',v:'$11.2M',c:'#00C27C'},{l:'SSG',v:'+6.8%',c:'#0EA5E9'},{l:'OOS Lost Sales',v:'$112K',c:'#E87068'},{l:'Active Stores',v:'39',c:'#B598E8'}],
+      kpis:[{l:'Total Revenue',v:'$10.5M',c:'#00C27C'},{l:'SSG',v:'+6.8%',c:'#0EA5E9'},{l:'OOS Lost Sales',v:'$112K',c:'#E87068'},{l:'Active Stores',v:'39',c:'#B598E8'}],
       cols:['State','Stores','Revenue (MTD)','Growth','Health'],
       rows:[['Illinois',8,'$2.4M','+9%',94],['New Jersey',5,'$1.7M','+7%',90],['Ohio',6,'$1.6M','+5%',86],['Pennsylvania',5,'$1.3M','+6%',88],['Massachusetts',4,'$1.2M','+4%',85],['Maryland',4,'$1.1M','+3%',84],['Michigan',7,'$1.1M','-4%',62]],
       actions:[{label:'View State Details',done:'Showing state breakdown'},{label:'Export Report',done:'Report downloaded'}]},
     revenue_state: { title:'State Revenue Comparison', color:'#00C27C', summary:'Revenue breakdown across all 7 states — current month vs prior.',
-      kpis:[{l:'Total MTD',v:'$11.29M',c:'#00C27C'},{l:'vs Prior',v:'+$1.15M',c:'#0EA5E9'},{l:'Top State',v:'Illinois',c:'#D4A03A'},{l:'Fastest Growth',v:'New Jersey',c:'#B598E8'}],
+      kpis:[{l:'Total MTD',v:'$10.50M',c:'#00C27C'},{l:'vs Prior',v:'+$960K',c:'#0EA5E9'},{l:'Top State',v:'Illinois',c:'#D4A03A'},{l:'Fastest Growth',v:'New Jersey',c:'#B598E8'}],
       cols:['State','Current MTD','Prior Month','Delta','% Change'],
-      rows:[['New Jersey','$1.71M','$1.45M','+$260K','+18%'],['Ohio','$1.62M','$1.41M','+$210K','+15%'],['Illinois','$2.41M','$2.15M','+$260K','+12%'],['Maryland','$1.12M','$1.01M','+$110K','+11%'],['Massachusetts','$1.22M','$1.12M','+$100K','+9%'],['Michigan','$1.89M','$1.75M','+$140K','+8%'],['Pennsylvania','$1.32M','$1.25M','+$70K','+6%']],
+      rows:[['New Jersey','$1.71M','$1.45M','+$260K','+18%'],['Ohio','$1.62M','$1.41M','+$210K','+15%'],['Illinois','$2.41M','$2.15M','+$260K','+12%'],['Maryland','$1.12M','$1.01M','+$110K','+11%'],['Massachusetts','$1.22M','$1.12M','+$100K','+9%'],['Pennsylvania','$1.32M','$1.25M','+$70K','+6%'],['Michigan','$1.10M','$1.15M','-$50K','-4%']],
       actions:[{label:'Export CSV',done:'CSV downloaded'},{label:'Email to VPs',done:'Sent to 3 VPs'}]},
     compliance_all: { title:'Operational Health — All States', color:'#00C27C', summary:'System health and sync status across all 7 states at a glance.',
       kpis:[{l:'States Online',v:'6/7',c:'#00C27C'},{l:'Needs Attention',v:'1',c:'#D4A03A'},{l:'Total Stores',v:'39',c:'#0EA5E9'},{l:'Uptime',v:'99.8%',c:'#00C27C'}],
@@ -2355,7 +2355,7 @@ function getNexusActionData(action) {
     brand_perf: { title:'Brand Performance Rankings', color:'#B598E8', summary:'Top brands across all stores by revenue contribution this month.',
       kpis:[{l:'Top Brand',v:'Jeeter',c:'#00C27C'},{l:'Highest Margin',v:'Wyld (45%)',c:'#D4A03A'},{l:'Fastest Growth',v:'Jeeter (+22%)',c:'#0EA5E9'},{l:'Brands Tracked',v:'48',c:'#B598E8'}],
       cols:['Rank','Brand','Category','Revenue','Units','Margin','Trend'],
-      rows:[['#1','Jeeter','Pre-Rolls','$1.42M','31.2K','42%','+22%'],['#2','STIIIZY','Vapes','$1.18M','18.4K','38%','+15%'],['#3','Wyld','Edibles','$892K','44.6K','45%','+18%'],['#4','Raw Garden','Concentrates','$764K','12.1K','36%','+9%'],['#5','Kiva','Edibles','$651K','29.8K','44%','+12%'],['#6','Cookies','Flower','$598K','8.9K','35%','-3%']],
+      rows:[['#1','Jeeter','Pre-Rolls','$1.42M','31.2K','42%','+22%'],['#2','STIIIZY','Vapes','$1.18M','18.4K','42%','+15%'],['#3','Wyld','Edibles','$892K','44.6K','45%','+18%'],['#4','Raw Garden','Concentrates','$764K','12.1K','36%','+9%'],['#5','Kiva','Edibles','$651K','29.8K','44%','+12%'],['#6','Cookies','Flower','$598K','8.9K','40%','-3%']],
       actions:[{label:'View Reorder Options',done:'Showing reorder details for top brands'},{label:'Export Rankings',done:'CSV downloaded'}]},
     rankings: { title:'Store Performance Rankings', color:'#00C27C', summary:'All stores in IL, MI, OH ranked by composite performance score.',
       kpis:[{l:'Top Store',v:'Logan Square',c:'#00C27C'},{l:'Avg Score',v:'78/100',c:'#0EA5E9'},{l:'Region Revenue',v:'$5.94M',c:'#D4A03A'},{l:'Declining',v:'3 MI stores',c:'#E87068'}],
@@ -2390,7 +2390,7 @@ function getNexusActionData(action) {
     close: { title:'Daily Close Reports — Illinois', color:'#00C27C', summary:'Yesterday\'s close summaries for all 8 Illinois stores.',
       kpis:[{l:'Total Revenue',v:'$303.6K',c:'#00C27C'},{l:'Total Orders',v:'3,090',c:'#0EA5E9'},{l:'Balanced',v:'6/8',c:'#D4A03A'},{l:'Needs Review',v:'2',c:'#E87068'}],
       cols:['Store','Revenue','Orders','Cash Collected','Variance','Status'],
-      rows:[['Logan Square','$52.8K','538','$11.4K','$0','Balanced'],['River North','$48.2K','494','$10.1K','$0','Balanced'],['Springfield','$32.6K','332','$7.2K','$0','Balanced'],['Naperville','$28.4K','289','$6.1K','$0','Balanced'],['Schaumburg','$41.5K','418','$8.9K','+$47','Review'],['Arl. Heights','$24.8K','252','$5.4K','-$12','Review'],['Peoria','$28.4K','289','$6.1K','$0','Balanced'],['Bloomington','$21.2K','216','$4.6K','$0','Balanced']],
+      rows:[['Logan Square','$48.2K','492','$10.4K','$0','Balanced'],['River North','$48.2K','494','$10.1K','$0','Balanced'],['Springfield','$32.6K','332','$7.2K','$0','Balanced'],['Naperville','$28.4K','289','$6.1K','$0','Balanced'],['Schaumburg','$41.5K','418','$8.9K','+$47','Review'],['Arl. Heights','$24.8K','252','$5.4K','-$12','Review'],['Peoria','$28.4K','289','$6.1K','$0','Balanced'],['Bloomington','$21.2K','216','$4.6K','$0','Balanced']],
       actions:[{label:'View Variances',done:'Showing Schaumburg (+$47) & Arlington Heights (-$12) details'},{label:'Export Close Report',done:'PDF downloaded'}]},
     labor: { title:'Labor Metrics — Illinois Stores', color:'#B598E8', summary:'Staffing levels and labor efficiency for all IL stores this week.',
       kpis:[{l:'Total Staff',v:'80',c:'#B598E8'},{l:'Avg Efficiency',v:'88%',c:'#00C27C'},{l:'Overtime',v:'18.2 hrs',c:'#E87068'},{l:'Over Budget',v:'Schaumburg +12%',c:'#E87068'}],
@@ -2405,7 +2405,7 @@ function getNexusActionData(action) {
     sync_status: { title:'Inventory Sync Overview', color:'#00C27C', summary:'Live inventory sync health across all state systems.',
       kpis:[{l:'Systems Online',v:'6/7',c:'#00C27C'},{l:'Needs Attention',v:'1 (PA)',c:'#D4A03A'},{l:'Total Products',v:'56,400',c:'#0EA5E9'},{l:'Accuracy',v:'99.7%',c:'#00C27C'}],
       cols:['State','System','Last Updated','Status','Products Tracked','Accuracy'],
-      rows:[['Illinois','METRC','2 min ago','All Good','12,481','100%'],['Michigan','METRC','5 min ago','All Good','9,842','99.9%'],['Ohio','METRC','3 min ago','All Good','8,215','100%'],['Pennsylvania','Leaf Data','47 min ago','Review','6,932','97.8%'],['New Jersey','BioTrack','8 min ago','All Good','7,621','100%'],['Maryland','METRC','1 min ago','All Good','5,418','100%'],['Massachusetts','METRC','4 min ago','All Good','5,891','99.9%']],
+      rows:[['Illinois','METRC','2 min ago','All Good','12,481','100%'],['Michigan','METRC','5 min ago','All Good','9,842','99.9%'],['Ohio','METRC','3 min ago','All Good','8,215','100%'],['Pennsylvania','MJ Freeway','47 min ago','Review','6,932','97.8%'],['New Jersey','METRC','8 min ago','All Good','7,621','100%'],['Maryland','METRC','1 min ago','All Good','5,418','100%'],['Massachusetts','METRC','4 min ago','All Good','5,891','99.9%']],
       actions:[{label:'View PA Details',done:'Showing Pennsylvania sync details'},{label:'Export Status Report',done:'Report downloaded'}]},
     discrepancy: { title:'Inventory Exceptions', color:'#D4A03A', summary:'Items that need attention — quantity mismatches flagged for review.',
       kpis:[{l:'Open Items',v:'9',c:'#D4A03A'},{l:'Priority',v:'3 urgent',c:'#E87068'},{l:'Most Affected',v:'PA (5)',c:'#64A8E0'},{l:'Avg Resolution',v:'2.1 days',c:'#00C27C'}],
@@ -2430,7 +2430,7 @@ function getNexusActionData(action) {
     market_prices: { title:'Price vs Market Comparison', color:'#D4A03A', summary:'Your top sellers compared to competitor and market average pricing.',
       kpis:[{l:'Below Market',v:'12',c:'#00C27C'},{l:'At Market',v:'18',c:'#0EA5E9'},{l:'Above Market',v:'6',c:'#E87068'},{l:'Avg Gap',v:'-3.2%',c:'#00C27C'}],
       cols:['Product','Your Price','Market Avg','Competitor Low','Gap','Recommendation'],
-      rows:[['Blue Dream 3.5g','$38','$42','$35','-9.5%','At optimal'],['STIIIZY OG Pod 1g','$52','$48','$45','+8.3%','Review — above market'],['Wyld Elderberry 10pk','$22','$24','$20','-8.3%','At optimal'],['Jeeter Baby Js 5pk','$45','$40','$38','+12.5%','Review — above market'],['Kiva Camino 20pk','$32','$30','$28','+6.7%','Review — slight premium'],['Raw Garden Sauce 1g','$28','$32','$25','-12.5%','Opportunity to raise']],
+      rows:[['Blue Dream 3.5g','$38','$42','$35','-9.5%','At optimal'],['STIIIZY OG Pod 1g','$45','$48','$42','-6.3%','At optimal'],['Wyld Elderberry 10pk','$22','$24','$20','-8.3%','At optimal'],['Jeeter Baby Js 5pk','$35','$38','$33','-7.9%','At optimal'],['Kiva Camino 20pk','$32','$30','$28','+6.7%','Review — slight premium'],['Raw Garden Sauce 1g','$28','$32','$25','-12.5%','Opportunity to raise']],
       actions:[{label:'View Price Details',done:'Showing full price comparison'},{label:'Export Analysis',done:'Price analysis downloaded'}]},
     sentiment_overview: { title:'Customer Sentiment — This Month', color:'#B598E8', summary:'Aggregated feedback from reviews, surveys, and support interactions.',
       kpis:[{l:'NPS Score',v:'72',c:'#00C27C'},{l:'Avg Rating',v:'4.6★',c:'#D4A03A'},{l:'Reviews',v:'348',c:'#0EA5E9'},{l:'Trend',v:'+5 pts',c:'#00C27C'}],
@@ -2465,7 +2465,7 @@ function getNexusActionData(action) {
     vendor_scorecard: { title:'Vendor Scorecard — Top Suppliers', color:'#B598E8', summary:'Vendor performance based on fill rates, delivery reliability, and margin contribution.',
       kpis:[{l:'Top Vendor',v:'Jeeter',c:'#00C27C'},{l:'Lowest Fill Rate',v:'Cookies (82%)',c:'#E87068'},{l:'Avg Lead Time',v:'4.2 days',c:'#D4A03A'},{l:'Active Vendors',v:'24',c:'#B598E8'}],
       cols:['Vendor','Fill Rate','On-Time %','Avg Lead Time','Revenue','Margin','Issues'],
-      rows:[['Jeeter','98%','96%','3 days','$1.42M','42%','0'],['STIIIZY','95%','94%','4 days','$1.18M','38%','1 short ship'],['Wyld','97%','92%','5 days','$892K','45%','0'],['Raw Garden','94%','90%','4 days','$764K','36%','2 late'],['Kiva','96%','95%','3 days','$651K','44%','0'],['Cookies','82%','78%','7 days','$598K','35%','4 shorts']],
+      rows:[['Jeeter','98%','96%','3 days','$1.42M','42%','0'],['STIIIZY','95%','94%','4 days','$1.18M','42%','1 short ship'],['Wyld','97%','92%','5 days','$892K','45%','0'],['Raw Garden','94%','90%','4 days','$764K','36%','2 late'],['Kiva','96%','95%','3 days','$651K','44%','0'],['Cookies','82%','78%','7 days','$598K','40%','4 shorts']],
       actions:[{label:'View Vendor Details',done:'Showing full vendor breakdown'},{label:'Export Scorecards',done:'Scorecards downloaded'}]},
     online_vs_instore: { title:'Online vs In-Store Mix', color:'#0EA5E9', summary:'Channel performance comparison — ecommerce pickup, delivery, and walk-in traffic.',
       kpis:[{l:'Online %',v:'38%',c:'#0EA5E9'},{l:'Walk-in %',v:'62%',c:'#00C27C'},{l:'Online AOV',v:'$112',c:'#D4A03A'},{l:'Walk-in AOV',v:'$89',c:'#B598E8'}],
@@ -2614,19 +2614,6 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
   };
 
   const processMessage = async (text) => {
-    // Check for direct nexus action prefix from command bar buttons
-    const actionMatch = text.match(/^<<nexus_action:(\w+)>>\s*(.*)/);
-    if (actionMatch) {
-      const actionKey = actionMatch[1];
-      const displayText = actionMatch[2] || text;
-      setMessages(prev => [...prev, { role: 'user', text: displayText }]);
-      setThinkingStatus('Running action...');
-      await new Promise(r => setTimeout(r, 800));
-      setThinkingStatus(null);
-      const data = getNexusActionData(actionKey);
-      setMessages(prev => [...prev, { role: 'agent', text: data.summary, component: 'nexus_action', data }]);
-      return;
-    }
 
     // Add user message
     setMessages(prev => [...prev, { role: 'user', text }]);
@@ -3072,21 +3059,6 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
   };
 
   // ── Nexus Action Handler — bypasses KB intent detection for operational tiles ──
-  const processNexusAction = async (suggestion) => {
-    setMessages(prev => [...prev, { role: 'user', text: suggestion.label }]);
-    setThinkingStatus('Running action...');
-    await new Promise(r => setTimeout(r, 800));
-    setThinkingStatus(null);
-
-    const actionData = getNexusActionData(suggestion.action);
-    setMessages(prev => [...prev, {
-      role: 'agent',
-      text: actionData.summary,
-      component: 'nexus_action',
-      data: actionData,
-    }]);
-  };
-
   const handleSuggestionClick = (key) => {
     const all = [...NEXUS_SUGGESTIONS, ...COMPACT_SUGGESTIONS, ...SUGGESTIONS];
     const suggestion = all.find(s => s.key === key);
