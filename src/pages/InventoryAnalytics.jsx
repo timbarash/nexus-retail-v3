@@ -467,9 +467,22 @@ export default function InventoryAnalytics() {
     setTransferStates(prev => ({ ...prev, [key]: 3 }));
   }, []);
 
-  // Navigate to Inventory Agent with reorder context
+  // Navigate to Inventory Agent with full product context for focused PO
   const handleReorder = useCallback((store, product) => {
-    navigate('/agents/connect', { state: { product: product.name, store: store.name, brand: product.brand } });
+    navigate('/agents/connect', { state: {
+      product: product.name,
+      store: store.name,
+      brand: product.brand,
+      category: product.category,
+      price: product.price,
+      floor: product.floor,
+      vault: product.vault,
+      avgWeekly: product.avgWeekly,
+      daysSupply: product.daysSupply,
+      estLostPerDay: product.estLostPerDay,
+      status: product.status,
+      metrcPkg: product.metrcPkg,
+    } });
   }, [navigate]);
 
   const showToast = useCallback((msg) => {

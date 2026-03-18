@@ -622,7 +622,7 @@ export function ReorderView({ data, onBack }) {
       </Section>
 
       {/* smart reorder quantities */}
-      <Section title="Also Recommended" icon={BarChart3} iconColor="#D4A03A" badge="Editable">
+      {recommendations.length > 0 && <Section title="Also Recommended" icon={BarChart3} iconColor="#D4A03A" badge="Editable">
         <p className="text-[10px] text-[#ADA599] mb-3">Based on recent sales trends. Adjust quantities as needed.</p>
         <div className="space-y-2">
           {recommendations.map((r, i) => {
@@ -716,7 +716,7 @@ export function ReorderView({ data, onBack }) {
             <span className="text-base font-bold text-[#D4A03A]">${costBreakdown.grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         </div>
-      </Section>
+      </Section>}
 
       {/* supplier info */}
       <Section title="Supplier Details" icon={Building2} iconColor="#64A8E0" defaultOpen={false}>
@@ -1093,18 +1093,52 @@ export default function ConnectAgent() {
   // Auto-trigger reorder view when navigated from Inventory Analytics with state
   useEffect(() => {
     if (navStateHandled) return;
-    const navState = location.state;
-    if (navState && navState.product && navState.store) {
+    const ns = location.state;
+    if (ns && ns.product && ns.store) {
       setNavStateHandled(true);
-      const contextMsg = `Draft a reorder PO for ${navState.product} (${navState.brand}) at ${navState.store}`;
+
+      // Build a focused single-product aiAnalysis so ReorderView shows only this item
+      const houseBrands = ['Ozone', 'Ozone Reserve', 'Simply Herb', 'Common Goods', 'Tunnel Vision'];
+      const isHouse = houseBrands.includes(ns.brand);
+      const suggestedQty = (ns.avgWeekly || 10) * 2;
+      const dailySales = (ns.avgWeekly || 10) / 7;
+      const lostPerWeek = ns.status === 'oos' ? Math.round(dailySales * (ns.price || 30) * 7) : 0;
+
+      const focusedProduct = {
+        id: `inv-${ns.metrcPkg || Date.now()}`,
+        brand: ns.brand,
+        name: ns.product,
+        type: `${ns.category || 'Product'}`,
+        thc: '—',
+        lastPrice: `$${(ns.price || 0).toFixed(2)}`,
+        avgWeeklySales: ns.avgWeekly || 10,
+        daysOutOfStock: ns.status === 'oos' ? Math.max(1, Math.ceil(ns.daysSupply || 1)) : 0,
+        urgency: ns.status === 'oos' || ns.status === 'critical' ? 'high' : 'medium',
+        supplier: isHouse ? `Internal Allocation (${ns.brand})` : `${ns.brand} Distribution`,
+        leadTime: isHouse ? '1-2 days' : '3-5 days',
+        paymentTerms: isHouse ? 'Internal' : 'Net 30',
+        brandColor: '#64A8E0',
+        image: null,
+        recommendedQty: suggestedQty,
+        note: ns.floor === 0 ? `Out of stock · ${ns.vault || 0} in vault` : `${ns.floor} on floor · ${ns.vault || 0} in vault`,
+      };
+
+      const focusedAnalysis = {
+        title: `Reorder PO — ${ns.product}`,
+        lostRevenue: lostPerWeek > 0 ? `$${lostPerWeek.toLocaleString()}/week` : 'N/A',
+        products: [focusedProduct],
+        recommendations: [],
+      };
+
+      const contextMsg = `Draft a reorder PO for ${ns.product} (${ns.brand}) at ${ns.store}`;
       setMessages([{ role: 'user', text: contextMsg }]);
       setView('typing');
       setActiveView('reorder');
-      setAiAnalysis(null);
+      setAiAnalysis(focusedAnalysis);
       setTimeout(() => {
         setMessages(prev => [...prev, {
           role: 'agent',
-          text: `I've prepared a reorder analysis for **${navState.product}** at **${navState.store}**. Here are the recommended order quantities and supplier details:`
+          text: `I've prepared a focused reorder PO for **${ns.product}** (${ns.brand}) at **${ns.store}**. Suggested quantity: **${suggestedQty} units** (2-week supply based on ${ns.avgWeekly || '~10'}/wk avg sales). Adjust the quantity and days of coverage below, then submit.`
         }]);
         setView('result');
       }, 1500);
