@@ -8,6 +8,7 @@ import NexusIcon from '../NexusIcon';
 const MY_STORES_ITEMS = [
   { to: '/', label: 'Command Center', icon: Zap },
   { to: '/locations', label: 'Store Performance', icon: MapPin },
+  { to: '/inventory', label: 'Inventory Analytics', icon: Package },
 ];
 
 const CUSTOMERS_ITEMS = [
@@ -17,9 +18,8 @@ const CUSTOMERS_ITEMS = [
   { to: '/competitive', label: 'Competitive Intel', icon: Trophy },
 ];
 
-const OPERATIONS_ITEMS = [
+const AI_AGENTS_ITEMS = [
   { to: '/agents/connect', label: 'Inventory Agent', icon: ShoppingCart },
-  { to: '/inventory', label: 'Inventory Analytics', icon: Package },
   { to: '/agents/pricing', label: 'Pricing & Margins', icon: CircleDollarSign },
   { to: '/agents/marketing', label: 'Marketing Campaigns', icon: Megaphone },
 ];
@@ -55,7 +55,7 @@ function SidebarContent({ onClose, onSlackOpen, onDtchOpen }) {
         {[
           { label: 'My Stores', items: MY_STORES_ITEMS },
           { label: 'Customers', items: CUSTOMERS_ITEMS },
-          { label: 'Operations', items: OPERATIONS_ITEMS, icon: Bot },
+          { label: 'AI Agents', items: AI_AGENTS_ITEMS, icon: Bot },
           { label: 'Help', items: HELP_ITEMS },
         ].map(({ label: groupLabel, items, icon: GroupIcon }, gi) => (
           <Fragment key={groupLabel}>

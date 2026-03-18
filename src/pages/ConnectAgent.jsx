@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Bot, Sparkles, Send, ArrowLeft, ChevronRight, Zap, TrendingUp,
   ShoppingBag, Package, Truck, AlertTriangle, CheckCircle2, Clock,
@@ -1080,12 +1081,35 @@ const SUGGESTIONS = [
    ═══════════════════════════════════════════════════════════════════ */
 
 export default function ConnectAgent() {
+  const location = useLocation();
   const [view, setView] = useState('idle');
   const [activeView, setActiveView] = useState(null);
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState([]);
   const bottomRef = useRef(null);
+  const [navStateHandled, setNavStateHandled] = useState(false);
+
+  // Auto-trigger reorder view when navigated from Inventory Analytics with state
+  useEffect(() => {
+    if (navStateHandled) return;
+    const navState = location.state;
+    if (navState && navState.product && navState.store) {
+      setNavStateHandled(true);
+      const contextMsg = `Draft a reorder PO for ${navState.product} (${navState.brand}) at ${navState.store}`;
+      setMessages([{ role: 'user', text: contextMsg }]);
+      setView('typing');
+      setActiveView('reorder');
+      setAiAnalysis(null);
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          role: 'agent',
+          text: `I've prepared a reorder analysis for **${navState.product}** at **${navState.store}**. Here are the recommended order quantities and supplier details:`
+        }]);
+        setView('result');
+      }, 1500);
+    }
+  }, [location.state, navStateHandled]);
 
   const handleSuggestionClick = async (key) => {
     const suggestion = SUGGESTIONS.find((s) => s.key === key);

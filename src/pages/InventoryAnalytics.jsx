@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Package, AlertTriangle, ArrowRightLeft, ShoppingCart, ChevronDown, ChevronRight, Filter, ArrowUpDown, TrendingDown, Warehouse, Truck, ClipboardList } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Package, AlertTriangle, ArrowRightLeft, ShoppingCart, ChevronDown, ChevronRight, Filter, ArrowUpDown, TrendingDown, Warehouse, Truck, ClipboardList, Check, RotateCw, Clock } from 'lucide-react';
 import { locations } from '../data/mockData';
 import { usePersona } from '../contexts/PersonaContext';
 import { useStores } from '../contexts/StoreContext';
@@ -135,11 +136,13 @@ const ALL_STATES = [...new Set(locations.map(l => l.state))].sort();
 // ---------------------------------------------------------------------------
 
 const STATUS_CONFIG = {
-  oos: { label: 'OOS', bg: 'bg-red-500/15', text: 'text-red-400', border: 'border-red-500/20' },
-  critical: { label: 'Critical', bg: 'bg-orange-500/15', text: 'text-orange-400', border: 'border-orange-500/20' },
-  low: { label: 'Low', bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/20' },
-  ok: { label: 'OK', bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'border-emerald-500/15' },
+  oos: { label: 'OOS', bg: 'bg-red-500/15', text: 'text-red-400', border: 'border-red-500/20', leftBorder: '#EF4444' },
+  critical: { label: 'Critical', bg: 'bg-orange-500/15', text: 'text-orange-400', border: 'border-orange-500/20', leftBorder: '#F97316' },
+  low: { label: 'Low', bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/20', leftBorder: '#F59E0B' },
+  ok: { label: 'OK', bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'border-emerald-500/15', leftBorder: 'transparent' },
 };
+
+const URGENCY_ORDER = { oos: 0, critical: 1, low: 2, ok: 3 };
 
 function StatusPill({ status }) {
   const cfg = STATUS_CONFIG[status];
@@ -167,17 +170,19 @@ function KpiCard({ icon: Icon, label, value, subValue, color, iconBg }) {
   );
 }
 
-function ProductRow({ product, onTransfer, onReorder }) {
+function ProductRow({ product, onReorder, transferStep, onStartTransfer, onConfirmTransfer }) {
   const canTransfer = product.floor === 0 && product.vault > 0;
   const canReorder = product.daysSupply < 7;
+  const isBold = product.status === 'oos' || product.status === 'critical';
+  const leftColor = STATUS_CONFIG[product.status]?.leftBorder || 'transparent';
 
   return (
-    <div className="grid grid-cols-[1fr_auto] gap-2 px-4 py-3 border-b border-[#38332B]/40 hover:bg-[#1E1D1B] transition-colors group">
+    <div className="grid grid-cols-[1fr_auto] gap-2 px-4 py-3 border-b border-[#38332B]/40 hover:bg-[#1E1D1B] transition-colors group" style={{ borderLeft: `3px solid ${leftColor}` }}>
       <div className="grid grid-cols-[1fr_repeat(5,auto)] items-center gap-x-4 gap-y-1 min-w-0">
         {/* Product info */}
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-[13px] font-medium text-[#F0EDE8] truncate">{product.name}</span>
+            <span className={`text-[13px] text-[#F0EDE8] truncate ${isBold ? 'font-bold' : 'font-medium'}`}>{product.name}</span>
             <StatusPill status={product.status} />
           </div>
           <p className="text-[11px] text-[#6B6359] truncate">{product.brand} · {product.category} · {fmtDollar(product.price)}</p>
@@ -221,13 +226,33 @@ function ProductRow({ product, onTransfer, onReorder }) {
       {/* CTAs */}
       <div className="flex items-center gap-2 flex-shrink-0">
         {canTransfer && (
-          <button
-            onClick={() => onTransfer(product)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition-colors"
-          >
-            <ArrowRightLeft size={12} />
-            Transfer to Floor
-          </button>
+          transferStep === 3 ? (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-[#00C27C]">
+              <Check size={12} />
+              {product.vault} moved
+            </span>
+          ) : transferStep === 2 ? (
+            <button
+              onClick={() => onConfirmTransfer(product)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#00C27C] text-white hover:brightness-110 transition-colors"
+            >
+              <Check size={12} />
+              Confirm
+            </button>
+          ) : transferStep === 1 ? (
+            <span className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-[#D4A03A]">
+              <div className="w-3.5 h-3.5 rounded-full border border-[#38332B] relative"><div className="absolute inset-0 rounded-full border border-t-[#D4A03A] animate-spin" /></div>
+              Scanning...
+            </span>
+          ) : (
+            <button
+              onClick={() => onStartTransfer(product)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-[#D4A03A] bg-[#D4A03A]/10 border border-[#D4A03A]/20 hover:bg-[#D4A03A]/20 transition-colors"
+            >
+              <ArrowRightLeft size={12} />
+              Transfer {product.vault}
+            </button>
+          )
         )}
         {canReorder && (
           <button
@@ -243,8 +268,13 @@ function ProductRow({ product, onTransfer, onReorder }) {
   );
 }
 
-function StoreAccordion({ store, onTransfer, onReorder, defaultOpen = false }) {
+function StoreAccordion({ store, onReorder, transferStates, onStartTransfer, onConfirmTransfer, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
+
+  // Sort products by urgency: OOS → Critical → Low → OK
+  const sortedProducts = useMemo(() => {
+    return [...store.products].sort((a, b) => URGENCY_ORDER[a.status] - URGENCY_ORDER[b.status]);
+  }, [store.products]);
 
   return (
     <div className="rounded-xl border border-[#38332B] bg-[#1C1B1A] overflow-hidden">
@@ -295,14 +325,19 @@ function StoreAccordion({ store, onTransfer, onReorder, defaultOpen = false }) {
             </div>
             <span className="min-w-[200px]" />
           </div>
-          {store.products.map((product, i) => (
-            <ProductRow
-              key={i}
-              product={product}
-              onTransfer={(p) => onTransfer(store, p)}
-              onReorder={(p) => onReorder(store, p)}
-            />
-          ))}
+          {sortedProducts.map((product, i) => {
+            const key = `${store.name}::${product.name}`;
+            return (
+              <ProductRow
+                key={i}
+                product={product}
+                transferStep={transferStates[key]}
+                onStartTransfer={(p) => onStartTransfer(store, p)}
+                onConfirmTransfer={(p) => onConfirmTransfer(store, p)}
+                onReorder={(p) => onReorder(store, p)}
+              />
+            );
+          })}
         </div>
       )}
     </div>
@@ -315,15 +350,17 @@ function StoreAccordion({ store, onTransfer, onReorder, defaultOpen = false }) {
 export default function InventoryAnalytics() {
   const { selectedPersona } = usePersona();
   const { selectedStoreNames } = useStores();
+  const navigate = useNavigate();
 
   // Filters
   const [stateFilter, setStateFilter] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all'); // all | oos | low | vault
   const [sortBy, setSortBy] = useState('lost'); // lost | days | alpha
 
-  // Drawer state
-  const [transferDrawer, setTransferDrawer] = useState({ open: false, store: null, product: null });
-  const [reorderDrawer, setReorderDrawer] = useState({ open: false, store: null, product: null });
+  // Inline transfer state machine: key = "storeName::productName" → step (1=scanning, 2=confirm, 3=done)
+  const [transferStates, setTransferStates] = useState({});
+
+  // Drawer state (bulk only)
   const [bulkTransferDrawer, setBulkTransferDrawer] = useState(false);
   const [bulkReorderDrawer, setBulkReorderDrawer] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
@@ -393,11 +430,21 @@ export default function InventoryAnalytics() {
   // KPI totals
   const kpis = useMemo(() => {
     const allProducts = visibleStores.flatMap(s => s.products);
+    const inStockProducts = allProducts.filter(p => p.status !== 'oos' && p.daysSupply < 900);
+    const avgDaysOfSupply = inStockProducts.length > 0
+      ? Math.round((inStockProducts.reduce((sum, p) => sum + p.daysSupply, 0) / inStockProducts.length) * 10) / 10
+      : 0;
+    const totalWeeklyUnits = allProducts.reduce((sum, p) => sum + p.avgWeekly, 0);
+    const totalInventory = allProducts.reduce((sum, p) => sum + p.floor + p.vault, 0);
+    const turnRate = totalInventory > 0 ? Math.round(((totalWeeklyUnits * 52) / totalInventory) * 10) / 10 : 0;
+
     return {
       oosCount: allProducts.filter(p => p.status === 'oos').length,
       lowCount: allProducts.filter(p => p.status === 'low' || p.status === 'critical').length,
       vaultReady: allProducts.filter(p => p.floor === 0 && p.vault > 0).length,
       totalLost: allProducts.reduce((sum, p) => sum + p.estLostPerDay, 0),
+      avgDaysOfSupply,
+      turnRate,
     };
   }, [visibleStores]);
 
@@ -406,14 +453,24 @@ export default function InventoryAnalytics() {
     return [...new Set(visibleStores.map(s => s.state))].sort();
   }, [visibleStores]);
 
-  // Handlers
-  const handleTransfer = useCallback((store, product) => {
-    setTransferDrawer({ open: true, store, product });
+  // Inline transfer state machine (matches NexusHome smart alerts pattern)
+  const handleStartTransfer = useCallback((store, product) => {
+    const key = `${store.name}::${product.name}`;
+    setTransferStates(prev => ({ ...prev, [key]: 1 }));
+    setTimeout(() => {
+      setTransferStates(prev => ({ ...prev, [key]: 2 }));
+    }, 1400);
   }, []);
 
-  const handleReorder = useCallback((store, product) => {
-    setReorderDrawer({ open: true, store, product });
+  const handleConfirmTransfer = useCallback((store, product) => {
+    const key = `${store.name}::${product.name}`;
+    setTransferStates(prev => ({ ...prev, [key]: 3 }));
   }, []);
+
+  // Navigate to Inventory Agent with reorder context
+  const handleReorder = useCallback((store, product) => {
+    navigate('/agents/connect', { state: { product: product.name, store: store.name, brand: product.brand } });
+  }, [navigate]);
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg);
@@ -472,6 +529,22 @@ export default function InventoryAnalytics() {
           subValue="from stockouts only"
           color="#EF4444"
           iconBg="rgba(239,68,68,0.1)"
+        />
+        <KpiCard
+          icon={Clock}
+          label="Avg Days of Supply"
+          value={`${kpis.avgDaysOfSupply}d`}
+          subValue="across in-stock SKUs"
+          color="#A855F7"
+          iconBg="rgba(168,85,247,0.1)"
+        />
+        <KpiCard
+          icon={RotateCw}
+          label="Inventory Turn Rate"
+          value={`${kpis.turnRate}x`}
+          subValue="annualized"
+          color="#3B82F6"
+          iconBg="rgba(59,130,246,0.1)"
         />
       </div>
 
@@ -550,7 +623,9 @@ export default function InventoryAnalytics() {
             <StoreAccordion
               key={store.name}
               store={store}
-              onTransfer={handleTransfer}
+              transferStates={transferStates}
+              onStartTransfer={handleStartTransfer}
+              onConfirmTransfer={handleConfirmTransfer}
               onReorder={handleReorder}
               defaultOpen={i === 0}
             />
@@ -586,63 +661,6 @@ export default function InventoryAnalytics() {
           </div>
         </div>
       )}
-
-      {/* Vault → Floor Transfer Drawer */}
-      <ConfirmationDrawer
-        open={transferDrawer.open}
-        onCancel={() => setTransferDrawer({ open: false, store: null, product: null })}
-        onConfirm={() => {
-          setTransferDrawer({ open: false, store: null, product: null });
-          showToast(`Transferred ${transferDrawer.product?.vault} units of ${transferDrawer.product?.name} to sales floor`);
-        }}
-        title="Confirm Vault → Floor Room Change"
-        description="This will update the METRC package room assignment from vault to sales floor."
-        icon={ArrowRightLeft}
-        confirmLabel="Confirm Transfer"
-        confirmColor="#3B82F6"
-        details={transferDrawer.product ? [
-          { label: 'Product', value: transferDrawer.product.name },
-          { label: 'Store', value: transferDrawer.store?.name || '' },
-          { label: 'Quantity', value: `${transferDrawer.product.vault} units` },
-          { label: 'METRC Package', value: transferDrawer.product.metrcPkg },
-          { label: 'Source', value: 'Vault / Back of House' },
-          { label: 'Destination', value: 'Sales Floor' },
-        ] : []}
-        warning="This room change will be logged in METRC. Ensure physical inventory matches before confirming."
-      />
-
-      {/* Reorder Draft Drawer */}
-      <ConfirmationDrawer
-        open={reorderDrawer.open}
-        onCancel={() => setReorderDrawer({ open: false, store: null, product: null })}
-        onConfirm={() => {
-          setReorderDrawer({ open: false, store: null, product: null });
-          showToast(`Reorder PO drafted for ${reorderDrawer.product?.name}`);
-        }}
-        title="Draft Reorder Purchase Order"
-        description="This will create a draft PO to replenish this SKU."
-        icon={ShoppingCart}
-        confirmLabel="Create Draft PO"
-        confirmColor="#00C27C"
-        details={reorderDrawer.product ? (() => {
-          const houseBrands = ['Ozone', 'Ozone Reserve', 'Simply Herb', 'Common Goods', 'Tunnel Vision'];
-          const isHouse = houseBrands.includes(reorderDrawer.product.brand);
-          return [
-            { label: 'Product', value: reorderDrawer.product.name },
-            { label: 'Store', value: reorderDrawer.store?.name || '' },
-            { label: isHouse ? 'Source' : 'Brand / Vendor', value: isHouse ? `Internal Allocation (${reorderDrawer.product.brand})` : reorderDrawer.product.brand },
-            { label: 'Suggested Qty', value: `${reorderDrawer.product.avgWeekly * 2} units (2-week supply)` },
-            { label: 'Est. Cost', value: fmtDollar(reorderDrawer.product.avgWeekly * 2 * reorderDrawer.product.price * 0.55) },
-            { label: 'Current Floor', value: `${reorderDrawer.product.floor} units` },
-            { label: 'Current Vault', value: `${reorderDrawer.product.vault} units` },
-          ];
-        })() : []}
-        warning={(() => {
-          const houseBrands = ['Ozone', 'Ozone Reserve', 'Simply Herb', 'Common Goods', 'Tunnel Vision'];
-          const isHouse = reorderDrawer.product && houseBrands.includes(reorderDrawer.product.brand);
-          return isHouse ? 'Internal allocation request will be routed to cultivation/processing.' : 'Draft PO will require manager approval before submission to vendor.';
-        })()}
-      />
 
       {/* Bulk Transfer Confirmation Drawer */}
       <ConfirmationDrawer
