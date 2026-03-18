@@ -468,7 +468,13 @@ export default function InventoryAnalytics() {
   }, []);
 
   // Navigate to Inventory Agent with full product context for focused PO
+  // Also include other low/OOS items from the same brand across all visible stores
   const handleReorder = useCallback((store, product) => {
+    const sameBrandItems = visibleStores.flatMap(s =>
+      s.products
+        .filter(p => p.brand === product.brand && p.name !== product.name && ['oos', 'critical', 'low'].includes(p.status))
+        .map(p => ({ ...p, storeName: s.name }))
+    );
     navigate('/agents/connect', { state: {
       product: product.name,
       store: store.name,
@@ -482,8 +488,9 @@ export default function InventoryAnalytics() {
       estLostPerDay: product.estLostPerDay,
       status: product.status,
       metrcPkg: product.metrcPkg,
+      sameBrandItems,
     } });
-  }, [navigate]);
+  }, [navigate, visibleStores]);
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg);

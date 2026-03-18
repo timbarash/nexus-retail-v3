@@ -622,8 +622,17 @@ export function ReorderView({ data, onBack }) {
       </Section>
 
       {/* smart reorder quantities */}
-      {recommendations.length > 0 && <Section title="Also Recommended" icon={BarChart3} iconColor="#D4A03A" badge="Editable">
-        <p className="text-[10px] text-[#ADA599] mb-3">Based on recent sales trends. Adjust quantities as needed.</p>
+      {recommendations.length > 0 && <Section
+        title={products.length === 1 ? `Other ${products[0].brand} Items — Low / OOS` : 'Also Recommended'}
+        icon={BarChart3}
+        iconColor="#D4A03A"
+        badge={`${recommendations.length} item${recommendations.length > 1 ? 's' : ''}`}
+      >
+        <p className="text-[10px] text-[#ADA599] mb-3">
+          {products.length === 1
+            ? `Other ${products[0].brand} products that are low or out of stock. Include them in this PO?`
+            : 'Based on recent sales trends. Adjust quantities as needed.'}
+        </p>
         <div className="space-y-2">
           {recommendations.map((r, i) => {
             const lineCost = (r.unitPrice || 0) * (recQuantities[i] || 0);
@@ -756,7 +765,7 @@ export function ReorderView({ data, onBack }) {
         ) : (
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
             <div>
-              <p className="text-[#F0EDE8] font-medium">Place reorder for {selected.size} items + {recommendations.length} recommended?</p>
+              <p className="text-[#F0EDE8] font-medium">Place reorder for {selected.size} item{selected.size !== 1 ? 's' : ''}{recommendations.length > 0 ? ` + ${recommendations.length} recommended` : ''}?</p>
               <p className="text-sm text-[#ADA599]">Purchase orders will be sent to respective suppliers.
                 {costBreakdown.totalSavings > 0 && <span className="text-emerald-400"> Saving ${costBreakdown.totalSavings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} with brand funded discounts.</span>}
               </p>
@@ -1123,22 +1132,38 @@ export default function ConnectAgent() {
         note: ns.floor === 0 ? `Out of stock · ${ns.vault || 0} in vault` : `${ns.floor} on floor · ${ns.vault || 0} in vault`,
       };
 
+      // Map same-brand low/OOS items into recommendations
+      const sameBrandRecs = (ns.sameBrandItems || []).map(item => ({
+        brand: item.brand,
+        product: `${item.name} — ${item.storeName}`,
+        qty: (item.avgWeekly || 10) * 2,
+        reason: item.status === 'oos'
+          ? `Out of stock at ${item.storeName} · ${item.avgWeekly}/wk avg sales`
+          : `${item.status === 'critical' ? 'Critical' : 'Low'} stock at ${item.storeName} · ${item.daysSupply?.toFixed(1)}d supply`,
+        unitPrice: (item.price || 0) * 0.55,
+        avgWeeklySales: item.avgWeekly || 10,
+      }));
+
       const focusedAnalysis = {
         title: `Reorder PO — ${ns.product}`,
         lostRevenue: lostPerWeek > 0 ? `$${lostPerWeek.toLocaleString()}/week` : 'N/A',
         products: [focusedProduct],
-        recommendations: [],
+        recommendations: sameBrandRecs,
       };
 
+      const otherCount = sameBrandRecs.length;
       const contextMsg = `Draft a reorder PO for ${ns.product} (${ns.brand}) at ${ns.store}`;
       setMessages([{ role: 'user', text: contextMsg }]);
       setView('typing');
       setActiveView('reorder');
       setAiAnalysis(focusedAnalysis);
       setTimeout(() => {
+        const otherMsg = otherCount > 0
+          ? ` I also found **${otherCount} other ${ns.brand} item${otherCount > 1 ? 's' : ''}** that ${otherCount > 1 ? 'are' : 'is'} low or out of stock — you can include ${otherCount > 1 ? 'them' : 'it'} in this PO below.`
+          : '';
         setMessages(prev => [...prev, {
           role: 'agent',
-          text: `I've prepared a focused reorder PO for **${ns.product}** (${ns.brand}) at **${ns.store}**. Suggested quantity: **${suggestedQty} units** (2-week supply based on ${ns.avgWeekly || '~10'}/wk avg sales). Adjust the quantity and days of coverage below, then submit.`
+          text: `I've prepared a focused reorder PO for **${ns.product}** (${ns.brand}) at **${ns.store}**. Suggested quantity: **${suggestedQty} units** (2-week supply based on ${ns.avgWeekly || '~10'}/wk avg sales).${otherMsg} Adjust quantities and days of coverage below, then submit.`
         }]);
         setView('result');
       }, 1500);
