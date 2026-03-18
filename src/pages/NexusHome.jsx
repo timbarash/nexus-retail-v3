@@ -1926,29 +1926,29 @@ function MorningBriefing() {
   const scaledCritical = Math.max(1, Math.round(NEXUS_DATA.stockoutRisk * storeRatio));
 
   const briefingText = useMemo(() => {
-    if (isCEO) return '"Portfolio revenue $2.8M yesterday, +6.8% same-store growth vs last year. IL and NJ leading at +9% and +7% SSG. MI flat — 3 stores dragging avg. Inventory turnover at 4.2x (target 5x). 87 SKUs currently out of stock across 8 stores — estimated $112K in missed sales yesterday. Margin holding at 48.2%."';
-    if (isVP) return '"Your 23 stores did $1.4M yesterday. Same-store growth +5.1% YoY. Logan Square top performer at $48.2K. Morenci down 23% — foot traffic declining 3 weeks straight, may need local campaign. 34 out-of-stock SKUs across your region — $48K in estimated missed sales. Avg basket $118, up $4 WoW."';
-    if (isRegional) return '"IL revenue $680K yesterday, +4.2% WoW. Springfield leading at +18%. 2 vault-to-floor transfers pending at Naperville — Kiva Gummies and Stiiizy Pods both have demand on floor. 34 SKUs received yesterday, all checked in. Schaumburg running a flash promo today (15% off 3-6 PM)."';
+    if (isCEO) return '"Portfolio revenue $1.2M yesterday, +6.8% same-store growth vs last year. IL and NJ leading at +9% and +7% SSG. MI flat — 3 stores dragging avg. Inventory turnover at 4.2x (target 5x). 87 SKUs currently out of stock across 8 stores — estimated $112K in missed sales yesterday. Margin holding at 48.2%."';
+    if (isVP) return '"Your 23 stores did $720K yesterday. Same-store growth +5.1% YoY. Logan Square top performer at $48.2K. Morenci down 23% — foot traffic declining 3 weeks straight, may need local campaign. 34 out-of-stock SKUs across your region — $48K in estimated missed sales. Avg basket $118, up $4 WoW."';
+    if (isRegional) return '"IL revenue $280K yesterday, +4.2% WoW. Springfield leading at +18%. 2 vault-to-floor transfers pending at Naperville — Kiva Gummies and Stiiizy Pods both have demand on floor. 34 SKUs received yesterday, all checked in. Schaumburg running a flash promo today (15% off 3-6 PM)."';
     if (isStoreMgr) return '"Logan Square did $48.2K yesterday, 8% above target. 2 products out of stock on floor — Blue Dream 3.5g (45 units in vault, ready to transfer) and Kiva Gummies (60 in vault). Stiiizy Pod LR down to 4 units on floor, transfer before afternoon rush. Happy Hour promo starts at 3 PM. No pending reorders to review."';
-    if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ METRC sync delay cleared at Newark (12 min, no data loss). 3 product batches expiring within 30 days need destruction manifests. Next scheduled audit: IL Mar 24."';
+    if (isCompliance) return '"All 39 stores synced with state track-and-trace systems. 0 active discrepancies. NJ METRC sync delay cleared at Newark (12 min, no data loss). 3 product batches expiring within 30 days need METRC destruction events filed. Next scheduled audit: IL Mar 24."';
     return '"Yesterday was your best Friday this quarter. Springfield IL drove 34% of revenue. 3 items need reordering."';
   }, [isCEO, isVP, isRegional, isStoreMgr, isCompliance]);
 
   const metrics = useMemo(() => {
     if (isCEO) return [
-      { label: 'Portfolio Rev', value: '$2.8M', trend: '+6.8% SSG', up: true },
+      { label: 'Portfolio Rev', value: '$1.2M', trend: '+6.8% SSG', up: true },
       { label: 'Inv Turnover', value: '4.2x', trend: 'target 5x', up: false },
       { label: 'OOS Lost Sales', value: '$112K', trend: '87 SKUs', up: false },
       { label: 'Margin', value: '48.2%', trend: '+0.8pp', up: true },
     ];
     if (isVP) return [
-      { label: 'Regional Rev', value: '$1.4M', trend: '+5.1% SSG', up: true },
+      { label: 'Regional Rev', value: '$720K', trend: '+5.1% SSG', up: true },
       { label: 'Avg Basket', value: '$118', trend: '+$4 WoW', up: true },
       { label: 'OOS Lost Sales', value: '$48K', trend: '34 SKUs', up: false },
       { label: 'Flagged', value: '1 store', trend: 'Morenci -23%', up: false },
     ];
     if (isRegional) return [
-      { label: 'IL Revenue', value: '$680K', trend: '+4.2% WoW', up: true },
+      { label: 'IL Revenue', value: '$280K', trend: '+4.2% WoW', up: true },
       { label: 'Transfers', value: '32 done', trend: '2 pending', up: false },
       { label: 'Received', value: '34 SKUs', trend: 'All verified', up: true },
       { label: 'Promos Today', value: '1 active', trend: 'Schaumburg', up: true },
@@ -2331,7 +2331,7 @@ const COMPLIANCE_ALERTS = [
   {
     id: 'comp-3', type: 'standard', severity: 'WARNING', color: '#D4A03A', time: '1h ago',
     title: '3 product batches expiring within 30 days across 3 states',
-    ai: 'Ozone Cart batch #2847 (14 units, IL), Camino Gummies batch #1923 (8 units, NJ), Simply Herb batch #3401 (22 units, MA). METRC/METRC destruction manifests needed.',
+    ai: 'Ozone Cart batch #2847 (14 units, IL), Camino Gummies batch #1923 (8 units, NJ), Simply Herb batch #3401 (22 units, MA). METRC destruction events required.',
     actions: ['View Inventory'],
   },
   {
@@ -2687,8 +2687,8 @@ function CrossStoreIntelligence({ onOpenNexus }) {
 
   const rebalanceItems = [
     { product: 'Blue Dream 3.5g', from: 'Naperville, IL', fromQty: 89, fromDays: 22, to: 'Logan Square, IL', toQty: 0, toDays: 0, recTransfer: 40, estRevRecovery: '$1,140/wk' },
-    { product: 'Wyld Elderberry Gummies', from: 'Springfield, IL', fromQty: 44, fromDays: 18, to: 'Fort Lee, NJ', toQty: 0, toDays: 0, recTransfer: 22, estRevRecovery: '$396/wk' },
-    { product: 'Stiiizy Live Resin Pod', from: 'Boston, MA', fromQty: 62, fromDays: 28, to: 'Hoboken, NJ', toQty: 3, toDays: 1, recTransfer: 24, estRevRecovery: '$720/wk' },
+    { product: 'Wyld Elderberry Gummies', from: 'Springfield, IL', fromQty: 44, fromDays: 18, to: 'River North, IL', toQty: 0, toDays: 0, recTransfer: 22, estRevRecovery: '$396/wk' },
+    { product: 'Stiiizy Live Resin Pod', from: 'Boston, MA', fromQty: 62, fromDays: 28, to: 'Worcester, MA', toQty: 3, toDays: 1, recTransfer: 24, estRevRecovery: '$720/wk' },
   ];
 
   const bestPractices = [
@@ -3105,7 +3105,7 @@ function StoreHealthMatrix({ onOpenNexus }) {
 
 const COMPLIANCE_ITEMS = [
   { id: 'c1', severity: 'URGENT', color: '#E87068', state: 'OH', title: 'METRC reconciliation overdue — Columbus', detail: '28h behind deadline. 4 packages pending reconciliation.', query: 'Show me the OH METRC reconciliation status' },
-  { id: 'c2', severity: 'ACTION', color: '#D4A03A', state: 'IL/NJ/MA', title: '3 product batches expiring within 30 days', detail: 'Batch #2847 (IL), #1923 (NJ), #3401 (MA) — destruction manifests needed.', query: 'Which product batches are expiring soon?' },
+  { id: 'c2', severity: 'ACTION', color: '#D4A03A', state: 'IL/NJ/MA', title: '3 product batches expiring within 30 days', detail: 'Batch #2847 (IL), #1923 (NJ), #3401 (MA) — METRC destruction events required.', query: 'Which product batches are expiring soon?' },
   { id: 'c3', severity: 'ACTION', color: '#D4A03A', state: 'All', title: '14 packages awaiting METRC tags', detail: 'Avg tagging time 12 min. 3 packages over 2 hours old.', query: 'Show me the METRC package queue' },
   { id: 'c4', severity: 'REVIEW', color: '#64A8E0', state: 'IL', title: 'License renewal due Apr 15 — 28 days', detail: '80% of paperwork complete. Missing: updated floor plan, staff roster.', query: 'What regulatory changes and license renewals are coming up?' },
   { id: 'c5', severity: 'REVIEW', color: '#64A8E0', state: 'IL', title: 'New edible potency testing rules — Apr 1', detail: 'Vendor intake process needs updating before enforcement date.', query: 'What regulatory changes and license renewals are coming up?' },

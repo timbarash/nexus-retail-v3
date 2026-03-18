@@ -289,11 +289,11 @@ export function detectIntent(text, products) {
   // Pricing / revenue management detection — trigger before marketing
   // Must require clear pricing-action intent; avoid grabbing how-to / KB queries
   // that merely mention pricing words in a support context
-  const pricingActionPatterns = /\b(change.{0,8}prices?|raise.{0,8}prices?|lower.{0,8}prices?|adjust.{0,8}prices?|update.{0,8}prices?|set.{0,8}prices?|create.{0,12}discount|new discount|discount roi|discount review|discount audit|discount waste|discount effectiveness|price benchmark|price comparison|price analysis|price scenarios?|compare.{0,8}(my |our )?(prices?|pricing)|my pricing|our pricing|my prices|our prices|my margins?|our margins?|my discounts?|our discounts?|review.{0,8}discounts?|overpriced|underpriced|gross price|net price|revenue management|price.{0,6}vs.{0,6}market|pricing (tool|agent|dashboard))\b/;
+  const pricingActionPatterns = /\b(change.{0,8}prices?|raise.{0,8}prices?|lower.{0,8}prices?|adjust.{0,8}prices?|update.{0,8}prices?|set.{0,8}prices?|re-?price|create.{0,12}discount|new discount|discount roi|discount review|discount audit|discount waste|discount effectiveness|price benchmark|price comparison|price analysis|price scenarios?|compare.{0,8}(my |our )?(prices?|pricing)|my pricing|our pricing|my prices|our prices|my margins?|our margins?|my discounts?|our discounts?|review.{0,8}discounts?|overpriced|underpriced|gross price|net price|revenue management|price.{0,6}vs.{0,6}market|pricing (tool|agent|dashboard))\b/;
   if (pricingActionPatterns.test(lower)) {
     // Exclude how-to / integration / compliance KB queries
     // But allow possessive data questions like "how are my margins", "how are our prices"
-    const isPossessiveDataQ = /\b(how are (my|our)|what are (my|our)|show me (my|our))\b/.test(lower);
+    const isPossessiveDataQ = /\b(how are (my|our)|how do (my|our)|what are (my|our)|show me (my|our))\b/.test(lower);
     const isKBQuery = !isPossessiveDataQ && /\b(how (do|does|to|is|are)|set up|configure|integrate|integration|compliance|metrc|biotrack|leafdata|api|pos |point of sale)\b/.test(lower);
     if (!isKBQuery) {
       return { lane: 'pricing' };
@@ -311,7 +311,7 @@ export function detectIntent(text, products) {
   }
 
   // Review feed — specific review browsing requests (must be before broader sentiment lane)
-  const reviewFeedPatterns = /\b(show me reviews?|recent reviews?|latest reviews?|last week'?s? reviews?|this week'?s? reviews?|this month'?s? reviews?|last month'?s? reviews?|5[- ]star|4[- ]star|3[- ]star|2[- ]star|1[- ]star|read reviews?|pull up reviews?|find reviews?|reviews? (about|mentioning|for|from|with|containing)|worst reviews?|best reviews?|top rated|lowest rated|angry reviews?|bad reviews?|good reviews?|great reviews?)\b/;
+  const reviewFeedPatterns = /\b(show me reviews?|recent reviews?|latest( customer)? reviews?|last week'?s? reviews?|this week'?s? reviews?|this month'?s? reviews?|last month'?s? reviews?|5[- ]star|4[- ]star|3[- ]star|2[- ]star|1[- ]star|read reviews?|pull up reviews?|find reviews?|reviews? (about|mentioning|for|from|with|containing)|worst reviews?|best reviews?|top rated|lowest rated|angry reviews?|bad reviews?|good reviews?|great reviews?|customer reviews?)\b/;
   if (reviewFeedPatterns.test(lower)) {
     return { lane: 'reviews' };
   }
@@ -328,8 +328,8 @@ export function detectIntent(text, products) {
 
   // Reporting / analytics / performance detection
   // Guard: how-to questions about reports/analytics tools go to KB, not reporting lane
-  const reportingPatterns = /\b(sales|revenue|performance|report|reporting|analytics|metrics|kpi|average order|aov|basket size|transactions|conversion|year over year|yoy|week over week|wow|month over month|mom|compare|vs market|versus market|market average|benchmark|how are we doing|how did we do|top sellers|best sellers|top products|worst products|bottom products|daily sales|weekly sales|monthly sales|quarterly|growth rate|trend|customer count|ticket average|units sold|gross margin|profit margin|net revenue)\b/;
-  const isReportingHowTo = /\b(how (do|does|to|is|are)|set up|configure|integrate|integration|where.{0,10}find|export|pull.{0,6}report|run.{0,6}report|generate.{0,6}report)\b/.test(lower) && !/\b(how are we doing|how did we do)\b/.test(lower);
+  const reportingPatterns = /\b(sales|revenue|performance|performing|report|reporting|analytics|metrics|kpi|average order|aov|basket size|transactions|conversion|year over year|yoy|week over week|wow|month over month|mom|compare|vs market|versus market|market average|benchmark|how are we doing|how did we do|how are .{0,20} doing|how did .{0,20} do|how is .{0,20} doing|top sellers|best sellers|top selling|best selling|selling best|top products|worst products|bottom products|daily sales|weekly sales|monthly sales|quarterly|growth rate|trend|customer count|ticket average|units sold|gross margin|profit margin|net revenue|margins?)\b/;
+  const isReportingHowTo = /\b(how (do|does|to|is|are)|set up|configure|integrate|integration|where.{0,10}find|export|pull.{0,6}report|run.{0,6}report|generate.{0,6}report)\b/.test(lower) && !/\b(how (are|is) .{0,20} (doing|performing)|how did .{0,20} do)\b/.test(lower);
   if (reportingPatterns.test(lower) && !isReportingHowTo) {
     return { lane: 'reporting' };
   }
@@ -337,7 +337,7 @@ export function detectIntent(text, products) {
   // Connect / inventory / purchasing detection — broad patterns
   // Guard: if query is a how-to about inventory processes (cycle counts, metrc, compliance), route to KB
   const isInventoryHowTo = /\b(how (do|does|to|is)|set up|configure|integrate|integration|compliance|metrc|biotrack|leafdata|cycle count|void|return)\b/.test(lower) && /\b(inventory|stock)\b/.test(lower);
-  const connectPatterns = /\b(reorder|re-?stock|out of stock|stockout|low stock|low inventory|inventory analysis|inventory check|check inventory|inventory report|purchasing|explore new products|trending products|margin analysis|vendor comparison|supplier|dead stock|replenish|what should we stock|catalog gaps|order optimization|seasonal forecast|running low|run out|running out|don't run out|need to order|need more|stock up|keep stocked|well.?stocked|fully stocked|shelf|fill the shelves?|supply chain|purchase order|po for|place.?an? order|order more|what do (i|we) need|what should (i|we) (buy|order)|inventory$|inventory\b|stock level|stock check|top up)\b/;
+  const connectPatterns = /\b(reorder(ing)?|re-?stock(ing)?|out of stock|stockout|low stock|low inventory|inventory analysis|inventory check|check inventory|inventory report|purchasing|explore new products|trending products|margin analysis|vendor comparison|supplier|dead stock|replenish|what should we stock|catalog gaps|order optimization|seasonal forecast|running low|run out|running out|don't run out|need to order|need more|stock up|keep stocked|well.?stocked|fully stocked|shelf|fill the shelves?|supply chain|purchase order|po for|place.?an? order|order more|what do (i|we) need|what should (i|we) (buy|order)|inventory$|inventory\b|stock level|stock check|top up)\b/;
   if (connectPatterns.test(lower) && !isInventoryHowTo) {
     return { lane: 'connect' };
   }
@@ -2436,7 +2436,7 @@ function getNexusActionData(action) {
     regulatory: { title:'Upcoming Industry Changes', color:'#B598E8', summary:'Key changes across your markets to stay ahead of.',
       kpis:[{l:'Upcoming',v:'5',c:'#B598E8'},{l:'Action Needed',v:'1',c:'#E87068'},{l:'Impactful',v:'2',c:'#D4A03A'},{l:'Next Date',v:'Apr 1',c:'#64A8E0'}],
       cols:['Date','State','What\'s Changing','Impact','Your Next Step'],
-      rows:[['Apr 1','Illinois','New potency testing for edibles','High','Update vendor process'],['Apr 15','New Jersey','Delivery license expansion','Medium','Evaluate delivery ops'],['May 1','Pennsylvania','System API v3 migration','High','Dev team integration update'],['May 15','Ohio','Adult-use sales begin','High','Staff training + menu update'],['Jun 1','Maryland','Updated packaging requirements','Medium','Review current packaging']],
+      rows:[['Apr 1','Illinois','New potency testing for edibles','High','Update vendor process'],['Apr 15','New Jersey','Delivery license expansion','Medium','Evaluate delivery ops'],['May 1','Pennsylvania','System API v3 migration','High','Dev team integration update'],['May 15','Ohio','Updated THC labeling requirements','Medium','Audit current labels'],['Jun 1','Maryland','Updated packaging requirements','Medium','Review current packaging']],
       actions:[{label:'View Upcoming Changes',done:'Showing regulatory timeline'},{label:'Export Calendar',done:'Calendar exported'}]},
     winback_campaign: { title:'Win-Back Campaign — Lapsed Customers', color:'#00C27C', summary:'Customers inactive 60+ days with high lifetime value, ready for re-engagement.',
       kpis:[{l:'Lapsed (60d+)',v:'1,247',c:'#E87068'},{l:'Avg LTV',v:'$2,840',c:'#00C27C'},{l:'Win-Back Rate',v:'23%',c:'#D4A03A'},{l:'Est. Revenue',v:'$89K',c:'#0EA5E9'}],
@@ -2446,7 +2446,7 @@ function getNexusActionData(action) {
     market_prices: { title:'Price vs Market Comparison', color:'#D4A03A', summary:'Your top sellers compared to competitor and market average pricing.',
       kpis:[{l:'Below Market',v:'12',c:'#00C27C'},{l:'At Market',v:'18',c:'#0EA5E9'},{l:'Above Market',v:'6',c:'#E87068'},{l:'Avg Gap',v:'-3.2%',c:'#00C27C'}],
       cols:['Product','Your Price','Market Avg','Competitor Low','Gap','Recommendation'],
-      rows:[['Blue Dream 3.5g','$38','$42','$35','-9.5%','At optimal'],['STIIIZY OG Pod 1g','$45','$48','$42','-6.3%','At optimal'],['Wyld Elderberry 10pk','$22','$24','$20','-8.3%','At optimal'],['Jeeter Baby Js 5pk','$35','$38','$33','-7.9%','At optimal'],['Kiva Camino 20pk','$32','$30','$28','+6.7%','Review — slight premium'],['Raw Garden Sauce 1g','$28','$32','$25','-12.5%','Opportunity to raise']],
+      rows:[['Blue Dream 3.5g','$38','$42','$35','-9.5%','At optimal'],['STIIIZY OG Pod 1g','$45','$48','$42','-6.3%','At optimal'],['Wyld Elderberry 10pk','$18','$20','$16','-10%','At optimal'],['Jeeter Baby Js 5pk','$35','$38','$33','-7.9%','At optimal'],['Kiva Camino 20pk','$22','$24','$20','-8.3%','At optimal'],['Raw Garden Sauce 1g','$28','$32','$25','-12.5%','Opportunity to raise']],
       actions:[{label:'View Price Details',done:'Showing full price comparison'},{label:'Export Analysis',done:'Price analysis downloaded'}]},
     sentiment_overview: { title:'Customer Sentiment — This Month', color:'#B598E8', summary:'Aggregated feedback from reviews, surveys, and support interactions.',
       kpis:[{l:'NPS Score',v:'72',c:'#00C27C'},{l:'Avg Rating',v:'4.6★',c:'#D4A03A'},{l:'Reviews',v:'348',c:'#0EA5E9'},{l:'Trend',v:'+5 pts',c:'#00C27C'}],
@@ -2493,11 +2493,11 @@ function getNexusActionData(action) {
       cols:['Metric','This Month','Last Month','Change','Goal'],
       rows:[['New Enrollments','2,841','2,612','+8.8%','Balanced'],['Points Issued','1.2M','1.1M','+9.1%','Balanced'],['Redemptions','8,412','7,890','+6.6%','Balanced'],['Lapsed Members (90d+)','4,218','3,840','+9.8%','Review'],['Rev from Loyalty','$4.8M','$4.4M','+9.1%','Balanced'],['Avg Visits (Loyal)','3.2/mo','3.1/mo','+3.2%','Balanced']],
       actions:[{label:'View Lapsed Members',done:'Showing lapsed member details'},{label:'View Enrollment Trends',done:'Showing enrollment breakdown'}]},
-    batch_expiry: { title:'Product Batches Expiring Within 30 Days', color:'#E87068', summary:'3 batches across IL, NJ, and MA need destruction manifests before expiration.',
-      kpis:[{l:'Expiring',v:'3 batches',c:'#E87068'},{l:'Total Units',v:'284',c:'#D4A03A'},{l:'Value at Risk',v:'$8.2K',c:'#E87068'},{l:'Action Needed',v:'Manifests',c:'#64A8E0'}],
+    batch_expiry: { title:'Product Batches Expiring Within 30 Days', color:'#E87068', summary:'3 batches across IL, NJ, and MA need METRC destruction events filed before expiration.',
+      kpis:[{l:'Expiring',v:'3 batches',c:'#E87068'},{l:'Total Units',v:'284',c:'#D4A03A'},{l:'Value at Risk',v:'$8.2K',c:'#E87068'},{l:'Action Needed',v:'METRC Events',c:'#64A8E0'}],
       cols:['Batch ID','Store','Product','Units','Expiry Date','Days Left','Action'],
-      rows:[['#2847','Logan Square (IL)','Kiva Terra Bites 20pk',96,'Apr 12','25 days','Create destruction manifest'],['#1923','Edison (NJ)','Wyld Pear CBN 10pk',120,'Apr 8','21 days','Create destruction manifest'],['#3401','Boston (MA)','Raw Garden Cart 0.5g',68,'Apr 18','31 days','Flag for discount or destruction']],
-      actions:[{label:'Generate Manifests',done:'Destruction manifests created for 3 batches'},{label:'Export Batch Report',done:'Report downloaded'}]},
+      rows:[['#2847','Logan Square (IL)','Kiva Terra Bites 20pk',96,'Apr 12','25 days','File METRC destruction event'],['#1923','Edison (NJ)','Wyld Pear CBN 10pk',120,'Apr 8','21 days','File METRC destruction event'],['#3401','Boston (MA)','Raw Garden Cart 0.5g',68,'Apr 18','31 days','Flag for discount or destruction']],
+      actions:[{label:'File METRC Events',done:'METRC destruction events filed for 3 batches'},{label:'Export Batch Report',done:'Report downloaded'}]},
     metrc_recon: { title:'METRC Reconciliation — Ohio', color:'#E87068', summary:'Columbus store is 28 hours behind reconciliation deadline. 4 packages pending.',
       kpis:[{l:'Overdue By',v:'28 hrs',c:'#E87068'},{l:'Pending Pkgs',v:'4',c:'#D4A03A'},{l:'OH Stores',v:'5/6 synced',c:'#D4A03A'},{l:'Risk Level',v:'High',c:'#E87068'}],
       cols:['Package ID','Store','Product','Received','METRC Status','Action'],
@@ -2511,7 +2511,7 @@ function getNexusActionData(action) {
     cross_transfer: { title:'Cross-Store Transfer Recommendations', color:'#64A8E0', summary:'AI-identified rebalancing opportunities to recover lost revenue from OOS products.',
       kpis:[{l:'Transfers Rec.',v:'3',c:'#64A8E0'},{l:'Total Units',v:'86',c:'#0EA5E9'},{l:'Est. Rev Recovery',v:'$2,256/wk',c:'#00C27C'},{l:'Avg Transit',v:'~24 hrs',c:'#D4A03A'}],
       cols:['Product','From','Surplus','To','Deficit','Transfer Qty','Est. Recovery'],
-      rows:[['Blue Dream 3.5g','Naperville, IL','89 units (22d)','Logan Square, IL','0 units (OOS)','40 units','$1,140/wk'],['Wyld Elderberry Gummies','Springfield, IL','44 units (18d)','Fort Lee, NJ','0 units (OOS)','22 units','$396/wk'],['Stiiizy Live Resin Pod','Boston, MA','62 units (28d)','Hoboken, NJ','3 units (1d)','24 units','$720/wk']],
+      rows:[['Blue Dream 3.5g','Naperville, IL','89 units (22d)','Logan Square, IL','0 units (OOS)','40 units','$1,140/wk'],['Wyld Elderberry Gummies','Springfield, IL','44 units (18d)','River North, IL','0 units (OOS)','22 units','$396/wk'],['Stiiizy Live Resin Pod','Boston, MA','62 units (28d)','Worcester, MA','3 units (1d)','24 units','$720/wk']],
       actions:[{label:'Initiate All Transfers',done:'3 transfer requests created — pending manager approval'},{label:'Export Transfer Plan',done:'Transfer plan downloaded'}]},
     metrc_queue: { title:'METRC Package Queue', color:'#D4A03A', summary:'Packages awaiting METRC tagging, pending manifests, and sync issues.',
       kpis:[{l:'Untagged Pkgs',v:'14',c:'#D4A03A'},{l:'Pending Manifests',v:'3',c:'#0EA5E9'},{l:'Sync Errors',v:'2',c:'#E87068'},{l:'Avg Tag Time',v:'12 min',c:'#00C27C'}],
