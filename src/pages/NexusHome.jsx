@@ -454,7 +454,7 @@ function NexusTile({ children, className = '', span = 1, onClick }) {
   const spanClass = span === 2 ? 'lg:col-span-2' : span === 3 ? 'lg:col-span-3' : '';
   return (
     <div
-      className={`rounded-2xl border border-[#38332B] bg-[#1C1B1A] transition-all duration-200 hover:brightness-110 overflow-hidden ${spanClass} ${className}`}
+      className={`rounded-2xl border border-[#38332B] bg-[#1C1B1A] transition-all duration-200 ${onClick ? 'hover:brightness-110' : ''} overflow-hidden ${spanClass} ${className}`}
       style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.3)', cursor: onClick ? 'pointer' : undefined }}
       onClick={onClick}
     >
@@ -515,7 +515,6 @@ function StatRow({ label, value, sub, trend, color }) {
 // ---------------------------------------------------------------------------
 
 function SentimentTile({ onOpenNexus }) {
-  const navigate = useNavigate();
   const { selectedStoreNames } = useStores();
   const { dateMultiplier, periodLabel, rangeLabel } = useDateRange();
 
@@ -739,7 +738,6 @@ function SentimentTile({ onOpenNexus }) {
 // ---------------------------------------------------------------------------
 
 function OmnichannelTile({ onOpenNexus }) {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('sms');
   const { dateMultiplier, rangeLabel } = useDateRange();
   const dm = dateMultiplier;
@@ -1215,7 +1213,6 @@ function UnifiedPipelineTile() {
    ═══════════════════════════════════════════════════════════════════ */
 
 function InventoryTile({ onOpenNexus }) {
-  const navigate = useNavigate();
   const { isAllSelected, selectionLabel } = useStores();
   const scaledAlerts = isAllSelected ? NEXUS_DATA.lowStockAlerts : Math.max(1, Math.round(NEXUS_DATA.lowStockAlerts * 0.5));
   const scaledRisk = isAllSelected ? NEXUS_DATA.stockoutRisk : Math.max(1, Math.round(NEXUS_DATA.stockoutRisk * 0.5));
@@ -2039,7 +2036,7 @@ function LiveTicker({ onOpenNexus }) {
     sale: (e) => `Tell me about recent sales at ${e.text.split(' ').slice(-2).join(' ')}`,
     inventory: (e) => `Show me inventory updates — ${e.text}`,
     review: (e) => `Show me the latest customer reviews`,
-    marketing: (e) => `How are our marketing campaigns performing?`,
+    marketing: (e) => `Show me marketing campaign performance`,
   };
   return (
     <NexusTile className="animate-fade-up" style={{ animationDelay: '100ms' }}>
@@ -2564,6 +2561,7 @@ function SmartAlertsFeed({ onAction }) {
       <div key={a.id} className="px-4 py-2.5 hover:bg-white/[0.02] transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${a.color}10` }}>
+            {a.severity === 'CRITICAL' && <AlertCircle size={14} style={{ color: a.color }} />}
             {a.severity === 'WARNING' && <AlertTriangle size={14} style={{ color: a.color }} />}
             {a.severity === 'OPPORTUNITY' && <TrendingUp size={14} style={{ color: a.color }} />}
             {a.severity === 'INSIGHT' && <Sparkles size={14} style={{ color: a.color }} />}
@@ -2684,7 +2682,6 @@ function SmartAlertsFeed({ onAction }) {
 // ─── CROSS-STORE INTELLIGENCE ─── //
 
 function CrossStoreIntelligence({ onOpenNexus }) {
-  const navigate = useNavigate();
   const { showCrossStore } = usePersona();
   if (!showCrossStore) return null;
 
@@ -2774,12 +2771,15 @@ function CrossStoreIntelligence({ onOpenNexus }) {
             {crossPricing.map((cp, i) => (
               <div key={i} className="rounded-xl border border-[#38332B] bg-[#141210] px-4 py-3">
                 <p className="text-[12px] font-medium text-[#F0EDE8] mb-1">{cp.product}</p>
-                <div className="flex items-center gap-4 text-[10px]">
+                <div className="flex items-center gap-4 text-[10px] flex-wrap">
                   <span className="text-[#ADA599]">IL: ${cp.ilPrice} ({cp.ilVol}/day)</span>
                   <span className="text-[#ADA599]">NJ: ${cp.njPrice} ({cp.njVol}/day)</span>
                   <span className="text-[#D4A03A] font-semibold">Optimal NJ: ${cp.optimalNJ} → {cp.projVol}/day</span>
                   <span className="text-[#00C27C] font-bold">{cp.projLift}</span>
                 </div>
+                <button onClick={() => onOpenNexus && onOpenNexus(`Optimize pricing for ${cp.product} — set NJ price to $${cp.optimalNJ} for projected ${cp.projLift} lift`)} className="mt-2 px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#D4A03A] bg-[#D4A03A]/10 border border-[#D4A03A]/20 hover:bg-[#D4A03A]/20 transition-colors">
+                  Optimize Price
+                </button>
               </div>
             ))}
           </div>
@@ -2792,7 +2792,6 @@ function CrossStoreIntelligence({ onOpenNexus }) {
 // ─── STORE HEALTH MATRIX ─── //
 
 function StoreHealthMatrix({ onOpenNexus }) {
-  const navigate = useNavigate();
   const { selectedStoreNames } = useStores();
   const { isStoreMgr, isCompliance, selectedPersona } = usePersona();
 

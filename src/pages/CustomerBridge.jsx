@@ -270,6 +270,22 @@ const UPSELL_TRIGGERS = {
 export function detectIntent(text, products) {
   const lower = text.toLowerCase();
 
+  // ── Nexus Action routing — direct widget clicks to operational data views ──
+  // Compliance / METRC / regulatory queries
+  if (/\bmetrc reconciliation\b|reconciliation (overdue|status|behind)/.test(lower)) return { lane: 'nexus_action', action: 'metrc_recon' };
+  if (/\bmetrc (package|tag) queue\b|\bpackages? awaiting\b|\bmetrc tags?\b/.test(lower)) return { lane: 'nexus_action', action: 'metrc_queue' };
+  if (/\bbatche?s?.{0,12}expir(ing|e|ation)\b|\bdestruction manifest\b|\bexpiring.{0,8}batch/.test(lower)) return { lane: 'nexus_action', action: 'batch_expiry' };
+  if (/\b(regulatory|license renewal|regulation|rule) (change|update|due|coming|upcoming)\b|\bregulatory changes\b|\blicense renewals?\b/.test(lower)) return { lane: 'nexus_action', action: 'regulatory' };
+  if (/\bcompliance status\b|\bcompliance.{0,12}(store|state|all)\b|\bmetrc compliance\b/.test(lower)) return { lane: 'nexus_action', action: 'compliance_all' };
+  // Cross-store transfer queries
+  if (/\btransfer \d+ units?\b|\btransfer.{0,20}(from|to)\b|\bcross.?store transfer\b|\brebalance\b/.test(lower)) return { lane: 'nexus_action', action: 'cross_transfer' };
+  // Best practice / replication queries
+  if (/\breplicate (at|across)\b|\bdeploy (at|across)\b|\bbest practice\b|\bimplement.{0,10}(across|at other)\b/.test(lower)) return { lane: 'nexus_action', action: 'practices' };
+  // Customer experience improvement queries
+  if (/\bcustomer experience\b|\bcx improvement\b|\bimprove.{0,8}experience\b/.test(lower)) return { lane: 'nexus_action', action: 'cx_improvements' };
+  // Marketing campaign performance (not launch — that goes to marketing lane)
+  if (/\bmarketing campaigns? performing\b|\bcampaign performance\b|\bhow are.{0,6}campaigns?\b/.test(lower)) return { lane: 'nexus_action', action: 'daily_flash' };
+
   // Pricing / revenue management detection — trigger before marketing
   // Must require clear pricing-action intent; avoid grabbing how-to / KB queries
   // that merely mention pricing words in a support context
@@ -2477,6 +2493,26 @@ function getNexusActionData(action) {
       cols:['Metric','This Month','Last Month','Change','Goal'],
       rows:[['New Enrollments','2,841','2,612','+8.8%','Balanced'],['Points Issued','1.2M','1.1M','+9.1%','Balanced'],['Redemptions','8,412','7,890','+6.6%','Balanced'],['Lapsed Members (90d+)','4,218','3,840','+9.8%','Review'],['Rev from Loyalty','$4.8M','$4.4M','+9.1%','Balanced'],['Avg Visits (Loyal)','3.2/mo','3.1/mo','+3.2%','Balanced']],
       actions:[{label:'View Lapsed Members',done:'Showing lapsed member details'},{label:'View Enrollment Trends',done:'Showing enrollment breakdown'}]},
+    batch_expiry: { title:'Product Batches Expiring Within 30 Days', color:'#E87068', summary:'3 batches across IL, NJ, and MA need destruction manifests before expiration.',
+      kpis:[{l:'Expiring',v:'3 batches',c:'#E87068'},{l:'Total Units',v:'284',c:'#D4A03A'},{l:'Value at Risk',v:'$8.2K',c:'#E87068'},{l:'Action Needed',v:'Manifests',c:'#64A8E0'}],
+      cols:['Batch ID','Store','Product','Units','Expiry Date','Days Left','Action'],
+      rows:[['#2847','Logan Square (IL)','Kiva Terra Bites 20pk',96,'Apr 12','25 days','Create destruction manifest'],['#1923','Edison (NJ)','Wyld Pear CBN 10pk',120,'Apr 8','21 days','Create destruction manifest'],['#3401','Boston (MA)','Raw Garden Cart 0.5g',68,'Apr 18','31 days','Flag for discount or destruction']],
+      actions:[{label:'Generate Manifests',done:'Destruction manifests created for 3 batches'},{label:'Export Batch Report',done:'Report downloaded'}]},
+    metrc_recon: { title:'METRC Reconciliation — Ohio', color:'#E87068', summary:'Columbus store is 28 hours behind reconciliation deadline. 4 packages pending.',
+      kpis:[{l:'Overdue By',v:'28 hrs',c:'#E87068'},{l:'Pending Pkgs',v:'4',c:'#D4A03A'},{l:'OH Stores',v:'5/6 synced',c:'#D4A03A'},{l:'Risk Level',v:'High',c:'#E87068'}],
+      cols:['Package ID','Store','Product','Received','METRC Status','Action'],
+      rows:[['PKG-9421','Columbus','Blue Dream 3.5g x40','Mar 16 2pm','Not Reconciled','Reconcile now'],['PKG-9418','Columbus','Jeeter Rolls x60','Mar 16 10am','Not Reconciled','Reconcile now'],['PKG-9415','Columbus','Wyld Gummies x100','Mar 15 4pm','Not Reconciled','Reconcile now'],['PKG-9412','Columbus','STIIIZY Pods x24','Mar 15 11am','Not Reconciled','Reconcile now'],['PKG-9408','Dayton','Kiva Bars x50','Mar 16 3pm','Synced','OK'],['PKG-9405','Canton','Raw Garden 1g x30','Mar 16 1pm','Synced','OK']],
+      actions:[{label:'Start Reconciliation',done:'Reconciliation initiated for 4 packages'},{label:'Contact Columbus Manager',done:'Message sent to store manager'}]},
+    cx_improvements: { title:'Customer Experience Opportunities', color:'#00C27C', summary:'AI-identified improvements based on review sentiment, wait times, and basket analysis.',
+      kpis:[{l:'Opportunities',v:'6',c:'#00C27C'},{l:'Est. NPS Lift',v:'+8 pts',c:'#0EA5E9'},{l:'Est. Rev Impact',v:'+$62K/mo',c:'#D4A03A'},{l:'Quick Wins',v:'3',c:'#B598E8'}],
+      cols:['Opportunity','Source','Impact','Effort','Priority'],
+      rows:[['Reduce checkout wait to < 5 min','Reviews: 64 wait-time mentions','High — +12% satisfaction','Add express lane at peak hrs','High'],['Budtender product training on edibles','Reviews: "didn\'t know dosing"','Med — fewer returns','2-hr training session','High'],['Add order-ahead for repeat purchases','Survey: 38% want faster pickup','High — +$18K/mo','Dev integration','Medium'],['Improve parking signage','Google reviews: 12 mentions','Low — reduce frustration','New signs — $200','Quick Win'],['Text receipt option','Survey: 52% prefer digital','Med — cost savings','POS config change','Quick Win'],['Loyalty point balance on receipt','Survey: 41% didn\'t know points','Med — +6% redemption','POS template update','Quick Win']],
+      actions:[{label:'View Implementation Plan',done:'Showing rollout timeline'},{label:'Export Opportunities',done:'Opportunity list downloaded'}]},
+    cross_transfer: { title:'Cross-Store Transfer Recommendations', color:'#64A8E0', summary:'AI-identified rebalancing opportunities to recover lost revenue from OOS products.',
+      kpis:[{l:'Transfers Rec.',v:'3',c:'#64A8E0'},{l:'Total Units',v:'86',c:'#0EA5E9'},{l:'Est. Rev Recovery',v:'$2,256/wk',c:'#00C27C'},{l:'Avg Transit',v:'~24 hrs',c:'#D4A03A'}],
+      cols:['Product','From','Surplus','To','Deficit','Transfer Qty','Est. Recovery'],
+      rows:[['Blue Dream 3.5g','Naperville, IL','89 units (22d)','Logan Square, IL','0 units (OOS)','40 units','$1,140/wk'],['Wyld Elderberry Gummies','Springfield, IL','44 units (18d)','Fort Lee, NJ','0 units (OOS)','22 units','$396/wk'],['Stiiizy Live Resin Pod','Boston, MA','62 units (28d)','Hoboken, NJ','3 units (1d)','24 units','$720/wk']],
+      actions:[{label:'Initiate All Transfers',done:'3 transfer requests created — pending manager approval'},{label:'Export Transfer Plan',done:'Transfer plan downloaded'}]},
     metrc_queue: { title:'METRC Package Queue', color:'#D4A03A', summary:'Packages awaiting METRC tagging, pending manifests, and sync issues.',
       kpis:[{l:'Untagged Pkgs',v:'14',c:'#D4A03A'},{l:'Pending Manifests',v:'3',c:'#0EA5E9'},{l:'Sync Errors',v:'2',c:'#E87068'},{l:'Avg Tag Time',v:'12 min',c:'#00C27C'}],
       cols:['Package','Store','Type','Status','METRC Status','Age'],
@@ -2624,7 +2660,19 @@ export default function CustomerBridge({ compact = false, nexusOverlay = false, 
     // Small base delay for UX feel
     await new Promise(r => setTimeout(r, 600));
 
-    if (intent.lane === 'support') {
+    if (intent.lane === 'nexus_action') {
+      // Direct data view — show operational data from NexusActionCard
+      const actionData = getNexusActionData(intent.action);
+      setThinkingStatus(`Loading ${actionData.title}...`);
+      await new Promise(r => setTimeout(r, 400));
+      setThinkingStatus(null);
+      setMessages(prev => [...prev, {
+        role: 'agent',
+        text: actionData.summary,
+        component: 'nexus_action',
+        data: actionData,
+      }]);
+    } else if (intent.lane === 'support') {
       setThinkingStatus('Searching knowledge base...');
       const results = searchKB(text);
       if (results.length > 0) {
