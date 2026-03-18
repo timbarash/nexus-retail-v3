@@ -2939,43 +2939,22 @@ function StoreHealthMatrix({ onOpenNexus }) {
 }
 
 // ─── COMPLIANCE COMMAND CENTER ─── //
+// Action-oriented: only shows things that need attention, no green "all good" status
 
-const COMPLIANCE_TIMELINE = [
-  { date: 'Mar 20', state: 'OH', label: 'METRC reconciliation deadline', status: 'overdue', detail: 'Columbus store 28h behind — 4 packages pending' },
-  { date: 'Mar 24', state: 'IL', label: 'Scheduled audit — all IL stores', status: 'upcoming', detail: '8 stores, all passing readiness checks' },
-  { date: 'Apr 1', state: 'IL', label: 'New edible potency testing rules', status: 'action', detail: 'Update vendor intake process for edibles' },
-  { date: 'Apr 12', state: 'NJ', label: 'Scheduled audit — NJ stores', status: 'upcoming', detail: '5 stores, all synced with METRC' },
-  { date: 'Apr 15', state: 'IL', label: 'License renewal due', status: 'action', detail: '80% of renewal paperwork complete' },
-  { date: 'May 1', state: 'PA', label: 'MJ Freeway API v3 migration', status: 'action', detail: 'Dev team integration update needed' },
-  { date: 'May 1', state: 'OH', label: 'Scheduled audit — OH stores', status: 'upcoming', detail: '6 stores, adult-use sales launching' },
-  { date: 'Jun 30', state: 'MD', label: 'License renewal due', status: 'action', detail: 'Renewal paperwork not started' },
-];
-
-const COMPLIANCE_STATES = [
-  { state: 'IL', system: 'METRC', stores: 8, synced: 8, lastSync: '4m', status: 'green', discrepancies: 0 },
-  { state: 'NJ', system: 'METRC', stores: 5, synced: 5, lastSync: '8m', status: 'green', discrepancies: 0 },
-  { state: 'OH', system: 'METRC', stores: 6, synced: 5, lastSync: '28h', status: 'red', discrepancies: 1 },
-  { state: 'MI', system: 'METRC', stores: 7, synced: 7, lastSync: '3m', status: 'green', discrepancies: 0 },
-  { state: 'PA', system: 'MJ Freeway', stores: 5, synced: 5, lastSync: '7m', status: 'green', discrepancies: 0 },
-  { state: 'MA', system: 'METRC', stores: 4, synced: 4, lastSync: '6m', status: 'green', discrepancies: 0 },
-  { state: 'MD', system: 'METRC', stores: 4, synced: 4, lastSync: '5m', status: 'green', discrepancies: 0 },
+const COMPLIANCE_ITEMS = [
+  { id: 'c1', severity: 'URGENT', color: '#E87068', state: 'OH', title: 'METRC reconciliation overdue — Columbus', detail: '28h behind deadline. 4 packages pending reconciliation.', query: 'Show me the OH METRC reconciliation status' },
+  { id: 'c2', severity: 'ACTION', color: '#D4A03A', state: 'IL/NJ/MA', title: '3 product batches expiring within 30 days', detail: 'Batch #2847 (IL), #1923 (NJ), #3401 (MA) — destruction manifests needed.', query: 'Which product batches are expiring soon?' },
+  { id: 'c3', severity: 'ACTION', color: '#D4A03A', state: 'All', title: '14 packages awaiting METRC tags', detail: 'Avg tagging time 12 min. 3 packages over 2 hours old.', query: 'Show me the METRC package queue' },
+  { id: 'c4', severity: 'REVIEW', color: '#64A8E0', state: 'IL', title: 'License renewal due Apr 15 — 28 days', detail: '80% of paperwork complete. Missing: updated floor plan, staff roster.', query: 'What regulatory changes and license renewals are coming up?' },
+  { id: 'c5', severity: 'REVIEW', color: '#64A8E0', state: 'IL', title: 'New edible potency testing rules — Apr 1', detail: 'Vendor intake process needs updating before enforcement date.', query: 'What regulatory changes and license renewals are coming up?' },
+  { id: 'c6', severity: 'REVIEW', color: '#64A8E0', state: 'PA', title: 'MJ Freeway API v3 migration — May 1', detail: 'Dev team integration update required. Current API deprecated.', query: 'Show me compliance status for PA stores' },
+  { id: 'c7', severity: 'REVIEW', color: '#64A8E0', state: 'MD', title: 'License renewal due Jun 30 — not started', detail: 'Renewal paperwork has not been initiated. 104 days remaining.', query: 'What regulatory changes and license renewals are coming up?' },
+  { id: 'c8', severity: 'REVIEW', color: '#64A8E0', state: 'OH', title: 'OH proposing monthly audit frequency', detail: 'For stores >$500K/mo. Currently quarterly. Public comment period open.', query: 'What regulatory changes and license renewals are coming up?' },
 ];
 
 function ComplianceCommandCenter({ onOpenNexus }) {
-  const [timelineOpen, setTimelineOpen] = useState(false);
-
-  const statusColor = (s) => s === 'green' ? '#00C27C' : s === 'warning' ? '#D4A03A' : '#E87068';
-  const totalSynced = COMPLIANCE_STATES.reduce((s, c) => s + c.synced, 0);
-  const totalStores = COMPLIANCE_STATES.reduce((s, c) => s + c.stores, 0);
-  const totalDisc = COMPLIANCE_STATES.reduce((s, c) => s + c.discrepancies, 0);
-  const hasIssue = COMPLIANCE_STATES.some(c => c.status !== 'green');
-
-  const actionItems = [
-    { label: 'Discrepancies', value: totalDisc > 0 ? `${totalDisc}` : '0', sub: totalDisc > 0 ? 'Needs review' : 'All clear', color: totalDisc > 0 ? '#E87068' : '#00C27C', query: 'Show me inventory discrepancies that need fixing' },
-    { label: 'Expiring', value: '3', sub: 'Within 30 days', color: '#D4A03A', query: 'Which product batches are expiring soon?' },
-    { label: 'Untagged Pkgs', value: '14', sub: 'Avg 12 min', color: '#D4A03A', query: 'Show me the METRC package queue' },
-    { label: 'License Due', value: 'IL Apr 15', sub: '28 days', color: '#64A8E0', query: 'What regulatory changes and license renewals are coming up?' },
-  ];
+  const urgentCount = COMPLIANCE_ITEMS.filter(i => i.severity === 'URGENT').length;
+  const actionCount = COMPLIANCE_ITEMS.filter(i => i.severity === 'ACTION').length;
 
   return (
     <NexusTile className="animate-fade-up" style={{ animationDelay: '350ms' }}>
@@ -2983,92 +2962,38 @@ function ComplianceCommandCenter({ onOpenNexus }) {
       <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
         <div className="flex items-center gap-2">
           <Shield className="w-4 h-4 text-[#64A8E0]" />
-          <span className="text-xs font-semibold text-[#F0EDE8]">Compliance Command Center</span>
+          <span className="text-xs font-semibold text-[#F0EDE8]">Compliance &amp; Regulatory</span>
+          <span className="text-[10px] text-[#6B6359]">{COMPLIANCE_ITEMS.length} items</span>
         </div>
-        <span className={`text-[10px] font-semibold ${hasIssue ? 'text-[#D4A03A]' : 'text-[#00C27C]'}`}>
-          {totalSynced}/{totalStores} stores synced
-        </span>
-      </div>
-
-      {/* Band 1: State Sync Strip */}
-      <div className="px-5 py-3 flex gap-2 overflow-x-auto">
-        {COMPLIANCE_STATES.map(sc => {
-          const c = statusColor(sc.status);
-          return (
-            <div key={sc.state} className="flex-shrink-0 rounded-xl border px-3 py-2 min-w-[90px] cursor-pointer hover:brightness-110 transition-all"
-              style={{ borderColor: `${c}30`, background: `${c}06` }}
-              onClick={() => onOpenNexus?.(`Show me compliance status for ${sc.state} stores`)}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold text-[#F0EDE8]">{sc.state}</span>
-                <div className="w-2 h-2 rounded-full" style={{ background: c }} />
-              </div>
-              <div className="text-[10px] text-[#6B6359]">{sc.synced}/{sc.stores} &middot; {sc.lastSync}</div>
-              <div className="text-[9px] font-medium mt-0.5" style={{ color: c === '#00C27C' ? '#6B6359' : c }}>
-                {sc.system}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Band 2: Action Items Counter */}
-      <div className="px-5 pb-3">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {actionItems.map((item, i) => (
-            <div key={i}
-              className="rounded-xl border border-[#38332B] bg-[#141210] px-3 py-2.5 cursor-pointer hover:brightness-125 transition-all"
-              onClick={() => onOpenNexus?.(item.query)}
-            >
-              <p className="text-[9px] text-[#6B6359] uppercase tracking-wider">{item.label}</p>
-              <p className="text-sm font-bold mt-0.5" style={{ color: item.color }}>{item.value}</p>
-              <p className="text-[9px] text-[#6B6359]">{item.sub}</p>
-            </div>
-          ))}
+        <div className="flex items-center gap-2">
+          {urgentCount > 0 && <span className="px-1.5 py-px rounded-full text-[8px] font-bold bg-[#E87068]/15 text-[#E87068]">{urgentCount} URGENT</span>}
+          {actionCount > 0 && <span className="px-1.5 py-px rounded-full text-[8px] font-bold bg-[#D4A03A]/15 text-[#D4A03A]">{actionCount} ACTION</span>}
         </div>
       </div>
 
-      {/* Band 3: Timeline Rail (expandable) */}
-      <div className="border-t border-[#38332B]">
-        <button
-          onClick={() => setTimelineOpen(!timelineOpen)}
-          className="w-full px-5 py-2 flex items-center justify-between text-[10px] text-[#6B6359] hover:text-[#ADA599] transition-colors"
-        >
-          <div className="flex items-center gap-1.5">
-            <Calendar size={11} />
-            <span>Compliance Timeline — Next 90 Days</span>
-            {COMPLIANCE_TIMELINE.some(t => t.status === 'overdue') && (
-              <span className="px-1.5 py-px rounded-full text-[8px] font-bold bg-[#E87068]/15 text-[#E87068]">1 OVERDUE</span>
-            )}
-          </div>
-          <ChevronDown size={11} className={`transition-transform ${timelineOpen ? 'rotate-180' : ''}`} />
-        </button>
-
-        {timelineOpen && (
-          <div className="px-5 pb-4">
-            <div className="relative ml-3 border-l border-[#38332B] pl-4 space-y-3">
-              {COMPLIANCE_TIMELINE.map((evt, i) => {
-                const dotColor = evt.status === 'overdue' ? '#E87068' : evt.status === 'action' ? '#D4A03A' : '#00C27C';
-                return (
-                  <div key={i} className="relative">
-                    <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full border-2" style={{ background: dotColor, borderColor: '#1C1B1A' }} />
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold" style={{ color: dotColor }}>{evt.date}</span>
-                          <span className="px-1.5 py-px rounded text-[8px] font-bold" style={{ background: `${dotColor}15`, color: dotColor }}>{evt.state}</span>
-                          {evt.status === 'overdue' && <span className="text-[8px] font-bold text-[#E87068] animate-pulse">OVERDUE</span>}
-                        </div>
-                        <p className="text-[11px] text-[#F0EDE8] mt-0.5">{evt.label}</p>
-                        <p className="text-[10px] text-[#6B6359]">{evt.detail}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+      {/* Item list */}
+      <div className="divide-y divide-[#38332B]/60">
+        {COMPLIANCE_ITEMS.map(item => (
+          <div key={item.id} className="px-5 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer" onClick={() => onOpenNexus?.(item.query)}>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <span className="text-[8px] font-bold px-1.5 py-px rounded-full" style={{ color: item.color, background: `${item.color}14` }}>
+                  {item.severity}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[12px] font-medium text-[#F0EDE8]">{item.title}</span>
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[9px] px-1.5 py-px rounded font-bold text-[#6B6359] bg-[#282724]">{item.state}</span>
+                  <span className="text-[10px] text-[#6B6359]">{item.detail}</span>
+                </div>
+              </div>
+              <ChevronRight size={12} className="text-[#38332B] flex-shrink-0 mt-1" />
             </div>
           </div>
-        )}
+        ))}
       </div>
     </NexusTile>
   );
