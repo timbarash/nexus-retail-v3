@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '../contexts/StoreContext';
 import { useDateRange } from '../contexts/DateRangeContext';
@@ -17,7 +17,7 @@ import {
   ArrowDownRight, Minus, CheckCircle2, Smartphone, QrCode, Monitor,
   Layers, Radio, Activity, Percent, Receipt, Store, Globe, Shield,
   Megaphone, ShoppingCart, ChevronDown, Rocket, ArrowRightLeft, Check, Lock,
-  Building2, Truck, Users, RefreshCw, FileText, Clipboard, Target, Eye, Calendar,
+  Building2, Truck, Users, RefreshCw, FileText, Clipboard, Target, Eye, Calendar, X,
 } from 'lucide-react';
 import NexusIcon from '../components/NexusIcon';
 import ConfirmationDrawer from '../components/common/ConfirmationDrawer';
@@ -2034,29 +2034,37 @@ const TICKER_EVENTS = [
   { icon: '\uD83D\uDCB0', text: '$312 sale Logan Square IL', time: '38m', cat: 'sale' },
 ];
 
-function LiveTicker() {
+function LiveTicker({ onOpenNexus }) {
+  const catQueries = {
+    sale: (e) => `Tell me about recent sales at ${e.text.split(' ').slice(-2).join(' ')}`,
+    inventory: (e) => `Show me inventory updates — ${e.text}`,
+    review: (e) => `Show me the latest customer reviews`,
+    marketing: (e) => `How are our marketing campaigns performing?`,
+  };
   return (
-    <div className="rounded-xl border border-[#38332B] bg-[#1C1B1A] overflow-hidden animate-fade-up" style={{ animationDelay: '100ms' }}>
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-[#38332B]">
+    <NexusTile className="animate-fade-up" style={{ animationDelay: '100ms' }}>
+      <div className="flex items-center gap-2 px-5 py-3 border-b border-[#38332B]">
         <span className="relative flex h-2 w-2">
           <span className="absolute h-full w-full animate-ping rounded-full bg-[#00C27C] opacity-40" />
           <span className="h-2 w-2 rounded-full bg-[#00C27C]" />
         </span>
-        <span className="text-[11px] font-semibold text-[#F0EDE8]">Live Feed</span>
-        <span className="text-[10px] text-[#6B6359] ml-auto">Auto-scrolling</span>
+        <span className="text-[11px] font-semibold text-[#F0EDE8]">Live Activity</span>
+        <span className="text-[10px] text-[#6B6359] ml-auto">{TICKER_EVENTS.length} events</span>
       </div>
-      <div className="relative overflow-hidden h-[36px]">
-        <div className="flex gap-2.5 absolute whitespace-nowrap px-4 py-1.5" style={{ animation: 'ticker-scroll 60s linear infinite' }}>
-          {[...TICKER_EVENTS, ...TICKER_EVENTS].map((e, i) => (
-            <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] border border-[#38332B] bg-[#141210]">
-              <span>{e.icon}</span>
-              <span className="text-[#C8C3BA] font-medium">{e.text}</span>
-              <span className="text-[#6B6359]">{e.time}</span>
-            </span>
-          ))}
-        </div>
+      <div className="divide-y divide-[#38332B]/60 max-h-[340px] overflow-y-auto">
+        {TICKER_EVENTS.map((e, i) => (
+          <div
+            key={i}
+            onClick={() => onOpenNexus?.(catQueries[e.cat]?.(e) || `Tell me more about: ${e.text}`)}
+            className="flex items-center gap-3 px-5 py-2.5 hover:bg-white/[0.02] transition-colors cursor-pointer"
+          >
+            <span className="text-base flex-shrink-0">{e.icon}</span>
+            <span className="text-[11px] text-[#C8C3BA] font-medium flex-1 truncate">{e.text}</span>
+            <span className="text-[10px] text-[#6B6359] flex-shrink-0">{e.time}</span>
+          </div>
+        ))}
       </div>
-    </div>
+    </NexusTile>
   );
 }
 
@@ -2900,8 +2908,57 @@ function StoreHealthMatrix({ onOpenNexus }) {
     );
   }
 
+  // Generate alerts & insights for a store based on its data
+  const getStoreInsights = useCallback((s) => {
+    const insights = [];
+    const color = s.composite >= 75 ? '#00C27C' : s.composite >= 55 ? '#D4A03A' : '#E87068';
+    // Sentiment alerts
+    if (s.sentimentFlag === 'alert') {
+      insights.push({ severity: 'ALERT', color: '#E87068', text: `Sentiment dropped ${Math.abs(s.sentimentDelta)}% — negative reviews trending`, query: `What's driving negative sentiment at ${s.name}?` });
+      insights.push({ severity: 'ALERT', color: '#E87068', text: `3 unresolved customer complaints this week`, query: `Show me the recent complaints at ${s.name}` });
+      insights.push({ severity: 'ACTION', color: '#D4A03A', text: `Consider staff coaching on customer experience`, query: `What customer experience improvements can we make at ${s.name}?` });
+    } else if (s.sentimentFlag === 'watch') {
+      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Sentiment ${s.sentimentDelta >= 0 ? 'up' : 'down'} ${Math.abs(s.sentimentDelta)}% — monitoring`, query: `What's the sentiment trend at ${s.name}?` });
+    }
+    // Stock alerts
+    if (s.stockScore < 80) {
+      insights.push({ severity: 'ALERT', color: '#E87068', text: `Stock score ${s.stockScore}/100 — ${Math.round((100 - s.stockScore) / 10)} products low or OOS`, query: `Which products are out of stock at ${s.name}?` });
+    } else if (s.stockScore < 90) {
+      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Stock score ${s.stockScore}/100 — minor replenishment needed`, query: `What needs reordering at ${s.name}?` });
+    }
+    // Compliance
+    if (s.compScore < 85) {
+      insights.push({ severity: 'ACTION', color: '#D4A03A', text: `Compliance score ${s.compScore}/100 — review METRC sync`, query: `Show METRC compliance status for ${s.name}` });
+    }
+    // Revenue
+    if (s.revenue < 300) {
+      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Revenue below $300K target — ${fmtDollar(s.revenue * 1000)} MTD`, query: `How can we boost revenue at ${s.name}?` });
+    }
+    // Margin
+    if (s.margin < 38) {
+      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Margin at ${s.margin}% — below 38% floor`, query: `What's dragging down margin at ${s.name}?` });
+    }
+    // Always add a positive or neutral insight
+    if (insights.length === 0) {
+      insights.push({ severity: 'OK', color: '#00C27C', text: `Store performing well — composite ${s.composite}/100`, query: `Give me a full performance summary for ${s.name}` });
+    }
+    return insights;
+  }, []);
+
+  // Store detail modal state
+  const [selectedStore, setSelectedStore] = useState(null);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!selectedStore) return;
+    const handler = (e) => { if (e.key === 'Escape') setSelectedStore(null); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [selectedStore]);
+
   // Default: Multi-store health matrix for CEO/VP/Regional
   return (
+    <>
     <NexusTile className="animate-fade-up" style={{ animationDelay: '400ms' }}>
       <div className="px-5 py-3 flex justify-between items-center border-b border-[#38332B]">
         <div className="flex items-center gap-2">
@@ -2920,7 +2977,7 @@ function StoreHealthMatrix({ onOpenNexus }) {
           const color = s.composite >= 75 ? '#00C27C' : s.composite >= 55 ? '#D4A03A' : '#E87068';
           const deg = s.composite * 3.6;
           return (
-            <div key={s.name} onClick={() => onOpenNexus && onOpenNexus(`Deep dive on ${s.name} — score ${s.composite}, ${s.alerts} alerts`)} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
+            <div key={s.name} onClick={() => setSelectedStore(s)} className="rounded-xl border border-[#38332B] bg-[#141210] p-3 text-center hover:brightness-110 transition-all cursor-pointer">
               <div className="w-11 h-11 rounded-full mx-auto mb-2 flex items-center justify-center" style={{ background: `conic-gradient(${color} ${deg}deg, #38332B 0deg)` }}>
                 <div className="w-8 h-8 rounded-full bg-[#141210] flex items-center justify-center text-xs font-bold" style={{ color }}>{s.composite}</div>
               </div>
@@ -2935,6 +2992,112 @@ function StoreHealthMatrix({ onOpenNexus }) {
         })}
       </div>
     </NexusTile>
+
+    {/* Store Detail Modal */}
+    {selectedStore && (() => {
+      const s = selectedStore;
+      const color = s.composite >= 75 ? '#00C27C' : s.composite >= 55 ? '#D4A03A' : '#E87068';
+      const deg = s.composite * 3.6;
+      const insights = getStoreInsights(s);
+      const rng = _seedRng(s.name.length * 31);
+      rng(); rng(); // consume stockScore + compScore calls
+      const revScore = Math.min(100, Math.round((s.revenue / 750) * 100));
+      const sentScore = s.sentimentScore;
+      const mktScore = Math.round(50 + rng() * 40);
+      const scoreBars = [
+        { label: 'Revenue', score: revScore, weight: '30%', color: '#00C27C' },
+        { label: 'Sentiment', score: sentScore, weight: '25%', color: '#64A8E0' },
+        { label: 'Stock', score: s.stockScore, weight: '20%', color: '#D4A03A' },
+        { label: 'Compliance', score: s.compScore, weight: '15%', color: '#B598E8' },
+        { label: 'Marketing', score: mktScore, weight: '10%', color: '#0EA5E9' },
+      ];
+      return (
+        <>
+          <div className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]" onClick={() => setSelectedStore(null)} />
+          <div className="fixed z-[91] bottom-0 left-0 right-0 sm:bottom-auto sm:top-[50%] sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl bg-[#1C1B1A] border border-[#38332B] shadow-2xl overflow-hidden animate-[slideUp_200ms_ease-out] sm:animate-[fadeIn_150ms_ease-out] max-h-[85vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 pt-5 pb-3 sticky top-0 bg-[#1C1B1A] z-10 border-b border-[#38332B]">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: `conic-gradient(${color} ${deg}deg, #38332B 0deg)` }}>
+                  <div className="w-8 h-8 rounded-full bg-[#1C1B1A] flex items-center justify-center text-xs font-bold" style={{ color }}>{s.composite}</div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-[#F0EDE8]">{s.name}</h3>
+                  <p className="text-[11px] text-[#6B6359]">{s.state} &middot; {fmtDollar(s.revenue * 1000)} MTD &middot; {s.transactions} txns</p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedStore(null)} className="w-7 h-7 rounded-lg flex items-center justify-center text-[#6B6359] hover:text-[#ADA599] hover:bg-[#282724] transition-colors">
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* Key Metrics */}
+            <div className="px-5 pt-4 grid grid-cols-4 gap-2">
+              {[
+                { label: 'Revenue', value: fmtDollar(s.revenue * 1000), color: '#00C27C' },
+                { label: 'Margin', value: `${s.margin}%`, color: s.margin >= 38 ? '#00C27C' : '#D4A03A' },
+                { label: 'Avg Basket', value: `$${s.avgBasket}`, color: '#64A8E0' },
+                { label: 'Sentiment', value: `${s.sentimentScore}`, color: s.sentimentDelta >= 0 ? '#00C27C' : '#E87068' },
+              ].map(m => (
+                <div key={m.label} className="rounded-lg border border-[#38332B] bg-[#141210] p-2 text-center">
+                  <p className="text-[9px] text-[#6B6359] uppercase">{m.label}</p>
+                  <p className="text-sm font-bold" style={{ color: m.color }}>{m.value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Score Breakdown */}
+            <div className="px-5 pt-4">
+              <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-wider mb-2">Score Breakdown</p>
+              <div className="space-y-2">
+                {scoreBars.map(bar => (
+                  <div key={bar.label} className="flex items-center gap-3">
+                    <span className="text-[10px] text-[#ADA599] w-20">{bar.label} <span className="text-[#6B6359]">({bar.weight})</span></span>
+                    <div className="flex-1 h-2 rounded-full bg-[#282724] overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${bar.score}%`, background: bar.color }} />
+                    </div>
+                    <span className="text-[10px] font-bold w-7 text-right" style={{ color: bar.color }}>{bar.score}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Alerts & Insights */}
+            <div className="px-5 pt-4 pb-2">
+              <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-wider mb-2">Alerts & Insights</p>
+              <div className="space-y-1.5">
+                {insights.map((ins, i) => (
+                  <div
+                    key={i}
+                    onClick={() => { setSelectedStore(null); onOpenNexus?.(ins.query); }}
+                    className="flex items-start gap-2.5 rounded-xl border border-[#38332B] bg-[#141210] px-3 py-2.5 hover:bg-white/[0.03] transition-colors cursor-pointer"
+                  >
+                    <span className="text-[8px] font-bold px-1.5 py-px rounded-full mt-0.5 flex-shrink-0" style={{ color: ins.color, background: `${ins.color}14` }}>
+                      {ins.severity}
+                    </span>
+                    <span className="text-[11px] text-[#ADA599] flex-1">{ins.text}</span>
+                    <ChevronRight size={12} className="text-[#38332B] flex-shrink-0 mt-0.5" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Deep dive button */}
+            <div className="p-5">
+              <button
+                onClick={() => { setSelectedStore(null); onOpenNexus?.(`Give me a full deep dive on ${s.name} — score ${s.composite}, revenue ${fmtDollar(s.revenue * 1000)}, ${s.alerts} alerts`); }}
+                className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98] flex items-center justify-center gap-2"
+                style={{ background: '#D4A03A' }}
+              >
+                <MessageSquare size={14} />
+                Deep Dive in Nexus Chat
+              </button>
+            </div>
+          </div>
+        </>
+      );
+    })()}
+    </>
   );
 }
 
@@ -2972,7 +3135,7 @@ function ComplianceCommandCenter({ onOpenNexus }) {
       </div>
 
       {/* Item list */}
-      <div className="divide-y divide-[#38332B]/60">
+      <div className="divide-y divide-[#38332B]/60 max-h-[340px] overflow-y-auto">
         {COMPLIANCE_ITEMS.map(item => (
           <div key={item.id} className="px-5 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer" onClick={() => onOpenNexus?.(item.query)}>
             <div className="flex items-start gap-3">
@@ -3018,14 +3181,14 @@ export default function NexusHome({ onOpenNexus }) {
       {/* 4. Store Health Matrix */}
       <StoreHealthMatrix onOpenNexus={onOpenNexus} />
 
-      {/* 4.5 Compliance Command Center */}
-      <ComplianceCommandCenter onOpenNexus={onOpenNexus} />
+      {/* 4.5 Compliance + Live Activity — side by side */}
+      <div className="grid gap-5 lg:grid-cols-2">
+        <ComplianceCommandCenter onOpenNexus={onOpenNexus} />
+        <LiveTicker onOpenNexus={onOpenNexus} />
+      </div>
 
       {/* 5. Cross-Store Intelligence (CEO/VP/Regional only) */}
       <CrossStoreIntelligence onOpenNexus={onOpenNexus} />
-
-      {/* 6. Live Activity Ticker */}
-      <LiveTicker />
 
       {/* 7. Sales Reporting — kept from v2 */}
       <p className="text-[10px] font-bold text-[#6B6359] uppercase tracking-[1.5px] mt-1">Performance</p>
