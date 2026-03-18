@@ -2809,6 +2809,53 @@ function StoreHealthMatrix({ onOpenNexus }) {
     }).sort((a, b) => b.composite - a.composite);
   }, [selectedStoreNames]);
 
+  // Generate alerts & insights for a store based on its data
+  const getStoreInsights = useCallback((s) => {
+    const insights = [];
+    // Sentiment alerts
+    if (s.sentimentFlag === 'alert') {
+      insights.push({ severity: 'ALERT', color: '#E87068', text: `Sentiment dropped ${Math.abs(s.sentimentDelta)}% — negative reviews trending`, query: `What's driving negative sentiment at ${s.name}?` });
+      insights.push({ severity: 'ALERT', color: '#E87068', text: `3 unresolved customer complaints this week`, query: `Show me the recent complaints at ${s.name}` });
+      insights.push({ severity: 'ACTION', color: '#D4A03A', text: `Consider staff coaching on customer experience`, query: `What customer experience improvements can we make at ${s.name}?` });
+    } else if (s.sentimentFlag === 'watch') {
+      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Sentiment ${s.sentimentDelta >= 0 ? 'up' : 'down'} ${Math.abs(s.sentimentDelta)}% — monitoring`, query: `What's the sentiment trend at ${s.name}?` });
+    }
+    // Stock alerts
+    if (s.stockScore < 80) {
+      insights.push({ severity: 'ALERT', color: '#E87068', text: `Stock score ${s.stockScore}/100 — ${Math.round((100 - s.stockScore) / 10)} products low or OOS`, query: `Which products are out of stock at ${s.name}?` });
+    } else if (s.stockScore < 90) {
+      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Stock score ${s.stockScore}/100 — minor replenishment needed`, query: `What needs reordering at ${s.name}?` });
+    }
+    // Compliance
+    if (s.compScore < 85) {
+      insights.push({ severity: 'ACTION', color: '#D4A03A', text: `Compliance score ${s.compScore}/100 — review METRC sync`, query: `Show METRC compliance status for ${s.name}` });
+    }
+    // Revenue
+    if (s.revenue < 300) {
+      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Revenue ${fmtDollar(s.revenue * 1000)} MTD — below $300K threshold`, query: `What's driving low revenue at ${s.name}?` });
+    }
+    // Margin
+    if (s.margin < 38) {
+      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Margin at ${s.margin}% — below 38% floor`, query: `What's dragging down margin at ${s.name}?` });
+    }
+    // Always add a positive or neutral insight
+    if (insights.length === 0) {
+      insights.push({ severity: 'OK', color: '#00C27C', text: `Store performing well — composite ${s.composite}/100`, query: `Give me a full performance summary for ${s.name}` });
+    }
+    return insights;
+  }, []);
+
+  // Store detail modal state
+  const [selectedStore, setSelectedStore] = useState(null);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!selectedStore) return;
+    const handler = (e) => { if (e.key === 'Escape') setSelectedStore(null); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [selectedStore]);
+
   // Store Manager: single-store deep dive
   if (isStoreMgr) {
     return (
@@ -2906,54 +2953,6 @@ function StoreHealthMatrix({ onOpenNexus }) {
       </NexusTile>
     );
   }
-
-  // Generate alerts & insights for a store based on its data
-  const getStoreInsights = useCallback((s) => {
-    const insights = [];
-    const color = s.composite >= 75 ? '#00C27C' : s.composite >= 55 ? '#D4A03A' : '#E87068';
-    // Sentiment alerts
-    if (s.sentimentFlag === 'alert') {
-      insights.push({ severity: 'ALERT', color: '#E87068', text: `Sentiment dropped ${Math.abs(s.sentimentDelta)}% — negative reviews trending`, query: `What's driving negative sentiment at ${s.name}?` });
-      insights.push({ severity: 'ALERT', color: '#E87068', text: `3 unresolved customer complaints this week`, query: `Show me the recent complaints at ${s.name}` });
-      insights.push({ severity: 'ACTION', color: '#D4A03A', text: `Consider staff coaching on customer experience`, query: `What customer experience improvements can we make at ${s.name}?` });
-    } else if (s.sentimentFlag === 'watch') {
-      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Sentiment ${s.sentimentDelta >= 0 ? 'up' : 'down'} ${Math.abs(s.sentimentDelta)}% — monitoring`, query: `What's the sentiment trend at ${s.name}?` });
-    }
-    // Stock alerts
-    if (s.stockScore < 80) {
-      insights.push({ severity: 'ALERT', color: '#E87068', text: `Stock score ${s.stockScore}/100 — ${Math.round((100 - s.stockScore) / 10)} products low or OOS`, query: `Which products are out of stock at ${s.name}?` });
-    } else if (s.stockScore < 90) {
-      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Stock score ${s.stockScore}/100 — minor replenishment needed`, query: `What needs reordering at ${s.name}?` });
-    }
-    // Compliance
-    if (s.compScore < 85) {
-      insights.push({ severity: 'ACTION', color: '#D4A03A', text: `Compliance score ${s.compScore}/100 — review METRC sync`, query: `Show METRC compliance status for ${s.name}` });
-    }
-    // Revenue
-    if (s.revenue < 300) {
-      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Revenue below $300K target — ${fmtDollar(s.revenue * 1000)} MTD`, query: `How can we boost revenue at ${s.name}?` });
-    }
-    // Margin
-    if (s.margin < 38) {
-      insights.push({ severity: 'WATCH', color: '#D4A03A', text: `Margin at ${s.margin}% — below 38% floor`, query: `What's dragging down margin at ${s.name}?` });
-    }
-    // Always add a positive or neutral insight
-    if (insights.length === 0) {
-      insights.push({ severity: 'OK', color: '#00C27C', text: `Store performing well — composite ${s.composite}/100`, query: `Give me a full performance summary for ${s.name}` });
-    }
-    return insights;
-  }, []);
-
-  // Store detail modal state
-  const [selectedStore, setSelectedStore] = useState(null);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!selectedStore) return;
-    const handler = (e) => { if (e.key === 'Escape') setSelectedStore(null); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [selectedStore]);
 
   // Default: Multi-store health matrix for CEO/VP/Regional
   return (
