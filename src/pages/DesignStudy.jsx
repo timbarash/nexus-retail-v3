@@ -13,6 +13,9 @@ import { SalesDeckIntegration } from './SalesDeckIntegration';
 import { HierarchyPMMAnalysis } from './HierarchyPMMAnalysis';
 import { DeckStructureExploration } from './DeckStructureExploration';
 import { CompetitorDeckPatterns } from './CompetitorDeckPatterns';
+import { FirstPrinciplesDeck } from './FirstPrinciplesDeck';
+import { SalesStoryDeck } from './SalesStoryDeck';
+import { InformationHierarchyStudy } from './InformationHierarchyStudy';
 
 /* ─── Theme Definitions ─── */
 const themes = {
@@ -194,6 +197,9 @@ const SECTIONS = [
   { id: 'sales-deck', label: 'Sales Deck' },
   { id: 'deck-structures', label: 'Structures' },
   { id: 'competitors', label: 'Comp Intel' },
+  { id: 'first-principles', label: '1st Principles' },
+  { id: 'sales-story', label: 'Sales Story' },
+  { id: 'info-hierarchy', label: 'Info Design' },
   { id: 'pmm', label: 'PMM Strategy' },
 ];
 
@@ -2292,6 +2298,27 @@ export default function DesignStudy() {
         {/* ═══ COMPETITOR DECK PATTERNS ═══ */}
         <Section id="competitors">
           <CompetitorDeckPatterns theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ FIRST PRINCIPLES DECK ═══ */}
+        <Section id="first-principles">
+          <FirstPrinciplesDeck theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ SALES STORY DECK ═══ */}
+        <Section id="sales-story">
+          <SalesStoryDeck theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ INFORMATION HIERARCHY STUDY ═══ */}
+        <Section id="info-hierarchy">
+          <InformationHierarchyStudy theme={theme} />
         </Section>
 
         <div style={divider} />
