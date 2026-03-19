@@ -2,9 +2,9 @@ import { useId } from 'react';
 import NexusIcon from './NexusIcon';
 
 /* ─── SubTitle (matches DesignStudy pattern) ─── */
-function SubTitle({ children }) {
+function SubTitle({ children, color = '#6B6359' }) {
   return (
-    <h3 style={{ fontSize: 14, fontWeight: 600, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
+    <h3 style={{ fontSize: 14, fontWeight: 600, color, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
       {children}
     </h3>
   );
@@ -12,16 +12,16 @@ function SubTitle({ children }) {
 
 /* ─── Inline SVG Logo Concepts ─── */
 
-function NeuralNodeIcon({ size = 48 }) {
+function NeuralNodeIcon({ size = 48, gradientColors = ['#D4A03A', '#FFC02A', '#FFD666'] }) {
   const uid = useId();
   const id = `neural-grad-${uid}`;
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#D4A03A" />
-          <stop offset="50%" stopColor="#FFC02A" />
-          <stop offset="100%" stopColor="#FFD666" />
+          <stop offset="0%" stopColor={gradientColors[0]} />
+          <stop offset="50%" stopColor={gradientColors[1]} />
+          <stop offset="100%" stopColor={gradientColors[2]} />
         </linearGradient>
       </defs>
       {/* Connection lines */}
@@ -50,7 +50,7 @@ function NeuralNodeIcon({ size = 48 }) {
   );
 }
 
-function FacetedGemIcon({ size = 48 }) {
+function FacetedGemIcon({ size = 48, gradientColors = ['#D4A03A', '#FFC02A', '#FFD666'] }) {
   const uid = useId();
   const id = `gem-grad-${uid}`;
   const id2 = `gem-grad2-${uid}`;
@@ -58,13 +58,13 @@ function FacetedGemIcon({ size = 48 }) {
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id={id} x1="15" y1="10" x2="85" y2="90" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#D4A03A" />
-          <stop offset="50%" stopColor="#FFC02A" />
-          <stop offset="100%" stopColor="#FFD666" />
+          <stop offset="0%" stopColor={gradientColors[0]} />
+          <stop offset="50%" stopColor={gradientColors[1]} />
+          <stop offset="100%" stopColor={gradientColors[2]} />
         </linearGradient>
         <linearGradient id={id2} x1="50" y1="10" x2="50" y2="90" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFD666" />
-          <stop offset="100%" stopColor="#D4A03A" />
+          <stop offset="0%" stopColor={gradientColors[2]} />
+          <stop offset="100%" stopColor={gradientColors[0]} />
         </linearGradient>
       </defs>
       {/* Outer diamond outline */}
@@ -90,7 +90,7 @@ function FacetedGemIcon({ size = 48 }) {
   );
 }
 
-function ApertureIcon({ size = 48 }) {
+function ApertureIcon({ size = 48, gradientColors = ['#D4A03A', '#FFC02A', '#FFD666'] }) {
   const uid = useId();
   const id = `aperture-grad-${uid}`;
   // Six overlapping aperture blades forming an iris
@@ -115,9 +115,9 @@ function ApertureIcon({ size = 48 }) {
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#D4A03A" />
-          <stop offset="50%" stopColor="#FFC02A" />
-          <stop offset="100%" stopColor="#FFD666" />
+          <stop offset="0%" stopColor={gradientColors[0]} />
+          <stop offset="50%" stopColor={gradientColors[1]} />
+          <stop offset="100%" stopColor={gradientColors[2]} />
         </linearGradient>
       </defs>
       {/* Outer ring */}
@@ -194,12 +194,12 @@ const LOGO_CONCEPTS = [
   { key: 'aperture', label: 'Aperture', description: 'Focused clarity' },
 ];
 
-function LogoByKey({ conceptKey, size = 36 }) {
+function LogoByKey({ conceptKey, size = 36, gradientColors }) {
   switch (conceptKey) {
     case 'swirl': return <NexusIcon size={size} />;
-    case 'neural': return <NeuralNodeIcon size={size} />;
-    case 'gem': return <FacetedGemIcon size={size} />;
-    case 'aperture': return <ApertureIcon size={size} />;
+    case 'neural': return <NeuralNodeIcon size={size} gradientColors={gradientColors} />;
+    case 'gem': return <FacetedGemIcon size={size} gradientColors={gradientColors} />;
+    case 'aperture': return <ApertureIcon size={size} gradientColors={gradientColors} />;
     default: return null;
   }
 }
@@ -218,12 +218,28 @@ const BACKGROUNDS = [
    NEXUS DEEP SECTION — Expanded Brand Exploration
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-export function NexusDeepSection() {
+export function NexusDeepSection({ theme = 'dark' }) {
+  const themes = {
+    dark: {
+      bg: '#0A0908', cardBg: '#141210', border: '#282724',
+      text: '#F0EDE8', textMuted: '#ADA599', textFaint: '#6B6359',
+      accentGold: '#D4A03A', accentGoldLight: '#FFC02A', accentGoldLighter: '#FFD666',
+      accentGreen: '#00C27C',
+    },
+    light: {
+      bg: '#FAFAF8', cardBg: '#FFFFFF', border: '#E5E2DC',
+      text: '#1A1917', textMuted: '#5C574F', textFaint: '#8C8680',
+      accentGold: '#B8860B', accentGoldLight: '#DAA520', accentGoldLighter: '#F0C75E',
+      accentGreen: '#059669',
+    }
+  };
+  const t = themes[theme];
+
   const card = {
-    background: '#141210',
+    background: t.cardBg,
     borderRadius: 16,
     padding: 32,
-    border: '1px solid #282724',
+    border: `1px solid ${t.border}`,
   };
 
   return (
@@ -231,8 +247,8 @@ export function NexusDeepSection() {
 
       {/* ━━━ SECTION 1: NAME CANDIDATES ━━━ */}
       <div>
-        <SubTitle>Name Candidates — Wordmark Explorations</SubTitle>
-        <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+        <SubTitle color={t.textFaint}>Name Candidates — Wordmark Explorations</SubTitle>
+        <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
           Five name directions tested in DM Sans at varied weights and letter-spacings.
           Each name carries a distinct semantic territory that shapes how users perceive the platform.
         </p>
@@ -247,7 +263,7 @@ export function NexusDeepSection() {
                   background: 'rgba(212,160,58,0.1)',
                   border: '1px solid rgba(212,160,58,0.2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 13, fontWeight: 600, color: '#D4A03A',
+                  fontSize: 13, fontWeight: 600, color: t.accentGold,
                   flexShrink: 0,
                 }}>
                   {i + 1}
@@ -257,7 +273,7 @@ export function NexusDeepSection() {
                   fontWeight: c.weight,
                   fontSize: c.size,
                   letterSpacing: c.spacing,
-                  color: '#F0EDE8',
+                  color: t.text,
                 }}>
                   {c.name}
                 </span>
@@ -266,16 +282,16 @@ export function NexusDeepSection() {
               {/* Meta + rationale */}
               <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', paddingLeft: 52 }}>
                 <div style={{ display: 'flex', gap: 16 }}>
-                  <span style={{ fontSize: 11, color: '#6B6359', fontFamily: 'monospace' }}>
+                  <span style={{ fontSize: 11, color: t.textFaint, fontFamily: 'monospace' }}>
                     wt {c.weight}
                   </span>
-                  <span style={{ fontSize: 11, color: '#6B6359', fontFamily: 'monospace' }}>
+                  <span style={{ fontSize: 11, color: t.textFaint, fontFamily: 'monospace' }}>
                     ls {c.spacing}
                   </span>
                 </div>
               </div>
-              <p style={{ fontSize: 13, color: '#ADA599', lineHeight: 1.6, paddingLeft: 52, margin: 0 }}>
-                <span style={{ color: '#D4A03A', fontWeight: 600 }}>{c.display}</span> — {c.rationale}
+              <p style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.6, paddingLeft: 52, margin: 0 }}>
+                <span style={{ color: t.accentGold, fontWeight: 600 }}>{c.display}</span> — {c.rationale}
               </p>
             </div>
           ))}
@@ -284,10 +300,10 @@ export function NexusDeepSection() {
 
       {/* ━━━ SECTION 2: LOGO VARIATIONS ━━━ */}
       <div>
-        <SubTitle>Logo Variations — Four Icon Concepts</SubTitle>
-        <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+        <SubTitle color={t.textFaint}>Logo Variations — Four Icon Concepts</SubTitle>
+        <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
           Each icon concept explores a different metaphor for the platform's role.
-          All use the gold gradient (#D4A03A to #FFC02A to #FFD666).
+          All use the gold gradient ({t.accentGold} to {t.accentGoldLight} to {t.accentGoldLighter}).
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
@@ -300,17 +316,17 @@ export function NexusDeepSection() {
               <div style={{
                 width: 96, height: 96,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: '#0A0908',
+                background: t.bg,
                 borderRadius: 16,
-                border: '1px solid #282724',
+                border: `1px solid ${t.border}`,
               }}>
-                <LogoByKey conceptKey={concept.key} size={56} />
+                <LogoByKey conceptKey={concept.key} size={56} gradientColors={[t.accentGold, t.accentGoldLight, t.accentGoldLighter]} />
               </div>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: '#F0EDE8', marginBottom: 4 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: t.text, marginBottom: 4 }}>
                   {concept.label}
                 </div>
-                <div style={{ fontSize: 12, color: '#6B6359' }}>
+                <div style={{ fontSize: 12, color: t.textFaint }}>
                   {concept.description}
                 </div>
               </div>
@@ -318,8 +334,8 @@ export function NexusDeepSection() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
                 {[16, 24, 36, 48].map(s => (
                   <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <LogoByKey conceptKey={concept.key} size={s} />
-                    <span style={{ fontSize: 9, color: '#6B6359', fontFamily: 'monospace' }}>{s}</span>
+                    <LogoByKey conceptKey={concept.key} size={s} gradientColors={[t.accentGold, t.accentGoldLight, t.accentGoldLighter]} />
+                    <span style={{ fontSize: 9, color: t.textFaint, fontFamily: 'monospace' }}>{s}</span>
                   </div>
                 ))}
               </div>
@@ -330,8 +346,8 @@ export function NexusDeepSection() {
 
       {/* ━━━ SECTION 3: WORDMARK x LOGO MATRIX ━━━ */}
       <div>
-        <SubTitle>Wordmark Pairings — Name x Logo Matrix</SubTitle>
-        <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+        <SubTitle color={t.textFaint}>Wordmark Pairings — Name x Logo Matrix</SubTitle>
+        <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
           Every name candidate paired with every logo concept. Scan the grid to find
           natural pairings where name tone and icon metaphor reinforce each other.
         </p>
@@ -345,7 +361,7 @@ export function NexusDeepSection() {
         }}>
           <div />
           {LOGO_CONCEPTS.map(concept => (
-            <div key={concept.key} style={{ textAlign: 'center', fontSize: 11, color: '#6B6359', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div key={concept.key} style={{ textAlign: 'center', fontSize: 11, color: t.textFaint, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {concept.label}
             </div>
           ))}
@@ -362,7 +378,7 @@ export function NexusDeepSection() {
             }}>
               {/* Row label */}
               <div style={{
-                fontSize: 13, fontWeight: 600, color: '#ADA599',
+                fontSize: 13, fontWeight: 600, color: t.textMuted,
                 textTransform: 'capitalize',
               }}>
                 {candidate.display}
@@ -371,23 +387,23 @@ export function NexusDeepSection() {
               {/* Pairing cells */}
               {LOGO_CONCEPTS.map(concept => (
                 <div key={concept.key} style={{
-                  background: '#141210',
+                  background: t.cardBg,
                   borderRadius: 12,
                   padding: '16px 12px',
-                  border: '1px solid #282724',
+                  border: `1px solid ${t.border}`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 10,
                   minHeight: 56,
                 }}>
-                  <LogoByKey conceptKey={concept.key} size={24} />
+                  <LogoByKey conceptKey={concept.key} size={24} gradientColors={[t.accentGold, t.accentGoldLight, t.accentGoldLighter]} />
                   <span style={{
                     fontFamily: "'DM Sans', sans-serif",
                     fontWeight: candidate.weight,
                     fontSize: 16,
                     letterSpacing: candidate.spacing,
-                    color: '#F0EDE8',
+                    color: t.text,
                     whiteSpace: 'nowrap',
                   }}>
                     {candidate.name}
@@ -401,8 +417,8 @@ export function NexusDeepSection() {
 
       {/* ━━━ SECTION 4: BACKGROUND TESTS ━━━ */}
       <div>
-        <SubTitle>Background Tests — Logo on Six Surfaces</SubTitle>
-        <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+        <SubTitle color={t.textFaint}>Background Tests — Logo on Six Surfaces</SubTitle>
+        <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
           The Nexus swirl logo tested on every surface it will appear on in the product.
           Checking contrast, legibility, and visual weight across light and dark contexts.
         </p>
@@ -414,7 +430,7 @@ export function NexusDeepSection() {
               <div key={bg.hex} style={{
                 borderRadius: 16,
                 overflow: 'hidden',
-                border: '1px solid #282724',
+                border: `1px solid ${t.border}`,
               }}>
                 {/* Logo display area */}
                 <div style={{
@@ -432,7 +448,7 @@ export function NexusDeepSection() {
                     fontWeight: 300,
                     fontSize: 24,
                     letterSpacing: '0.06em',
-                    color: isLight ? '#1C1B1A' : '#F0EDE8',
+                    color: isLight ? '#1C1B1A' : t.text,
                   }}>
                     nexus
                   </span>
@@ -440,16 +456,16 @@ export function NexusDeepSection() {
 
                 {/* Label bar */}
                 <div style={{
-                  background: '#1C1B1A',
+                  background: t.cardBg,
                   padding: '10px 16px',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}>
-                  <span style={{ fontSize: 12, color: '#ADA599', fontWeight: 500 }}>
+                  <span style={{ fontSize: 12, color: t.textMuted, fontWeight: 500 }}>
                     {bg.name}
                   </span>
-                  <span style={{ fontSize: 11, color: '#6B6359', fontFamily: 'monospace' }}>
+                  <span style={{ fontSize: 11, color: t.textFaint, fontFamily: 'monospace' }}>
                     {bg.hex}
                   </span>
                 </div>

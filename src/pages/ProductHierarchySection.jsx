@@ -2,15 +2,18 @@ import { useEffect, useRef, useId } from 'react';
 import NexusIcon from '../components/NexusIcon';
 
 /* ─── DexSpiral SVG (Dex Logo) ─── */
-function DexSpiral({ size = 48, className = '', style = {} }) {
+function DexSpiral({ size = 48, className = '', style = {}, gradientColors }) {
+  const c0 = gradientColors ? gradientColors[0] : '#D4A03A';
+  const c1 = gradientColors ? gradientColors[1] : '#FFC02A';
+  const c2 = gradientColors ? gradientColors[2] : '#FFD666';
   const id = `dex-spiral-ph-${size}`;
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#D4A03A" />
-          <stop offset="50%" stopColor="#FFC02A" />
-          <stop offset="100%" stopColor="#FFD666" />
+          <stop offset="0%" stopColor={c0} />
+          <stop offset="50%" stopColor={c1} />
+          <stop offset="100%" stopColor={c2} />
         </linearGradient>
       </defs>
       <path
@@ -32,26 +35,28 @@ function DexSpiral({ size = 48, className = '', style = {} }) {
 }
 
 /* ─── ConnectIcon SVG ─── */
-function ConnectIcon({ size = 48, className = '', style = {} }) {
+function ConnectIcon({ size = 48, className = '', style = {}, accentGreen }) {
+  const greenColor = accentGreen || '#00C27C';
   const id = `connect-grad-ph-${size}`;
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={style}>
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#00C27C" />
+          <stop offset="0%" stopColor={greenColor} />
           <stop offset="100%" stopColor="#64A8E0" />
         </linearGradient>
       </defs>
       <rect x="12" y="30" width="40" height="40" rx="16" stroke={`url(#${id})`} strokeWidth="5" fill="none" />
       <rect x="48" y="30" width="40" height="40" rx="16" stroke={`url(#${id})`} strokeWidth="5" fill="none" />
-      <circle cx="32" cy="50" r="4" fill="#00C27C" />
+      <circle cx="32" cy="50" r="4" fill={greenColor} />
       <circle cx="68" cy="50" r="4" fill="#64A8E0" />
     </svg>
   );
 }
 
 /* ─── Placeholder icons for future products ─── */
-function PlaceholderIcon({ size = 24, label = '?', color = '#6B6359' }) {
+function PlaceholderIcon({ size = 24, label = '?', color }) {
+  color = color || '#6B6359';
   return (
     <div style={{
       width: size, height: size, borderRadius: 6,
@@ -66,7 +71,8 @@ function PlaceholderIcon({ size = 24, label = '?', color = '#6B6359' }) {
 }
 
 /* ─── Analytics Icon ─── */
-function AnalyticsIcon({ size = 24, color = '#00C27C' }) {
+function AnalyticsIcon({ size = 24, color }) {
+  color = color || '#00C27C';
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <rect x="3" y="14" width="4" height="7" rx="1" fill={color} opacity="0.5" />
@@ -77,7 +83,8 @@ function AnalyticsIcon({ size = 24, color = '#00C27C' }) {
 }
 
 /* ─── Consumer Icon ─── */
-function ConsumerIcon({ size = 24, color = '#D4A03A' }) {
+function ConsumerIcon({ size = 24, color }) {
+  color = color || '#D4A03A';
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="8" r="4" stroke={color} strokeWidth="2" fill="none" />
@@ -90,68 +97,55 @@ function ConsumerIcon({ size = 24, color = '#D4A03A' }) {
 /* ═══  DESIGN TOKENS                                                    ═══ */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-const T = {
-  bg: '#0A0908',
-  card: '#141210',
+const STATIC = {
   cardHover: '#1A1815',
-  border: '#282724',
   borderLight: '#38332B',
-  text: '#F0EDE8',
-  textSecondary: '#ADA599',
-  textMuted: '#6B6359',
-  gold: '#D4A03A',
-  goldLight: '#FFC02A',
-  goldBright: '#FFD666',
-  green: '#00C27C',
   greenDark: '#0A6B42',
   blue: '#64A8E0',
   coral: '#FF6B6B',
   font: "'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
 };
 
-const B2B_COLOR = T.green;
-const B2C_COLOR = T.gold;
-
 /* ─── Shared style builders ─── */
-const cardStyle = (extra = {}) => ({
-  background: T.card,
+const cardStyle = (t, extra = {}) => ({
+  background: t.cardBg,
   borderRadius: 16,
   padding: 32,
-  border: `1px solid ${T.border}`,
+  border: `1px solid ${t.border}`,
   ...extra,
 });
 
-const dividerStyle = {
+const dividerStyle = (t) => ({
   height: 1,
-  background: `linear-gradient(90deg, transparent, ${T.borderLight}, transparent)`,
+  background: `linear-gradient(90deg, transparent, ${t.border}, transparent)`,
   margin: '64px 0',
-};
+});
 
-const sectionTitleStyle = {
+const sectionTitleStyle = (t) => ({
   fontSize: 32,
   fontWeight: 700,
-  color: T.text,
+  color: t.text,
   letterSpacing: '-0.02em',
   marginBottom: 8,
   lineHeight: 1.2,
-};
+});
 
-const sectionSubStyle = {
+const sectionSubStyle = (t) => ({
   fontSize: 15,
-  color: T.textSecondary,
+  color: t.textMuted,
   lineHeight: 1.7,
   maxWidth: 640,
   marginBottom: 40,
-};
+});
 
-const labelStyle = {
+const labelStyle = (t) => ({
   fontSize: 12,
   fontWeight: 600,
-  color: T.textMuted,
+  color: t.textFaint,
   textTransform: 'uppercase',
   letterSpacing: '0.1em',
   marginBottom: 16,
-};
+});
 
 const tagStyle = (color) => ({
   display: 'inline-block',
@@ -169,7 +163,7 @@ const tagStyle = (color) => ({
 /* ═══  SECTION 1: CURRENT vs PROPOSED HIERARCHY                         ═══ */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-function HierarchyTreeNode({ icon, label, sublabel, color, indent = 0, isLast = false, isBranch = false, isDashed = false, children }) {
+function HierarchyTreeNode({ icon, label, sublabel, color, indent = 0, isLast = false, isBranch = false, isDashed = false, children, t }) {
   return (
     <div style={{ marginLeft: indent * 28, position: 'relative' }}>
       {indent > 0 && (
@@ -213,8 +207,8 @@ function HierarchyTreeNode({ icon, label, sublabel, color, indent = 0, isLast = 
           {icon}
         </div>
         <div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{label}</div>
-          {sublabel && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 1 }}>{sublabel}</div>}
+          <div style={{ fontSize: 14, fontWeight: 600, color: t.text }}>{label}</div>
+          {sublabel && <div style={{ fontSize: 11, color: t.textFaint, marginTop: 1 }}>{sublabel}</div>}
         </div>
       </div>
       {children}
@@ -222,12 +216,14 @@ function HierarchyTreeNode({ icon, label, sublabel, color, indent = 0, isLast = 
   );
 }
 
-function CurrentVsProposedSection() {
+function CurrentVsProposedSection({ t }) {
+  const B2B_COLOR = t.accentGreen;
+  const B2C_COLOR = t.accentGold;
   return (
     <div>
-      <div style={labelStyle}>Section 1</div>
-      <h2 style={sectionTitleStyle}>Current vs. Proposed Hierarchy</h2>
-      <p style={sectionSubStyle}>
+      <div style={labelStyle(t)}>Section 1</div>
+      <h2 style={sectionTitleStyle(t)}>Current vs. Proposed Hierarchy</h2>
+      <p style={sectionSubStyle(t)}>
         Today, Dutchie AI products exist as a flat list. Reorganizing them into suites creates clearer market positioning and opens expansion paths for new products.
       </p>
 
@@ -237,46 +233,50 @@ function CurrentVsProposedSection() {
         gap: 32,
       }}>
         {/* Current (Flat) */}
-        <div style={cardStyle()}>
+        <div style={cardStyle(t)}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
             <div style={{
               padding: '4px 12px', borderRadius: 8,
-              background: 'rgba(173,165,153,0.1)',
-              border: '1px solid rgba(173,165,153,0.15)',
-              fontSize: 11, fontWeight: 700, color: T.textMuted,
+              background: `${t.textMuted}1A`,
+              border: `1px solid ${t.textMuted}26`,
+              fontSize: 11, fontWeight: 700, color: t.textFaint,
               textTransform: 'uppercase', letterSpacing: '0.08em',
             }}>Current</div>
-            <span style={{ fontSize: 13, color: T.textMuted }}>Flat structure</span>
+            <span style={{ fontSize: 13, color: t.textFaint }}>Flat structure</span>
           </div>
 
           <HierarchyTreeNode
-            icon={<span style={{ fontSize: 14, fontWeight: 700, color: T.text }}>D</span>}
+            icon={<span style={{ fontSize: 14, fontWeight: 700, color: t.text }}>D</span>}
             label="Dutchie AI"
             sublabel="Parent brand"
-            color={T.textMuted}
+            color={t.textFaint}
             isBranch
+            t={t}
           >
             <HierarchyTreeNode
               icon={<NexusIcon size={16} />}
               label="Nexus"
               sublabel="Platform"
-              color={T.gold}
+              color={t.accentGold}
               indent={1}
+              t={t}
             />
             <HierarchyTreeNode
-              icon={<DexSpiral size={16} />}
+              icon={<DexSpiral size={16} gradientColors={[t.accentGold, t.accentGoldLight, t.accentGoldLighter]} />}
               label="Dex"
               sublabel="Agent"
-              color={T.gold}
+              color={t.accentGold}
               indent={1}
+              t={t}
             />
             <HierarchyTreeNode
-              icon={<ConnectIcon size={16} />}
+              icon={<ConnectIcon size={16} accentGreen={t.accentGreen} />}
               label="Connect"
               sublabel="Marketplace"
-              color={T.green}
+              color={t.accentGreen}
               indent={1}
               isLast
+              t={t}
             />
           </HierarchyTreeNode>
 
@@ -285,8 +285,8 @@ function CurrentVsProposedSection() {
             background: 'rgba(255,107,107,0.06)',
             border: '1px solid rgba(255,107,107,0.12)',
           }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T.coral, marginBottom: 4 }}>Limitations</div>
-            <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: T.textSecondary, lineHeight: 1.8 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: STATIC.coral, marginBottom: 4 }}>Limitations</div>
+            <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: t.textMuted, lineHeight: 1.8 }}>
               <li>No clear market segmentation</li>
               <li>Unclear where new products slot in</li>
               <li>Dex relationship to Nexus/Connect is ambiguous</li>
@@ -295,24 +295,25 @@ function CurrentVsProposedSection() {
         </div>
 
         {/* Proposed (Suite-Based) */}
-        <div style={cardStyle({ border: `1px solid ${T.borderLight}` })}>
+        <div style={cardStyle(t, { border: `1px solid ${STATIC.borderLight}` })}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
             <div style={{
               padding: '4px 12px', borderRadius: 8,
-              background: `${T.green}12`,
-              border: `1px solid ${T.green}25`,
-              fontSize: 11, fontWeight: 700, color: T.green,
+              background: `${t.accentGreen}12`,
+              border: `1px solid ${t.accentGreen}25`,
+              fontSize: 11, fontWeight: 700, color: t.accentGreen,
               textTransform: 'uppercase', letterSpacing: '0.08em',
             }}>Proposed</div>
-            <span style={{ fontSize: 13, color: T.textSecondary }}>Suite-based structure</span>
+            <span style={{ fontSize: 13, color: t.textMuted }}>Suite-based structure</span>
           </div>
 
           <HierarchyTreeNode
-            icon={<span style={{ fontSize: 14, fontWeight: 700, color: T.text }}>D</span>}
+            icon={<span style={{ fontSize: 14, fontWeight: 700, color: t.text }}>D</span>}
             label="Dutchie AI"
             sublabel="Parent brand"
-            color={T.textMuted}
+            color={t.textFaint}
             isBranch
+            t={t}
           >
             {/* B2B Suite */}
             <HierarchyTreeNode
@@ -322,13 +323,15 @@ function CurrentVsProposedSection() {
               color={B2B_COLOR}
               indent={1}
               isBranch
+              t={t}
             >
               <HierarchyTreeNode
-                icon={<ConnectIcon size={16} />}
+                icon={<ConnectIcon size={16} accentGreen={t.accentGreen} />}
                 label="Connect"
                 sublabel="Marketplace"
                 color={B2B_COLOR}
                 indent={2}
+                t={t}
               />
               <HierarchyTreeNode
                 icon={<PlaceholderIcon size={16} label="A" color={B2B_COLOR} />}
@@ -337,6 +340,7 @@ function CurrentVsProposedSection() {
                 color={B2B_COLOR}
                 indent={2}
                 isDashed
+                t={t}
               />
               <HierarchyTreeNode
                 icon={<AnalyticsIcon size={16} color={B2B_COLOR} />}
@@ -346,6 +350,7 @@ function CurrentVsProposedSection() {
                 indent={2}
                 isLast
                 isDashed
+                t={t}
               />
             </HierarchyTreeNode>
 
@@ -358,6 +363,7 @@ function CurrentVsProposedSection() {
               indent={1}
               isLast
               isBranch
+              t={t}
             >
               <HierarchyTreeNode
                 icon={<NexusIcon size={16} />}
@@ -365,13 +371,15 @@ function CurrentVsProposedSection() {
                 sublabel="Retail Command Center"
                 color={B2C_COLOR}
                 indent={2}
+                t={t}
               />
               <HierarchyTreeNode
-                icon={<DexSpiral size={16} />}
+                icon={<DexSpiral size={16} gradientColors={[t.accentGold, t.accentGoldLight, t.accentGoldLighter]} />}
                 label="Dex"
                 sublabel="Retail AI Agent"
                 color={B2C_COLOR}
                 indent={2}
+                t={t}
               />
               <HierarchyTreeNode
                 icon={<ConsumerIcon size={16} color={B2C_COLOR} />}
@@ -381,17 +389,18 @@ function CurrentVsProposedSection() {
                 indent={2}
                 isLast
                 isDashed
+                t={t}
               />
             </HierarchyTreeNode>
           </HierarchyTreeNode>
 
           <div style={{
             marginTop: 24, padding: '12px 16px', borderRadius: 10,
-            background: `${T.green}08`,
-            border: `1px solid ${T.green}15`,
+            background: `${t.accentGreen}08`,
+            border: `1px solid ${t.accentGreen}15`,
           }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T.green, marginBottom: 4 }}>Advantages</div>
-            <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: T.textSecondary, lineHeight: 1.8 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: t.accentGreen, marginBottom: 4 }}>Advantages</div>
+            <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: t.textMuted, lineHeight: 1.8 }}>
               <li>Clear market segmentation by buyer</li>
               <li>Natural expansion slots for new products</li>
               <li>Distinct GTM motions per suite</li>
@@ -404,19 +413,19 @@ function CurrentVsProposedSection() {
       <div style={{
         marginTop: 24, display: 'flex', gap: 24, flexWrap: 'wrap',
         padding: '14px 20px', borderRadius: 10,
-        background: T.card, border: `1px solid ${T.border}`,
+        background: t.cardBg, border: `1px solid ${t.border}`,
       }}>
-        <span style={{ fontSize: 12, color: T.textMuted, fontWeight: 600 }}>Legend:</span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: T.textSecondary }}>
-          <span style={{ width: 16, height: 2, background: T.gold, borderRadius: 1, display: 'inline-block' }} />
+        <span style={{ fontSize: 12, color: t.textFaint, fontWeight: 600 }}>Legend:</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: t.textMuted }}>
+          <span style={{ width: 16, height: 2, background: t.accentGold, borderRadius: 1, display: 'inline-block' }} />
           B2C (Retailer/Consumer)
         </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: T.textSecondary }}>
-          <span style={{ width: 16, height: 2, background: T.green, borderRadius: 1, display: 'inline-block' }} />
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: t.textMuted }}>
+          <span style={{ width: 16, height: 2, background: t.accentGreen, borderRadius: 1, display: 'inline-block' }} />
           B2B (Brand/Supplier)
         </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: T.textSecondary }}>
-          <span style={{ width: 16, height: 0, borderTop: `2px dashed ${T.textMuted}`, display: 'inline-block' }} />
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: t.textMuted }}>
+          <span style={{ width: 16, height: 0, borderTop: `2px dashed ${t.textFaint}`, display: 'inline-block' }} />
           Future / Planned
         </span>
       </div>
@@ -428,7 +437,7 @@ function CurrentVsProposedSection() {
 /* ═══  SECTION 2: THREE HIERARCHY MODELS                                ═══ */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-function ModelDiagramBox({ label, sublabel, color, icon, width = 'auto', dashed = false }) {
+function ModelDiagramBox({ label, sublabel, color, icon, width = 'auto', dashed = false, t }) {
   return (
     <div style={{
       display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -439,34 +448,34 @@ function ModelDiagramBox({ label, sublabel, color, icon, width = 'auto', dashed 
     }}>
       {icon && <div style={{ flexShrink: 0 }}>{icon}</div>}
       <div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{label}</div>
-        {sublabel && <div style={{ fontSize: 10, color: T.textMuted }}>{sublabel}</div>}
+        <div style={{ fontSize: 13, fontWeight: 600, color: t.text }}>{label}</div>
+        {sublabel && <div style={{ fontSize: 10, color: t.textFaint }}>{sublabel}</div>}
       </div>
     </div>
   );
 }
 
-function ProConList({ pros, cons }) {
+function ProConList({ pros, cons, t }) {
   return (
     <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 16 }}>
       <div style={{ flex: 1, minWidth: 180 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.green, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: t.accentGreen, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
           Pros
         </div>
         {pros.map((p, i) => (
-          <div key={i} style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.7, paddingLeft: 12, position: 'relative' }}>
-            <span style={{ position: 'absolute', left: 0, color: T.green }}>+</span>
+          <div key={i} style={{ fontSize: 12, color: t.textMuted, lineHeight: 1.7, paddingLeft: 12, position: 'relative' }}>
+            <span style={{ position: 'absolute', left: 0, color: t.accentGreen }}>+</span>
             {p}
           </div>
         ))}
       </div>
       <div style={{ flex: 1, minWidth: 180 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.coral, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: STATIC.coral, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
           Cons
         </div>
         {cons.map((c, i) => (
-          <div key={i} style={{ fontSize: 12, color: T.textSecondary, lineHeight: 1.7, paddingLeft: 12, position: 'relative' }}>
-            <span style={{ position: 'absolute', left: 0, color: T.coral }}>-</span>
+          <div key={i} style={{ fontSize: 12, color: t.textMuted, lineHeight: 1.7, paddingLeft: 12, position: 'relative' }}>
+            <span style={{ position: 'absolute', left: 0, color: STATIC.coral }}>-</span>
             {c}
           </div>
         ))}
@@ -475,17 +484,19 @@ function ProConList({ pros, cons }) {
   );
 }
 
-function ModelADiagram() {
+function ModelADiagram({ t }) {
+  const B2B_COLOR = t.accentGreen;
+  const B2C_COLOR = t.accentGold;
   return (
     <div style={{ padding: '20px 0' }}>
       {/* Root */}
       <div style={{ textAlign: 'center', marginBottom: 16 }}>
-        <ModelDiagramBox label="Dutchie AI" sublabel="Parent Brand" color={T.textMuted}
-          icon={<span style={{ fontSize: 14, fontWeight: 700, color: T.text }}>D</span>} />
+        <ModelDiagramBox label="Dutchie AI" sublabel="Parent Brand" color={t.textFaint}
+          icon={<span style={{ fontSize: 14, fontWeight: 700, color: t.text }}>D</span>} t={t} />
       </div>
       {/* Connector */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-        <div style={{ width: 2, height: 20, background: `${T.textMuted}40` }} />
+        <div style={{ width: 2, height: 20, background: `${t.textFaint}40` }} />
       </div>
       {/* Two suites side by side */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
@@ -498,11 +509,11 @@ function ModelADiagram() {
           <div style={{ fontSize: 12, fontWeight: 700, color: B2B_COLOR, marginBottom: 12, textAlign: 'center' }}>B2B AI Suite</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <ModelDiagramBox label="Connect" sublabel="Marketplace" color={B2B_COLOR}
-              icon={<ConnectIcon size={16} />} width="100%" />
+              icon={<ConnectIcon size={16} accentGreen={t.accentGreen} />} width="100%" t={t} />
             <ModelDiagramBox label="Brand Analytics" sublabel="Insights" color={B2B_COLOR}
-              icon={<AnalyticsIcon size={16} color={B2B_COLOR} />} width="100%" dashed />
+              icon={<AnalyticsIcon size={16} color={B2B_COLOR} />} width="100%" dashed t={t} />
             <ModelDiagramBox label="Supply Chain AI" sublabel="Optimization" color={B2B_COLOR}
-              icon={<PlaceholderIcon size={16} label="S" color={B2B_COLOR} />} width="100%" dashed />
+              icon={<PlaceholderIcon size={16} label="S" color={B2B_COLOR} />} width="100%" dashed t={t} />
           </div>
         </div>
         {/* B2C */}
@@ -514,11 +525,11 @@ function ModelADiagram() {
           <div style={{ fontSize: 12, fontWeight: 700, color: B2C_COLOR, marginBottom: 12, textAlign: 'center' }}>B2C AI Suite</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <ModelDiagramBox label="Nexus" sublabel="Retail Command Center" color={B2C_COLOR}
-              icon={<NexusIcon size={16} />} width="100%" />
+              icon={<NexusIcon size={16} />} width="100%" t={t} />
             <ModelDiagramBox label="Dex" sublabel="AI Agent" color={B2C_COLOR}
-              icon={<DexSpiral size={16} />} width="100%" />
+              icon={<DexSpiral size={16} gradientColors={[t.accentGold, t.accentGoldLight, t.accentGoldLighter]} />} width="100%" t={t} />
             <ModelDiagramBox label="POS Intelligence" sublabel="Customer Engagement" color={B2C_COLOR}
-              icon={<ConsumerIcon size={16} color={B2C_COLOR} />} width="100%" dashed />
+              icon={<ConsumerIcon size={16} color={B2C_COLOR} />} width="100%" dashed t={t} />
           </div>
         </div>
       </div>
@@ -526,11 +537,11 @@ function ModelADiagram() {
   );
 }
 
-function ModelBDiagram() {
+function ModelBDiagram({ t }) {
   const layers = [
-    { label: 'Platform Layer', sublabel: 'The surface users see', product: 'Nexus', color: T.gold, icon: <NexusIcon size={16} />, description: 'Dashboards, alerts, workflow UI' },
-    { label: 'Intelligence Layer', sublabel: 'The AI brain', product: 'Dex', color: '#FFC02A', icon: <DexSpiral size={16} />, description: 'Reasoning, predictions, NLP' },
-    { label: 'Network Layer', sublabel: 'The data/commerce mesh', product: 'Connect', color: T.green, icon: <ConnectIcon size={16} />, description: 'B2B marketplace, matching, pricing' },
+    { label: 'Platform Layer', sublabel: 'The surface users see', product: 'Nexus', color: t.accentGold, icon: <NexusIcon size={16} />, description: 'Dashboards, alerts, workflow UI' },
+    { label: 'Intelligence Layer', sublabel: 'The AI brain', product: 'Dex', color: t.accentGoldLight, icon: <DexSpiral size={16} gradientColors={[t.accentGold, t.accentGoldLight, t.accentGoldLighter]} />, description: 'Reasoning, predictions, NLP' },
+    { label: 'Network Layer', sublabel: 'The data/commerce mesh', product: 'Connect', color: t.accentGreen, icon: <ConnectIcon size={16} accentGreen={t.accentGreen} />, description: 'B2B marketplace, matching, pricing' },
   ];
 
   return (
@@ -551,8 +562,8 @@ function ModelBDiagram() {
               {layer.icon}
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{layer.label}</div>
-              <div style={{ fontSize: 11, color: T.textMuted }}>{layer.sublabel}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: t.text }}>{layer.label}</div>
+              <div style={{ fontSize: 11, color: t.textFaint }}>{layer.sublabel}</div>
             </div>
             <div style={{
               padding: '4px 10px', borderRadius: 8,
@@ -565,14 +576,14 @@ function ModelBDiagram() {
           {i < layers.length - 1 && (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 4 L10 16 M6 12 L10 16 L14 12" stroke={T.textMuted} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
+                <path d="M10 4 L10 16 M6 12 L10 16 L14 12" stroke={t.textFaint} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
               </svg>
             </div>
           )}
         </div>
       ))}
       <div style={{
-        marginTop: 12, textAlign: 'center', fontSize: 11, color: T.textMuted, fontStyle: 'italic',
+        marginTop: 12, textAlign: 'center', fontSize: 11, color: t.textFaint, fontStyle: 'italic',
       }}>
         Data flows up through layers; intelligence enriches each level
       </div>
@@ -580,33 +591,33 @@ function ModelBDiagram() {
   );
 }
 
-function ModelCDiagram() {
+function ModelCDiagram({ t }) {
   const personas = [
     {
       label: 'For Retailers',
       tagline: 'Run your store smarter',
-      color: T.gold,
+      color: t.accentGold,
       products: [
         { name: 'Nexus', icon: <NexusIcon size={14} /> },
-        { name: 'Dex', icon: <DexSpiral size={14} /> },
+        { name: 'Dex', icon: <DexSpiral size={14} gradientColors={[t.accentGold, t.accentGoldLight, t.accentGoldLighter]} /> },
       ],
     },
     {
       label: 'For Brands',
       tagline: 'Grow your distribution',
-      color: T.green,
+      color: t.accentGreen,
       products: [
-        { name: 'Connect', icon: <ConnectIcon size={14} /> },
-        { name: 'Brand Tools', icon: <AnalyticsIcon size={14} color={T.green} /> },
+        { name: 'Connect', icon: <ConnectIcon size={14} accentGreen={t.accentGreen} /> },
+        { name: 'Brand Tools', icon: <AnalyticsIcon size={14} color={t.accentGreen} /> },
       ],
     },
     {
       label: 'For Consumers',
       tagline: 'Discover and enjoy',
-      color: T.blue,
+      color: STATIC.blue,
       products: [
-        { name: 'Loyalty', icon: <PlaceholderIcon size={14} label="L" color={T.blue} /> },
-        { name: 'Recommendations', icon: <PlaceholderIcon size={14} label="R" color={T.blue} /> },
+        { name: 'Loyalty', icon: <PlaceholderIcon size={14} label="L" color={STATIC.blue} /> },
+        { name: 'Recommendations', icon: <PlaceholderIcon size={14} label="R" color={STATIC.blue} /> },
       ],
     },
   ];
@@ -623,7 +634,7 @@ function ModelCDiagram() {
         }}>
           <div style={{ minWidth: 140 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: p.color }}>{p.label}</div>
-            <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic' }}>{p.tagline}</div>
+            <div style={{ fontSize: 11, color: t.textFaint, fontStyle: 'italic' }}>{p.tagline}</div>
           </div>
           <div style={{
             width: 1, height: 32, background: `${p.color}25`, flexShrink: 0,
@@ -636,7 +647,7 @@ function ModelCDiagram() {
                 background: `${p.color}12`, border: `1px solid ${p.color}22`,
               }}>
                 {prod.icon}
-                <span style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{prod.name}</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: t.text }}>{prod.name}</span>
               </div>
             ))}
           </div>
@@ -645,8 +656,8 @@ function ModelCDiagram() {
       {/* Cross-cutting note */}
       <div style={{
         marginTop: 8, padding: '10px 14px', borderRadius: 10,
-        background: 'rgba(255,192,42,0.04)', border: '1px dashed rgba(255,192,42,0.15)',
-        fontSize: 12, color: T.textMuted, textAlign: 'center',
+        background: `${t.accentGoldLight}0A`, border: `1px dashed ${t.accentGoldLight}26`,
+        fontSize: 12, color: t.textFaint, textAlign: 'center',
       }}>
         Note: Dex spans Retailers + Brands (appears in multiple persona groups)
       </div>
@@ -654,15 +665,15 @@ function ModelCDiagram() {
   );
 }
 
-function ThreeModelsSection() {
+function ThreeModelsSection({ t }) {
   const models = [
     {
       id: 'A',
       title: 'Suite-Based',
       subtitle: 'B2B vs B2C',
-      color: T.green,
+      color: t.accentGreen,
       badge: 'Recommended',
-      diagram: <ModelADiagram />,
+      diagram: <ModelADiagram t={t} />,
       pros: [
         'Clear market segmentation for sales teams',
         'Natural expansion paths for new products',
@@ -677,9 +688,9 @@ function ThreeModelsSection() {
       id: 'B',
       title: 'Layer-Based',
       subtitle: 'Platform / Intelligence / Network',
-      color: T.gold,
+      color: t.accentGold,
       badge: null,
-      diagram: <ModelBDiagram />,
+      diagram: <ModelBDiagram t={t} />,
       pros: [
         'Clean technical separation of concerns',
         'Highlights Dex as the core intelligence',
@@ -694,9 +705,9 @@ function ThreeModelsSection() {
       id: 'C',
       title: 'Persona-Based',
       subtitle: 'Who uses it?',
-      color: T.blue,
+      color: STATIC.blue,
       badge: null,
-      diagram: <ModelCDiagram />,
+      diagram: <ModelCDiagram t={t} />,
       pros: [
         'Customer-centric messaging and positioning',
         'Easy for sales to pitch per-persona bundles',
@@ -712,15 +723,15 @@ function ThreeModelsSection() {
 
   return (
     <div>
-      <div style={labelStyle}>Section 2</div>
-      <h2 style={sectionTitleStyle}>Three Hierarchy Models</h2>
-      <p style={sectionSubStyle}>
+      <div style={labelStyle(t)}>Section 2</div>
+      <h2 style={sectionTitleStyle(t)}>Three Hierarchy Models</h2>
+      <p style={sectionSubStyle(t)}>
         Three distinct frameworks for organizing the Dutchie AI product family. Each optimizes for a different dimension: market, architecture, or customer.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         {models.map((m) => (
-          <div key={m.id} style={cardStyle({ position: 'relative', overflow: 'hidden' })}>
+          <div key={m.id} style={cardStyle(t, { position: 'relative', overflow: 'hidden' })}>
             {/* Accent line at top */}
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0, height: 3,
@@ -737,8 +748,8 @@ function ThreeModelsSection() {
                 {m.id}
               </div>
               <div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: T.text }}>{m.title}</div>
-                <div style={{ fontSize: 12, color: T.textMuted }}>{m.subtitle}</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: t.text }}>{m.title}</div>
+                <div style={{ fontSize: 12, color: t.textFaint }}>{m.subtitle}</div>
               </div>
               {m.badge && (
                 <div style={{
@@ -755,8 +766,8 @@ function ThreeModelsSection() {
 
             {m.diagram}
 
-            <div style={{ height: 1, background: `${T.border}`, margin: '8px 0 12px' }} />
-            <ProConList pros={m.pros} cons={m.cons} />
+            <div style={{ height: 1, background: `${t.border}`, margin: '8px 0 12px' }} />
+            <ProConList pros={m.pros} cons={m.cons} t={t} />
           </div>
         ))}
       </div>
@@ -768,40 +779,40 @@ function ThreeModelsSection() {
 /* ═══  SECTION 3: PRODUCT POSITIONING MATRIX                            ═══ */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-function PositioningMatrixSection() {
+function PositioningMatrixSection({ t }) {
   const products = [
     {
       name: 'Nexus',
       icon: <NexusIcon size={20} />,
-      color: T.gold,
+      color: t.accentGold,
       audience: 'Dispensary operators & managers',
       valueProp: '"Your AI command center for cannabis retail"',
       aiRole: 'Predictive analytics, smart alerts, inventory optimization',
       revenueModel: 'SaaS subscription (monthly/annual)',
       stage: 'Growth',
-      stageColor: T.green,
+      stageColor: t.accentGreen,
     },
     {
       name: 'Dex',
-      icon: <DexSpiral size={20} />,
-      color: '#FFC02A',
+      icon: <DexSpiral size={20} gradientColors={[t.accentGold, t.accentGoldLight, t.accentGoldLighter]} />,
+      color: t.accentGoldLight,
       audience: 'All internal users (operators, budtenders, brands)',
       valueProp: '"Ask anything about your business"',
       aiRole: 'Conversational AI, multi-step reasoning, data synthesis',
       revenueModel: 'Usage-based (queries/month) or add-on',
       stage: 'Early',
-      stageColor: T.gold,
+      stageColor: t.accentGold,
     },
     {
       name: 'Connect',
-      icon: <ConnectIcon size={20} />,
-      color: T.green,
+      icon: <ConnectIcon size={20} accentGreen={t.accentGreen} />,
+      color: t.accentGreen,
       audience: 'Brands + Retailers (two-sided)',
       valueProp: '"The cannabis B2B marketplace"',
       aiRole: 'Matching algorithms, pricing optimization, demand forecasting',
       revenueModel: 'Transaction fee + premium listings',
       stage: 'Mature',
-      stageColor: T.blue,
+      stageColor: STATIC.blue,
     },
   ];
 
@@ -815,29 +826,29 @@ function PositioningMatrixSection() {
 
   return (
     <div>
-      <div style={labelStyle}>Section 3</div>
-      <h2 style={sectionTitleStyle}>Product Positioning Matrix</h2>
-      <p style={sectionSubStyle}>
+      <div style={labelStyle(t)}>Section 3</div>
+      <h2 style={sectionTitleStyle(t)}>Product Positioning Matrix</h2>
+      <p style={sectionSubStyle(t)}>
         Each product mapped across the key dimensions that drive marketing strategy, sales enablement, and investor narrative.
       </p>
 
       {/* Desktop table view */}
       <div style={{
-        ...cardStyle({ padding: 0, overflow: 'hidden' }),
+        ...cardStyle(t, { padding: 0, overflow: 'hidden' }),
       }}>
         {/* Header row */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '12% 18% 20% 22% 18% 10%',
           padding: '14px 24px',
-          background: '#0E0D0B',
-          borderBottom: `1px solid ${T.border}`,
+          background: t.cardBg,
+          borderBottom: `1px solid ${t.border}`,
         }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Product
           </div>
           {columns.map((col) => (
-            <div key={col.key} style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <div key={col.key} style={{ fontSize: 11, fontWeight: 700, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               {col.label}
             </div>
           ))}
@@ -849,7 +860,7 @@ function PositioningMatrixSection() {
             display: 'grid',
             gridTemplateColumns: '12% 18% 20% 22% 18% 10%',
             padding: '18px 24px',
-            borderBottom: i < products.length - 1 ? `1px solid ${T.border}` : 'none',
+            borderBottom: i < products.length - 1 ? `1px solid ${t.border}` : 'none',
             background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
             alignItems: 'center',
           }}>
@@ -862,10 +873,10 @@ function PositioningMatrixSection() {
               }}>
                 {p.icon}
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{p.name}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: t.text }}>{p.name}</span>
             </div>
             {/* Audience */}
-            <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.5, paddingRight: 12 }}>
+            <div style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.5, paddingRight: 12 }}>
               {p.audience}
             </div>
             {/* Value Prop */}
@@ -873,11 +884,11 @@ function PositioningMatrixSection() {
               {p.valueProp}
             </div>
             {/* AI Role */}
-            <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.5, paddingRight: 12 }}>
+            <div style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.5, paddingRight: 12 }}>
               {p.aiRole}
             </div>
             {/* Revenue Model */}
-            <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.5, paddingRight: 12 }}>
+            <div style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.5, paddingRight: 12 }}>
               {p.revenueModel}
             </div>
             {/* Stage */}
@@ -900,7 +911,9 @@ function PositioningMatrixSection() {
 /* ═══  SECTION 4: SUITE NAMING EXPLORATIONS                             ═══ */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-function SuiteNamingSection() {
+function SuiteNamingSection({ t }) {
+  const B2B_COLOR = t.accentGreen;
+  const B2C_COLOR = t.accentGold;
   const options = [
     {
       id: 1,
@@ -911,7 +924,7 @@ function SuiteNamingSection() {
       retailColor: B2C_COLOR,
       brandColor: B2B_COLOR,
       rating: 'Safe',
-      ratingColor: T.blue,
+      ratingColor: STATIC.blue,
     },
     {
       id: 2,
@@ -922,7 +935,7 @@ function SuiteNamingSection() {
       retailColor: B2C_COLOR,
       brandColor: B2B_COLOR,
       rating: 'Strong',
-      ratingColor: T.green,
+      ratingColor: t.accentGreen,
     },
     {
       id: 3,
@@ -933,7 +946,7 @@ function SuiteNamingSection() {
       retailColor: B2C_COLOR,
       brandColor: B2B_COLOR,
       rating: 'Bold',
-      ratingColor: T.gold,
+      ratingColor: t.accentGold,
     },
     {
       id: 4,
@@ -944,28 +957,28 @@ function SuiteNamingSection() {
       retailColor: B2C_COLOR,
       brandColor: B2B_COLOR,
       rating: 'Risky',
-      ratingColor: T.coral,
+      ratingColor: STATIC.coral,
     },
   ];
 
   return (
     <div>
-      <div style={labelStyle}>Section 4</div>
-      <h2 style={sectionTitleStyle}>Suite Naming Explorations</h2>
-      <p style={sectionSubStyle}>
+      <div style={labelStyle(t)}>Section 4</div>
+      <h2 style={sectionTitleStyle(t)}>Suite Naming Explorations</h2>
+      <p style={sectionSubStyle(t)}>
         If we adopt a suite-based model, the naming convention signals positioning, audience, and brand architecture. Four strategic directions, each with distinct tradeoffs.
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
         {options.map((opt) => (
-          <div key={opt.id} style={cardStyle({ position: 'relative' })}>
+          <div key={opt.id} style={cardStyle(t, { position: 'relative' })}>
             {/* Option number */}
             <div style={{
               position: 'absolute', top: 16, right: 16,
               width: 28, height: 28, borderRadius: '50%',
-              background: `${T.textMuted}15`, border: `1px solid ${T.textMuted}25`,
+              background: `${t.textFaint}15`, border: `1px solid ${t.textFaint}25`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 12, fontWeight: 700, color: T.textMuted,
+              fontSize: 12, fontWeight: 700, color: t.textFaint,
             }}>
               {opt.id}
             </div>
@@ -989,7 +1002,7 @@ function SuiteNamingSection() {
               }}>
                 <NexusIcon size={18} />
                 <span style={{
-                  fontSize: 17, fontWeight: 600, color: T.text,
+                  fontSize: 17, fontWeight: 600, color: t.text,
                   letterSpacing: '-0.01em',
                 }}>
                   {opt.retail}
@@ -1003,9 +1016,9 @@ function SuiteNamingSection() {
                 border: `1px solid ${opt.brandColor}20`,
                 display: 'flex', alignItems: 'center', gap: 10,
               }}>
-                <ConnectIcon size={18} />
+                <ConnectIcon size={18} accentGreen={t.accentGreen} />
                 <span style={{
-                  fontSize: 17, fontWeight: 600, color: T.text,
+                  fontSize: 17, fontWeight: 600, color: t.text,
                   letterSpacing: '-0.01em',
                 }}>
                   {opt.brand}
@@ -1014,7 +1027,7 @@ function SuiteNamingSection() {
             </div>
 
             {/* Description */}
-            <p style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.7, margin: 0 }}>
+            <p style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.7, margin: 0 }}>
               {opt.description}
             </p>
           </div>
@@ -1028,7 +1041,7 @@ function SuiteNamingSection() {
 /* ═══  SECTION 5: REVENUE & GTM IMPLICATIONS                           ═══ */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-function FlowStep({ label, sublabel, color, isArrow = false }) {
+function FlowStep({ label, sublabel, color, isArrow = false, t }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
       <div style={{
@@ -1036,8 +1049,8 @@ function FlowStep({ label, sublabel, color, isArrow = false }) {
         background: `${color}10`, border: `1.5px solid ${color}25`,
         minWidth: 100, textAlign: 'center',
       }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{label}</div>
-        {sublabel && <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>{sublabel}</div>}
+        <div style={{ fontSize: 13, fontWeight: 600, color: t.text }}>{label}</div>
+        {sublabel && <div style={{ fontSize: 10, color: t.textFaint, marginTop: 2 }}>{sublabel}</div>}
       </div>
       {isArrow && (
         <svg width="32" height="16" viewBox="0 0 32 16" fill="none" style={{ flexShrink: 0 }}>
@@ -1048,113 +1061,115 @@ function FlowStep({ label, sublabel, color, isArrow = false }) {
   );
 }
 
-function GTMSection() {
+function GTMSection({ t }) {
+  const B2B_COLOR = t.accentGreen;
+  const B2C_COLOR = t.accentGold;
   return (
     <div>
-      <div style={labelStyle}>Section 5</div>
-      <h2 style={sectionTitleStyle}>Revenue & GTM Implications</h2>
-      <p style={sectionSubStyle}>
+      <div style={labelStyle(t)}>Section 5</div>
+      <h2 style={sectionTitleStyle(t)}>Revenue & GTM Implications</h2>
+      <p style={sectionSubStyle(t)}>
         Each organizational model drives a fundamentally different go-to-market motion, sales team structure, and expansion playbook.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         {/* GTM Model: Suite-Based */}
-        <div style={cardStyle({ position: 'relative', overflow: 'hidden' })}>
+        <div style={cardStyle(t, { position: 'relative', overflow: 'hidden' })}>
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0, height: 3,
             background: `linear-gradient(90deg, ${B2B_COLOR}, ${B2C_COLOR})`,
           }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <span style={tagStyle(T.green)}>Model A</span>
-            <span style={{ fontSize: 16, fontWeight: 700, color: T.text }}>Suite-Based GTM</span>
+            <span style={tagStyle(t.accentGreen)}>Model A</span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: t.text }}>Suite-Based GTM</span>
           </div>
-          <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.7, marginBottom: 20 }}>
+          <div style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.7, marginBottom: 20 }}>
             Land with one suite, expand to the other. Two separate sales motions, unified by the Dutchie AI umbrella.
           </div>
 
           <div style={{
             display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center',
             padding: '16px 20px', borderRadius: 12,
-            background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.border}`,
+            background: 'rgba(255,255,255,0.02)', border: `1px solid ${t.border}`,
           }}>
-            <FlowStep label="Land B2C Suite" sublabel="Nexus + Dex" color={B2C_COLOR} isArrow />
-            <FlowStep label="Prove ROI" sublabel="3-6 months" color={T.textSecondary} isArrow />
-            <FlowStep label="Expand B2B" sublabel="Connect upsell" color={B2B_COLOR} isArrow />
-            <FlowStep label="Full Platform" sublabel="Both suites" color={T.gold} />
+            <FlowStep label="Land B2C Suite" sublabel="Nexus + Dex" color={B2C_COLOR} isArrow t={t} />
+            <FlowStep label="Prove ROI" sublabel="3-6 months" color={t.textMuted} isArrow t={t} />
+            <FlowStep label="Expand B2B" sublabel="Connect upsell" color={B2B_COLOR} isArrow t={t} />
+            <FlowStep label="Full Platform" sublabel="Both suites" color={t.accentGold} t={t} />
           </div>
 
           <div style={{ marginTop: 16, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: 180 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, marginBottom: 4 }}>SALES TEAM</div>
-              <div style={{ fontSize: 13, color: T.textSecondary }}>Two specialized teams: Retail Sales + Brand Partnerships</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: t.textFaint, marginBottom: 4 }}>SALES TEAM</div>
+              <div style={{ fontSize: 13, color: t.textMuted }}>Two specialized teams: Retail Sales + Brand Partnerships</div>
             </div>
             <div style={{ flex: 1, minWidth: 180 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, marginBottom: 4 }}>EXPANSION TRIGGER</div>
-              <div style={{ fontSize: 13, color: T.textSecondary }}>Cross-sell when retailer asks about brand ordering, or brand asks about retail insights</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: t.textFaint, marginBottom: 4 }}>EXPANSION TRIGGER</div>
+              <div style={{ fontSize: 13, color: t.textMuted }}>Cross-sell when retailer asks about brand ordering, or brand asks about retail insights</div>
             </div>
           </div>
         </div>
 
         {/* GTM Model: Layer-Based */}
-        <div style={cardStyle({ position: 'relative', overflow: 'hidden' })}>
+        <div style={cardStyle(t, { position: 'relative', overflow: 'hidden' })}>
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-            background: `linear-gradient(90deg, ${T.gold}, ${T.green})`,
+            background: `linear-gradient(90deg, ${t.accentGold}, ${t.accentGreen})`,
           }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <span style={tagStyle(T.gold)}>Model B</span>
-            <span style={{ fontSize: 16, fontWeight: 700, color: T.text }}>Layer-Based GTM</span>
+            <span style={tagStyle(t.accentGold)}>Model B</span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: t.text }}>Layer-Based GTM</span>
           </div>
-          <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.7, marginBottom: 20 }}>
+          <div style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.7, marginBottom: 20 }}>
             Sell the visible platform first, then upsell AI intelligence, then unlock network effects.
           </div>
 
           <div style={{
             display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center',
             padding: '16px 20px', borderRadius: 12,
-            background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.border}`,
+            background: 'rgba(255,255,255,0.02)', border: `1px solid ${t.border}`,
           }}>
-            <FlowStep label="Nexus" sublabel="Platform entry" color={T.gold} isArrow />
-            <FlowStep label="+ Dex" sublabel="AI upsell" color="#FFC02A" isArrow />
-            <FlowStep label="+ Connect" sublabel="Network effect" color={T.green} isArrow />
-            <FlowStep label="Lock-in" sublabel="Full stack" color={T.blue} />
+            <FlowStep label="Nexus" sublabel="Platform entry" color={t.accentGold} isArrow t={t} />
+            <FlowStep label="+ Dex" sublabel="AI upsell" color={t.accentGoldLight} isArrow t={t} />
+            <FlowStep label="+ Connect" sublabel="Network effect" color={t.accentGreen} isArrow t={t} />
+            <FlowStep label="Lock-in" sublabel="Full stack" color={STATIC.blue} t={t} />
           </div>
 
           <div style={{ marginTop: 16, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: 180 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, marginBottom: 4 }}>SALES TEAM</div>
-              <div style={{ fontSize: 13, color: T.textSecondary }}>Single team, progressive selling. Customer success drives upsell.</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: t.textFaint, marginBottom: 4 }}>SALES TEAM</div>
+              <div style={{ fontSize: 13, color: t.textMuted }}>Single team, progressive selling. Customer success drives upsell.</div>
             </div>
             <div style={{ flex: 1, minWidth: 180 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, marginBottom: 4 }}>EXPANSION TRIGGER</div>
-              <div style={{ fontSize: 13, color: T.textSecondary }}>Usage-based: power users hit query limits, unlock Dex. Active retailers join Connect.</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: t.textFaint, marginBottom: 4 }}>EXPANSION TRIGGER</div>
+              <div style={{ fontSize: 13, color: t.textMuted }}>Usage-based: power users hit query limits, unlock Dex. Active retailers join Connect.</div>
             </div>
           </div>
         </div>
 
         {/* GTM Model: Persona-Based */}
-        <div style={cardStyle({ position: 'relative', overflow: 'hidden' })}>
+        <div style={cardStyle(t, { position: 'relative', overflow: 'hidden' })}>
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-            background: `linear-gradient(90deg, ${T.blue}, ${T.gold}, ${T.green})`,
+            background: `linear-gradient(90deg, ${STATIC.blue}, ${t.accentGold}, ${t.accentGreen})`,
           }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <span style={tagStyle(T.blue)}>Model C</span>
-            <span style={{ fontSize: 16, fontWeight: 700, color: T.text }}>Persona-Based GTM</span>
+            <span style={tagStyle(STATIC.blue)}>Model C</span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: t.text }}>Persona-Based GTM</span>
           </div>
-          <div style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.7, marginBottom: 20 }}>
+          <div style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.7, marginBottom: 20 }}>
             Segment sales teams by buyer persona. Each persona gets a tailored bundle and narrative.
           </div>
 
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12,
             padding: '16px 20px', borderRadius: 12,
-            background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.border}`,
+            background: 'rgba(255,255,255,0.02)', border: `1px solid ${t.border}`,
           }}>
             {[
-              { persona: 'Retailer', products: 'Nexus + Dex', color: T.gold, motion: 'Inbound + outbound sales' },
-              { persona: 'Brand', products: 'Connect + Analytics', color: T.green, motion: 'Partner development' },
-              { persona: 'Consumer', products: 'Loyalty + Recs', color: T.blue, motion: 'Product-led growth' },
+              { persona: 'Retailer', products: 'Nexus + Dex', color: t.accentGold, motion: 'Inbound + outbound sales' },
+              { persona: 'Brand', products: 'Connect + Analytics', color: t.accentGreen, motion: 'Partner development' },
+              { persona: 'Consumer', products: 'Loyalty + Recs', color: STATIC.blue, motion: 'Product-led growth' },
             ].map((p, i) => (
               <div key={i} style={{
                 padding: '14px 16px', borderRadius: 10,
@@ -1162,20 +1177,20 @@ function GTMSection() {
                 textAlign: 'center',
               }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: p.color, marginBottom: 4 }}>{p.persona}</div>
-                <div style={{ fontSize: 12, color: T.text, fontWeight: 500, marginBottom: 6 }}>{p.products}</div>
-                <div style={{ fontSize: 11, color: T.textMuted }}>{p.motion}</div>
+                <div style={{ fontSize: 12, color: t.text, fontWeight: 500, marginBottom: 6 }}>{p.products}</div>
+                <div style={{ fontSize: 11, color: t.textFaint }}>{p.motion}</div>
               </div>
             ))}
           </div>
 
           <div style={{ marginTop: 16, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: 180 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, marginBottom: 4 }}>SALES TEAM</div>
-              <div style={{ fontSize: 13, color: T.textSecondary }}>Three pods: Retail AEs, Brand Partnership Managers, Growth/PLG team</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: t.textFaint, marginBottom: 4 }}>SALES TEAM</div>
+              <div style={{ fontSize: 13, color: t.textMuted }}>Three pods: Retail AEs, Brand Partnership Managers, Growth/PLG team</div>
             </div>
             <div style={{ flex: 1, minWidth: 180 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, marginBottom: 4 }}>EXPANSION TRIGGER</div>
-              <div style={{ fontSize: 13, color: T.textSecondary }}>Organic: retailers refer brands, brands request retail data, consumers drive adoption</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: t.textFaint, marginBottom: 4 }}>EXPANSION TRIGGER</div>
+              <div style={{ fontSize: 13, color: t.textMuted }}>Organic: retailers refer brands, brands request retail data, consumers drive adoption</div>
             </div>
           </div>
         </div>
@@ -1188,16 +1203,16 @@ function GTMSection() {
 /* ═══  SECTION 6: COMPETITIVE POSITIONING MAP                           ═══ */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-function CompetitiveMapSection() {
+function CompetitiveMapSection({ t }) {
   const canvasRef = useRef(null);
   const uid = useId();
 
   const competitors = [
-    { name: 'Dutchie AI', x: 0.82, y: 0.85, color: T.gold, size: 12, glow: true },
+    { name: 'Dutchie AI', x: 0.82, y: 0.85, color: t.accentGold, size: 12, glow: true },
     { name: 'Leafly', x: 0.70, y: 0.28, color: '#78B858', size: 8, glow: false },
     { name: 'Treez', x: 0.40, y: 0.55, color: '#8BB4D9', size: 7, glow: false },
     { name: 'Flowhub', x: 0.25, y: 0.30, color: '#C78FD6', size: 7, glow: false },
-    { name: 'Generic ERP', x: 0.65, y: 0.15, color: T.textMuted, size: 6, glow: false },
+    { name: 'Generic ERP', x: 0.65, y: 0.15, color: t.textFaint, size: 6, glow: false },
   ];
 
   useEffect(() => {
@@ -1210,7 +1225,7 @@ function CompetitiveMapSection() {
     canvas.height = H;
 
     // Background
-    ctx.fillStyle = '#0E0D0B';
+    ctx.fillStyle = t.cardBg;
     ctx.fillRect(0, 0, W, H);
 
     // Grid
@@ -1248,7 +1263,7 @@ function CompetitiveMapSection() {
 
     // Axis labels
     ctx.font = "600 11px 'DM Sans', sans-serif";
-    ctx.fillStyle = T.textMuted;
+    ctx.fillStyle = t.textFaint;
     ctx.textAlign = 'center';
     ctx.fillText('Market Breadth', W / 2, H - 16);
 
@@ -1261,7 +1276,7 @@ function CompetitiveMapSection() {
 
     // Low/High labels
     ctx.font = "500 10px 'DM Sans', sans-serif";
-    ctx.fillStyle = 'rgba(107,99,89,0.6)';
+    ctx.fillStyle = `${t.textFaint}99`;
     ctx.textAlign = 'left';
     ctx.fillText('Narrow', PAD + 4, H - PAD + 18);
     ctx.textAlign = 'right';
@@ -1272,7 +1287,7 @@ function CompetitiveMapSection() {
 
     // Quadrant labels
     ctx.font = "500 10px 'DM Sans', sans-serif";
-    ctx.fillStyle = 'rgba(107,99,89,0.3)';
+    ctx.fillStyle = `${t.textFaint}4D`;
     ctx.textAlign = 'center';
     const qW = (W - 2 * PAD) / 2;
     const qH = (H - 2 * PAD) / 2;
@@ -1289,8 +1304,8 @@ function CompetitiveMapSection() {
       // Glow for Dutchie
       if (c.glow) {
         const grad = ctx.createRadialGradient(px, py, 0, px, py, 30);
-        grad.addColorStop(0, 'rgba(212,160,58,0.25)');
-        grad.addColorStop(1, 'rgba(212,160,58,0)');
+        grad.addColorStop(0, `${t.accentGold}40`);
+        grad.addColorStop(1, `${t.accentGold}00`);
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(px, py, 30, 0, Math.PI * 2);
@@ -1305,7 +1320,7 @@ function CompetitiveMapSection() {
 
       // Ring for Dutchie
       if (c.glow) {
-        ctx.strokeStyle = 'rgba(212,160,58,0.4)';
+        ctx.strokeStyle = `${t.accentGold}66`;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(px, py, c.size + 4, 0, Math.PI * 2);
@@ -1314,28 +1329,28 @@ function CompetitiveMapSection() {
 
       // Label
       ctx.font = c.glow ? "700 13px 'DM Sans', sans-serif" : "500 11px 'DM Sans', sans-serif";
-      ctx.fillStyle = c.glow ? T.text : T.textSecondary;
+      ctx.fillStyle = c.glow ? t.text : t.textMuted;
       ctx.textAlign = 'center';
       ctx.fillText(c.name, px, py - c.size - 8);
     });
 
-  }, []);
+  }, [t]);
 
   return (
     <div>
-      <div style={labelStyle}>Section 6</div>
-      <h2 style={sectionTitleStyle}>Competitive Positioning Map</h2>
-      <p style={sectionSubStyle}>
+      <div style={labelStyle(t)}>Section 6</div>
+      <h2 style={sectionTitleStyle(t)}>Competitive Positioning Map</h2>
+      <p style={sectionSubStyle(t)}>
         Dutchie AI occupies the "AI Platform Leader" quadrant -- high AI sophistication across a wide market. Competitors cluster in lower-left: narrow focus, limited AI capabilities.
       </p>
 
-      <div style={cardStyle({ padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center' })}>
+      <div style={cardStyle(t, { padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center' })}>
         <canvas
           ref={canvasRef}
           style={{
             width: '100%', maxWidth: 600, height: 400,
             borderRadius: 12,
-            border: `1px solid ${T.border}`,
+            border: `1px solid ${t.border}`,
           }}
         />
 
@@ -1343,7 +1358,7 @@ function CompetitiveMapSection() {
         <div style={{
           display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center',
           marginTop: 20, padding: '12px 20px', borderRadius: 10,
-          background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.border}`,
+          background: 'rgba(255,255,255,0.02)', border: `1px solid ${t.border}`,
         }}>
           {competitors.map((c) => (
             <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -1352,7 +1367,7 @@ function CompetitiveMapSection() {
                 background: c.color,
                 boxShadow: c.glow ? `0 0 8px ${c.color}60` : 'none',
               }} />
-              <span style={{ fontSize: 12, color: c.glow ? T.text : T.textSecondary, fontWeight: c.glow ? 600 : 400 }}>
+              <span style={{ fontSize: 12, color: c.glow ? t.text : t.textMuted, fontWeight: c.glow ? 600 : 400 }}>
                 {c.name}
               </span>
             </div>
@@ -1369,7 +1384,7 @@ function CompetitiveMapSection() {
           {
             title: 'Dutchie AI',
             insight: 'Only player with conversational AI (Dex), predictive analytics (Nexus), AND a B2B marketplace (Connect) in cannabis.',
-            color: T.gold,
+            color: t.accentGold,
           },
           {
             title: 'Leafly',
@@ -1382,9 +1397,9 @@ function CompetitiveMapSection() {
             color: '#8BB4D9',
           },
         ].map((c) => (
-          <div key={c.title} style={cardStyle({ padding: 20 })}>
+          <div key={c.title} style={cardStyle(t, { padding: 20 })}>
             <div style={{ fontSize: 14, fontWeight: 700, color: c.color, marginBottom: 8 }}>{c.title}</div>
-            <p style={{ fontSize: 13, color: T.textSecondary, lineHeight: 1.7, margin: 0 }}>{c.insight}</p>
+            <p style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.7, margin: 0 }}>{c.insight}</p>
           </div>
         ))}
       </div>
@@ -1396,7 +1411,23 @@ function CompetitiveMapSection() {
 /* ═══  MAIN EXPORT                                                      ═══ */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-export function ProductHierarchySection() {
+export function ProductHierarchySection({ theme = 'dark' }) {
+  const themes = {
+    dark: {
+      bg: '#0A0908', cardBg: '#141210', border: '#282724',
+      text: '#F0EDE8', textMuted: '#ADA599', textFaint: '#6B6359',
+      accentGold: '#D4A03A', accentGoldLight: '#FFC02A', accentGoldLighter: '#FFD666',
+      accentGreen: '#00C27C',
+    },
+    light: {
+      bg: '#FAFAF8', cardBg: '#FFFFFF', border: '#E5E2DC',
+      text: '#1A1917', textMuted: '#5C574F', textFaint: '#8C8680',
+      accentGold: '#B8860B', accentGoldLight: '#DAA520', accentGoldLighter: '#F0C75E',
+      accentGreen: '#059669',
+    }
+  };
+  const t = themes[theme];
+
   // Load DM Sans font
   useEffect(() => {
     if (!document.querySelector('link[href*="DM+Sans"]')) {
@@ -1409,9 +1440,9 @@ export function ProductHierarchySection() {
 
   return (
     <div style={{
-      background: T.bg,
-      color: T.text,
-      fontFamily: T.font,
+      background: t.bg,
+      color: t.text,
+      fontFamily: STATIC.font,
       minHeight: '100vh',
       padding: '0 0 80px',
     }}>
@@ -1425,23 +1456,23 @@ export function ProductHierarchySection() {
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '6px 14px', borderRadius: 10,
-            background: 'rgba(212,160,58,0.08)',
-            border: '1px solid rgba(212,160,58,0.15)',
+            background: `${t.accentGold}14`,
+            border: `1px solid ${t.accentGold}26`,
           }}>
             <NexusIcon size={18} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: T.gold }}>Dutchie AI</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: t.accentGold }}>Dutchie AI</span>
           </div>
-          <span style={{ fontSize: 12, color: T.textMuted }}>Product Marketing</span>
+          <span style={{ fontSize: 12, color: t.textFaint }}>Product Marketing</span>
         </div>
 
         <h1 style={{
-          fontSize: 42, fontWeight: 800, color: T.text,
+          fontSize: 42, fontWeight: 800, color: t.text,
           letterSpacing: '-0.03em', lineHeight: 1.1,
           marginBottom: 12,
         }}>
           Product Hierarchy<br />
           <span style={{
-            background: `linear-gradient(135deg, ${T.gold}, ${T.green})`,
+            background: `linear-gradient(135deg, ${t.accentGold}, ${t.accentGreen})`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -1451,7 +1482,7 @@ export function ProductHierarchySection() {
         </h1>
 
         <p style={{
-          fontSize: 16, color: T.textSecondary, lineHeight: 1.7,
+          fontSize: 16, color: t.textMuted, lineHeight: 1.7,
           maxWidth: 640, marginBottom: 8,
         }}>
           How should Nexus, Dex, and Connect be organized as Dutchie's AI product family grows?
@@ -1462,59 +1493,59 @@ export function ProductHierarchySection() {
         <div style={{
           display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 20, marginBottom: 16,
         }}>
-          {['B2C AI Suite', 'B2B AI Suite', 'Hierarchy Models', 'Naming', 'GTM', 'Competitive'].map((t) => (
-            <span key={t} style={{
+          {['B2C AI Suite', 'B2B AI Suite', 'Hierarchy Models', 'Naming', 'GTM', 'Competitive'].map((tag) => (
+            <span key={tag} style={{
               padding: '4px 12px', borderRadius: 8,
               background: 'rgba(255,255,255,0.04)',
-              border: `1px solid ${T.border}`,
-              fontSize: 11, color: T.textMuted, fontWeight: 500,
+              border: `1px solid ${t.border}`,
+              fontSize: 11, color: t.textFaint, fontWeight: 500,
             }}>
-              {t}
+              {tag}
             </span>
           ))}
         </div>
 
         {/* Thin divider */}
-        <div style={dividerStyle} />
+        <div style={dividerStyle(t)} />
 
         {/* Section 1 */}
-        <CurrentVsProposedSection />
+        <CurrentVsProposedSection t={t} />
 
-        <div style={dividerStyle} />
+        <div style={dividerStyle(t)} />
 
         {/* Section 2 */}
-        <ThreeModelsSection />
+        <ThreeModelsSection t={t} />
 
-        <div style={dividerStyle} />
+        <div style={dividerStyle(t)} />
 
         {/* Section 3 */}
-        <PositioningMatrixSection />
+        <PositioningMatrixSection t={t} />
 
-        <div style={dividerStyle} />
+        <div style={dividerStyle(t)} />
 
         {/* Section 4 */}
-        <SuiteNamingSection />
+        <SuiteNamingSection t={t} />
 
-        <div style={dividerStyle} />
+        <div style={dividerStyle(t)} />
 
         {/* Section 5 */}
-        <GTMSection />
+        <GTMSection t={t} />
 
-        <div style={dividerStyle} />
+        <div style={dividerStyle(t)} />
 
         {/* Section 6 */}
-        <CompetitiveMapSection />
+        <CompetitiveMapSection t={t} />
 
         {/* Footer */}
         <div style={{
           marginTop: 80, padding: '32px 0',
-          borderTop: `1px solid ${T.border}`,
+          borderTop: `1px solid ${t.border}`,
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 8 }}>
+          <div style={{ fontSize: 12, color: t.textFaint, marginBottom: 8 }}>
             Dutchie AI -- Product Marketing -- Hierarchy Exploration
           </div>
-          <div style={{ fontSize: 11, color: `${T.textMuted}80` }}>
+          <div style={{ fontSize: 11, color: `${t.textFaint}80` }}>
             Internal document. March 2026.
           </div>
         </div>

@@ -58,11 +58,12 @@ const bodyTextStyle = {
 };
 
 /* ─── Star Rating Component ─── */
-function Stars({ count, max = 5 }) {
+function Stars({ count, max = 5, colors }) {
+  const c = colors || COLORS;
   return (
     <span style={{ letterSpacing: 2, fontSize: 14 }}>
       {Array.from({ length: max }, (_, i) => (
-        <span key={i} style={{ color: i < count ? COLORS.goldLight : COLORS.textDim }}>
+        <span key={i} style={{ color: i < count ? (c.accentGoldLight || c.goldLight) : (c.textDim || c.textFaint) }}>
           {i < count ? '\u2605' : '\u2606'}
         </span>
       ))}
@@ -88,30 +89,31 @@ function StatusDot({ status }) {
 }
 
 /* ─── Section Divider ─── */
-function Divider() {
-  return <div style={dividerStyle} />;
+function Divider({ style }) {
+  return <div style={style || dividerStyle} />;
 }
 
 /* ─── Sub Title ─── */
-function SubTitle({ children }) {
-  return <h3 style={sectionTitleStyle}>{children}</h3>;
+function SubTitle({ children, style }) {
+  return <h3 style={style || sectionTitleStyle}>{children}</h3>;
 }
 
 /* ─── Section Number Badge ─── */
-function SectionBadge({ number }) {
+function SectionBadge({ number, colors }) {
+  const c = colors || { accentGold: COLORS.gold, goldRgb: '212,160,58', goldLightRgb: '255,192,42' };
   return (
     <div style={{
       width: 40,
       height: 40,
       borderRadius: '50%',
-      background: `linear-gradient(135deg, rgba(212,160,58,0.15), rgba(255,192,42,0.08))`,
-      border: '1px solid rgba(212,160,58,0.25)',
+      background: `linear-gradient(135deg, rgba(${c.goldRgb},0.15), rgba(${c.goldLightRgb},0.08))`,
+      border: `1px solid rgba(${c.goldRgb},0.25)`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontSize: 16,
       fontWeight: 700,
-      color: COLORS.gold,
+      color: c.accentGold,
       flexShrink: 0,
       marginBottom: 16,
     }}>
@@ -317,15 +319,73 @@ const TRADEMARK_CHECKS = [
    MAIN EXPORT
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-export function DNameExplorationSection() {
+export function DNameExplorationSection({ theme = 'dark' }) {
+  const themes = {
+    dark: {
+      bg: '#0A0908', cardBg: '#141210', border: '#282724',
+      text: '#F0EDE8', textMuted: '#ADA599', textFaint: '#6B6359',
+      accentGold: '#D4A03A', accentGoldLight: '#FFC02A', accentGoldLighter: '#FFD666',
+      accentGreen: '#00C27C',
+    },
+    light: {
+      bg: '#FAFAF8', cardBg: '#FFFFFF', border: '#E5E2DC',
+      text: '#1A1917', textMuted: '#5C574F', textFaint: '#8C8680',
+      accentGold: '#B8860B', accentGoldLight: '#DAA520', accentGoldLighter: '#F0C75E',
+      accentGreen: '#059669',
+    }
+  };
+  const t = themes[theme];
+
+  // Theme-aware helpers for rgba gold values
+  const goldRgb = theme === 'dark' ? '212,160,58' : '184,134,11';
+  const goldLightRgb = theme === 'dark' ? '255,192,42' : '218,165,32';
+  const goldLighterRgb = theme === 'dark' ? '255,214,102' : '240,199,94';
+  const greenRgb = theme === 'dark' ? '0,194,124' : '5,150,105';
+  const cardBgRgb = theme === 'dark' ? '20,18,16' : '255,255,255';
+  const bgRgb = theme === 'dark' ? '10,9,8' : '250,250,248';
+  const blueRgb = '100,168,224';
+  const borderLight = theme === 'dark' ? '#38332B' : '#D5D0C8';
+  const cardHover = theme === 'dark' ? '#1A1815' : '#F5F5F2';
+  const textDim = theme === 'dark' ? '#4A453E' : '#B0AAA2';
+
+  const themedBaseCard = {
+    background: t.cardBg,
+    borderRadius: 16,
+    padding: 32,
+    border: `1px solid ${t.border}`,
+  };
+
+  const themedDividerStyle = {
+    height: 1,
+    background: `linear-gradient(90deg, transparent, ${borderLight}, transparent)`,
+    margin: '64px 0',
+  };
+
+  const themedSectionTitleStyle = {
+    fontSize: 14,
+    fontWeight: 600,
+    color: t.textFaint,
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    marginBottom: 24,
+  };
+
+  const themedBodyTextStyle = {
+    fontSize: 14,
+    color: t.textMuted,
+    lineHeight: 1.7,
+    maxWidth: 640,
+    marginBottom: 32,
+  };
+
   const [hoveredSuite, setHoveredSuite] = useState(null);
   const [expandedRole, setExpandedRole] = useState(null);
 
   return (
     <div style={{
       fontFamily: "'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-      background: COLORS.bg,
-      color: COLORS.textPrimary,
+      background: t.bg,
+      color: t.text,
       minHeight: '100vh',
       padding: '0 24px 120px',
       maxWidth: 1100,
@@ -339,11 +399,11 @@ export function DNameExplorationSection() {
           gap: 12,
           padding: '8px 20px',
           borderRadius: 24,
-          background: 'rgba(212,160,58,0.08)',
-          border: '1px solid rgba(212,160,58,0.15)',
+          background: `rgba(${goldRgb},0.08)`,
+          border: `1px solid rgba(${goldRgb},0.15)`,
           marginBottom: 32,
         }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: COLORS.gold, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: t.accentGold, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             Naming Strategy
           </span>
         </div>
@@ -353,12 +413,12 @@ export function DNameExplorationSection() {
           fontWeight: 700,
           letterSpacing: '-0.02em',
           lineHeight: 1.1,
-          color: COLORS.textPrimary,
+          color: t.text,
           marginBottom: 20,
         }}>
           The{' '}
           <span style={{
-            background: 'linear-gradient(135deg, #D4A03A, #FFC02A, #FFD666)',
+            background: `linear-gradient(135deg, ${t.accentGold}, ${t.accentGoldLight}, ${t.accentGoldLighter})`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -370,7 +430,7 @@ export function DNameExplorationSection() {
 
         <p style={{
           fontSize: 18,
-          color: COLORS.textSecondary,
+          color: t.textMuted,
           lineHeight: 1.6,
           maxWidth: 600,
           margin: '0 auto 16px',
@@ -397,32 +457,32 @@ export function DNameExplorationSection() {
                 width: 56,
                 height: 56,
                 borderRadius: 14,
-                background: `linear-gradient(135deg, rgba(212,160,58,${0.15 - i * 0.02}), rgba(255,192,42,${0.08 - i * 0.01}))`,
-                border: '1px solid rgba(212,160,58,0.2)',
+                background: `linear-gradient(135deg, rgba(${goldRgb},${0.15 - i * 0.02}), rgba(${goldLightRgb},${0.08 - i * 0.01}))`,
+                border: `1px solid rgba(${goldRgb},0.2)`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: 28,
                 fontWeight: 700,
-                color: COLORS.gold,
+                color: t.accentGold,
               }}>
                 {item.letter}
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.textPrimary }}>{item.label}</span>
-              <span style={{ fontSize: 11, color: COLORS.textMuted }}>{item.sub}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: t.text }}>{item.label}</span>
+              <span style={{ fontSize: 11, color: t.textFaint }}>{item.sub}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <Divider />
+      <Divider style={themedDividerStyle} />
 
       {/* ═══════════════════════ SECTION 1: D-NAME CANDIDATE MATRIX ═══════════════════════ */}
-      <SectionBadge number={1} />
+      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={1} />
       <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
         D-Name Candidate Matrix
       </h2>
-      <p style={bodyTextStyle}>
+      <p style={themedBodyTextStyle}>
         For each product role in the Dutchie AI suite, we explore six D-name candidates.
         Each is rendered as a wordmark in DM Sans with typography tuned to its personality.
       </p>
@@ -448,10 +508,10 @@ export function DNameExplorationSection() {
                 boxShadow: `0 0 12px ${role.accent}66`,
               }} />
               <div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, color: COLORS.textPrimary, margin: 0 }}>
+                <h3 style={{ fontSize: 20, fontWeight: 700, color: t.text, margin: 0 }}>
                   {role.role}
                 </h3>
-                <span style={{ fontSize: 12, color: COLORS.textMuted }}>
+                <span style={{ fontSize: 12, color: t.textFaint }}>
                   Currently: <span style={{ color: role.accent }}>{role.currently}</span>
                   {' '}&mdash; {role.description}
                 </span>
@@ -466,14 +526,14 @@ export function DNameExplorationSection() {
             }}>
               {role.candidates.map((c, ci) => (
                 <div key={c.name} style={{
-                  ...baseCard,
+                  ...themedBaseCard,
                   padding: '24px 28px',
                   borderRadius: 14,
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 12,
                   transition: 'border-color 0.2s, background 0.2s',
-                  borderColor: COLORS.border,
+                  borderColor: t.border,
                   position: 'relative',
                   overflow: 'hidden',
                 }}>
@@ -506,7 +566,7 @@ export function DNameExplorationSection() {
                       fontWeight: c.weight,
                       fontSize: 42,
                       letterSpacing: c.spacing,
-                      color: COLORS.textPrimary,
+                      color: t.text,
                       lineHeight: 1,
                     }}>
                       {c.name}
@@ -516,7 +576,7 @@ export function DNameExplorationSection() {
                   {/* Typography meta */}
                   <div style={{
                     fontSize: 10,
-                    color: COLORS.textDim,
+                    color: textDim,
                     fontFamily: 'monospace',
                     display: 'flex',
                     gap: 12,
@@ -528,7 +588,7 @@ export function DNameExplorationSection() {
                   {/* Rationale */}
                   <p style={{
                     fontSize: 13,
-                    color: COLORS.textSecondary,
+                    color: t.textMuted,
                     lineHeight: 1.6,
                     margin: 0,
                   }}>
@@ -541,14 +601,14 @@ export function DNameExplorationSection() {
         ))}
       </div>
 
-      <Divider />
+      <Divider style={themedDividerStyle} />
 
       {/* ═══════════════════════ SECTION 2: BEST D-SUITE COMBINATIONS ═══════════════════════ */}
-      <SectionBadge number={2} />
+      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={2} />
       <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
         Best D-Suite Combinations
       </h2>
-      <p style={bodyTextStyle}>
+      <p style={themedBodyTextStyle}>
         Five curated suites where all four product names share the D-prefix and create a cohesive family.
         Each is evaluated for memorability, distinctiveness, professional tone, and cannabis culture fit.
       </p>
@@ -558,11 +618,11 @@ export function DNameExplorationSection() {
           <div
             key={suite.id}
             style={{
-              ...baseCard,
+              ...themedBaseCard,
               padding: 0,
               overflow: 'hidden',
               transition: 'border-color 0.25s',
-              borderColor: hoveredSuite === si ? COLORS.borderLight : COLORS.border,
+              borderColor: hoveredSuite === si ? borderLight : t.border,
             }}
             onMouseEnter={() => setHoveredSuite(si)}
             onMouseLeave={() => setHoveredSuite(null)}
@@ -570,7 +630,7 @@ export function DNameExplorationSection() {
             {/* Suite Header */}
             <div style={{
               padding: '24px 32px 16px',
-              borderBottom: `1px solid ${COLORS.border}`,
+              borderBottom: `1px solid ${t.border}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -578,10 +638,10 @@ export function DNameExplorationSection() {
               gap: 16,
             }}>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: COLORS.gold, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: t.accentGold, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
                   Suite {si + 1}
                 </div>
-                <h3 style={{ fontSize: 22, fontWeight: 700, color: COLORS.textPrimary, margin: 0 }}>
+                <h3 style={{ fontSize: 22, fontWeight: 700, color: t.text, margin: 0 }}>
                   {suite.label}
                 </h3>
               </div>
@@ -589,8 +649,8 @@ export function DNameExplorationSection() {
               <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
                 {Object.entries(suite.ratings).map(([key, val]) => (
                   <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                    <Stars count={val} />
-                    <span style={{ fontSize: 9, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <Stars count={val} colors={{ accentGoldLight: t.accentGoldLight, textFaint: textDim }} />
+                    <span style={{ fontSize: 9, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       {key === 'cannabis' ? 'Culture' : key.charAt(0).toUpperCase() + key.slice(1)}
                     </span>
                   </div>
@@ -604,7 +664,7 @@ export function DNameExplorationSection() {
               <div style={{
                 fontSize: 12,
                 fontWeight: 500,
-                color: COLORS.textMuted,
+                color: t.textFaint,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 marginBottom: 20,
@@ -641,7 +701,7 @@ export function DNameExplorationSection() {
                       fontWeight: 700,
                       fontSize: 36,
                       letterSpacing: '0.02em',
-                      color: COLORS.textPrimary,
+                      color: t.text,
                       lineHeight: 1,
                       borderBottom: `3px solid ${suite.colors[ni]}`,
                       paddingBottom: 6,
@@ -659,7 +719,7 @@ export function DNameExplorationSection() {
             }}>
               <p style={{
                 fontSize: 13,
-                color: COLORS.textSecondary,
+                color: t.textMuted,
                 lineHeight: 1.7,
                 margin: 0,
                 maxWidth: 700,
@@ -671,14 +731,14 @@ export function DNameExplorationSection() {
         ))}
       </div>
 
-      <Divider />
+      <Divider style={themedDividerStyle} />
 
       {/* ═══════════════════════ SECTION 3: PHONETIC ANALYSIS ═══════════════════════ */}
-      <SectionBadge number={3} />
+      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={3} />
       <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
         Phonetic Analysis
       </h2>
-      <p style={bodyTextStyle}>
+      <p style={themedBodyTextStyle}>
         A detailed breakdown of each D-name candidate by syllable count, phonetic feel, domain plausibility,
         verbal distinctiveness, and natural emoji pairing.
       </p>
@@ -698,11 +758,11 @@ export function DNameExplorationSection() {
                   textAlign: 'left',
                   fontSize: 10,
                   fontWeight: 600,
-                  color: COLORS.textMuted,
+                  color: t.textFaint,
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
-                  borderBottom: `2px solid ${COLORS.borderLight}`,
-                  background: COLORS.card,
+                  borderBottom: `2px solid ${borderLight}`,
+                  background: t.cardBg,
                   position: 'sticky',
                   top: 0,
                   whiteSpace: 'nowrap',
@@ -717,21 +777,21 @@ export function DNameExplorationSection() {
           <tbody>
             {PHONETICS.map((p, pi) => (
               <tr key={p.name} style={{
-                background: pi % 2 === 0 ? 'transparent' : 'rgba(20,18,16,0.5)',
+                background: pi % 2 === 0 ? 'transparent' : `rgba(${cardBgRgb},0.5)`,
               }}>
                 <td style={{
                   padding: '14px 16px',
                   fontWeight: 700,
                   fontSize: 16,
-                  color: COLORS.textPrimary,
-                  borderBottom: `1px solid ${COLORS.border}`,
+                  color: t.text,
+                  borderBottom: `1px solid ${t.border}`,
                   fontFamily: "'DM Sans', sans-serif",
                 }}>
                   {p.name}
                 </td>
                 <td style={{
                   padding: '14px 16px',
-                  borderBottom: `1px solid ${COLORS.border}`,
+                  borderBottom: `1px solid ${t.border}`,
                   textAlign: 'center',
                 }}>
                   <span style={{
@@ -751,15 +811,15 @@ export function DNameExplorationSection() {
                 </td>
                 <td style={{
                   padding: '14px 16px',
-                  color: COLORS.textSecondary,
-                  borderBottom: `1px solid ${COLORS.border}`,
+                  color: t.textMuted,
+                  borderBottom: `1px solid ${t.border}`,
                   maxWidth: 220,
                 }}>
                   {p.feel}
                 </td>
                 <td style={{
                   padding: '14px 16px',
-                  borderBottom: `1px solid ${COLORS.border}`,
+                  borderBottom: `1px solid ${t.border}`,
                 }}>
                   <span style={{
                     padding: '4px 10px',
@@ -776,15 +836,15 @@ export function DNameExplorationSection() {
                 </td>
                 <td style={{
                   padding: '14px 16px',
-                  color: COLORS.textSecondary,
-                  borderBottom: `1px solid ${COLORS.border}`,
+                  color: t.textMuted,
+                  borderBottom: `1px solid ${t.border}`,
                   maxWidth: 200,
                 }}>
                   {p.verbal}
                 </td>
                 <td style={{
                   padding: '14px 16px',
-                  borderBottom: `1px solid ${COLORS.border}`,
+                  borderBottom: `1px solid ${t.border}`,
                   textAlign: 'center',
                   fontSize: 22,
                 }}>
@@ -796,35 +856,35 @@ export function DNameExplorationSection() {
         </table>
       </div>
 
-      <Divider />
+      <Divider style={themedDividerStyle} />
 
       {/* ═══════════════════════ SECTION 4: THE DEX FAMILY DIRECTION ═══════════════════════ */}
-      <SectionBadge number={4} />
+      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={4} />
       <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
         The "Dex Family" Direction
       </h2>
-      <p style={bodyTextStyle}>
+      <p style={themedBodyTextStyle}>
         An alternative approach: what if Dex is the anchor name and everything branches from it?
         A single brand name with sub-product extensions, like Salesforce's naming model.
       </p>
 
       {/* Dex Family Hierarchy */}
       <div style={{
-        ...baseCard,
+        ...themedBaseCard,
         padding: 0,
         overflow: 'hidden',
       }}>
         {/* Top Bar: Dex parent brand */}
         <div style={{
           padding: '28px 36px',
-          background: 'linear-gradient(135deg, rgba(212,160,58,0.06), rgba(255,192,42,0.03))',
-          borderBottom: `1px solid ${COLORS.border}`,
+          background: `linear-gradient(135deg, rgba(${goldRgb},0.06), rgba(${goldLightRgb},0.03))`,
+          borderBottom: `1px solid ${t.border}`,
           textAlign: 'center',
         }}>
           <div style={{
             fontSize: 11,
             fontWeight: 600,
-            color: COLORS.gold,
+            color: t.accentGold,
             textTransform: 'uppercase',
             letterSpacing: '0.12em',
             marginBottom: 12,
@@ -836,14 +896,14 @@ export function DNameExplorationSection() {
             fontWeight: 700,
             fontSize: 52,
             letterSpacing: '0.02em',
-            color: COLORS.textPrimary,
+            color: t.text,
             lineHeight: 1,
           }}>
             Dex
           </div>
           <div style={{
             fontSize: 14,
-            color: COLORS.textSecondary,
+            color: t.textMuted,
             marginTop: 10,
           }}>
             The intelligent backbone of Dutchie
@@ -862,9 +922,9 @@ export function DNameExplorationSection() {
             return (
               <div key={item.name} style={{
                 padding: '28px 32px',
-                borderRight: `1px solid ${COLORS.border}`,
-                borderBottom: `1px solid ${COLORS.border}`,
-                background: isCore ? 'rgba(212,160,58,0.04)' : 'transparent',
+                borderRight: `1px solid ${t.border}`,
+                borderBottom: `1px solid ${t.border}`,
+                background: isCore ? `rgba(${goldRgb},0.04)` : 'transparent',
                 position: 'relative',
               }}>
                 {/* Tier badge */}
@@ -878,20 +938,20 @@ export function DNameExplorationSection() {
                   letterSpacing: '0.08em',
                   marginBottom: 14,
                   background: isCore
-                    ? 'rgba(212,160,58,0.12)'
+                    ? `rgba(${goldRgb},0.12)`
                     : isExtension
-                    ? 'rgba(100,168,224,0.1)'
-                    : 'rgba(0,194,124,0.1)',
+                    ? `rgba(${blueRgb},0.1)`
+                    : `rgba(${greenRgb},0.1)`,
                   color: isCore
-                    ? COLORS.gold
+                    ? t.accentGold
                     : isExtension
                     ? COLORS.blue
-                    : COLORS.green,
+                    : t.accentGreen,
                   border: `1px solid ${isCore
-                    ? 'rgba(212,160,58,0.2)'
+                    ? `rgba(${goldRgb},0.2)`
                     : isExtension
-                    ? 'rgba(100,168,224,0.2)'
-                    : 'rgba(0,194,124,0.2)'}`,
+                    ? `rgba(${blueRgb},0.2)`
+                    : `rgba(${greenRgb},0.2)`}`,
                 }}>
                   {isCore ? 'Core' : isExtension ? 'Extension' : 'Product'}
                 </div>
@@ -901,7 +961,7 @@ export function DNameExplorationSection() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontWeight: 700,
                   fontSize: 26,
-                  color: COLORS.textPrimary,
+                  color: t.text,
                   letterSpacing: '0.01em',
                   marginBottom: 4,
                 }}>
@@ -910,14 +970,14 @@ export function DNameExplorationSection() {
                 <div style={{
                   fontSize: 12,
                   fontWeight: 600,
-                  color: COLORS.textMuted,
+                  color: t.textFaint,
                   marginBottom: 12,
                 }}>
                   {item.sub}
                 </div>
                 <p style={{
                   fontSize: 13,
-                  color: COLORS.textSecondary,
+                  color: t.textMuted,
                   lineHeight: 1.6,
                   margin: 0,
                 }}>
@@ -936,7 +996,7 @@ export function DNameExplorationSection() {
         }}>
           <div style={{
             padding: '24px 32px',
-            borderRight: `1px solid ${COLORS.border}`,
+            borderRight: `1px solid ${t.border}`,
           }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#34D399', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
               Advantages
@@ -947,7 +1007,7 @@ export function DNameExplorationSection() {
               'Easier marketing -- one name to remember',
               'Natural extensibility for future products',
             ].map((pro, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, fontSize: 13, color: COLORS.textSecondary, lineHeight: 1.5 }}>
+              <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, fontSize: 13, color: t.textMuted, lineHeight: 1.5 }}>
                 <span style={{ color: '#34D399', flexShrink: 0 }}>+</span>
                 <span>{pro}</span>
               </div>
@@ -963,7 +1023,7 @@ export function DNameExplorationSection() {
               'Harder to sell individual products standalone',
               'Risk of brand fatigue -- "Dex everything"',
             ].map((con, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, fontSize: 13, color: COLORS.textSecondary, lineHeight: 1.5 }}>
+              <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, fontSize: 13, color: t.textMuted, lineHeight: 1.5 }}>
                 <span style={{ color: '#F87171', flexShrink: 0 }}>&ndash;</span>
                 <span>{con}</span>
               </div>
@@ -972,14 +1032,14 @@ export function DNameExplorationSection() {
         </div>
       </div>
 
-      <Divider />
+      <Divider style={themedDividerStyle} />
 
       {/* ═══════════════════════ SECTION 5: NAME COLLISION & TRADEMARK CHECK ═══════════════════════ */}
-      <SectionBadge number={5} />
+      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={5} />
       <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
         Name Collision & Trademark Check
       </h2>
-      <p style={bodyTextStyle}>
+      <p style={themedBodyTextStyle}>
         A quick vibes check on the top eight D-name candidates. Green means clear,
         yellow means proceed with caution, red means significant concern.
       </p>
@@ -991,7 +1051,7 @@ export function DNameExplorationSection() {
       }}>
         {TRADEMARK_CHECKS.map((item) => (
           <div key={item.name} style={{
-            ...baseCard,
+            ...themedBaseCard,
             padding: '24px 28px',
             borderRadius: 14,
           }}>
@@ -1000,11 +1060,11 @@ export function DNameExplorationSection() {
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 700,
               fontSize: 28,
-              color: COLORS.textPrimary,
+              color: t.text,
               letterSpacing: '0.02em',
               marginBottom: 20,
               paddingBottom: 16,
-              borderBottom: `1px solid ${COLORS.border}`,
+              borderBottom: `1px solid ${t.border}`,
             }}>
               {item.name}
             </div>
@@ -1031,7 +1091,7 @@ export function DNameExplorationSection() {
                     <div style={{
                       fontSize: 11,
                       fontWeight: 600,
-                      color: COLORS.textMuted,
+                      color: t.textFaint,
                       textTransform: 'uppercase',
                       letterSpacing: '0.06em',
                       marginBottom: 3,
@@ -1040,7 +1100,7 @@ export function DNameExplorationSection() {
                     </div>
                     <div style={{
                       fontSize: 12,
-                      color: COLORS.textSecondary,
+                      color: t.textMuted,
                       lineHeight: 1.5,
                     }}>
                       {data.text}
@@ -1053,14 +1113,14 @@ export function DNameExplorationSection() {
         ))}
       </div>
 
-      <Divider />
+      <Divider style={themedDividerStyle} />
 
       {/* ═══════════════════════ SECTION 6: FINAL RECOMMENDATION ═══════════════════════ */}
-      <SectionBadge number={6} />
+      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={6} />
       <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
         Final Recommendation
       </h2>
-      <p style={bodyTextStyle}>
+      <p style={themedBodyTextStyle}>
         After evaluating phonetics, trademark risk, brand cohesion, and cannabis culture fit,
         one suite emerges as the clear winner.
       </p>
@@ -1070,9 +1130,9 @@ export function DNameExplorationSection() {
         position: 'relative',
         borderRadius: 20,
         overflow: 'hidden',
-        background: COLORS.card,
-        border: '2px solid rgba(212,160,58,0.35)',
-        boxShadow: '0 0 60px rgba(212,160,58,0.08), 0 4px 30px rgba(0,0,0,0.3)',
+        background: t.cardBg,
+        border: `2px solid rgba(${goldRgb},0.35)`,
+        boxShadow: `0 0 60px rgba(${goldRgb},0.08), 0 4px 30px rgba(0,0,0,0.3)`,
       }}>
         {/* Gold shimmer gradient at top */}
         <div style={{
@@ -1081,7 +1141,7 @@ export function DNameExplorationSection() {
           left: 0,
           right: 0,
           height: 4,
-          background: 'linear-gradient(90deg, #D4A03A, #FFC02A, #FFD666, #FFC02A, #D4A03A)',
+          background: `linear-gradient(90deg, ${t.accentGold}, ${t.accentGoldLight}, ${t.accentGoldLighter}, ${t.accentGoldLight}, ${t.accentGold})`,
         }} />
 
         {/* Winner badge */}
@@ -1099,14 +1159,14 @@ export function DNameExplorationSection() {
             gap: 8,
             padding: '6px 16px',
             borderRadius: 20,
-            background: 'linear-gradient(135deg, rgba(212,160,58,0.15), rgba(255,214,102,0.08))',
-            border: '1px solid rgba(212,160,58,0.3)',
+            background: `linear-gradient(135deg, rgba(${goldRgb},0.15), rgba(${goldLighterRgb},0.08))`,
+            border: `1px solid rgba(${goldRgb},0.3)`,
           }}>
             <span style={{ fontSize: 16 }}>{'\uD83C\uDFC6'}</span>
             <span style={{
               fontSize: 12,
               fontWeight: 700,
-              color: COLORS.goldLight,
+              color: t.accentGoldLight,
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
             }}>
@@ -1122,8 +1182,8 @@ export function DNameExplorationSection() {
               { label: 'Culture Fit', val: 5 },
             ].map(r => (
               <div key={r.label} style={{ textAlign: 'center' }}>
-                <Stars count={r.val} />
-                <div style={{ fontSize: 9, color: COLORS.textMuted, marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{r.label}</div>
+                <Stars count={r.val} colors={{ accentGoldLight: t.accentGoldLight, textFaint: textDim }} />
+                <div style={{ fontSize: 9, color: t.textFaint, marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{r.label}</div>
               </div>
             ))}
           </div>
@@ -1134,7 +1194,7 @@ export function DNameExplorationSection() {
           <h3 style={{
             fontSize: 16,
             fontWeight: 600,
-            color: COLORS.gold,
+            color: t.accentGold,
             margin: '0 0 8px',
           }}>
             Suite 5: The Bold Set
@@ -1142,7 +1202,7 @@ export function DNameExplorationSection() {
           <div style={{
             fontSize: 11,
             fontWeight: 500,
-            color: COLORS.textMuted,
+            color: t.textFaint,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
             marginBottom: 28,
@@ -1161,8 +1221,8 @@ export function DNameExplorationSection() {
         }}>
           {[
             { name: 'Dash', role: 'Platform', color: '#8B6FE0', desc: 'Command center for your dispensary empire' },
-            { name: 'Dex', role: 'AI Agent', color: COLORS.gold, desc: 'Your intelligent copilot' },
-            { name: 'Dock', role: 'B2B Marketplace', color: COLORS.green, desc: 'Where retailers and brands meet' },
+            { name: 'Dex', role: 'AI Agent', color: t.accentGold, desc: 'Your intelligent copilot' },
+            { name: 'Dock', role: 'B2B Marketplace', color: t.accentGreen, desc: 'Where retailers and brands meet' },
             { name: 'Dose', role: 'Consumer', color: COLORS.blue, desc: 'Personalized cannabis experiences' },
           ].map((item) => (
             <div key={item.name} style={{ flex: '1 1 180px', minWidth: 160 }}>
@@ -1182,7 +1242,7 @@ export function DNameExplorationSection() {
                 fontWeight: 700,
                 fontSize: 48,
                 letterSpacing: '0.02em',
-                color: COLORS.textPrimary,
+                color: t.text,
                 lineHeight: 1,
                 display: 'block',
                 marginBottom: 8,
@@ -1191,7 +1251,7 @@ export function DNameExplorationSection() {
               </span>
               <span style={{
                 fontSize: 12,
-                color: COLORS.textSecondary,
+                color: t.textMuted,
                 lineHeight: 1.4,
               }}>
                 {item.desc}
@@ -1203,10 +1263,10 @@ export function DNameExplorationSection() {
         {/* Reasoning */}
         <div style={{
           padding: '28px 40px 36px',
-          borderTop: `1px solid ${COLORS.border}`,
-          background: 'rgba(10,9,8,0.4)',
+          borderTop: `1px solid ${t.border}`,
+          background: `rgba(${bgRgb},0.4)`,
         }}>
-          <h4 style={{ fontSize: 14, fontWeight: 700, color: COLORS.textPrimary, marginBottom: 16 }}>
+          <h4 style={{ fontSize: 14, fontWeight: 700, color: t.text, marginBottom: 16 }}>
             Why This Suite Wins
           </h4>
 
@@ -1237,14 +1297,14 @@ export function DNameExplorationSection() {
                 <div style={{
                   fontSize: 13,
                   fontWeight: 700,
-                  color: COLORS.gold,
+                  color: t.accentGold,
                   marginBottom: 8,
                 }}>
                   {point.title}
                 </div>
                 <p style={{
                   fontSize: 12,
-                  color: COLORS.textSecondary,
+                  color: t.textMuted,
                   lineHeight: 1.6,
                   margin: 0,
                 }}>
@@ -1259,18 +1319,18 @@ export function DNameExplorationSection() {
             marginTop: 28,
             padding: '20px 24px',
             borderRadius: 12,
-            background: 'rgba(212,160,58,0.05)',
-            border: '1px solid rgba(212,160,58,0.15)',
+            background: `rgba(${goldRgb},0.05)`,
+            border: `1px solid rgba(${goldRgb},0.15)`,
           }}>
             <p style={{
               fontSize: 14,
-              color: COLORS.textSecondary,
+              color: t.textMuted,
               lineHeight: 1.7,
               margin: 0,
               textAlign: 'center',
             }}>
-              <strong style={{ color: COLORS.goldLight }}>The D-prefix convention</strong> gives Dutchie a naming system as recognizable as Apple's "i" or Google's "G" suite.
-              When a customer hears <strong style={{ color: COLORS.textPrimary }}>"Dash, Dex, Dock, Dose"</strong> -- they know
+              <strong style={{ color: t.accentGoldLight }}>The D-prefix convention</strong> gives Dutchie a naming system as recognizable as Apple's "i" or Google's "G" suite.
+              When a customer hears <strong style={{ color: t.text }}>"Dash, Dex, Dock, Dose"</strong> -- they know
               it's Dutchie. Four letters. Four syllables. Four products. One unmistakable brand.
             </p>
           </div>
@@ -1278,11 +1338,11 @@ export function DNameExplorationSection() {
       </div>
 
       {/* ═══════════════════════ APPENDIX: FULL SCORING MATRIX ═══════════════════════ */}
-      <Divider />
+      <Divider style={themedDividerStyle} />
 
       <div style={{ marginBottom: 32 }}>
-        <SubTitle>Appendix: Quick-Reference Scoring</SubTitle>
-        <p style={bodyTextStyle}>
+        <SubTitle style={themedSectionTitleStyle}>Appendix: Quick-Reference Scoring</SubTitle>
+        <p style={themedBodyTextStyle}>
           A consolidated view of all five suites, scored across four dimensions.
           The Bold Set leads with a total of 19/20.
         </p>
@@ -1302,11 +1362,11 @@ export function DNameExplorationSection() {
                     textAlign: i >= 2 ? 'center' : 'left',
                     fontSize: 10,
                     fontWeight: 600,
-                    color: COLORS.textMuted,
+                    color: t.textFaint,
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
-                    borderBottom: `2px solid ${COLORS.borderLight}`,
-                    background: COLORS.card,
+                    borderBottom: `2px solid ${borderLight}`,
+                    background: t.cardBg,
                     whiteSpace: 'nowrap',
                     ...(i === 0 ? { borderRadius: '12px 0 0 0' } : {}),
                     ...(i === 6 ? { borderRadius: '0 12px 0 0' } : {}),
@@ -1322,13 +1382,13 @@ export function DNameExplorationSection() {
                 const isWinner = suite.id === 'bold';
                 return (
                   <tr key={suite.id} style={{
-                    background: isWinner ? 'rgba(212,160,58,0.06)' : (si % 2 === 0 ? 'transparent' : 'rgba(20,18,16,0.5)'),
+                    background: isWinner ? `rgba(${goldRgb},0.06)` : (si % 2 === 0 ? 'transparent' : `rgba(${cardBgRgb},0.5)`),
                   }}>
                     <td style={{
                       padding: '14px 16px',
                       fontWeight: 700,
-                      color: isWinner ? COLORS.goldLight : COLORS.textPrimary,
-                      borderBottom: `1px solid ${COLORS.border}`,
+                      color: isWinner ? t.accentGoldLight : t.text,
+                      borderBottom: `1px solid ${t.border}`,
                       whiteSpace: 'nowrap',
                     }}>
                       {suite.label}
@@ -1339,8 +1399,8 @@ export function DNameExplorationSection() {
                           fontWeight: 700,
                           padding: '2px 8px',
                           borderRadius: 4,
-                          background: 'rgba(212,160,58,0.15)',
-                          color: COLORS.gold,
+                          background: `rgba(${goldRgb},0.15)`,
+                          color: t.accentGold,
                           textTransform: 'uppercase',
                           letterSpacing: '0.05em',
                         }}>
@@ -1350,8 +1410,8 @@ export function DNameExplorationSection() {
                     </td>
                     <td style={{
                       padding: '14px 16px',
-                      color: COLORS.textSecondary,
-                      borderBottom: `1px solid ${COLORS.border}`,
+                      color: t.textMuted,
+                      borderBottom: `1px solid ${t.border}`,
                       fontFamily: "'DM Sans', sans-serif",
                       fontWeight: 500,
                     }}>
@@ -1361,12 +1421,12 @@ export function DNameExplorationSection() {
                       <td key={vi} style={{
                         padding: '14px 16px',
                         textAlign: 'center',
-                        borderBottom: `1px solid ${COLORS.border}`,
+                        borderBottom: `1px solid ${t.border}`,
                       }}>
                         <span style={{
                           fontWeight: 700,
                           fontSize: 16,
-                          color: val >= 5 ? '#34D399' : val >= 4 ? COLORS.goldLight : COLORS.textSecondary,
+                          color: val >= 5 ? '#34D399' : val >= 4 ? t.accentGoldLight : t.textMuted,
                         }}>
                           {val}
                         </span>
@@ -1375,12 +1435,12 @@ export function DNameExplorationSection() {
                     <td style={{
                       padding: '14px 16px',
                       textAlign: 'center',
-                      borderBottom: `1px solid ${COLORS.border}`,
+                      borderBottom: `1px solid ${t.border}`,
                       fontWeight: 700,
                       fontSize: 18,
-                      color: isWinner ? COLORS.goldLight : COLORS.textPrimary,
+                      color: isWinner ? t.accentGoldLight : t.text,
                     }}>
-                      {total}<span style={{ fontSize: 12, color: COLORS.textMuted, fontWeight: 400 }}>/20</span>
+                      {total}<span style={{ fontSize: 12, color: t.textFaint, fontWeight: 400 }}>/20</span>
                     </td>
                   </tr>
                 );
@@ -1394,12 +1454,12 @@ export function DNameExplorationSection() {
       <div style={{
         textAlign: 'center',
         padding: '48px 0 0',
-        borderTop: `1px solid ${COLORS.border}`,
+        borderTop: `1px solid ${t.border}`,
         marginTop: 48,
       }}>
         <div style={{
           fontSize: 11,
-          color: COLORS.textDim,
+          color: textDim,
           letterSpacing: '0.06em',
         }}>
           D-NAME EXPLORATION &mdash; DUTCHIE AI NAMING STRATEGY &mdash; 2026

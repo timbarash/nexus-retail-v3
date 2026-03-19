@@ -64,10 +64,10 @@ function contrastRatio(hex1, hex2) {
 }
 
 /* ─── SubTitle (matching DesignStudy convention) ─── */
-function SubTitle({ children }) {
+function SubTitle({ children, color = '#6B6359' }) {
   return (
     <h3 style={{
-      fontSize: 14, fontWeight: 600, color: '#6B6359',
+      fontSize: 14, fontWeight: 600, color,
       textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24,
     }}>
       {children}
@@ -76,7 +76,7 @@ function SubTitle({ children }) {
 }
 
 /* ─── Theme Palette Card ─── */
-function ThemePalette({ name, description, colors }) {
+function ThemePalette({ name, description, colors, labelColor = '#ADA599', labelFaintColor = '#6B6359' }) {
   return (
     <div style={{
       background: colors.background, borderRadius: 16, padding: 28,
@@ -94,10 +94,10 @@ function ThemePalette({ name, description, colors }) {
               border: '1px solid rgba(255,255,255,0.08)',
               boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
             }} />
-            <span style={{ fontSize: 10, color: '#ADA599', fontWeight: 500, textAlign: 'center', lineHeight: 1.2 }}>
+            <span style={{ fontSize: 10, color: labelColor, fontWeight: 500, textAlign: 'center', lineHeight: 1.2 }}>
               {key.replace(/([A-Z])/g, ' $1').trim()}
             </span>
-            <span style={{ fontSize: 9, color: '#6B6359', fontFamily: 'monospace' }}>{value}</span>
+            <span style={{ fontSize: 9, color: labelFaintColor, fontFamily: 'monospace' }}>{value}</span>
           </div>
         ))}
       </div>
@@ -109,7 +109,23 @@ function ThemePalette({ name, description, colors }) {
    MAIN EXPORT
    ═══════════════════════════════════════════════════════════════════ */
 
-export function ColorTypographySection() {
+export function ColorTypographySection({ theme = 'dark' }) {
+  const themes = {
+    dark: {
+      bg: '#0A0908', cardBg: '#141210', border: '#282724',
+      text: '#F0EDE8', textMuted: '#ADA599', textFaint: '#6B6359',
+      accentGold: '#D4A03A', accentGoldLight: '#FFC02A', accentGoldLighter: '#FFD666',
+      accentGreen: '#00C27C',
+    },
+    light: {
+      bg: '#FAFAF8', cardBg: '#FFFFFF', border: '#E5E2DC',
+      text: '#1A1917', textMuted: '#5C574F', textFaint: '#8C8680',
+      accentGold: '#B8860B', accentGoldLight: '#DAA520', accentGoldLighter: '#F0C75E',
+      accentGreen: '#059669',
+    }
+  };
+  const t = themes[theme];
+
   const orbitRef = useRef(null);
 
   /* Load additional Google Fonts */
@@ -160,7 +176,7 @@ export function ColorTypographySection() {
   }, []);
 
   /* ─── Theme definitions ─── */
-  const themes = [
+  const themeExplorations = [
     {
       name: 'Current Warm Dark',
       description: 'The established palette: warm blacks with gold and green accents',
@@ -281,7 +297,7 @@ export function ColorTypographySection() {
 
   const divider = {
     height: 1,
-    background: 'linear-gradient(90deg, transparent, #38332B, transparent)',
+    background: `linear-gradient(90deg, transparent, ${t.border}, transparent)`,
     margin: '64px 0',
   };
 
@@ -292,28 +308,28 @@ export function ColorTypographySection() {
           SECTION 1 — EXPANDED COLOR SYSTEM
           ═══════════════════════════════════════════════════════════════ */}
       <div style={{ marginBottom: 80 }}>
-        <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: '#F0EDE8', marginBottom: 12 }}>
+        <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: t.text, marginBottom: 12 }}>
           Expanded Color System
         </h2>
-        <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 560, marginBottom: 56 }}>
+        <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 560, marginBottom: 56 }}>
           A comprehensive exploration of color themes, gradients, and accessibility to guide the evolution of the brand palette.
         </p>
 
         {/* ─── Theme Explorations ─── */}
-        <SubTitle>Theme Explorations</SubTitle>
-        <p style={{ fontSize: 13, color: '#6B6359', marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
+        <SubTitle color={t.textFaint}>Theme Explorations</SubTitle>
+        <p style={{ fontSize: 13, color: t.textFaint, marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
           Four complete palette options showing how different background temperatures and accent choices shift the brand personality.
         </p>
 
-        {themes.map((theme, i) => (
-          <ThemePalette key={i} name={theme.name} description={theme.description} colors={theme.colors} />
+        {themeExplorations.map((te, i) => (
+          <ThemePalette key={i} name={te.name} description={te.description} colors={te.colors} labelColor={t.textMuted} labelFaintColor={t.textFaint} />
         ))}
 
         <div style={divider} />
 
         {/* ─── Gradient Studies ─── */}
-        <SubTitle>Gradient Studies</SubTitle>
-        <p style={{ fontSize: 13, color: '#6B6359', marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
+        <SubTitle color={t.textFaint}>Gradient Studies</SubTitle>
+        <p style={{ fontSize: 13, color: t.textFaint, marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
           Eight gradient combinations for use in accent bars, progress indicators, hero backgrounds, and decorative elements.
         </p>
 
@@ -326,8 +342,8 @@ export function ColorTypographySection() {
                 boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
               }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 500, color: '#ADA599' }}>{i + 1}. {g.name}</span>
-                <span style={{ fontSize: 11, color: '#6B6359', fontFamily: 'monospace' }}>{g.colors}</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: t.textMuted }}>{i + 1}. {g.name}</span>
+                <span style={{ fontSize: 11, color: t.textFaint, fontFamily: 'monospace' }}>{g.colors}</span>
               </div>
             </div>
           ))}
@@ -336,8 +352,8 @@ export function ColorTypographySection() {
         <div style={divider} />
 
         {/* ─── Contrast & Accessibility ─── */}
-        <SubTitle>Contrast &amp; Accessibility</SubTitle>
-        <p style={{ fontSize: 13, color: '#6B6359', marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
+        <SubTitle color={t.textFaint}>Contrast &amp; Accessibility</SubTitle>
+        <p style={{ fontSize: 13, color: t.textFaint, marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
           WCAG AA compliance requires a contrast ratio of at least 4.5:1 for normal text. Each pair is tested below.
         </p>
 
@@ -346,7 +362,7 @@ export function ColorTypographySection() {
             <div key={ti}>
               <div style={{ fontSize: 12, fontWeight: 600, color: test.fg, marginBottom: 10 }}>
                 {test.fgName}
-                <span style={{ fontFamily: 'monospace', fontWeight: 400, color: '#6B6359', marginLeft: 8 }}>{test.fg}</span>
+                <span style={{ fontFamily: 'monospace', fontWeight: 400, color: t.textFaint, marginLeft: 8 }}>{test.fg}</span>
               </div>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 {test.bgs.map((bg, bi) => {
@@ -392,42 +408,42 @@ export function ColorTypographySection() {
           SECTION 2 — TYPOGRAPHY DEEP DIVE
           ═══════════════════════════════════════════════════════════════ */}
       <div style={{ marginBottom: 80 }}>
-        <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: '#F0EDE8', marginBottom: 12 }}>
+        <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: t.text, marginBottom: 12 }}>
           Typography Deep Dive
         </h2>
-        <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 560, marginBottom: 56 }}>
+        <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 560, marginBottom: 56 }}>
           Font pairings, type scale, and specimen explorations for the full design system.
         </p>
 
         {/* ─── Font Pairing Explorations ─── */}
-        <SubTitle>Font Pairing Explorations</SubTitle>
-        <p style={{ fontSize: 13, color: '#6B6359', marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
+        <SubTitle color={t.textFaint}>Font Pairing Explorations</SubTitle>
+        <p style={{ fontSize: 13, color: t.textFaint, marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
           Four heading + body combinations, each shifting the brand voice: geometric, tech, luxury, or developer.
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: 20, marginBottom: 56 }}>
           {fontPairings.map((pair, i) => (
             <div key={i} style={{
-              background: '#141210', borderRadius: 16, padding: 28,
-              border: '1px solid #282724',
+              background: t.cardBg, borderRadius: 16, padding: 28,
+              border: `1px solid ${t.border}`,
             }}>
               {/* Pairing label */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
                 <span style={{
-                  fontSize: 10, fontWeight: 700, color: '#D4A03A',
+                  fontSize: 10, fontWeight: 700, color: t.accentGold,
                   background: 'rgba(212,160,58,0.1)', padding: '3px 10px',
                   borderRadius: 6, letterSpacing: '0.06em',
                 }}>
                   {i + 1}
                 </span>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#F0EDE8' }}>{pair.name}</span>
-                <span style={{ fontSize: 11, color: '#6B6359', marginLeft: 'auto' }}>{pair.tag}</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: t.text }}>{pair.name}</span>
+                <span style={{ fontSize: 11, color: t.textFaint, marginLeft: 'auto' }}>{pair.tag}</span>
               </div>
 
               {/* Heading specimen */}
               <div style={{
                 fontFamily: pair.headingFamily, fontWeight: pair.headingWeight,
-                fontSize: 32, color: '#F0EDE8', letterSpacing: '-0.01em',
+                fontSize: 32, color: t.text, letterSpacing: '-0.01em',
                 lineHeight: 1.2, marginBottom: 12,
               }}>
                 Retail Intelligence
@@ -436,7 +452,7 @@ export function ColorTypographySection() {
               {/* Body specimen */}
               <div style={{
                 fontFamily: pair.bodyFamily, fontWeight: pair.bodyWeight,
-                fontSize: 15, color: '#ADA599', lineHeight: 1.65,
+                fontSize: 15, color: t.textMuted, lineHeight: 1.65,
               }}>
                 The next generation of cannabis retail analytics, powered by AI agents that monitor inventory,
                 predict demand, and optimize pricing across your entire dispensary network in real time.
@@ -445,16 +461,16 @@ export function ColorTypographySection() {
               {/* Font metadata */}
               <div style={{
                 marginTop: 16, paddingTop: 12,
-                borderTop: '1px solid #282724',
+                borderTop: `1px solid ${t.border}`,
                 display: 'flex', gap: 24,
               }}>
                 <div>
-                  <div style={{ fontSize: 10, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Heading</div>
-                  <div style={{ fontSize: 11, color: '#ADA599', fontFamily: 'monospace' }}>{pair.headingFamily.split("'")[1]} {pair.headingWeight}</div>
+                  <div style={{ fontSize: 10, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Heading</div>
+                  <div style={{ fontSize: 11, color: t.textMuted, fontFamily: 'monospace' }}>{pair.headingFamily.split("'")[1]} {pair.headingWeight}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Body</div>
-                  <div style={{ fontSize: 11, color: '#ADA599', fontFamily: 'monospace' }}>{pair.bodyFamily.split("'")[1]} {pair.bodyWeight}</div>
+                  <div style={{ fontSize: 10, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Body</div>
+                  <div style={{ fontSize: 11, color: t.textMuted, fontFamily: 'monospace' }}>{pair.bodyFamily.split("'")[1]} {pair.bodyWeight}</div>
                 </div>
               </div>
             </div>
@@ -464,69 +480,69 @@ export function ColorTypographySection() {
         <div style={divider} />
 
         {/* ─── Type Scale ─── */}
-        <SubTitle>Type Scale</SubTitle>
-        <p style={{ fontSize: 13, color: '#6B6359', marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
+        <SubTitle color={t.textFaint}>Type Scale</SubTitle>
+        <p style={{ fontSize: 13, color: t.textFaint, marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
           Complete typographic hierarchy with pixel sizes, line heights, and letter spacing values for the DM Sans family.
         </p>
 
         <div style={{
-          background: '#141210', borderRadius: 16, padding: 32,
-          border: '1px solid #282724', marginBottom: 56,
+          background: t.cardBg, borderRadius: 16, padding: 32,
+          border: `1px solid ${t.border}`, marginBottom: 56,
           overflow: 'hidden',
         }}>
-          {typeScale.map((t, i) => (
+          {typeScale.map((ts, i) => (
             <div key={i} style={{
               display: 'flex', alignItems: 'baseline', gap: 24,
               padding: '16px 0',
-              borderBottom: i < typeScale.length - 1 ? '1px solid #1C1B1A' : 'none',
+              borderBottom: i < typeScale.length - 1 ? `1px solid ${t.border}` : 'none',
             }}>
               {/* Metadata column */}
               <div style={{ minWidth: 160, flexShrink: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#ADA599', marginBottom: 4 }}>{t.name}</div>
-                <div style={{ fontSize: 10, fontFamily: 'monospace', color: '#6B6359', lineHeight: 1.6 }}>
-                  {t.size}px / {t.lineHeight} / {t.letterSpacing}
+                <div style={{ fontSize: 12, fontWeight: 600, color: t.textMuted, marginBottom: 4 }}>{ts.name}</div>
+                <div style={{ fontSize: 10, fontFamily: 'monospace', color: t.textFaint, lineHeight: 1.6 }}>
+                  {ts.size}px / {ts.lineHeight} / {ts.letterSpacing}
                   <br />
-                  weight: {t.weight}
+                  weight: {ts.weight}
                 </div>
               </div>
 
               {/* Specimen */}
               <div style={{
                 fontFamily: "'DM Sans', sans-serif",
-                fontSize: t.size > 40 ? `clamp(24px, 4vw, ${t.size}px)` : t.size,
-                fontWeight: t.weight,
-                lineHeight: t.lineHeight,
-                letterSpacing: t.letterSpacing,
-                color: '#F0EDE8',
-                whiteSpace: t.size > 24 ? 'nowrap' : 'normal',
+                fontSize: ts.size > 40 ? `clamp(24px, 4vw, ${ts.size}px)` : ts.size,
+                fontWeight: ts.weight,
+                lineHeight: ts.lineHeight,
+                letterSpacing: ts.letterSpacing,
+                color: t.text,
+                whiteSpace: ts.size > 24 ? 'nowrap' : 'normal',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
               }}>
-                {t.size >= 24 ? 'Retail Intelligence' : 'The quick brown fox jumps over the lazy dog'}
+                {ts.size >= 24 ? 'Retail Intelligence' : 'The quick brown fox jumps over the lazy dog'}
               </div>
             </div>
           ))}
         </div>
 
         {/* ─── Scale visual representation ─── */}
-        <SubTitle>Scale Visualization</SubTitle>
+        <SubTitle color={t.textFaint}>Scale Visualization</SubTitle>
         <div style={{
-          background: '#141210', borderRadius: 16, padding: 32,
-          border: '1px solid #282724',
+          background: t.cardBg, borderRadius: 16, padding: 32,
+          border: `1px solid ${t.border}`,
           display: 'flex', alignItems: 'flex-end', gap: 12, justifyContent: 'center',
           minHeight: 200,
         }}>
-          {typeScale.map((t, i) => {
-            const barHeight = (t.size / 56) * 160;
+          {typeScale.map((ts, i) => {
+            const barHeight = (ts.size / 56) * 160;
             return (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>{t.size}px</span>
+                <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>{ts.size}px</span>
                 <div style={{
                   width: 40, height: barHeight, borderRadius: 6,
-                  background: `linear-gradient(180deg, #D4A03A, rgba(212,160,58,${0.2 + (i * 0.1)}))`,
+                  background: `linear-gradient(180deg, ${t.accentGold}, rgba(212,160,58,${0.2 + (i * 0.1)}))`,
                   transition: 'height 0.3s ease',
                 }} />
-                <span style={{ fontSize: 10, color: '#ADA599', fontWeight: 500 }}>{t.name}</span>
+                <span style={{ fontSize: 10, color: t.textMuted, fontWeight: 500 }}>{ts.name}</span>
               </div>
             );
           })}
@@ -537,18 +553,18 @@ export function ColorTypographySection() {
           SECTION 3 — PRODUCT FAMILY DEEP DIVE
           ═══════════════════════════════════════════════════════════════ */}
       <div style={{ marginBottom: 80 }}>
-        <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: '#F0EDE8', marginBottom: 12 }}>
+        <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: t.text, marginBottom: 12 }}>
           Product Family Deep Dive
         </h2>
-        <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 560, marginBottom: 56 }}>
+        <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 560, marginBottom: 56 }}>
           Hierarchy explorations and parent brand lockups for the Dutchie AI product suite.
         </p>
 
         {/* ─── Hierarchy Exploration 1: Horizontal Bar ─── */}
-        <SubTitle>Hierarchy 1 — Horizontal Bar</SubTitle>
+        <SubTitle color={t.textFaint}>Hierarchy 1 — Horizontal Bar</SubTitle>
         <div style={{
-          background: '#141210', borderRadius: 16, padding: 32,
-          border: '1px solid #282724', marginBottom: 40, textAlign: 'center',
+          background: t.cardBg, borderRadius: 16, padding: 32,
+          border: `1px solid ${t.border}`, marginBottom: 40, textAlign: 'center',
         }}>
           {/* Parent brand */}
           <div style={{
@@ -558,7 +574,7 @@ export function ColorTypographySection() {
             <NexusIcon size={20} />
             <span style={{
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-              fontSize: 16, color: '#F0EDE8', letterSpacing: '0.02em',
+              fontSize: 16, color: t.text, letterSpacing: '0.02em',
             }}>
               Dutchie AI
             </span>
@@ -567,7 +583,7 @@ export function ColorTypographySection() {
           {/* Connecting line */}
           <div style={{
             width: '60%', height: 1, margin: '0 auto 24px',
-            background: 'linear-gradient(90deg, transparent, #38332B, transparent)',
+            background: `linear-gradient(90deg, transparent, ${t.border}, transparent)`,
           }} />
 
           {/* Three products in a row */}
@@ -579,7 +595,7 @@ export function ColorTypographySection() {
                   <div style={{
                     fontFamily: "'DM Sans', sans-serif",
                     fontWeight: p.fontWeight, fontSize: 18,
-                    letterSpacing: p.letterSpacing, color: '#F0EDE8',
+                    letterSpacing: p.letterSpacing, color: t.text,
                   }}>
                     {p.name.toLowerCase()}
                   </div>
@@ -591,10 +607,10 @@ export function ColorTypographySection() {
         </div>
 
         {/* ─── Hierarchy Exploration 2: Pyramid ─── */}
-        <SubTitle>Hierarchy 2 — Pyramid</SubTitle>
+        <SubTitle color={t.textFaint}>Hierarchy 2 — Pyramid</SubTitle>
         <div style={{
-          background: '#141210', borderRadius: 16, padding: 40,
-          border: '1px solid #282724', marginBottom: 40, textAlign: 'center',
+          background: t.cardBg, borderRadius: 16, padding: 40,
+          border: `1px solid ${t.border}`, marginBottom: 40, textAlign: 'center',
         }}>
           {/* Top tier: Dutchie AI */}
           <div style={{
@@ -605,7 +621,7 @@ export function ColorTypographySection() {
             <NexusIcon size={24} />
             <span style={{
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-              fontSize: 20, color: '#F0EDE8', letterSpacing: '0.02em',
+              fontSize: 20, color: t.text, letterSpacing: '0.02em',
             }}>
               Dutchie AI
             </span>
@@ -616,18 +632,18 @@ export function ColorTypographySection() {
             display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
             marginBottom: 8, position: 'relative', height: 32,
           }}>
-            <div style={{ width: 1, height: 16, background: '#38332B' }} />
+            <div style={{ width: 1, height: 16, background: t.border }} />
             {/* Horizontal bar */}
             <div style={{
               position: 'absolute', top: 16,
-              width: '60%', height: 1, background: '#38332B',
+              width: '60%', height: 1, background: t.border,
             }} />
             {/* Three vertical drops */}
             {[-1, 0, 1].map(offset => (
               <div key={offset} style={{
                 position: 'absolute', top: 16,
                 left: `${50 + offset * 30}%`, transform: 'translateX(-50%)',
-                width: 1, height: 16, background: '#38332B',
+                width: 1, height: 16, background: t.border,
               }} />
             ))}
           </div>
@@ -636,7 +652,7 @@ export function ColorTypographySection() {
           <div style={{ display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap' }}>
             {products.map((p, i) => (
               <div key={i} style={{
-                background: '#1C1B1A', borderRadius: 12, padding: '16px 24px',
+                background: t.bg, borderRadius: 12, padding: '16px 24px',
                 border: `1px solid ${p.accent}22`,
                 minWidth: 140, textAlign: 'center',
               }}>
@@ -644,7 +660,7 @@ export function ColorTypographySection() {
                 <div style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontWeight: p.fontWeight, fontSize: 16,
-                  letterSpacing: p.letterSpacing, color: '#F0EDE8',
+                  letterSpacing: p.letterSpacing, color: t.text,
                 }}>
                   {p.name.toLowerCase()}
                 </div>
@@ -655,10 +671,10 @@ export function ColorTypographySection() {
         </div>
 
         {/* ─── Hierarchy Exploration 3: Orbital ─── */}
-        <SubTitle>Hierarchy 3 — Orbital</SubTitle>
+        <SubTitle color={t.textFaint}>Hierarchy 3 — Orbital</SubTitle>
         <div style={{
-          background: '#141210', borderRadius: 16, padding: 40,
-          border: '1px solid #282724', marginBottom: 56,
+          background: t.cardBg, borderRadius: 16, padding: 40,
+          border: `1px solid ${t.border}`, marginBottom: 56,
           display: 'flex', justifyContent: 'center', alignItems: 'center',
           minHeight: 340,
         }}>
@@ -668,7 +684,7 @@ export function ColorTypographySection() {
               position: 'absolute', top: '50%', left: '50%',
               transform: 'translate(-50%, -50%)',
               width: 240, height: 240, borderRadius: '50%',
-              border: '1px solid rgba(56,51,43,0.5)',
+              border: `1px solid ${t.border}`,
               animation: 'cts-pulse-ring 4s ease-in-out infinite',
             }} />
 
@@ -681,7 +697,7 @@ export function ColorTypographySection() {
             }}>
               <div style={{
                 width: 64, height: 64, borderRadius: '50%',
-                background: '#1C1B1A', border: '2px solid #38332B',
+                background: t.bg, border: `2px solid ${t.border}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 boxShadow: '0 0 30px rgba(212,160,58,0.15)',
               }}>
@@ -689,7 +705,7 @@ export function ColorTypographySection() {
               </div>
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-                fontSize: 11, color: '#ADA599', letterSpacing: '0.04em',
+                fontSize: 11, color: t.textMuted, letterSpacing: '0.04em',
               }}>
                 Dutchie AI
               </span>
@@ -709,7 +725,7 @@ export function ColorTypographySection() {
               }}>
                 <div style={{
                   width: 44, height: 44, borderRadius: '50%',
-                  background: '#1C1B1A', border: `2px solid ${item.accent}44`,
+                  background: t.bg, border: `2px solid ${item.accent}44`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   boxShadow: `0 0 16px ${item.accent}22`,
                 }}>
@@ -723,8 +739,8 @@ export function ColorTypographySection() {
         <div style={divider} />
 
         {/* ─── Parent Brand Lockups ─── */}
-        <SubTitle>Parent Brand Lockups</SubTitle>
-        <p style={{ fontSize: 13, color: '#6B6359', marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
+        <SubTitle color={t.textFaint}>Parent Brand Lockups</SubTitle>
+        <p style={{ fontSize: 13, color: t.textFaint, marginBottom: 24, marginTop: -12, lineHeight: 1.6 }}>
           Four presentation styles for the Dutchie AI parent brand — text only, logo + text, stacked, and monogram badge.
         </p>
 
@@ -732,17 +748,17 @@ export function ColorTypographySection() {
 
           {/* Lockup 1: Text Only */}
           <div style={{
-            background: '#141210', borderRadius: 16, padding: 32,
-            border: '1px solid #282724',
+            background: t.cardBg, borderRadius: 16, padding: 32,
+            border: `1px solid ${t.border}`,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             minHeight: 160,
           }}>
-            <div style={{ fontSize: 11, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
+            <div style={{ fontSize: 11, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
               Text Only
             </div>
             <span style={{
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-              fontSize: 28, color: '#F0EDE8', letterSpacing: '0.02em',
+              fontSize: 28, color: t.text, letterSpacing: '0.02em',
             }}>
               Dutchie AI
             </span>
@@ -750,19 +766,19 @@ export function ColorTypographySection() {
 
           {/* Lockup 2: Logo + Text */}
           <div style={{
-            background: '#141210', borderRadius: 16, padding: 32,
-            border: '1px solid #282724',
+            background: t.cardBg, borderRadius: 16, padding: 32,
+            border: `1px solid ${t.border}`,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             minHeight: 160,
           }}>
-            <div style={{ fontSize: 11, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
+            <div style={{ fontSize: 11, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
               Logo + Text
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <NexusIcon size={32} />
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-                fontSize: 24, color: '#F0EDE8', letterSpacing: '0.02em',
+                fontSize: 24, color: t.text, letterSpacing: '0.02em',
               }}>
                 Dutchie AI
               </span>
@@ -771,19 +787,19 @@ export function ColorTypographySection() {
 
           {/* Lockup 3: Stacked */}
           <div style={{
-            background: '#141210', borderRadius: 16, padding: 32,
-            border: '1px solid #282724',
+            background: t.cardBg, borderRadius: 16, padding: 32,
+            border: `1px solid ${t.border}`,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             minHeight: 160,
           }}>
-            <div style={{ fontSize: 11, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
+            <div style={{ fontSize: 11, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
               Stacked
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
               <NexusIcon size={40} />
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-                fontSize: 20, color: '#F0EDE8', letterSpacing: '0.02em',
+                fontSize: 20, color: t.text, letterSpacing: '0.02em',
               }}>
                 Dutchie AI
               </span>
@@ -792,12 +808,12 @@ export function ColorTypographySection() {
 
           {/* Lockup 4: Badge / Monogram */}
           <div style={{
-            background: '#141210', borderRadius: 16, padding: 32,
-            border: '1px solid #282724',
+            background: t.cardBg, borderRadius: 16, padding: 32,
+            border: `1px solid ${t.border}`,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             minHeight: 160,
           }}>
-            <div style={{ fontSize: 11, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
+            <div style={{ fontSize: 11, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 20 }}>
               Monogram Badge
             </div>
             <div style={{
@@ -809,7 +825,7 @@ export function ColorTypographySection() {
             }}>
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 700,
-                fontSize: 32, color: '#D4A03A',
+                fontSize: 32, color: t.accentGold,
                 lineHeight: 1,
               }}>
                 D
@@ -819,7 +835,7 @@ export function ColorTypographySection() {
         </div>
 
         {/* ─── Lockup on various backgrounds ─── */}
-        <SubTitle>Lockup Context Tests</SubTitle>
+        <SubTitle color={t.textFaint}>Lockup Context Tests</SubTitle>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
           {/* On pure black */}
           <div style={{

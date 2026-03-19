@@ -5,13 +5,8 @@ import { useEffect, useId } from 'react';
    for the Dutchie AI Logo Family (Parent, Platform, Agent, Marketplace)
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* ─── Shared Constants ─── */
+/* ─── Shared Constants (used by SVG logos for negative-space cutouts) ─── */
 const BG = '#0A0908';
-const CARD_BG = '#141210';
-const BORDER = '#282724';
-const TEXT_PRIMARY = '#F0EDE8';
-const TEXT_SECONDARY = '#ADA599';
-const TEXT_MUTED = '#6B6359';
 
 const STYLE_DIRECTIONS = [
   {
@@ -760,20 +755,20 @@ const PRODUCT_LABELS = {
    LAYOUT COMPONENTS
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-function ColorSwatch({ hex, name }) {
+function ColorSwatch({ hex, name, t }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
       <div style={{
         width: 32, height: 32, borderRadius: 8, background: hex,
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: `1px solid ${t.border}`,
         boxShadow: '0 1px 4px rgba(0,0,0,0.4)',
       }} />
-      <span style={{ fontSize: 9, color: TEXT_MUTED, fontFamily: 'monospace', letterSpacing: '0.02em' }}>{hex}</span>
+      <span style={{ fontSize: 9, color: t.textFaint, fontFamily: 'monospace', letterSpacing: '0.02em' }}>{hex}</span>
     </div>
   );
 }
 
-function LogoRow({ styleId, size = 48 }) {
+function LogoRow({ styleId, size = 48, t }) {
   const logos = LOGO_MAP[styleId];
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
@@ -782,7 +777,7 @@ function LogoRow({ styleId, size = 48 }) {
         return (
           <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
             <Logo size={size} />
-            <span style={{ fontSize: 10, color: TEXT_MUTED, fontWeight: 500, letterSpacing: '0.04em' }}>
+            <span style={{ fontSize: 10, color: t.textFaint, fontWeight: 500, letterSpacing: '0.04em' }}>
               {PRODUCT_LABELS[key]}
             </span>
           </div>
@@ -792,33 +787,33 @@ function LogoRow({ styleId, size = 48 }) {
   );
 }
 
-function BrandBar({ styleId, direction }) {
+function BrandBar({ styleId, direction, t }) {
   const logos = LOGO_MAP[styleId];
   const Parent = logos.parent;
-  const barBg = styleId === 'cannabis-heritage' ? '#042017' : '#111110';
+  const barBg = styleId === 'cannabis-heritage' ? '#042017' : t.cardBg;
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px',
-      background: barBg, borderRadius: 8, border: `1px solid ${BORDER}`,
+      background: barBg, borderRadius: 8, border: `1px solid ${t.border}`,
       width: '100%', maxWidth: 400,
     }}>
       <Parent size={28} />
-      <span style={{ fontSize: 15, fontWeight: 600, color: TEXT_PRIMARY, letterSpacing: '0.02em' }}>
+      <span style={{ fontSize: 15, fontWeight: 600, color: t.text, letterSpacing: '0.02em' }}>
         Dutchie AI
       </span>
-      <span style={{ fontSize: 12, color: TEXT_MUTED, marginLeft: 'auto' }}>
+      <span style={{ fontSize: 12, color: t.textFaint, marginLeft: 'auto' }}>
         {direction.name}
       </span>
     </div>
   );
 }
 
-function StyleCard({ styleId, direction }) {
+function StyleCard({ styleId, direction, t }) {
   const logos = LOGO_MAP[styleId];
   const Agent = logos.agent;
   return (
     <div style={{
-      background: CARD_BG, borderRadius: 12, border: `1px solid ${BORDER}`,
+      background: t.cardBg, borderRadius: 12, border: `1px solid ${t.border}`,
       padding: 24, display: 'flex', flexDirection: 'column', gap: 16,
       maxWidth: 320,
     }}>
@@ -826,10 +821,10 @@ function StyleCard({ styleId, direction }) {
         <Agent size={72} />
       </div>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: TEXT_PRIMARY, marginBottom: 4 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: t.text, marginBottom: 4 }}>
           {direction.name}
         </div>
-        <div style={{ fontSize: 11, color: TEXT_MUTED, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 11, color: t.textFaint, lineHeight: 1.5 }}>
           {direction.description}
         </div>
       </div>
@@ -837,35 +832,35 @@ function StyleCard({ styleId, direction }) {
   );
 }
 
-function StyleSection({ direction, index }) {
+function StyleSection({ direction, index, t }) {
   const { id, name, subtitle, description, colors } = direction;
   const sectionBg = id === 'cannabis-heritage'
-    ? 'linear-gradient(180deg, #042017 0%, #0A0908 100%)'
+    ? `linear-gradient(180deg, #042017 0%, ${t.bg} 100%)`
     : undefined;
 
   return (
     <div style={{
       padding: '64px 0',
-      borderBottom: `1px solid ${BORDER}`,
+      borderBottom: `1px solid ${t.border}`,
       background: sectionBg,
     }}>
       {/* Section header */}
       <div style={{ marginBottom: 40 }}>
         <div style={{
           display: 'inline-block', padding: '4px 12px', borderRadius: 20,
-          background: 'rgba(255,255,255,0.06)', border: `1px solid ${BORDER}`,
-          fontSize: 11, fontWeight: 600, color: TEXT_MUTED, letterSpacing: '0.1em',
+          background: `${t.border}33`, border: `1px solid ${t.border}`,
+          fontSize: 11, fontWeight: 600, color: t.textFaint, letterSpacing: '0.1em',
           textTransform: 'uppercase', marginBottom: 12,
         }}>
           Style {index + 1} of 6
         </div>
-        <h2 style={{ fontSize: 28, fontWeight: 700, color: TEXT_PRIMARY, margin: '8px 0 4px' }}>
+        <h2 style={{ fontSize: 28, fontWeight: 700, color: t.text, margin: '8px 0 4px' }}>
           {name}
         </h2>
-        <p style={{ fontSize: 14, color: TEXT_SECONDARY, margin: 0, fontStyle: 'italic' }}>
+        <p style={{ fontSize: 14, color: t.textMuted, margin: 0, fontStyle: 'italic' }}>
           {subtitle}
         </p>
-        <p style={{ fontSize: 13, color: TEXT_MUTED, margin: '8px 0 0', maxWidth: 560, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 13, color: t.textFaint, margin: '8px 0 0', maxWidth: 560, lineHeight: 1.6 }}>
           {description}
         </p>
       </div>
@@ -873,12 +868,12 @@ function StyleSection({ direction, index }) {
       {/* Row 1: All 4 logos at 48px */}
       <div style={{ marginBottom: 32 }}>
         <div style={{
-          fontSize: 11, fontWeight: 600, color: TEXT_MUTED, textTransform: 'uppercase',
+          fontSize: 11, fontWeight: 600, color: t.textFaint, textTransform: 'uppercase',
           letterSpacing: '0.1em', marginBottom: 16,
         }}>
           Logo Family
         </div>
-        <LogoRow styleId={id} size={48} />
+        <LogoRow styleId={id} size={48} t={t} />
       </div>
 
       {/* Row 2: Brand bar + Style card + Color palette */}
@@ -890,32 +885,32 @@ function StyleSection({ direction, index }) {
           {/* Brand bar mockup */}
           <div>
             <div style={{
-              fontSize: 11, fontWeight: 600, color: TEXT_MUTED, textTransform: 'uppercase',
+              fontSize: 11, fontWeight: 600, color: t.textFaint, textTransform: 'uppercase',
               letterSpacing: '0.1em', marginBottom: 10,
             }}>
               Brand Bar
             </div>
-            <BrandBar styleId={id} direction={direction} />
+            <BrandBar styleId={id} direction={direction} t={t} />
           </div>
 
           {/* Color palette */}
           <div>
             <div style={{
-              fontSize: 11, fontWeight: 600, color: TEXT_MUTED, textTransform: 'uppercase',
+              fontSize: 11, fontWeight: 600, color: t.textFaint, textTransform: 'uppercase',
               letterSpacing: '0.1em', marginBottom: 10,
             }}>
               Color Palette
             </div>
             <div style={{ display: 'flex', gap: 16 }}>
               {colors.map((c, i) => (
-                <ColorSwatch key={i} hex={c.hex} name={c.name} />
+                <ColorSwatch key={i} hex={c.hex} name={c.name} t={t} />
               ))}
             </div>
           </div>
         </div>
 
         {/* Right column: Style card */}
-        <StyleCard styleId={id} direction={direction} />
+        <StyleCard styleId={id} direction={direction} t={t} />
       </div>
     </div>
   );
@@ -925,14 +920,14 @@ function StyleSection({ direction, index }) {
    COMPARISON GRID
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-function ComparisonGrid() {
+function ComparisonGrid({ t }) {
   const products = ['parent', 'platform', 'agent', 'marketplace'];
   return (
     <div style={{ padding: '64px 0' }}>
-      <h2 style={{ fontSize: 28, fontWeight: 700, color: TEXT_PRIMARY, marginBottom: 8 }}>
+      <h2 style={{ fontSize: 28, fontWeight: 700, color: t.text, marginBottom: 8 }}>
         Side-by-Side Comparison
       </h2>
-      <p style={{ fontSize: 13, color: TEXT_MUTED, marginBottom: 32, lineHeight: 1.5 }}>
+      <p style={{ fontSize: 13, color: t.textFaint, marginBottom: 32, lineHeight: 1.5 }}>
         All 6 style directions compared across all 4 product marks. Each column is a style, each row is a product.
       </p>
 
@@ -946,9 +941,9 @@ function ComparisonGrid() {
             <tr>
               <th style={{
                 padding: '12px 16px', textAlign: 'left', fontSize: 11,
-                color: TEXT_MUTED, fontWeight: 600, letterSpacing: '0.08em',
-                textTransform: 'uppercase', borderBottom: `1px solid ${BORDER}`,
-                position: 'sticky', left: 0, background: BG, zIndex: 2,
+                color: t.textFaint, fontWeight: 600, letterSpacing: '0.08em',
+                textTransform: 'uppercase', borderBottom: `1px solid ${t.border}`,
+                position: 'sticky', left: 0, background: t.bg, zIndex: 2,
                 minWidth: 100,
               }}>
                 Product
@@ -956,8 +951,8 @@ function ComparisonGrid() {
               {STYLE_DIRECTIONS.map(dir => (
                 <th key={dir.id} style={{
                   padding: '12px 8px', textAlign: 'center', fontSize: 10,
-                  color: TEXT_MUTED, fontWeight: 600, letterSpacing: '0.06em',
-                  textTransform: 'uppercase', borderBottom: `1px solid ${BORDER}`,
+                  color: t.textFaint, fontWeight: 600, letterSpacing: '0.06em',
+                  textTransform: 'uppercase', borderBottom: `1px solid ${t.border}`,
                   minWidth: 100,
                 }}>
                   {dir.name.split('/')[0].trim()}
@@ -970,8 +965,8 @@ function ComparisonGrid() {
               <tr key={product}>
                 <td style={{
                   padding: '16px 16px', fontSize: 12, fontWeight: 600,
-                  color: TEXT_SECONDARY, borderBottom: rowIdx < products.length - 1 ? `1px solid rgba(40,39,36,0.5)` : 'none',
-                  position: 'sticky', left: 0, background: BG, zIndex: 1,
+                  color: t.textMuted, borderBottom: rowIdx < products.length - 1 ? `1px solid ${t.border}80` : 'none',
+                  position: 'sticky', left: 0, background: t.bg, zIndex: 1,
                 }}>
                   {PRODUCT_LABELS[product]}
                 </td>
@@ -980,9 +975,9 @@ function ComparisonGrid() {
                   return (
                     <td key={dir.id} style={{
                       padding: '12px 8px', textAlign: 'center',
-                      borderBottom: rowIdx < products.length - 1 ? `1px solid rgba(40,39,36,0.5)` : 'none',
+                      borderBottom: rowIdx < products.length - 1 ? `1px solid ${t.border}80` : 'none',
                     }}>
-                      <div style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', width: 64, height: 64, borderRadius: 10, background: CARD_BG, border: `1px solid ${BORDER}` }}>
+                      <div style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', width: 64, height: 64, borderRadius: 10, background: t.cardBg, border: `1px solid ${t.border}` }}>
                         <Logo size={40} />
                       </div>
                     </td>
@@ -1001,8 +996,8 @@ function ComparisonGrid() {
         {STYLE_DIRECTIONS.map((dir, i) => (
           <div key={dir.id} style={{
             padding: '6px 14px', borderRadius: 20,
-            background: 'rgba(255,255,255,0.04)', border: `1px solid ${BORDER}`,
-            fontSize: 11, color: TEXT_MUTED, fontWeight: 500,
+            background: `${t.border}33`, border: `1px solid ${t.border}`,
+            fontSize: 11, color: t.textFaint, fontWeight: 500,
           }}>
             {i + 1}. {dir.name}
           </div>
@@ -1016,7 +1011,23 @@ function ComparisonGrid() {
    EXPORTED COMPONENT
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-export function VisualStylesSection() {
+export function VisualStylesSection({ theme = 'dark' }) {
+  const themes = {
+    dark: {
+      bg: '#0A0908', cardBg: '#141210', border: '#282724',
+      text: '#F0EDE8', textMuted: '#ADA599', textFaint: '#6B6359',
+      accentGold: '#D4A03A', accentGoldLight: '#FFC02A', accentGoldLighter: '#FFD666',
+      accentGreen: '#00C27C',
+    },
+    light: {
+      bg: '#FAFAF8', cardBg: '#FFFFFF', border: '#E5E2DC',
+      text: '#1A1917', textMuted: '#5C574F', textFaint: '#8C8680',
+      accentGold: '#B8860B', accentGoldLight: '#DAA520', accentGoldLighter: '#F0C75E',
+      accentGreen: '#059669',
+    }
+  };
+  const t = themes[theme];
+
   // Load DM Sans font
   useEffect(() => {
     if (!document.querySelector('link[href*="DM+Sans"]')) {
@@ -1029,27 +1040,27 @@ export function VisualStylesSection() {
 
   return (
     <div style={{
-      background: BG,
-      color: TEXT_PRIMARY,
+      background: t.bg,
+      color: t.text,
       fontFamily: "'DM Sans', sans-serif",
       minHeight: '100vh',
     }}>
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 32px' }}>
 
         {/* Page header */}
-        <div style={{ padding: '80px 0 40px', borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ padding: '80px 0 40px', borderBottom: `1px solid ${t.border}` }}>
           <div style={{
             display: 'inline-block', padding: '4px 12px', borderRadius: 20,
-            background: 'rgba(212,160,58,0.1)', border: '1px solid rgba(212,160,58,0.2)',
-            fontSize: 11, fontWeight: 600, color: '#D4A03A', letterSpacing: '0.1em',
+            background: `${t.accentGold}1A`, border: `1px solid ${t.accentGold}33`,
+            fontSize: 11, fontWeight: 600, color: t.accentGold, letterSpacing: '0.1em',
             textTransform: 'uppercase', marginBottom: 16,
           }}>
             Brand Exploration
           </div>
-          <h1 style={{ fontSize: 40, fontWeight: 700, color: TEXT_PRIMARY, margin: '0 0 12px', lineHeight: 1.1 }}>
+          <h1 style={{ fontSize: 40, fontWeight: 700, color: t.text, margin: '0 0 12px', lineHeight: 1.1 }}>
             Visual Style Directions
           </h1>
-          <p style={{ fontSize: 16, color: TEXT_SECONDARY, margin: 0, lineHeight: 1.6, maxWidth: 620 }}>
+          <p style={{ fontSize: 16, color: t.textMuted, margin: 0, lineHeight: 1.6, maxWidth: 620 }}>
             Six radically different aesthetic directions for the Dutchie AI logo family.
             Each direction shows a complete set of four marks: parent brand, platform (Nexus),
             agent (Dex), and marketplace (Connect).
@@ -1057,9 +1068,9 @@ export function VisualStylesSection() {
         </div>
 
         {/* Quick overview — all parent marks in a row */}
-        <div style={{ padding: '40px 0', borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ padding: '40px 0', borderBottom: `1px solid ${t.border}` }}>
           <div style={{
-            fontSize: 11, fontWeight: 600, color: TEXT_MUTED, textTransform: 'uppercase',
+            fontSize: 11, fontWeight: 600, color: t.textFaint, textTransform: 'uppercase',
             letterSpacing: '0.1em', marginBottom: 20,
           }}>
             Quick Overview — Parent Marks
@@ -1071,12 +1082,12 @@ export function VisualStylesSection() {
                 <div key={dir.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
                   <div style={{
                     width: 72, height: 72, borderRadius: 14,
-                    background: CARD_BG, border: `1px solid ${BORDER}`,
+                    background: t.cardBg, border: `1px solid ${t.border}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <Parent size={48} />
                   </div>
-                  <span style={{ fontSize: 10, color: TEXT_MUTED, fontWeight: 500, textAlign: 'center', maxWidth: 80 }}>
+                  <span style={{ fontSize: 10, color: t.textFaint, fontWeight: 500, textAlign: 'center', maxWidth: 80 }}>
                     {i + 1}. {dir.name.split('/')[0].trim()}
                   </span>
                 </div>
@@ -1087,18 +1098,18 @@ export function VisualStylesSection() {
 
         {/* Individual style sections */}
         {STYLE_DIRECTIONS.map((dir, i) => (
-          <StyleSection key={dir.id} direction={dir} index={i} />
+          <StyleSection key={dir.id} direction={dir} index={i} t={t} />
         ))}
 
         {/* Comparison grid */}
-        <ComparisonGrid />
+        <ComparisonGrid t={t} />
 
         {/* Footer */}
         <div style={{
-          padding: '40px 0', borderTop: `1px solid ${BORDER}`,
+          padding: '40px 0', borderTop: `1px solid ${t.border}`,
           textAlign: 'center',
         }}>
-          <p style={{ fontSize: 12, color: TEXT_MUTED, margin: 0 }}>
+          <p style={{ fontSize: 12, color: t.textFaint, margin: 0 }}>
             Dutchie AI Brand Study — Visual Style Explorations — All logos are inline SVG, viewBox 0 0 100 100
           </p>
         </div>

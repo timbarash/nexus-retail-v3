@@ -5,6 +5,28 @@ import { ColorTypographySection } from './ColorTypographySection';
 import { ProductHierarchySection } from './ProductHierarchySection';
 import { DNameExplorationSection } from './DNameExplorationSection';
 import { VisualStylesSection } from './VisualStylesSection';
+import { PositioningDeepDive } from './PositioningDeepDive';
+import { SuiteNamingDeepDive } from './SuiteNamingDeepDive';
+
+/* ─── Theme Definitions ─── */
+const themes = {
+  dark: {
+    bg: '#0A0908', cardBg: '#141210', border: '#282724',
+    text: '#F0EDE8', textMuted: '#ADA599', textFaint: '#6B6359',
+    navBg: 'rgba(10,9,8,0.92)',
+    divider: '#282724',
+    accentGold: '#D4A03A', accentGoldLight: '#FFC02A', accentGoldLighter: '#FFD666',
+    accentGreen: '#00C27C',
+  },
+  light: {
+    bg: '#FAFAF8', cardBg: '#FFFFFF', border: '#E5E2DC',
+    text: '#1A1917', textMuted: '#5C574F', textFaint: '#8C8680',
+    navBg: 'rgba(250,250,248,0.92)',
+    divider: '#E5E2DC',
+    accentGold: '#B8860B', accentGoldLight: '#DAA520', accentGoldLighter: '#F0C75E',
+    accentGreen: '#059669',
+  }
+};
 
 /* ─── Golden Spiral SVG (Dex Logo) ─── */
 function DexSpiral({ size = 48, className = '', style = {} }) {
@@ -128,20 +150,21 @@ function NetworkConstellation() {
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  return <canvas ref={canvasRef} style={{ width: '100%', maxWidth: 600, height: 300, borderRadius: 12, border: '1px solid #282724' }} />;
+  return <canvas ref={canvasRef} style={{ width: '100%', maxWidth: 600, height: 300, borderRadius: 12, border: '1px solid currentColor', borderColor: 'inherit' }} />;
 }
 
 /* ─── Color Swatch ─── */
-function Swatch({ color, name, hex }) {
+function Swatch({ color, name, hex, theme = 'dark' }) {
+  const t = themes[theme];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
       <div style={{
         width: 72, height: 72, borderRadius: 12, background: color,
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+        boxShadow: theme === 'dark' ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
       }} />
-      <span style={{ fontSize: 12, color: '#ADA599', fontWeight: 500 }}>{name}</span>
-      <span style={{ fontSize: 11, color: '#6B6359', fontFamily: 'monospace' }}>{hex}</span>
+      <span style={{ fontSize: 12, color: t.textMuted, fontWeight: 500 }}>{name}</span>
+      <span style={{ fontSize: 11, color: t.textFaint, fontFamily: 'monospace' }}>{hex}</span>
     </div>
   );
 }
@@ -157,15 +180,18 @@ const SECTIONS = [
   { id: 'hierarchy', label: 'Hierarchy' },
   { id: 'dnames', label: 'D-Names' },
   { id: 'styles', label: 'Styles' },
+  { id: 'positioning', label: 'Positioning' },
+  { id: 'naming', label: 'Naming' },
 ];
 
-function SectionNav({ active }) {
+function SectionNav({ active, theme = 'dark', setTheme }) {
+  const t = themes[theme];
   return (
     <nav style={{
       position: 'sticky', top: 0, zIndex: 50,
-      background: 'rgba(10,9,8,0.92)', backdropFilter: 'blur(12px)',
-      borderBottom: '1px solid #282724',
-      display: 'flex', justifyContent: 'center', gap: 4, padding: '12px 16px',
+      background: t.navBg, backdropFilter: 'blur(12px)',
+      borderBottom: `1px solid ${t.border}`,
+      display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4, padding: '12px 16px',
     }}>
       {SECTIONS.map(s => (
         <a
@@ -174,8 +200,8 @@ function SectionNav({ active }) {
           onClick={e => { e.preventDefault(); document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth' }); }}
           style={{
             padding: '6px 16px', borderRadius: 20, fontSize: 13, fontWeight: 500,
-            color: active === s.id ? '#F0EDE8' : '#6B6359',
-            background: active === s.id ? 'rgba(212,160,58,0.12)' : 'transparent',
+            color: active === s.id ? t.text : t.textFaint,
+            background: active === s.id ? `rgba(212,160,58,0.12)` : 'transparent',
             border: active === s.id ? '1px solid rgba(212,160,58,0.2)' : '1px solid transparent',
             textDecoration: 'none', transition: 'all 0.2s',
           }}
@@ -183,12 +209,37 @@ function SectionNav({ active }) {
           {s.label}
         </a>
       ))}
+      {setTheme && (
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          style={{
+            marginLeft: 12,
+            padding: '6px 14px',
+            borderRadius: 20,
+            fontSize: 14,
+            fontWeight: 500,
+            cursor: 'pointer',
+            border: `1px solid ${t.border}`,
+            background: theme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+            color: t.text,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'all 0.2s',
+          }}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {theme === 'dark' ? '\u2600' : '\u263E'}
+          <span style={{ fontSize: 11 }}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+        </button>
+      )}
     </nav>
   );
 }
 
 /* ─── Typography Specimen ─── */
-function TypeSpecimen({ family = 'DM Sans' }) {
+function TypeSpecimen({ family = 'DM Sans', theme = 'dark' }) {
+  const t = themes[theme];
   const weights = [
     { weight: 300, label: 'Light' },
     { weight: 400, label: 'Regular' },
@@ -200,8 +251,8 @@ function TypeSpecimen({ family = 'DM Sans' }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {weights.map(w => (
         <div key={w.weight} style={{ display: 'flex', alignItems: 'baseline', gap: 24 }}>
-          <span style={{ width: 100, fontSize: 12, color: '#6B6359', fontFamily: 'monospace' }}>{w.weight} {w.label}</span>
-          <span style={{ fontFamily: `'${family}', sans-serif`, fontWeight: w.weight, fontSize: 28, color: '#F0EDE8', letterSpacing: '0.01em' }}>
+          <span style={{ width: 100, fontSize: 12, color: t.textFaint, fontFamily: 'monospace' }}>{w.weight} {w.label}</span>
+          <span style={{ fontFamily: `'${family}', sans-serif`, fontWeight: w.weight, fontSize: 28, color: t.text, letterSpacing: '0.01em' }}>
             Aa Bb Cc 0123
           </span>
         </div>
@@ -220,22 +271,24 @@ function Section({ id, children }) {
 }
 
 /* ─── Subsection Title ─── */
-function SubTitle({ children }) {
+function SubTitle({ children, theme = 'dark' }) {
+  const t = themes[theme];
   return (
-    <h3 style={{ fontSize: 14, fontWeight: 600, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
+    <h3 style={{ fontSize: 14, fontWeight: 600, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
       {children}
     </h3>
   );
 }
 
 /* ─── Logo Size Demo ─── */
-function LogoSizes({ component: C, sizes = [16, 24, 36, 48, 72] }) {
+function LogoSizes({ component: C, sizes = [16, 24, 36, 48, 72], theme = 'dark' }) {
+  const t = themes[theme];
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
       {sizes.map(s => (
         <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
           <C size={s} />
-          <span style={{ fontSize: 11, color: '#6B6359', fontFamily: 'monospace' }}>{s}px</span>
+          <span style={{ fontSize: 11, color: t.textFaint, fontFamily: 'monospace' }}>{s}px</span>
         </div>
       ))}
     </div>
@@ -402,23 +455,25 @@ function MeshNodesLogo({ size = 48, color1 = '#00C27C', color2 = '#64A8E0' }) {
 /* ═══  CONNECT DEEP SECTION — Expanded Brand Exploration                               ═══ */
 /* ═══════════════════════════════════════════════════════════════════════════════════════════ */
 
-export function ConnectDeepSection() {
+export function ConnectDeepSection({ theme = 'dark' }) {
+  const t = themes[theme];
+
   const SubTitle = ({ children }) => (
-    <h3 style={{ fontSize: 14, fontWeight: 600, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
+    <h3 style={{ fontSize: 14, fontWeight: 600, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
       {children}
     </h3>
   );
 
   const card = {
-    background: '#141210',
+    background: t.cardBg,
     borderRadius: 16,
     padding: 32,
-    border: '1px solid #282724',
+    border: `1px solid ${t.border}`,
   };
 
   const divider = {
     height: 1,
-    background: 'linear-gradient(90deg, transparent, #38332B, transparent)',
+    background: `linear-gradient(90deg, transparent, ${t.border}, transparent)`,
     margin: '56px 0',
   };
 
@@ -452,7 +507,7 @@ export function ConnectDeepSection() {
 
       {/* ═══════════════════════  SECTION 1: NAME CANDIDATES  ═══════════════════════ */}
       <SubTitle>Name Candidates</SubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         Five name alternatives for the B2B marketplace, each carrying a distinct metaphor for how retailers and brands come together.
       </p>
 
@@ -483,18 +538,18 @@ export function ConnectDeepSection() {
                 fontWeight: n.weight,
                 fontSize: 36,
                 letterSpacing: n.spacing,
-                color: '#F0EDE8',
+                color: t.text,
               }}>
                 {n.name}
               </span>
-              <div style={{ fontSize: 11, color: '#6B6359', fontFamily: 'monospace', marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: t.textFaint, fontFamily: 'monospace', marginTop: 4 }}>
                 weight {n.weight} / spacing {n.spacing}
               </div>
             </div>
 
             {/* Rationale */}
             <div style={{ flex: 1, minWidth: 240 }}>
-              <p style={{ fontSize: 13, color: '#ADA599', lineHeight: 1.7, margin: 0 }}>
+              <p style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.7, margin: 0 }}>
                 {n.rationale}
               </p>
             </div>
@@ -506,7 +561,7 @@ export function ConnectDeepSection() {
 
       {/* ═══════════════════════  SECTION 2: LOGO VARIATIONS  ═══════════════════════ */}
       <SubTitle>Logo Variations — Four Network/Link Concepts</SubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         Each logo explores a different visual metaphor for marketplace connection. All use the green-to-blue gradient.
       </p>
 
@@ -530,19 +585,19 @@ export function ConnectDeepSection() {
 
             {/* Label */}
             <div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: '#F0EDE8', marginBottom: 4 }}>{v.label}</div>
-              <div style={{ fontSize: 12, color: '#6B6359', lineHeight: 1.5, maxWidth: 200 }}>{v.sub}</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: t.text, marginBottom: 4 }}>{v.label}</div>
+              <div style={{ fontSize: 12, color: t.textFaint, lineHeight: 1.5, maxWidth: 200 }}>{v.sub}</div>
             </div>
 
             {/* Size scale */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 12,
-              paddingTop: 12, borderTop: '1px solid #282724', width: '100%', justifyContent: 'center',
+              paddingTop: 12, borderTop: `1px solid ${t.border}`, width: '100%', justifyContent: 'center',
             }}>
               {[20, 32, 48].map(s => (
                 <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                   <v.Component size={s} />
-                  <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>{s}</span>
+                  <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>{s}</span>
                 </div>
               ))}
             </div>
@@ -554,14 +609,14 @@ export function ConnectDeepSection() {
 
       {/* ═══════════════════════  SECTION 3: MARKETPLACE MOCKUPS  ═══════════════════════ */}
       <SubTitle>Marketplace Mockups — Each Logo In Context</SubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         How each logo variant looks in four real-world application contexts: marketplace header, mobile app icon, email signature, and invoice watermark.
       </p>
 
       {logoVariants.map(v => (
         <div key={v.label} style={{ marginBottom: 48 }}>
-          <div style={{ fontSize: 16, fontWeight: 600, color: '#F0EDE8', marginBottom: 4 }}>{v.label}</div>
-          <div style={{ fontSize: 12, color: '#6B6359', marginBottom: 16 }}>{v.sub}</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: t.text, marginBottom: 4 }}>{v.label}</div>
+          <div style={{ fontSize: 12, color: t.textFaint, marginBottom: 16 }}>{v.sub}</div>
 
           <div style={{
             display: 'grid',
@@ -570,7 +625,7 @@ export function ConnectDeepSection() {
           }}>
             {/* 1. Marketplace Header Bar */}
             <div style={{ ...card, padding: 20 }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Marketplace Header
               </div>
               <div style={{
@@ -583,20 +638,20 @@ export function ConnectDeepSection() {
                 border: '1px solid rgba(0,194,124,0.12)',
               }}>
                 <v.Component size={24} />
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 16, letterSpacing: '0.02em', color: '#F0EDE8' }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 16, letterSpacing: '0.02em', color: t.text }}>
                   connect
                 </span>
                 <div style={{ marginLeft: 'auto', display: 'flex', gap: 16 }}>
-                  <span style={{ fontSize: 11, color: '#6B6359' }}>Browse</span>
-                  <span style={{ fontSize: 11, color: '#6B6359' }}>Orders</span>
-                  <span style={{ fontSize: 11, color: '#6B6359' }}>Account</span>
+                  <span style={{ fontSize: 11, color: t.textFaint }}>Browse</span>
+                  <span style={{ fontSize: 11, color: t.textFaint }}>Orders</span>
+                  <span style={{ fontSize: 11, color: t.textFaint }}>Account</span>
                 </div>
               </div>
             </div>
 
             {/* 2. Mobile App Icon */}
             <div style={{ ...card, padding: 20 }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Mobile App Icon
               </div>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: 8, paddingBottom: 8 }}>
@@ -618,7 +673,7 @@ export function ConnectDeepSection() {
 
             {/* 3. Email Signature */}
             <div style={{ ...card, padding: 20 }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Email Signature
               </div>
               <div style={{
@@ -646,7 +701,7 @@ export function ConnectDeepSection() {
 
             {/* 4. Invoice / PO Watermark */}
             <div style={{ ...card, padding: 20 }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Invoice Watermark
               </div>
               <div style={{
@@ -690,7 +745,7 @@ export function ConnectDeepSection() {
 
       {/* ═══════════════════════  SECTION 4: COLOR SCHEME EXPLORATIONS  ═══════════════════════ */}
       <SubTitle>Color Scheme Explorations — Four Alternative Palettes</SubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         The marketplace brand color should convey trust, energy, and partnership. Each palette pairs with all four logo variants.
       </p>
 
@@ -698,8 +753,8 @@ export function ConnectDeepSection() {
         <div key={p.label} style={{ marginBottom: 40 }}>
           {/* Palette header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: '#F0EDE8' }}>{p.label}</div>
-            <div style={{ fontSize: 13, color: '#6B6359' }}>{p.sub}</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: t.text }}>{p.label}</div>
+            <div style={{ fontSize: 13, color: t.textFaint }}>{p.sub}</div>
           </div>
 
           <div style={{
@@ -715,48 +770,48 @@ export function ConnectDeepSection() {
                 <div style={{
                   width: 56, height: 56, borderRadius: 12,
                   background: p.primary,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                  boxShadow: theme === 'dark' ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
                 }} />
-                <span style={{ fontSize: 11, color: '#ADA599' }}>Primary</span>
-                <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>{p.primary}</span>
+                <span style={{ fontSize: 11, color: t.textMuted }}>Primary</span>
+                <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>{p.primary}</span>
               </div>
               {/* Secondary swatch */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                 <div style={{
                   width: 56, height: 56, borderRadius: 12,
                   background: p.secondary,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                  boxShadow: theme === 'dark' ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
                 }} />
-                <span style={{ fontSize: 11, color: '#ADA599' }}>Secondary</span>
-                <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>{p.secondary}</span>
+                <span style={{ fontSize: 11, color: t.textMuted }}>Secondary</span>
+                <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>{p.secondary}</span>
               </div>
               {/* Gradient swatch */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                 <div style={{
                   width: 56, height: 56, borderRadius: 12,
                   background: `linear-gradient(135deg, ${p.primary}, ${p.secondary})`,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                  boxShadow: theme === 'dark' ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
                 }} />
-                <span style={{ fontSize: 11, color: '#ADA599' }}>Gradient</span>
-                <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>135deg</span>
+                <span style={{ fontSize: 11, color: t.textMuted }}>Gradient</span>
+                <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>135deg</span>
               </div>
               {/* Background swatch */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                 <div style={{
                   width: 56, height: 56, borderRadius: 12,
                   background: p.bg,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                  boxShadow: theme === 'dark' ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
                 }} />
-                <span style={{ fontSize: 11, color: '#ADA599' }}>Dark BG</span>
-                <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>{p.bg}</span>
+                <span style={{ fontSize: 11, color: t.textMuted }}>Dark BG</span>
+                <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>{p.bg}</span>
               </div>
 
               {/* Divider */}
-              <div style={{ width: 1, height: 56, background: '#282724', margin: '0 8px' }} />
+              <div style={{ width: 1, height: 56, background: t.border, margin: '0 8px' }} />
 
               {/* All 4 logos in this palette's colors */}
               {[ChainLinksLogo, HandshakeLogo, BridgeArchLogo, MeshNodesLogo].map((Logo, i) => (
@@ -771,7 +826,7 @@ export function ConnectDeepSection() {
                   }}>
                     <Logo size={36} color1={p.primary} color2={p.secondary} />
                   </div>
-                  <span style={{ fontSize: 10, color: '#6B6359' }}>
+                  <span style={{ fontSize: 10, color: t.textFaint }}>
                     {['Chain', 'Shake', 'Bridge', 'Mesh'][i]}
                   </span>
                 </div>
@@ -794,7 +849,7 @@ export function ConnectDeepSection() {
                 fontWeight: 600,
                 fontSize: 15,
                 letterSpacing: '0.02em',
-                color: '#F0EDE8',
+                color: t.text,
               }}>
                 connect
               </span>
@@ -810,7 +865,7 @@ export function ConnectDeepSection() {
 
       {/* ═══════════════════════  SECTION 5: FULL COMBINATION MATRIX  ═══════════════════════ */}
       <SubTitle>Combination Matrix — Name x Logo</SubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         Selected pairings showing how each name candidate looks alongside each logo variant in a horizontal lockup.
       </p>
 
@@ -823,10 +878,10 @@ export function ConnectDeepSection() {
         {names.map(n => (
           logoVariants.map(v => (
             <div key={`${n.name}-${v.label}`} style={{
-              background: '#141210',
+              background: t.cardBg,
               borderRadius: 12,
               padding: '16px 20px',
-              border: '1px solid #282724',
+              border: `1px solid ${t.border}`,
               display: 'flex',
               alignItems: 'center',
               gap: 10,
@@ -838,11 +893,11 @@ export function ConnectDeepSection() {
                   fontWeight: n.weight,
                   fontSize: 20,
                   letterSpacing: n.spacing,
-                  color: '#F0EDE8',
+                  color: t.text,
                 }}>
                   {n.name}
                 </span>
-                <div style={{ fontSize: 9, color: '#6B6359', marginTop: 2 }}>{v.label}</div>
+                <div style={{ fontSize: 9, color: t.textFaint, marginTop: 2 }}>{v.label}</div>
               </div>
             </div>
           ))
@@ -1013,7 +1068,8 @@ function DeepAgentAvatar({ children, size = 48 }) {
 }
 
 /* ═══ EXPORTED: DexDeepSection ═══ */
-export function DexDeepSection() {
+export function DexDeepSection({ theme = 'dark' }) {
+  const t = themes[theme];
   const [thinkingAngle, setThinkingAngle] = useState(0);
   const [rippleScale, setRippleScale] = useState(1);
   const [rippleOpacity, setRippleOpacity] = useState(1);
@@ -1063,14 +1119,14 @@ export function DexDeepSection() {
   }, []);
 
   const DSSubTitle = ({ children }) => (
-    <h3 style={{ fontSize: 14, fontWeight: 600, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
+    <h3 style={{ fontSize: 14, fontWeight: 600, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
       {children}
     </h3>
   );
 
   const card = {
-    background: '#141210', borderRadius: 16, padding: 32,
-    border: '1px solid #282724',
+    background: t.cardBg, borderRadius: 16, padding: 32,
+    border: `1px solid ${t.border}`,
   };
 
   const nameStudies = [
@@ -1120,7 +1176,7 @@ export function DexDeepSection() {
     <div>
       {/* ════════ NAME CANDIDATES ════════ */}
       <DSSubTitle>Name Candidates</DSSubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         Five name candidates for the AI agent brand. Each wordmark is set in DM Sans with a distinct
         weight and letter-spacing tuned to match the personality of the name.
       </p>
@@ -1131,16 +1187,16 @@ export function DexDeepSection() {
             ...card,
             padding: 0,
             overflow: 'hidden',
-            border: ns.current ? '1px solid rgba(212,160,58,0.3)' : '1px solid #282724',
+            border: ns.current ? '1px solid rgba(212,160,58,0.3)' : `1px solid ${t.border}`,
           }}>
             <div style={{ display: 'flex', alignItems: 'stretch', minHeight: 120, flexWrap: 'wrap' }}>
               {/* Number badge */}
               <div style={{
                 width: 56, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                background: ns.current ? 'rgba(212,160,58,0.08)' : 'rgba(255,255,255,0.02)',
-                borderRight: '1px solid #282724', flexShrink: 0,
+                background: ns.current ? 'rgba(212,160,58,0.08)' : (theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'),
+                borderRight: `1px solid ${t.border}`, flexShrink: 0,
               }}>
-                <span style={{ fontSize: 20, fontWeight: 700, color: ns.current ? '#FFC02A' : '#6B6359', fontFamily: 'monospace' }}>
+                <span style={{ fontSize: 20, fontWeight: 700, color: ns.current ? '#FFC02A' : t.textFaint, fontFamily: 'monospace' }}>
                   {i + 1}
                 </span>
                 {ns.current && (
@@ -1153,14 +1209,14 @@ export function DexDeepSection() {
               {/* Wordmark display */}
               <div style={{
                 width: 200, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRight: '1px solid #282724', padding: '24px 32px', flexShrink: 0,
+                borderRight: `1px solid ${t.border}`, padding: '24px 32px', flexShrink: 0,
               }}>
                 <span style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontWeight: ns.weight,
                   fontSize: 42,
                   letterSpacing: ns.spacing,
-                  color: '#F0EDE8',
+                  color: t.text,
                 }}>
                   {ns.name.toLowerCase()}
                 </span>
@@ -1169,15 +1225,15 @@ export function DexDeepSection() {
               {/* Rationale text */}
               <div style={{ flex: 1, padding: '20px 28px', display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 200 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                  <span style={{ fontSize: 16, fontWeight: 600, color: '#F0EDE8' }}>{ns.name}</span>
+                  <span style={{ fontSize: 16, fontWeight: 600, color: t.text }}>{ns.name}</span>
                   <span style={{
-                    fontSize: 10, color: '#6B6359', fontFamily: 'monospace',
-                    padding: '2px 8px', background: 'rgba(255,255,255,0.04)', borderRadius: 4,
+                    fontSize: 10, color: t.textFaint, fontFamily: 'monospace',
+                    padding: '2px 8px', background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', borderRadius: 4,
                   }}>
                     wt:{ns.weight} ls:{ns.spacing}
                   </span>
                 </div>
-                <p style={{ fontSize: 13, color: '#ADA599', lineHeight: 1.6, margin: 0 }}>
+                <p style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.6, margin: 0 }}>
                   {ns.rationale}
                 </p>
               </div>
@@ -1188,7 +1244,7 @@ export function DexDeepSection() {
 
       {/* ════════ LOGO VARIATIONS ════════ */}
       <DSSubTitle>Logo Variations</DSSubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         Four distinct visual concepts for the agent mark. Each conveys intelligence, iteration, or awareness
         through different geometric metaphors. All rendered in the gold gradient (#D4A03A to #FFD666).
       </p>
@@ -1208,8 +1264,8 @@ export function DexDeepSection() {
             <div style={{
               padding: '36px 24px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: '#0A0908',
-              borderBottom: '1px solid #282724',
+              background: t.bg,
+              borderBottom: `1px solid ${t.border}`,
               minHeight: 140,
             }}>
               <v.Component size={80} idPrefix={`lv-${i}`} />
@@ -1218,15 +1274,15 @@ export function DexDeepSection() {
             {/* Label and description */}
             <div style={{ padding: '20px 24px', flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#F0EDE8' }}>{v.label}</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: t.text }}>{v.label}</span>
                 <span style={{
-                  fontSize: 10, fontFamily: 'monospace', color: '#6B6359',
-                  padding: '2px 6px', background: 'rgba(255,255,255,0.04)', borderRadius: 4,
+                  fontSize: 10, fontFamily: 'monospace', color: t.textFaint,
+                  padding: '2px 6px', background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)', borderRadius: 4,
                 }}>
                   {i + 1}/4
                 </span>
               </div>
-              <p style={{ fontSize: 12, color: '#ADA599', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontSize: 12, color: t.textMuted, lineHeight: 1.6, margin: 0 }}>
                 {v.desc}
               </p>
             </div>
@@ -1239,12 +1295,12 @@ export function DexDeepSection() {
         ...card,
         display: 'flex', alignItems: 'center', justifyContent: 'space-around',
         flexWrap: 'wrap', gap: 32, marginBottom: 64,
-        background: '#0A0908',
+        background: t.bg,
       }}>
         {logoVariants.map((v, i) => (
           <div key={v.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <v.Component size={56} idPrefix={`cmp-${i}`} />
-            <span style={{ fontSize: 11, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <span style={{ fontSize: 11, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               {v.label}
             </span>
           </div>
@@ -1253,7 +1309,7 @@ export function DexDeepSection() {
 
       {/* ════════ AGENT AVATAR STUDIES ════════ */}
       <DSSubTitle>Agent Avatar Studies</DSSubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         Each logo variation rendered as a circular agent avatar — dark background (#1A1710) with
         gold glow border. Tested at 32px, 48px, and 64px for UI legibility.
       </p>
@@ -1267,7 +1323,7 @@ export function DexDeepSection() {
             ...card,
             display: 'flex', flexDirection: 'column', gap: 20,
           }}>
-            <div style={{ fontSize: 12, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <div style={{ fontSize: 12, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               {v.label}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
@@ -1276,7 +1332,7 @@ export function DexDeepSection() {
                   <DeepAgentAvatar size={sz}>
                     <v.Component size={sz * 0.58} idPrefix={`av-${i}-${sz}`} />
                   </DeepAgentAvatar>
-                  <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>{sz}px</span>
+                  <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>{sz}px</span>
                 </div>
               ))}
             </div>
@@ -1286,7 +1342,7 @@ export function DexDeepSection() {
 
       {/* ════════ CHAT BUBBLE DEMOS ════════ */}
       <DSSubTitle>Chat Bubble Demos</DSSubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         Three chat bubble treatments for agent messages. Each balances brand presence against
         readability and conversation flow.
       </p>
@@ -1297,7 +1353,7 @@ export function DexDeepSection() {
       }}>
         {/* Style 1: Minimal */}
         <div style={{ ...card }}>
-          <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             1. Minimal
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
@@ -1305,8 +1361,8 @@ export function DexDeepSection() {
               <GoldenSpiralLogo size={16} idPrefix="cb1" />
             </DeepAgentAvatar>
             <div>
-              <span style={{ fontSize: 11, color: '#6B6359', display: 'block', marginBottom: 4 }}>Dex</span>
-              <p style={{ fontSize: 13, color: '#ADA599', lineHeight: 1.6, margin: 0 }}>
+              <span style={{ fontSize: 11, color: t.textFaint, display: 'block', marginBottom: 4 }}>Dex</span>
+              <p style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.6, margin: 0 }}>
                 I found 3 inventory anomalies across your Denver locations. Two involve mismatched
                 unit counts on high-velocity SKUs. Want me to draft correction POs?
               </p>
@@ -1316,11 +1372,11 @@ export function DexDeepSection() {
 
         {/* Style 2: Card */}
         <div style={{ ...card }}>
-          <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             2. Card
           </div>
           <div style={{
-            background: '#1A1710',
+            background: theme === 'dark' ? '#1A1710' : '#FFFDF5',
             borderRadius: 12,
             overflow: 'hidden',
             border: '1px solid rgba(212,160,58,0.12)',
@@ -1335,12 +1391,12 @@ export function DexDeepSection() {
               <DeepAgentAvatar size={24}>
                 <GoldenSpiralLogo size={14} idPrefix="cb2" />
               </DeepAgentAvatar>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#F0EDE8' }}>Dex</span>
-              <span style={{ fontSize: 10, color: '#6B6359', marginLeft: 'auto' }}>Just now</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: t.text }}>Dex</span>
+              <span style={{ fontSize: 10, color: t.textFaint, marginLeft: 'auto' }}>Just now</span>
             </div>
             {/* Card body */}
             <div style={{ padding: '14px 16px' }}>
-              <p style={{ fontSize: 13, color: '#ADA599', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.6, margin: 0 }}>
                 I found 3 inventory anomalies across your Denver locations. Two involve mismatched
                 unit counts on high-velocity SKUs. Want me to draft correction POs?
               </p>
@@ -1350,7 +1406,7 @@ export function DexDeepSection() {
 
         {/* Style 3: Branded — gold accent border left */}
         <div style={{ ...card }}>
-          <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             3. Branded
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
@@ -1365,13 +1421,13 @@ export function DexDeepSection() {
               padding: '12px 16px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#F0EDE8' }}>Dex</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: t.text }}>Dex</span>
                 <span style={{
-                  fontSize: 9, color: '#D4A03A', textTransform: 'uppercase', letterSpacing: '0.08em',
+                  fontSize: 9, color: t.accentGold, textTransform: 'uppercase', letterSpacing: '0.08em',
                   padding: '1px 6px', background: 'rgba(212,160,58,0.1)', borderRadius: 3,
                 }}>AI Agent</span>
               </div>
-              <p style={{ fontSize: 13, color: '#ADA599', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.6, margin: 0 }}>
                 I found 3 inventory anomalies across your Denver locations. Two involve mismatched
                 unit counts on high-velocity SKUs. Want me to draft correction POs?
               </p>
@@ -1382,7 +1438,7 @@ export function DexDeepSection() {
 
       {/* ════════ ANIMATED STATES ════════ */}
       <DSSubTitle>Animated States</DSSubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         Three key interaction states for the AI agent. Thinking uses continuous spiral rotation.
         Listening uses a pulsing ripple emanation. Success cross-fades from spiral to checkmark.
       </p>
@@ -1393,7 +1449,7 @@ export function DexDeepSection() {
       }}>
         {/* Thinking — spiral rotating */}
         <div style={{ ...card, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, paddingTop: 40, paddingBottom: 40 }}>
-          <div style={{ fontSize: 11, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 11, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Thinking
           </div>
           <div style={{
@@ -1421,23 +1477,23 @@ export function DexDeepSection() {
             </DeepAgentAvatar>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <span style={{ fontSize: 13, color: '#ADA599', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+            <span style={{ fontSize: 13, color: t.textMuted, display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
               <span style={{ display: 'inline-flex', gap: 3 }}>
-                <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#FFC02A', opacity: 0.4 + (Math.sin(thinkingAngle * 0.05) + 1) * 0.3 }} />
-                <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#FFC02A', opacity: 0.4 + (Math.sin(thinkingAngle * 0.05 + 1) + 1) * 0.3 }} />
-                <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#FFC02A', opacity: 0.4 + (Math.sin(thinkingAngle * 0.05 + 2) + 1) * 0.3 }} />
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: t.accentGoldLight, opacity: 0.4 + (Math.sin(thinkingAngle * 0.05) + 1) * 0.3 }} />
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: t.accentGoldLight, opacity: 0.4 + (Math.sin(thinkingAngle * 0.05 + 1) + 1) * 0.3 }} />
+                <span style={{ width: 4, height: 4, borderRadius: '50%', background: t.accentGoldLight, opacity: 0.4 + (Math.sin(thinkingAngle * 0.05 + 2) + 1) * 0.3 }} />
               </span>
               Analyzing inventory data
             </span>
           </div>
-          <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>
+          <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>
             continuous rotation @ 1.5 deg/frame
           </span>
         </div>
 
         {/* Listening — ripple pulsing */}
         <div style={{ ...card, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, paddingTop: 40, paddingBottom: 40 }}>
-          <div style={{ fontSize: 11, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 11, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Listening
           </div>
           <div style={{
@@ -1469,23 +1525,23 @@ export function DexDeepSection() {
             </DeepAgentAvatar>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <span style={{ fontSize: 13, color: '#ADA599', display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+            <span style={{ fontSize: 13, color: t.textMuted, display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
               <span style={{
-                width: 8, height: 8, borderRadius: '50%', background: '#D4A03A',
+                width: 8, height: 8, borderRadius: '50%', background: t.accentGold,
                 opacity: rippleOpacity,
                 boxShadow: `0 0 ${8 * rippleOpacity}px rgba(212,160,58,0.4)`,
               }} />
               Listening for input
             </span>
           </div>
-          <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>
+          <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>
             sine pulse @ 0.03 rad/frame
           </span>
         </div>
 
         {/* Success — spiral morphs to checkmark */}
         <div style={{ ...card, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, paddingTop: 40, paddingBottom: 40 }}>
-          <div style={{ fontSize: 11, color: '#6B6359', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <div style={{ fontSize: 11, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Success
           </div>
           <div style={{
@@ -1558,14 +1614,14 @@ export function DexDeepSection() {
           <div style={{ textAlign: 'center' }}>
             <span style={{
               fontSize: 13,
-              color: successProgress > 0.7 ? '#00C27C' : '#ADA599',
+              color: successProgress > 0.7 ? t.accentGreen : t.textMuted,
               display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center',
               transition: 'color 0.3s',
             }}>
               {successProgress > 0.7 ? 'Task complete' : 'Processing...'}
             </span>
           </div>
-          <span style={{ fontSize: 10, color: '#6B6359', fontFamily: 'monospace' }}>
+          <span style={{ fontSize: 10, color: t.textFaint, fontFamily: 'monospace' }}>
             spiral-to-check crossfade @ {(successProgress * 100).toFixed(0)}%
           </span>
         </div>
@@ -1573,7 +1629,7 @@ export function DexDeepSection() {
 
       {/* ════════ NAME + LOGO PAIRING MATRIX ════════ */}
       <DSSubTitle>Name + Logo Pairing Matrix</DSSubTitle>
-      <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 600, marginBottom: 32 }}>
         A cross-reference grid pairing each name candidate with each logo variation. Evaluate
         how the letterform energy matches the icon geometry.
       </p>
@@ -1588,18 +1644,18 @@ export function DexDeepSection() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: '140px repeat(4, 1fr)',
-          borderBottom: '1px solid #282724',
-          background: 'rgba(255,255,255,0.02)',
+          borderBottom: `1px solid ${t.border}`,
+          background: theme === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
           minWidth: 700,
         }}>
-          <div style={{ padding: '12px 16px', borderRight: '1px solid #282724' }} />
+          <div style={{ padding: '12px 16px', borderRight: `1px solid ${t.border}` }} />
           {logoVariants.map((v, i) => (
             <div key={v.label} style={{
               padding: '12px 8px', textAlign: 'center',
-              borderRight: i < 3 ? '1px solid #282724' : 'none',
+              borderRight: i < 3 ? `1px solid ${t.border}` : 'none',
             }}>
               <v.Component size={28} idPrefix={`matrix-h-${i}`} />
-              <div style={{ fontSize: 9, color: '#6B6359', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: 9, color: t.textFaint, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 {v.label}
               </div>
             </div>
@@ -1611,13 +1667,13 @@ export function DexDeepSection() {
           <div key={ns.name} style={{
             display: 'grid',
             gridTemplateColumns: '140px repeat(4, 1fr)',
-            borderBottom: ni < nameStudies.length - 1 ? '1px solid #282724' : 'none',
+            borderBottom: ni < nameStudies.length - 1 ? `1px solid ${t.border}` : 'none',
             background: ns.current ? 'rgba(212,160,58,0.03)' : 'transparent',
             minWidth: 700,
           }}>
             {/* Name label */}
             <div style={{
-              padding: '16px', borderRight: '1px solid #282724',
+              padding: '16px', borderRight: `1px solid ${t.border}`,
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
               <span style={{
@@ -1625,7 +1681,7 @@ export function DexDeepSection() {
                 fontWeight: ns.weight,
                 fontSize: 20,
                 letterSpacing: ns.spacing,
-                color: '#F0EDE8',
+                color: t.text,
               }}>
                 {ns.name.toLowerCase()}
               </span>
@@ -1641,7 +1697,7 @@ export function DexDeepSection() {
             {logoVariants.map((v, vi) => (
               <div key={v.label} style={{
                 padding: '12px 8px',
-                borderRight: vi < 3 ? '1px solid #282724' : 'none',
+                borderRight: vi < 3 ? `1px solid ${t.border}` : 'none',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               }}>
                 <DeepAgentAvatar size={32}>
@@ -1652,7 +1708,7 @@ export function DexDeepSection() {
                   fontWeight: ns.weight,
                   fontSize: 14,
                   letterSpacing: ns.spacing,
-                  color: '#ADA599',
+                  color: t.textMuted,
                 }}>
                   {ns.name.toLowerCase()}
                 </span>
@@ -1669,8 +1725,10 @@ export function DexDeepSection() {
 
 export default function DesignStudy() {
   const [activeSection, setActiveSection] = useState('hero');
+  const [theme, setTheme] = useState('dark');
+  const t = themes[theme];
 
-  // Load DM Sans
+  // Load DM Sans & set body background
   useEffect(() => {
     if (!document.getElementById('dm-sans-link')) {
       const link = document.createElement('link');
@@ -1679,7 +1737,9 @@ export default function DesignStudy() {
       link.href = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap';
       document.head.appendChild(link);
     }
-  }, []);
+    document.body.style.background = t.bg;
+    document.documentElement.style.background = t.bg;
+  }, [theme, t.bg]);
 
   // Intersection observer for active section
   useEffect(() => {
@@ -1704,25 +1764,25 @@ export default function DesignStudy() {
   };
 
   const divider = {
-    height: 1, background: 'linear-gradient(90deg, transparent, #38332B, transparent)',
+    height: 1, background: `linear-gradient(90deg, transparent, ${t.border}, transparent)`,
     margin: '0',
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0A0908', color: '#F0EDE8' }}>
-      <SectionNav active={activeSection} />
+    <div style={{ minHeight: '100vh', background: t.bg, color: t.text, transition: 'background 0.3s, color 0.3s' }}>
+      <SectionNav active={activeSection} theme={theme} setTheme={setTheme} />
 
       <div style={container}>
         {/* ═══ HERO ═══ */}
         <Section id="hero">
           <div style={{ textAlign: 'center', paddingTop: 40 }}>
-            <p style={{ fontSize: 13, fontWeight: 500, color: '#D4A03A', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 16 }}>
+            <p style={{ fontSize: 13, fontWeight: 500, color: t.accentGold, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 16 }}>
               Dutchie AI
             </p>
-            <h1 style={{ fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 24, color: '#F0EDE8' }}>
+            <h1 style={{ fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 24, color: t.text }}>
               Brand Identity Study
             </h1>
-            <p style={{ fontSize: 18, color: '#ADA599', maxWidth: 540, margin: '0 auto 56px', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 18, color: t.textMuted, maxWidth: 540, margin: '0 auto 56px', lineHeight: 1.6 }}>
               Visual identity system for three product brands — the platform, the intelligence, and the network.
             </p>
 
@@ -1737,16 +1797,16 @@ export default function DesignStudy() {
                   key={p.id}
                   onClick={() => document.getElementById(p.id)?.scrollIntoView({ behavior: 'smooth' })}
                   style={{
-                    background: '#141210', border: '1px solid #282724', borderRadius: 16,
+                    background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
                     padding: 24, cursor: 'pointer', textAlign: 'center',
                     transition: 'all 0.25s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = p.accent; e.currentTarget.style.boxShadow = `0 4px 24px ${p.accent}15`; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#282724'; e.currentTarget.style.boxShadow = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.boxShadow = 'none'; }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>{p.icon}</div>
-                  <div style={{ fontSize: 18, fontWeight: 600, color: '#F0EDE8', marginBottom: 4 }}>{p.label}</div>
-                  <div style={{ fontSize: 13, color: '#6B6359' }}>{p.sub}</div>
+                  <div style={{ fontSize: 18, fontWeight: 600, color: t.text, marginBottom: 4 }}>{p.label}</div>
+                  <div style={{ fontSize: 13, color: t.textFaint }}>{p.sub}</div>
                 </button>
               ))}
             </div>
@@ -1760,84 +1820,84 @@ export default function DesignStudy() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 48 }}>
             <NexusIcon size={36} />
             <div>
-              <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: '#F0EDE8' }}>Nexus</h2>
-              <p style={{ fontSize: 14, color: '#6B6359' }}>The AI-Powered Retail Platform</p>
+              <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: t.text }}>Nexus</h2>
+              <p style={{ fontSize: 14, color: t.textFaint }}>The AI-Powered Retail Platform</p>
             </div>
           </div>
 
           {/* Logo sizes */}
-          <SubTitle>Logo — Scale Study</SubTitle>
-          <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', marginBottom: 48 }}>
-            <LogoSizes component={NexusIcon} />
+          <SubTitle theme={theme}>Logo — Scale Study</SubTitle>
+          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+            <LogoSizes component={NexusIcon} theme={theme} />
           </div>
 
           {/* Wordmark */}
-          <SubTitle>Wordmark</SubTitle>
-          <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', marginBottom: 48 }}>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 42, letterSpacing: '0.06em', color: '#F0EDE8' }}>
+          <SubTitle theme={theme}>Wordmark</SubTitle>
+          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 42, letterSpacing: '0.06em', color: t.text }}>
               nexus
             </span>
           </div>
 
           {/* Logo lockups */}
-          <SubTitle>Logo Lockups</SubTitle>
+          <SubTitle theme={theme}>Logo Lockups</SubTitle>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 48 }}>
             {/* Horizontal */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', alignItems: 'center', gap: 12 }}>
               <NexusIcon size={28} />
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 24, letterSpacing: '0.06em', color: '#F0EDE8' }}>nexus</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 24, letterSpacing: '0.06em', color: t.text }}>nexus</span>
             </div>
             {/* Icon only */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <NexusIcon size={48} />
             </div>
             {/* Stacked */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
               <NexusIcon size={36} />
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 18, letterSpacing: '0.06em', color: '#F0EDE8' }}>nexus</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 18, letterSpacing: '0.06em', color: t.text }}>nexus</span>
             </div>
           </div>
 
           {/* Color palette */}
-          <SubTitle>Color Palette</SubTitle>
+          <SubTitle theme={theme}>Color Palette</SubTitle>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 48 }}>
-            <Swatch color="linear-gradient(135deg, #D4A03A, #FFC02A, #FFD666)" name="Gold Gradient" hex="#D4A03A → #FFD666" />
-            <Swatch color="#D4A03A" name="Gold" hex="#D4A03A" />
-            <Swatch color="#FFC02A" name="Amber" hex="#FFC02A" />
-            <Swatch color="#FFD666" name="Light Gold" hex="#FFD666" />
-            <Swatch color="#141210" name="Surface" hex="#141210" />
-            <Swatch color="#1C1B1A" name="Card" hex="#1C1B1A" />
-            <Swatch color="#00C27C" name="Accent Green" hex="#00C27C" />
+            <Swatch theme={theme} color="linear-gradient(135deg, #D4A03A, #FFC02A, #FFD666)" name="Gold Gradient" hex="#D4A03A → #FFD666" />
+            <Swatch theme={theme} color="#D4A03A" name="Gold" hex="#D4A03A" />
+            <Swatch theme={theme} color="#FFC02A" name="Amber" hex="#FFC02A" />
+            <Swatch theme={theme} color="#FFD666" name="Light Gold" hex="#FFD666" />
+            <Swatch theme={theme} color="#141210" name="Surface" hex="#141210" />
+            <Swatch theme={theme} color="#1C1B1A" name="Card" hex="#1C1B1A" />
+            <Swatch theme={theme} color="#00C27C" name="Accent Green" hex="#00C27C" />
           </div>
 
           {/* Usage examples */}
-          <SubTitle>Usage Examples</SubTitle>
+          <SubTitle theme={theme}>Usage Examples</SubTitle>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 48 }}>
             {/* On dark */}
-            <div style={{ background: '#0A0908', borderRadius: 16, padding: 32, border: '1px solid #282724', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: t.bg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <NexusIcon size={48} />
-              <span style={{ marginLeft: 12, fontFamily: "'DM Sans'", fontWeight: 300, fontSize: 24, letterSpacing: '0.06em', color: '#F0EDE8' }}>nexus</span>
+              <span style={{ marginLeft: 12, fontFamily: "'DM Sans'", fontWeight: 300, fontSize: 24, letterSpacing: '0.06em', color: t.text }}>nexus</span>
             </div>
             {/* On card */}
-            <div style={{ background: '#1C1B1A', borderRadius: 16, padding: 32, border: '1px solid #38332B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <NexusIcon size={48} />
-              <span style={{ marginLeft: 12, fontFamily: "'DM Sans'", fontWeight: 300, fontSize: 24, letterSpacing: '0.06em', color: '#F0EDE8' }}>nexus</span>
+              <span style={{ marginLeft: 12, fontFamily: "'DM Sans'", fontWeight: 300, fontSize: 24, letterSpacing: '0.06em', color: t.text }}>nexus</span>
             </div>
             {/* Min size */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
               <NexusIcon size={16} />
-              <span style={{ fontSize: 11, color: '#6B6359' }}>Min: 16px</span>
+              <span style={{ fontSize: 11, color: t.textFaint }}>Min: 16px</span>
             </div>
           </div>
 
           {/* Typography */}
-          <SubTitle>Typography — DM Sans</SubTitle>
-          <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', marginBottom: 48 }}>
-            <TypeSpecimen family="DM Sans" />
+          <SubTitle theme={theme}>Typography — DM Sans</SubTitle>
+          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+            <TypeSpecimen family="DM Sans" theme={theme} />
           </div>
 
           {/* Deep brand exploration */}
-          <NexusDeepSection />
+          <NexusDeepSection theme={theme} />
         </Section>
 
         <div style={divider} />
@@ -1847,41 +1907,41 @@ export default function DesignStudy() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 48 }}>
             <DexSpiral size={36} />
             <div>
-              <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: '#F0EDE8' }}>Dex</h2>
-              <p style={{ fontSize: 14, color: '#6B6359' }}>The AI Agent</p>
+              <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: t.text }}>Dex</h2>
+              <p style={{ fontSize: 14, color: t.textFaint }}>The AI Agent</p>
             </div>
           </div>
 
           {/* Logo sizes */}
-          <SubTitle>Logo — Golden Spiral</SubTitle>
-          <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', marginBottom: 24 }}>
-            <LogoSizes component={DexSpiral} sizes={[24, 36, 48, 72, 96]} />
+          <SubTitle theme={theme}>Logo — Golden Spiral</SubTitle>
+          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 24 }}>
+            <LogoSizes component={DexSpiral} sizes={[24, 36, 48, 72, 96]} theme={theme} />
           </div>
-          <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 540, marginBottom: 48 }}>
+          <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 540, marginBottom: 48 }}>
             The golden spiral represents intelligence unfolding — iterative reasoning that converges toward insight.
             Rooted in the Fibonacci sequence, it evokes nature-inspired AI that grows organically from data.
           </p>
 
           {/* Wordmark */}
-          <SubTitle>Wordmark</SubTitle>
-          <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', marginBottom: 48 }}>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 42, letterSpacing: '0.04em', color: '#F0EDE8' }}>
+          <SubTitle theme={theme}>Wordmark</SubTitle>
+          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 42, letterSpacing: '0.04em', color: t.text }}>
               dex
             </span>
           </div>
 
           {/* Color palette */}
-          <SubTitle>Color Palette</SubTitle>
+          <SubTitle theme={theme}>Color Palette</SubTitle>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 48 }}>
-            <Swatch color="#D4A03A" name="Gold" hex="#D4A03A" />
-            <Swatch color="#FFC02A" name="Amber" hex="#FFC02A" />
-            <Swatch color="#FFD666" name="Warm Gold" hex="#FFD666" />
-            <Swatch color="linear-gradient(135deg, #D4A03A, #FFC02A)" name="Gradient" hex="#D4A03A → #FFC02A" />
-            <Swatch color="#1A1710" name="Agent Dark" hex="#1A1710" />
+            <Swatch theme={theme} color="#D4A03A" name="Gold" hex="#D4A03A" />
+            <Swatch theme={theme} color="#FFC02A" name="Amber" hex="#FFC02A" />
+            <Swatch theme={theme} color="#FFD666" name="Warm Gold" hex="#FFD666" />
+            <Swatch theme={theme} color="linear-gradient(135deg, #D4A03A, #FFC02A)" name="Gradient" hex="#D4A03A → #FFC02A" />
+            <Swatch theme={theme} color="#1A1710" name="Agent Dark" hex="#1A1710" />
           </div>
 
           {/* Agent badge */}
-          <SubTitle>Agent Badge</SubTitle>
+          <SubTitle theme={theme}>Agent Badge</SubTitle>
           <div style={{ display: 'flex', gap: 24, alignItems: 'center', marginBottom: 48, flexWrap: 'wrap' }}>
             <DexBadge size={40} />
             <DexBadge size={56} />
@@ -1890,46 +1950,46 @@ export default function DesignStudy() {
           </div>
 
           {/* Usage: chat bubble, agent card, loading */}
-          <SubTitle>Usage Examples</SubTitle>
+          <SubTitle theme={theme}>Usage Examples</SubTitle>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 48 }}>
             {/* Chat bubble */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 24, border: '1px solid #282724' }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Chat Bubble</div>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Chat Bubble</div>
               <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <DexBadge size={32} />
-                <div style={{ background: '#1C1B1A', borderRadius: '4px 12px 12px 12px', padding: '10px 14px', fontSize: 13, color: '#ADA599', lineHeight: 1.5, flex: 1 }}>
+                <div style={{ background: theme === 'dark' ? '#1C1B1A' : '#F5F4F0', borderRadius: '4px 12px 12px 12px', padding: '10px 14px', fontSize: 13, color: t.textMuted, lineHeight: 1.5, flex: 1 }}>
                   I found 3 inventory anomalies across your Denver locations that need attention.
                 </div>
               </div>
             </div>
             {/* Agent card */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 24, border: '1px solid #282724' }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Agent Card</div>
-              <div style={{ background: '#1A1710', borderRadius: 12, padding: 20, border: '1px solid rgba(212,160,58,0.15)', display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Agent Card</div>
+              <div style={{ background: theme === 'dark' ? '#1A1710' : '#FFFDF5', borderRadius: 12, padding: 20, border: '1px solid rgba(212,160,58,0.15)', display: 'flex', alignItems: 'center', gap: 14 }}>
                 <DexBadge size={44} />
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#F0EDE8' }}>Dex</div>
-                  <div style={{ fontSize: 12, color: '#00C27C', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00C27C', display: 'inline-block' }} />
+                  <div style={{ fontSize: 15, fontWeight: 600, color: t.text }}>Dex</div>
+                  <div style={{ fontSize: 12, color: t.accentGreen, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: t.accentGreen, display: 'inline-block' }} />
                     Active
                   </div>
                 </div>
               </div>
             </div>
             {/* Loading state */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 24, border: '1px solid #282724' }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Loading State</div>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Loading State</div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, paddingTop: 8 }}>
                 <div style={{ animation: 'spin 3s linear infinite' }}>
                   <DexSpiral size={48} />
                 </div>
-                <span style={{ fontSize: 13, color: '#6B6359' }}>Dex is thinking...</span>
+                <span style={{ fontSize: 13, color: t.textFaint }}>Dex is thinking...</span>
               </div>
             </div>
           </div>
 
           {/* Deep brand exploration */}
-          <DexDeepSection />
+          <DexDeepSection theme={theme} />
         </Section>
 
         <div style={divider} />
@@ -1939,63 +1999,63 @@ export default function DesignStudy() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 48 }}>
             <ConnectIcon size={36} />
             <div>
-              <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: '#F0EDE8' }}>Connect</h2>
-              <p style={{ fontSize: 14, color: '#6B6359' }}>The B2B Marketplace</p>
+              <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: t.text }}>Connect</h2>
+              <p style={{ fontSize: 14, color: t.textFaint }}>The B2B Marketplace</p>
             </div>
           </div>
 
           {/* Logo sizes */}
-          <SubTitle>Logo — Link Symbol</SubTitle>
-          <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', marginBottom: 24 }}>
-            <LogoSizes component={ConnectIcon} sizes={[24, 36, 48, 72, 96]} />
+          <SubTitle theme={theme}>Logo — Link Symbol</SubTitle>
+          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 24 }}>
+            <LogoSizes component={ConnectIcon} sizes={[24, 36, 48, 72, 96]} theme={theme} />
           </div>
-          <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 540, marginBottom: 48 }}>
+          <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 540, marginBottom: 48 }}>
             The interlocking links represent network, trust, and partnership — the bridge between retailers and brands.
             Two connected nodes symbolize the marketplace relationship.
           </p>
 
           {/* Wordmark */}
-          <SubTitle>Wordmark</SubTitle>
-          <div style={{ background: '#141210', borderRadius: 16, padding: 32, border: '1px solid #282724', marginBottom: 48 }}>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 42, letterSpacing: '0.02em', color: '#F0EDE8' }}>
+          <SubTitle theme={theme}>Wordmark</SubTitle>
+          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 42, letterSpacing: '0.02em', color: t.text }}>
               connect
             </span>
           </div>
 
           {/* Color palette */}
-          <SubTitle>Color Palette</SubTitle>
+          <SubTitle theme={theme}>Color Palette</SubTitle>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 48 }}>
-            <Swatch color="#00C27C" name="Green" hex="#00C27C" />
-            <Swatch color="#00E08E" name="Green Light" hex="#00E08E" />
-            <Swatch color="#64A8E0" name="Blue" hex="#64A8E0" />
-            <Swatch color="linear-gradient(135deg, #00C27C, #64A8E0)" name="Gradient" hex="#00C27C → #64A8E0" />
-            <Swatch color="#042017" name="Deep Green" hex="#042017" />
+            <Swatch theme={theme} color="#00C27C" name="Green" hex="#00C27C" />
+            <Swatch theme={theme} color="#00E08E" name="Green Light" hex="#00E08E" />
+            <Swatch theme={theme} color="#64A8E0" name="Blue" hex="#64A8E0" />
+            <Swatch theme={theme} color="linear-gradient(135deg, #00C27C, #64A8E0)" name="Gradient" hex="#00C27C → #64A8E0" />
+            <Swatch theme={theme} color="#042017" name="Deep Green" hex="#042017" />
           </div>
 
           {/* Network constellation */}
-          <SubTitle>Network Graphic</SubTitle>
-          <div style={{ background: '#0A0908', borderRadius: 16, padding: 24, border: '1px solid #282724', marginBottom: 48, display: 'flex', justifyContent: 'center' }}>
+          <SubTitle theme={theme}>Network Graphic</SubTitle>
+          <div style={{ background: t.bg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}`, marginBottom: 48, display: 'flex', justifyContent: 'center' }}>
             <NetworkConstellation />
           </div>
 
           {/* Usage examples */}
-          <SubTitle>Usage Examples</SubTitle>
+          <SubTitle theme={theme}>Usage Examples</SubTitle>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             {/* Marketplace header */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 24, border: '1px solid #282724' }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Marketplace Header</div>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Marketplace Header</div>
               <div style={{
                 background: 'linear-gradient(135deg, #042017, #0A2A1E)',
                 borderRadius: 12, padding: 20, display: 'flex', alignItems: 'center', gap: 12,
                 border: '1px solid rgba(0,194,124,0.15)',
               }}>
                 <ConnectIcon size={28} />
-                <span style={{ fontFamily: "'DM Sans'", fontWeight: 600, fontSize: 18, letterSpacing: '0.02em', color: '#F0EDE8' }}>connect</span>
+                <span style={{ fontFamily: "'DM Sans'", fontWeight: 600, fontSize: 18, letterSpacing: '0.02em', color: t.text }}>connect</span>
               </div>
             </div>
             {/* PO document */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 24, border: '1px solid #282724' }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>PO Document</div>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>PO Document</div>
               <div style={{ background: '#F8F8F6', borderRadius: 8, padding: 16, color: '#1A1A1A' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <ConnectIcon size={18} />
@@ -2007,8 +2067,8 @@ export default function DesignStudy() {
               </div>
             </div>
             {/* Partner portal */}
-            <div style={{ background: '#141210', borderRadius: 16, padding: 24, border: '1px solid #282724' }}>
-              <div style={{ fontSize: 11, color: '#6B6359', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Partner Portal</div>
+            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+              <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Partner Portal</div>
               <div style={{ background: '#0A1520', borderRadius: 12, padding: 20, border: '1px solid rgba(100,168,224,0.15)', textAlign: 'center' }}>
                 <ConnectIcon size={32} />
                 <div style={{ fontSize: 13, color: '#64A8E0', marginTop: 8 }}>Brand Partner Dashboard</div>
@@ -2017,56 +2077,56 @@ export default function DesignStudy() {
           </div>
 
           {/* Deep brand exploration */}
-          <ConnectDeepSection />
+          <ConnectDeepSection theme={theme} />
         </Section>
 
         <div style={divider} />
 
         {/* ═══ FULL COLOR SYSTEM ═══ */}
         <Section id="colors">
-          <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: '#F0EDE8', marginBottom: 48 }}>
+          <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: t.text, marginBottom: 48 }}>
             Color System
           </h2>
 
-          <SubTitle>Brand Primaries</SubTitle>
+          <SubTitle theme={theme}>Brand Primaries</SubTitle>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 48 }}>
-            <Swatch color="#D4A03A" name="Gold" hex="#D4A03A" />
-            <Swatch color="#FFC02A" name="Amber" hex="#FFC02A" />
-            <Swatch color="#FFD666" name="Light Gold" hex="#FFD666" />
-            <Swatch color="#00C27C" name="Green" hex="#00C27C" />
-            <Swatch color="#00E08E" name="Green Light" hex="#00E08E" />
-            <Swatch color="#64A8E0" name="Blue" hex="#64A8E0" />
-            <Swatch color="#B598E8" name="Purple" hex="#B598E8" />
+            <Swatch theme={theme} color="#D4A03A" name="Gold" hex="#D4A03A" />
+            <Swatch theme={theme} color="#FFC02A" name="Amber" hex="#FFC02A" />
+            <Swatch theme={theme} color="#FFD666" name="Light Gold" hex="#FFD666" />
+            <Swatch theme={theme} color="#00C27C" name="Green" hex="#00C27C" />
+            <Swatch theme={theme} color="#00E08E" name="Green Light" hex="#00E08E" />
+            <Swatch theme={theme} color="#64A8E0" name="Blue" hex="#64A8E0" />
+            <Swatch theme={theme} color="#B598E8" name="Purple" hex="#B598E8" />
           </div>
 
-          <SubTitle>Dark Theme Surfaces</SubTitle>
+          <SubTitle theme={theme}>Dark Theme Surfaces</SubTitle>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 48 }}>
-            <Swatch color="#0A0908" name="Background" hex="#0A0908" />
-            <Swatch color="#141210" name="Surface" hex="#141210" />
-            <Swatch color="#1C1B1A" name="Card" hex="#1C1B1A" />
-            <Swatch color="#282724" name="Hover" hex="#282724" />
-            <Swatch color="#38332B" name="Border" hex="#38332B" />
-            <Swatch color="#042017" name="Sidebar" hex="#042017" />
+            <Swatch theme={theme} color="#0A0908" name="Background" hex="#0A0908" />
+            <Swatch theme={theme} color="#141210" name="Surface" hex="#141210" />
+            <Swatch theme={theme} color="#1C1B1A" name="Card" hex="#1C1B1A" />
+            <Swatch theme={theme} color="#282724" name="Hover" hex="#282724" />
+            <Swatch theme={theme} color="#38332B" name="Border" hex="#38332B" />
+            <Swatch theme={theme} color="#042017" name="Sidebar" hex="#042017" />
           </div>
 
-          <SubTitle>Text</SubTitle>
+          <SubTitle theme={theme}>Text</SubTitle>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 48 }}>
-            <Swatch color="#F0EDE8" name="Primary" hex="#F0EDE8" />
-            <Swatch color="#ADA599" name="Secondary" hex="#ADA599" />
-            <Swatch color="#6B6359" name="Muted" hex="#6B6359" />
+            <Swatch theme={theme} color="#F0EDE8" name="Primary" hex="#F0EDE8" />
+            <Swatch theme={theme} color="#ADA599" name="Secondary" hex="#ADA599" />
+            <Swatch theme={theme} color="#6B6359" name="Muted" hex="#6B6359" />
           </div>
 
-          <SubTitle>Semantic</SubTitle>
+          <SubTitle theme={theme}>Semantic</SubTitle>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}>
-            <Swatch color="#00C27C" name="Success" hex="#00C27C" />
-            <Swatch color="#FFC02A" name="Warning" hex="#FFC02A" />
-            <Swatch color="#E87068" name="Error" hex="#E87068" />
-            <Swatch color="#64A8E0" name="Info" hex="#64A8E0" />
+            <Swatch theme={theme} color="#00C27C" name="Success" hex="#00C27C" />
+            <Swatch theme={theme} color="#FFC02A" name="Warning" hex="#FFC02A" />
+            <Swatch theme={theme} color="#E87068" name="Error" hex="#E87068" />
+            <Swatch theme={theme} color="#64A8E0" name="Info" hex="#64A8E0" />
           </div>
 
           {/* Deep color & typography exploration */}
           <div style={{ marginTop: 56 }}>
-            <ColorTypographySection />
+            <ColorTypographySection theme={theme} />
           </div>
         </Section>
 
@@ -2074,10 +2134,10 @@ export default function DesignStudy() {
 
         {/* ═══ PRODUCT FAMILY ═══ */}
         <Section id="family">
-          <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: '#F0EDE8', marginBottom: 16 }}>
+          <h2 style={{ fontSize: 32, fontWeight: 300, letterSpacing: '-0.01em', color: t.text, marginBottom: 16 }}>
             Product Family
           </h2>
-          <p style={{ fontSize: 14, color: '#ADA599', lineHeight: 1.7, maxWidth: 540, marginBottom: 48 }}>
+          <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 540, marginBottom: 48 }}>
             Three products, one platform. Nexus is the surface. Dex is the intelligence. Connect is the network.
           </p>
 
@@ -2091,11 +2151,11 @@ export default function DesignStudy() {
               { icon: <ConnectIcon size={48} />, name: 'connect', sub: 'Network', nameStyle: { fontWeight: 600, letterSpacing: '0.02em' }, accent: '#00C27C' },
             ].map((p, i) => (
               <div key={i} style={{
-                background: '#141210', borderRadius: 16, padding: 32,
-                border: '1px solid #282724', textAlign: 'center',
+                background: t.cardBg, borderRadius: 16, padding: 32,
+                border: `1px solid ${t.border}`, textAlign: 'center',
               }}>
                 <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'center' }}>{p.icon}</div>
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 24, color: '#F0EDE8', marginBottom: 6, ...p.nameStyle }}>{p.name}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 24, color: t.text, marginBottom: 6, ...p.nameStyle }}>{p.name}</div>
                 <div style={{ fontSize: 13, color: p.accent }}>{p.sub}</div>
               </div>
             ))}
@@ -2106,17 +2166,17 @@ export default function DesignStudy() {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <NexusIcon size={20} />
-                <span style={{ fontSize: 14, color: '#ADA599' }}>Nexus</span>
+                <span style={{ fontSize: 14, color: t.textMuted }}>Nexus</span>
               </div>
-              <span style={{ color: '#38332B', fontSize: 20 }}>→</span>
+              <span style={{ color: t.border, fontSize: 20 }}>→</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <DexSpiral size={20} />
-                <span style={{ fontSize: 14, color: '#ADA599' }}>Dex</span>
+                <span style={{ fontSize: 14, color: t.textMuted }}>Dex</span>
               </div>
-              <span style={{ color: '#38332B', fontSize: 20 }}>→</span>
+              <span style={{ color: t.border, fontSize: 20 }}>→</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <ConnectIcon size={20} />
-                <span style={{ fontSize: 14, color: '#ADA599' }}>Connect</span>
+                <span style={{ fontSize: 14, color: t.textMuted }}>Connect</span>
               </div>
             </div>
           </div>
@@ -2124,14 +2184,14 @@ export default function DesignStudy() {
           {/* Powered by */}
           <div style={{
             background: 'linear-gradient(135deg, rgba(212,160,58,0.06), rgba(0,194,124,0.04))',
-            borderRadius: 16, padding: 32, border: '1px solid #282724', textAlign: 'center',
+            borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, textAlign: 'center',
           }}>
-            <p style={{ fontSize: 12, color: '#6B6359', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>
+            <p style={{ fontSize: 12, color: t.textFaint, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>
               Powered by
             </p>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
               <NexusIcon size={24} />
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 22, color: '#F0EDE8', letterSpacing: '0.02em' }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 22, color: t.text, letterSpacing: '0.02em' }}>
                 Dutchie AI
               </span>
             </div>
@@ -2142,26 +2202,40 @@ export default function DesignStudy() {
 
         {/* ═══ PRODUCT HIERARCHY (PMM) ═══ */}
         <Section id="hierarchy">
-          <ProductHierarchySection />
+          <ProductHierarchySection theme={theme} />
         </Section>
 
         <div style={divider} />
 
         {/* ═══ D-NAME EXPLORATION ═══ */}
         <Section id="dnames">
-          <DNameExplorationSection />
+          <DNameExplorationSection theme={theme} />
         </Section>
 
         <div style={divider} />
 
         {/* ═══ VISUAL STYLES ═══ */}
         <Section id="styles">
-          <VisualStylesSection />
+          <VisualStylesSection theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ POSITIONING DEEP DIVE ═══ */}
+        <Section id="positioning">
+          <PositioningDeepDive theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ SUITE NAMING DEEP DIVE ═══ */}
+        <Section id="naming">
+          <SuiteNamingDeepDive theme={theme} />
         </Section>
 
         {/* Footer */}
-        <div style={{ padding: '48px 0', textAlign: 'center', borderTop: '1px solid #282724' }}>
-          <p style={{ fontSize: 12, color: '#6B6359' }}>
+        <div style={{ padding: '48px 0', textAlign: 'center', borderTop: `1px solid ${t.border}` }}>
+          <p style={{ fontSize: 12, color: t.textFaint }}>
             Brand Identity Study — Dutchie AI Product Suite — 2026
           </p>
         </div>
