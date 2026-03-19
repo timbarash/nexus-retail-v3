@@ -9,6 +9,7 @@ import { PositioningDeepDive } from './PositioningDeepDive';
 import { SuiteNamingDeepDive } from './SuiteNamingDeepDive';
 import { ExecutiveSummary } from './ExecutiveSummary';
 import { DexB2CvsB2BSection } from './DexB2CvsB2BSection';
+import { SalesDeckIntegration } from './SalesDeckIntegration';
 
 /* ─── Theme Definitions ─── */
 const themes = {
@@ -187,6 +188,7 @@ const SECTIONS = [
   { id: 'positioning', label: 'Positioning' },
   { id: 'naming', label: 'Naming' },
   { id: 'b2c-b2b', label: 'B2C vs B2B' },
+  { id: 'sales-deck', label: 'Sales Deck' },
 ];
 
 function SectionNav({ active, theme = 'dark', setTheme }) {
@@ -2263,6 +2265,13 @@ export default function DesignStudy() {
         {/* ═══ DEX B2C vs B2B ═══ */}
         <Section id="b2c-b2b">
           <DexB2CvsB2BSection theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ SALES DECK INTEGRATION ═══ */}
+        <Section id="sales-deck">
+          <SalesDeckIntegration theme={theme} />
         </Section>
 
         {/* Footer */}
