@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import NexusIcon from '../components/NexusIcon';
 import { NexusDeepSection } from '../components/NexusDeepSection';
 import { ColorTypographySection } from './ColorTypographySection';
+import { ProductHierarchySection } from './ProductHierarchySection';
+import { DNameExplorationSection } from './DNameExplorationSection';
+import { VisualStylesSection } from './VisualStylesSection';
 
 /* ─── Golden Spiral SVG (Dex Logo) ─── */
 function DexSpiral({ size = 48, className = '', style = {} }) {
@@ -151,6 +154,9 @@ const SECTIONS = [
   { id: 'connect', label: 'Connect' },
   { id: 'colors', label: 'Colors' },
   { id: 'family', label: 'Family' },
+  { id: 'hierarchy', label: 'Hierarchy' },
+  { id: 'dnames', label: 'D-Names' },
+  { id: 'styles', label: 'Styles' },
 ];
 
 function SectionNav({ active }) {
@@ -2130,6 +2136,27 @@ export default function DesignStudy() {
               </span>
             </div>
           </div>
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ PRODUCT HIERARCHY (PMM) ═══ */}
+        <Section id="hierarchy">
+          <ProductHierarchySection />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ D-NAME EXPLORATION ═══ */}
+        <Section id="dnames">
+          <DNameExplorationSection />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ VISUAL STYLES ═══ */}
+        <Section id="styles">
+          <VisualStylesSection />
         </Section>
 
         {/* Footer */}
