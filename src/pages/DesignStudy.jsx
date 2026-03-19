@@ -19,12 +19,13 @@ const themes = {
     accentGreen: '#00C27C',
   },
   light: {
-    bg: '#FAFAF8', cardBg: '#FFFFFF', border: '#E5E2DC',
-    text: '#1A1917', textMuted: '#5C574F', textFaint: '#8C8680',
-    navBg: 'rgba(250,250,248,0.92)',
-    divider: '#E5E2DC',
-    accentGold: '#B8860B', accentGoldLight: '#DAA520', accentGoldLighter: '#F0C75E',
-    accentGreen: '#059669',
+    bg: '#FFFFFF', cardBg: '#F8F7F5', border: '#E8E5E0',
+    text: '#1C1917', textMuted: '#57534E', textFaint: '#A8A29E',
+    navBg: 'rgba(255,255,255,0.95)',
+    divider: '#E8E5E0',
+    // Gold accents darkened for contrast on white backgrounds
+    accentGold: '#A17A1A', accentGoldLight: '#C49A2A', accentGoldLighter: '#D4A03A',
+    accentGreen: '#047857',
   }
 };
 
@@ -469,6 +470,7 @@ export function ConnectDeepSection({ theme = 'dark' }) {
     borderRadius: 16,
     padding: 32,
     border: `1px solid ${t.border}`,
+    boxShadow: theme === 'light' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
   };
 
   const divider = {
@@ -882,6 +884,7 @@ export function ConnectDeepSection({ theme = 'dark' }) {
               borderRadius: 12,
               padding: '16px 20px',
               border: `1px solid ${t.border}`,
+              boxShadow: theme === 'light' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
               display: 'flex',
               alignItems: 'center',
               gap: 10,
@@ -1127,6 +1130,7 @@ export function DexDeepSection({ theme = 'dark' }) {
   const card = {
     background: t.cardBg, borderRadius: 16, padding: 32,
     border: `1px solid ${t.border}`,
+    boxShadow: theme === 'light' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
   };
 
   const nameStudies = [
@@ -1738,7 +1742,9 @@ export default function DesignStudy() {
       document.head.appendChild(link);
     }
     document.body.style.background = t.bg;
+    document.body.style.transition = 'background 0.3s ease';
     document.documentElement.style.background = t.bg;
+    document.documentElement.style.transition = 'background 0.3s ease';
   }, [theme, t.bg]);
 
   // Intersection observer for active section
@@ -1766,6 +1772,15 @@ export default function DesignStudy() {
   const divider = {
     height: 1, background: `linear-gradient(90deg, transparent, ${t.border}, transparent)`,
     margin: '0',
+  };
+
+  // Light-mode card shadow for grounding cards on white surfaces
+  const cardShadow = theme === 'light' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none';
+
+  // Base card style used throughout the main layout
+  const card = {
+    background: t.cardBg, borderRadius: 16, padding: 32,
+    border: `1px solid ${t.border}`, boxShadow: cardShadow,
   };
 
   return (
@@ -1799,10 +1814,10 @@ export default function DesignStudy() {
                   style={{
                     background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
                     padding: 24, cursor: 'pointer', textAlign: 'center',
-                    transition: 'all 0.25s',
+                    transition: 'all 0.25s', boxShadow: cardShadow,
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = p.accent; e.currentTarget.style.boxShadow = `0 4px 24px ${p.accent}15`; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.boxShadow = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.boxShadow = cardShadow; }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>{p.icon}</div>
                   <div style={{ fontSize: 18, fontWeight: 600, color: t.text, marginBottom: 4 }}>{p.label}</div>
@@ -1827,13 +1842,13 @@ export default function DesignStudy() {
 
           {/* Logo sizes */}
           <SubTitle theme={theme}>Logo — Scale Study</SubTitle>
-          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+          <div style={{ ...card, marginBottom: 48 }}>
             <LogoSizes component={NexusIcon} theme={theme} />
           </div>
 
           {/* Wordmark */}
           <SubTitle theme={theme}>Wordmark</SubTitle>
-          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+          <div style={{ ...card, marginBottom: 48 }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 42, letterSpacing: '0.06em', color: t.text }}>
               nexus
             </span>
@@ -1843,16 +1858,16 @@ export default function DesignStudy() {
           <SubTitle theme={theme}>Logo Lockups</SubTitle>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 48 }}>
             {/* Horizontal */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ ...card, display: 'flex', alignItems: 'center', gap: 12 }}>
               <NexusIcon size={28} />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 24, letterSpacing: '0.06em', color: t.text }}>nexus</span>
             </div>
             {/* Icon only */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ ...card, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <NexusIcon size={48} />
             </div>
             {/* Stacked */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{ ...card, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
               <NexusIcon size={36} />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 18, letterSpacing: '0.06em', color: t.text }}>nexus</span>
             </div>
@@ -1874,17 +1889,17 @@ export default function DesignStudy() {
           <SubTitle theme={theme}>Usage Examples</SubTitle>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 48 }}>
             {/* On dark */}
-            <div style={{ background: t.bg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: t.bg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, boxShadow: cardShadow, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <NexusIcon size={48} />
               <span style={{ marginLeft: 12, fontFamily: "'DM Sans'", fontWeight: 300, fontSize: 24, letterSpacing: '0.06em', color: t.text }}>nexus</span>
             </div>
             {/* On card */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ ...card, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <NexusIcon size={48} />
               <span style={{ marginLeft: 12, fontFamily: "'DM Sans'", fontWeight: 300, fontSize: 24, letterSpacing: '0.06em', color: t.text }}>nexus</span>
             </div>
             {/* Min size */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{ ...card, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
               <NexusIcon size={16} />
               <span style={{ fontSize: 11, color: t.textFaint }}>Min: 16px</span>
             </div>
@@ -1892,7 +1907,7 @@ export default function DesignStudy() {
 
           {/* Typography */}
           <SubTitle theme={theme}>Typography — DM Sans</SubTitle>
-          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+          <div style={{ ...card, marginBottom: 48 }}>
             <TypeSpecimen family="DM Sans" theme={theme} />
           </div>
 
@@ -1914,7 +1929,7 @@ export default function DesignStudy() {
 
           {/* Logo sizes */}
           <SubTitle theme={theme}>Logo — Golden Spiral</SubTitle>
-          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 24 }}>
+          <div style={{ ...card, marginBottom: 24 }}>
             <LogoSizes component={DexSpiral} sizes={[24, 36, 48, 72, 96]} theme={theme} />
           </div>
           <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 540, marginBottom: 48 }}>
@@ -1924,7 +1939,7 @@ export default function DesignStudy() {
 
           {/* Wordmark */}
           <SubTitle theme={theme}>Wordmark</SubTitle>
-          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+          <div style={{ ...card, marginBottom: 48 }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 42, letterSpacing: '0.04em', color: t.text }}>
               dex
             </span>
@@ -1953,7 +1968,7 @@ export default function DesignStudy() {
           <SubTitle theme={theme}>Usage Examples</SubTitle>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 48 }}>
             {/* Chat bubble */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+            <div style={{ ...card, padding: 24 }}>
               <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Chat Bubble</div>
               <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <DexBadge size={32} />
@@ -1963,7 +1978,7 @@ export default function DesignStudy() {
               </div>
             </div>
             {/* Agent card */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+            <div style={{ ...card, padding: 24 }}>
               <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Agent Card</div>
               <div style={{ background: theme === 'dark' ? '#1A1710' : '#FFFDF5', borderRadius: 12, padding: 20, border: '1px solid rgba(212,160,58,0.15)', display: 'flex', alignItems: 'center', gap: 14 }}>
                 <DexBadge size={44} />
@@ -1977,7 +1992,7 @@ export default function DesignStudy() {
               </div>
             </div>
             {/* Loading state */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+            <div style={{ ...card, padding: 24 }}>
               <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Loading State</div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, paddingTop: 8 }}>
                 <div style={{ animation: 'spin 3s linear infinite' }}>
@@ -2006,7 +2021,7 @@ export default function DesignStudy() {
 
           {/* Logo sizes */}
           <SubTitle theme={theme}>Logo — Link Symbol</SubTitle>
-          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 24 }}>
+          <div style={{ ...card, marginBottom: 24 }}>
             <LogoSizes component={ConnectIcon} sizes={[24, 36, 48, 72, 96]} theme={theme} />
           </div>
           <p style={{ fontSize: 14, color: t.textMuted, lineHeight: 1.7, maxWidth: 540, marginBottom: 48 }}>
@@ -2016,7 +2031,7 @@ export default function DesignStudy() {
 
           {/* Wordmark */}
           <SubTitle theme={theme}>Wordmark</SubTitle>
-          <div style={{ background: t.cardBg, borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, marginBottom: 48 }}>
+          <div style={{ ...card, marginBottom: 48 }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 42, letterSpacing: '0.02em', color: t.text }}>
               connect
             </span>
@@ -2034,7 +2049,7 @@ export default function DesignStudy() {
 
           {/* Network constellation */}
           <SubTitle theme={theme}>Network Graphic</SubTitle>
-          <div style={{ background: t.bg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}`, marginBottom: 48, display: 'flex', justifyContent: 'center' }}>
+          <div style={{ background: t.bg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}`, boxShadow: cardShadow, marginBottom: 48, display: 'flex', justifyContent: 'center' }}>
             <NetworkConstellation />
           </div>
 
@@ -2042,7 +2057,7 @@ export default function DesignStudy() {
           <SubTitle theme={theme}>Usage Examples</SubTitle>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             {/* Marketplace header */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+            <div style={{ ...card, padding: 24 }}>
               <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Marketplace Header</div>
               <div style={{
                 background: 'linear-gradient(135deg, #042017, #0A2A1E)',
@@ -2054,7 +2069,7 @@ export default function DesignStudy() {
               </div>
             </div>
             {/* PO document */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+            <div style={{ ...card, padding: 24 }}>
               <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>PO Document</div>
               <div style={{ background: '#F8F8F6', borderRadius: 8, padding: 16, color: '#1A1A1A' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -2067,7 +2082,7 @@ export default function DesignStudy() {
               </div>
             </div>
             {/* Partner portal */}
-            <div style={{ background: t.cardBg, borderRadius: 16, padding: 24, border: `1px solid ${t.border}` }}>
+            <div style={{ ...card, padding: 24 }}>
               <div style={{ fontSize: 11, color: t.textFaint, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Partner Portal</div>
               <div style={{ background: '#0A1520', borderRadius: 12, padding: 20, border: '1px solid rgba(100,168,224,0.15)', textAlign: 'center' }}>
                 <ConnectIcon size={32} />
@@ -2151,8 +2166,7 @@ export default function DesignStudy() {
               { icon: <ConnectIcon size={48} />, name: 'connect', sub: 'Network', nameStyle: { fontWeight: 600, letterSpacing: '0.02em' }, accent: '#00C27C' },
             ].map((p, i) => (
               <div key={i} style={{
-                background: t.cardBg, borderRadius: 16, padding: 32,
-                border: `1px solid ${t.border}`, textAlign: 'center',
+                ...card, textAlign: 'center',
               }}>
                 <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'center' }}>{p.icon}</div>
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 24, color: t.text, marginBottom: 6, ...p.nameStyle }}>{p.name}</div>
@@ -2184,7 +2198,7 @@ export default function DesignStudy() {
           {/* Powered by */}
           <div style={{
             background: 'linear-gradient(135deg, rgba(212,160,58,0.06), rgba(0,194,124,0.04))',
-            borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, textAlign: 'center',
+            borderRadius: 16, padding: 32, border: `1px solid ${t.border}`, boxShadow: cardShadow, textAlign: 'center',
           }}>
             <p style={{ fontSize: 12, color: t.textFaint, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>
               Powered by

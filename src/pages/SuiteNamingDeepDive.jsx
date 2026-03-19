@@ -5,183 +5,291 @@ const themes = {
   light: { bg: '#FAFAF8', cardBg: '#FFFFFF', border: '#E5E2DC', text: '#1A1917', textMuted: '#5C574F', textFaint: '#8C8680', accentGold: '#B8860B', accentGoldLight: '#DAA520', accentGoldLighter: '#F0C75E', accentGreen: '#059669' }
 };
 
-// ---- Data ----
+// ============================================================
+// DATA: Agent Name Candidates
+// ============================================================
 
-const retailNames = [
-  { name: 'Dash', meaning: 'Speed and clarity in a single stroke', mood: 'bold' },
-  { name: 'Deck', meaning: 'Command deck; your operational bridge', mood: 'techy' },
-  { name: 'Den', meaning: 'A cozy space to hunker down with data', mood: 'warm' },
-  { name: 'Dial', meaning: 'Precision control, fine-tuning the details', mood: 'precise' },
-  { name: 'Dome', meaning: 'The all-seeing overview, a panopticon of insight', mood: 'bold' },
-  { name: 'Domain', meaning: 'Your territory, your kingdom of commerce', mood: 'authoritative' },
-  { name: 'Depth', meaning: 'Going beneath the surface of your data', mood: 'techy' },
-  { name: 'Drift', meaning: 'Effortless flow through complex analytics', mood: 'playful' },
-  { name: 'Drive', meaning: 'Ambition and forward momentum', mood: 'bold' },
-  { name: 'Delta', meaning: 'Change, transformation, the difference that matters', mood: 'techy' },
-  { name: 'Dynamo', meaning: 'Raw energy and unstoppable power', mood: 'bold' },
-  { name: 'Datum', meaning: 'The singular truth, the atomic unit of insight', mood: 'techy' },
-  { name: 'Dossier', meaning: 'A complete intelligence file on your business', mood: 'authoritative' },
-  { name: 'Directive', meaning: 'Clear guidance, actionable intelligence', mood: 'authoritative' },
-  { name: 'Dispatch', meaning: 'Sending insights where they are needed, fast', mood: 'bold' },
+const agentCandidates = [
+  {
+    name: 'Dex',
+    origin: 'Dexterity',
+    personality: 'Nimble, sharp, always one step ahead. Your quickest thinker.',
+    conversationTest: 'Hey Dex, how are sales looking today?',
+    scores: { approachability: 5, uniqueness: 4, professionalism: 4 },
+  },
+  {
+    name: 'Kip',
+    origin: 'Quick energy',
+    personality: 'Energetic, eager to help, a bit playful but always delivers.',
+    conversationTest: 'Kip, pull up yesterday\'s top sellers for me.',
+    scores: { approachability: 5, uniqueness: 4, professionalism: 3 },
+  },
+  {
+    name: 'Nev',
+    origin: 'Never miss',
+    personality: 'Wise, calm, the one who always remembers what you forgot.',
+    conversationTest: 'Nev says we\'re running low on that strain again.',
+    scores: { approachability: 4, uniqueness: 4, professionalism: 4 },
+  },
+  {
+    name: 'Taz',
+    origin: 'Energetic force',
+    personality: 'Fast, memorable, a whirlwind of productivity and answers.',
+    conversationTest: 'Ask Taz, it usually knows the answer immediately.',
+    scores: { approachability: 4, uniqueness: 5, professionalism: 3 },
+  },
+  {
+    name: 'Ren',
+    origin: 'Renaissance',
+    personality: 'Knowledgeable, clean, a polymath who connects the dots.',
+    conversationTest: 'Ren, what\'s our best margin product this week?',
+    scores: { approachability: 4, uniqueness: 4, professionalism: 5 },
+  },
+  {
+    name: 'Joss',
+    origin: 'Good fortune',
+    personality: 'Friendly, approachable, warm. The coworker everyone trusts.',
+    conversationTest: 'Joss flagged a compliance issue before I even noticed.',
+    scores: { approachability: 5, uniqueness: 3, professionalism: 4 },
+  },
+  {
+    name: 'Lex',
+    origin: 'Lexicon',
+    personality: 'Smart, precise, articulate. Knows the right word for everything.',
+    conversationTest: 'Lex, break down this week\'s performance by category.',
+    scores: { approachability: 4, uniqueness: 3, professionalism: 5 },
+  },
+  {
+    name: 'Cal',
+    origin: 'Calculated',
+    personality: 'Reliable, steady, the numbers person you always trust.',
+    conversationTest: 'Cal ran the forecast and we should order by Thursday.',
+    scores: { approachability: 4, uniqueness: 3, professionalism: 5 },
+  },
+  {
+    name: 'Sage',
+    origin: 'Wisdom + herb',
+    personality: 'Wise, cannabis-adjacent, the knowing elder of your operation.',
+    conversationTest: 'Sage recommended we shift the edibles display.',
+    scores: { approachability: 4, uniqueness: 4, professionalism: 4 },
+  },
+  {
+    name: 'Wren',
+    origin: 'Small bird',
+    personality: 'Small but sharp, observant, nature-connected. Sees everything.',
+    conversationTest: 'Wren caught that inventory discrepancy before open.',
+    scores: { approachability: 4, uniqueness: 5, professionalism: 4 },
+  },
+  {
+    name: 'Finn',
+    origin: 'Adventure + Irish charm',
+    personality: 'Adventurous, discoverer, brings charm and warmth to data.',
+    conversationTest: 'Finn found three products trending that we don\'t stock yet.',
+    scores: { approachability: 5, uniqueness: 3, professionalism: 3 },
+  },
+  {
+    name: 'Rue',
+    origin: 'Rue herb + French',
+    personality: 'Contemplative, sophisticated, cannabis-adjacent with French flair.',
+    conversationTest: 'Rue analyzed the weekend patterns and suggested new hours.',
+    scores: { approachability: 3, uniqueness: 5, professionalism: 5 },
+  },
 ];
 
-const agentNames = [
-  { name: 'Dex', meaning: 'Dexterity and skill; sharp, nimble, clever', mood: 'bold' },
-  { name: 'Dot', meaning: 'Small but always present, a helpful companion', mood: 'playful' },
-  { name: 'Dart', meaning: 'Quick and precise, hitting the target every time', mood: 'bold' },
-  { name: 'Drift', meaning: 'Flowing naturally through conversation', mood: 'warm' },
-  { name: 'Djinn', meaning: 'A magical being that grants wishes', mood: 'playful' },
-  { name: 'Droid', meaning: 'Reliable, capable, a bit sci-fi', mood: 'techy' },
-  { name: 'Deputy', meaning: 'Your second-in-command, always ready to help', mood: 'warm' },
-  { name: 'Duide', meaning: 'Guide reimagined with a D; a trusted sherpa', mood: 'warm' },
-  { name: 'Delve', meaning: 'Going deep, investigating, unearthing answers', mood: 'techy' },
-  { name: 'Daemon', meaning: 'Background process; always running, always helpful', mood: 'techy' },
-  { name: 'Druid', meaning: 'Ancient wisdom meets modern intelligence', mood: 'warm' },
-  { name: 'Delphi', meaning: 'The oracle, source of prophetic knowledge', mood: 'authoritative' },
-  { name: 'Ditto', meaning: 'It gets you, mirrors your needs perfectly', mood: 'playful' },
-  { name: 'Dimple', meaning: 'Friendly, approachable, makes you smile', mood: 'playful' },
-  { name: 'Dopple', meaning: 'Your digital doppelganger, your AI twin', mood: 'techy' },
+// ============================================================
+// DATA: Platform Name Candidates
+// ============================================================
+
+const platformCandidates = [
+  { name: 'Nexus', tagline: 'The connection point where all your data meets.', usage: 'Open up Nexus to check today\'s numbers.' },
+  { name: 'Pulse', tagline: 'The real-time heartbeat of your business.', usage: 'Pulse is showing a spike in afternoon foot traffic.' },
+  { name: 'Atlas', tagline: 'A map of everything. The comprehensive view.', usage: 'Pull up Atlas \u2014 I need the full picture on Q2.' },
+  { name: 'Prism', tagline: 'See your data from every angle.', usage: 'Prism breaks it down by time, category, and location.' },
+  { name: 'Vertex', tagline: 'Peak performance, always in view.', usage: 'Vertex says we hit a new daily record yesterday.' },
+  { name: 'Signal', tagline: 'Clear insights cutting through the noise.', usage: 'The Signal dashboard flagged three trends to watch.' },
+  { name: 'Beacon', tagline: 'A guiding light for dispensary operators.', usage: 'Beacon\'s forecasting saved us from a stockout last week.' },
+  { name: 'Meridian', tagline: 'The central line guiding your path forward.', usage: 'Meridian shows our loyalty program is underperforming.' },
+  { name: 'Lumen', tagline: 'Illuminating what matters in your business.', usage: 'Lumen lit up three hidden revenue opportunities.' },
+  { name: 'Cortex', tagline: 'The brain behind your retail operation.', usage: 'Cortex processed last month and here\'s what it found.' },
 ];
 
-const b2bNames = [
-  { name: 'Deal', meaning: 'The handshake, the transaction, the core of B2B', mood: 'bold' },
-  { name: 'Dock', meaning: 'Where goods arrive and connections are made', mood: 'techy' },
-  { name: 'Drop', meaning: 'Product drops, deliveries, the moment of exchange', mood: 'playful' },
-  { name: 'Draft', meaning: 'Crafted with care, artisanal commerce', mood: 'warm' },
-  { name: 'District', meaning: 'A neighborhood of brands and retailers', mood: 'authoritative' },
-  { name: 'Depot', meaning: 'The central hub where supply meets demand', mood: 'bold' },
-  { name: 'Duct', meaning: 'The conduit, the pipeline connecting partners', mood: 'techy' },
-  { name: 'Derive', meaning: 'Deriving value from every relationship', mood: 'techy' },
-  { name: 'Direct', meaning: 'Straight to the point, no middleman', mood: 'bold' },
-  { name: 'Distribute', meaning: 'Getting products where they need to go', mood: 'authoritative' },
-  { name: 'Dispatch', meaning: 'Sending orders out with urgency', mood: 'bold' },
-  { name: 'Docket', meaning: 'The organized agenda of commerce', mood: 'precise' },
+// ============================================================
+// DATA: Marketplace Name Candidates
+// ============================================================
+
+const marketplaceCandidates = [
+  { name: 'Connect', tagline: 'Brands meet retailers. Simple as that.', usage: 'We found that vendor on Connect last week.' },
+  { name: 'Bridge', tagline: 'The span between brand and shelf.', usage: 'Bridge has 200 new products from Colorado brands.' },
+  { name: 'Market', tagline: 'The simplest word for what it is.', usage: 'Check Market for the latest wholesale pricing.' },
+  { name: 'Link', tagline: 'Every connection strengthens the chain.', usage: 'Our top supplier just joined Link.' },
+  { name: 'Exchange', tagline: 'Where cannabis commerce happens.', usage: 'Exchange processed 400 orders this month.' },
+  { name: 'Grove', tagline: 'Where brands and retailers grow together.', usage: 'We discovered three craft brands on Grove.' },
+  { name: 'Canopy', tagline: 'The umbrella covering the whole market.', usage: 'Canopy covers every licensed brand in the state.' },
+  { name: 'Relay', tagline: 'Passing quality products down the chain.', usage: 'Relay cut our ordering time in half.' },
+  { name: 'Source', tagline: 'Where great products come from.', usage: 'Source it through Dutchie, guaranteed quality.' },
+  { name: 'Harvest', tagline: 'Gathering the best the market has to offer.', usage: 'Harvest just onboarded 50 new craft producers.' },
 ];
 
-const consumerNames = [
-  { name: 'Dose', meaning: 'Precision, personalization, just the right amount', mood: 'precise' },
-  { name: 'Daze', meaning: 'Wonder, delight, the wow of discovery', mood: 'playful' },
-  { name: 'Dawn', meaning: 'New beginnings, first light, fresh starts', mood: 'warm' },
-  { name: 'Dew', meaning: 'Fresh, natural, morning clarity', mood: 'warm' },
-  { name: 'Dive', meaning: 'Deep exploration, immersive discovery', mood: 'bold' },
-  { name: 'Disq', meaning: 'Discover reimagined; a disc of curated finds', mood: 'techy' },
-  { name: 'Drip', meaning: 'Steady flow of great recommendations', mood: 'playful' },
-  { name: 'Dream', meaning: 'Aspiration, imagination, the ideal experience', mood: 'warm' },
-  { name: 'Desire', meaning: 'What you want before you know you want it', mood: 'bold' },
-  { name: 'Drift', meaning: 'Browse without friction, discover by wandering', mood: 'playful' },
+// ============================================================
+// DATA: Consumer Name Candidates
+// ============================================================
+
+const consumerCandidates = [
+  { name: 'Discover', tagline: 'Find your next favorite.', usage: 'I found that edible on Discover last night.' },
+  { name: 'Bloom', tagline: 'Watch your preferences blossom.', usage: 'Bloom recommended something amazing and it was perfect.' },
+  { name: 'Leaf', tagline: 'Natural. Simple. Cannabis.', usage: 'Check Leaf before you go \u2014 they have great recommendations.' },
+  { name: 'Guide', tagline: 'Personalized guidance, every time.', usage: 'Guide matched me to the exact terpene profile I wanted.' },
+  { name: 'Taste', tagline: 'Curated to your personal preference.', usage: 'My Taste profile knows me better than I know myself.' },
+  { name: 'Match', tagline: 'The right product for the right moment.', usage: 'Match found me three products perfect for sleep.' },
+  { name: 'Wander', tagline: 'Explore, discover, enjoy the journey.', usage: 'I was just wandering on Wander and found a new brand.' },
+  { name: 'Glow', tagline: 'That warm feeling of finding exactly what you need.', usage: 'Glow\'s weekly picks are always spot-on for me.' },
+  { name: 'Dose', tagline: 'Precise. Measured. Personalized.', usage: 'Dose calculated the perfect strength for a beginner.' },
+  { name: 'Path', tagline: 'Your personalized cannabis journey.', usage: 'Path\'s onboarding quiz was actually fun and useful.' },
 ];
 
-const suites = [
+// ============================================================
+// DATA: Suite Combinations
+// ============================================================
+
+const suiteCombinations = [
   {
     id: 1,
-    retail: 'Dash', agent: 'Dex', b2b: 'Deal', consumer: 'Dose',
-    suiteName: 'The Sharp Suite',
-    vibe: 'Speed, precision, commerce, experience. Every name cuts clean. No wasted syllables. This suite means business but never feels cold.',
-    scores: { memorability: 5, professionalism: 5, cannabisFit: 4, distinctiveness: 4 },
+    agent: 'Dex', platform: 'Nexus', marketplace: 'Connect', consumer: 'Bloom',
+    label: 'The Flagship',
+    vibe: 'Familiar names, strong individual identities, easy to remember. The safe-but-excellent choice.',
+    scores: { memorability: 5, professionalism: 5, cannabisFit: 3, cohesion: 4 },
   },
   {
     id: 2,
-    retail: 'Deck', agent: 'Dex', b2b: 'Dock', consumer: 'Dive',
-    suiteName: 'The Naval Suite',
-    vibe: 'Command deck, dexterity, docking bay, deep dive. A nautical thread ties everything together. Strong, adventurous, cohesive.',
-    scores: { memorability: 4, professionalism: 4, cannabisFit: 3, distinctiveness: 5 },
+    agent: 'Dex', platform: 'Pulse', marketplace: 'Bridge', consumer: 'Discover',
+    label: 'The Clear',
+    vibe: 'Action-oriented, every name implies doing something. Energetic and forward-moving.',
+    scores: { memorability: 4, professionalism: 5, cannabisFit: 2, cohesion: 5 },
   },
   {
     id: 3,
-    retail: 'Den', agent: 'Dot', b2b: 'Draft', consumer: 'Dew',
-    suiteName: 'The Soft Suite',
-    vibe: 'Cozy, friendly, crafted, fresh. Every name feels approachable and human. Great for a brand that wants to feel like your neighborhood dispensary.',
-    scores: { memorability: 3, professionalism: 3, cannabisFit: 5, distinctiveness: 3 },
+    agent: 'Dex', platform: 'Atlas', marketplace: 'Grove', consumer: 'Wander',
+    label: 'The Natural',
+    vibe: 'Earthy, cannabis-native, exploration-themed. Feels organic and grounded.',
+    scores: { memorability: 4, professionalism: 4, cannabisFit: 5, cohesion: 5 },
   },
   {
     id: 4,
-    retail: 'Delta', agent: 'Dex', b2b: 'Direct', consumer: 'Dawn',
-    suiteName: 'The Movement Suite',
-    vibe: 'Change, skill, action, new beginnings. Names that imply forward motion and transformation. Bold and aspirational.',
-    scores: { memorability: 4, professionalism: 5, cannabisFit: 3, distinctiveness: 4 },
+    agent: 'Sage', platform: 'Prism', marketplace: 'Exchange', consumer: 'Glow',
+    label: 'The Wise',
+    vibe: 'Sophisticated and cerebral. Every name suggests depth and transformation.',
+    scores: { memorability: 4, professionalism: 5, cannabisFit: 4, cohesion: 4 },
   },
   {
     id: 5,
-    retail: 'Dome', agent: 'Dex', b2b: 'District', consumer: 'Dose',
-    suiteName: 'The Structure Suite',
-    vibe: 'Overview, intelligence, marketplace, precision. Architectural and organized. Feels like a well-designed city.',
-    scores: { memorability: 4, professionalism: 5, cannabisFit: 3, distinctiveness: 4 },
+    agent: 'Ren', platform: 'Signal', marketplace: 'Source', consumer: 'Path',
+    label: 'The Clean',
+    vibe: 'Minimal and modern. No wasted syllables. Pure and precise.',
+    scores: { memorability: 3, professionalism: 5, cannabisFit: 3, cohesion: 5 },
   },
   {
     id: 6,
-    retail: 'Datum', agent: 'Daemon', b2b: 'Depot', consumer: 'Drip',
-    suiteName: 'The Tech Suite',
-    vibe: 'Data-driven, background AI, supply hub, steady flow. The most technical and engineer-friendly of all suites. Pure tech DNA.',
-    scores: { memorability: 3, professionalism: 4, cannabisFit: 2, distinctiveness: 5 },
+    agent: 'Dex', platform: 'Meridian', marketplace: 'Canopy', consumer: 'Dose',
+    label: 'The Cannabis Suite',
+    vibe: 'Industry-rooted. Canopy and Dose are unmistakably cannabis. Meridian guides the way.',
+    scores: { memorability: 4, professionalism: 4, cannabisFit: 5, cohesion: 4 },
   },
   {
     id: 7,
-    retail: 'Depth', agent: 'Delphi', b2b: 'Dock', consumer: 'Dream',
-    suiteName: 'The Oracle Suite',
-    vibe: 'Deep insight, prophetic AI, connection, aspiration. Mystical and wise. The suite that makes AI feel like ancient wisdom.',
-    scores: { memorability: 4, professionalism: 3, cannabisFit: 4, distinctiveness: 5 },
+    agent: 'Kip', platform: 'Beacon', marketplace: 'Relay', consumer: 'Match',
+    label: 'The Friendly',
+    vibe: 'Approachable, warm, nothing intimidating. The suite for a local dispensary that cares.',
+    scores: { memorability: 4, professionalism: 3, cannabisFit: 3, cohesion: 4 },
   },
   {
     id: 8,
-    retail: 'Drive', agent: 'Deputy', b2b: 'Deal', consumer: 'Desire',
-    suiteName: 'The Action Suite',
-    vibe: 'Ambition, assistance, commerce, want. Everything is about doing, achieving, getting. Motivational energy.',
-    scores: { memorability: 4, professionalism: 4, cannabisFit: 3, distinctiveness: 3 },
-  },
-  {
-    id: 9,
-    retail: 'Dynamo', agent: 'Djinn', b2b: 'Drop', consumer: 'Daze',
-    suiteName: 'The Magic Suite',
-    vibe: 'Power, magic, delivery, wonder. The most playful and imaginative suite. Makes cannabis tech feel like an adventure.',
-    scores: { memorability: 5, professionalism: 2, cannabisFit: 5, distinctiveness: 5 },
-  },
-  {
-    id: 10,
-    retail: 'Dial', agent: 'Dex', b2b: 'Docket', consumer: 'Dose',
-    suiteName: 'The Precision Suite',
-    vibe: 'Control, finesse, organized, measured. Everything about accuracy and careful calibration. The pharmacist suite.',
-    scores: { memorability: 3, professionalism: 5, cannabisFit: 4, distinctiveness: 3 },
+    agent: 'Dex', platform: 'Vertex', marketplace: 'Market', consumer: 'Guide',
+    label: 'The Direct',
+    vibe: 'No-nonsense. Vertex aspires up, Market is what it is, Guide does what it says.',
+    scores: { memorability: 4, professionalism: 5, cannabisFit: 2, cohesion: 4 },
   },
 ];
 
-const topThreeIds = [1, 2, 4];
+// ============================================================
+// DATA: Top 3 Head-to-Head
+// ============================================================
 
-// ---- Helper Components ----
+const topThreeSuites = [
+  {
+    agent: 'Dex', platform: 'Nexus', marketplace: 'Connect', consumer: 'Bloom',
+    label: 'The Flagship',
+    meetingTest: '"Let\'s pull up Nexus and ask Dex about Q3 projections, then check Connect for new vendor options."',
+    emailTest: 'Subject: Your Bloom recommendations are ready \u2014 3 new strains matched to your profile',
+    appStoreTest: 'Bloom by Dutchie \u2014 AI-powered cannabis discovery. Find your next favorite strain.',
+    investorTest: '"Dex is our AI copilot, Nexus is the intelligence layer, Connect is the marketplace, and Bloom brings consumers in."',
+  },
+  {
+    agent: 'Dex', platform: 'Atlas', marketplace: 'Grove', consumer: 'Wander',
+    label: 'The Natural',
+    meetingTest: '"Atlas is showing a 15% uptick in pre-rolls. Let me ask Dex what\'s driving it, and check if Grove has new suppliers."',
+    emailTest: 'Subject: Wander into something new \u2014 your personalized picks for the weekend',
+    appStoreTest: 'Wander by Dutchie \u2014 Explore cannabis your way. AI-guided recommendations.',
+    investorTest: '"Our suite is nature-inspired: Atlas maps the market, Dex navigates it, Grove connects it, and Wander lets consumers explore."',
+  },
+  {
+    agent: 'Dex', platform: 'Pulse', marketplace: 'Bridge', consumer: 'Discover',
+    label: 'The Clear',
+    meetingTest: '"Pulse flagged an anomaly this morning. Dex dug into it and Bridge shows the supplier delayed shipment."',
+    emailTest: 'Subject: Discover something new \u2014 curated picks based on your favorites',
+    appStoreTest: 'Discover by Dutchie \u2014 Cannabis recommendations powered by AI.',
+    investorTest: '"Pulse gives operators a heartbeat, Dex is the intelligence, Bridge connects supply, and Discover brings consumers."',
+  },
+];
 
-function SectionHeader({ t, number, title, subtitle }) {
+// ============================================================
+// DATA: Winner Suite
+// ============================================================
+
+const winnerSuite = {
+  agent: { name: 'Dex', tagline: 'Your AI copilot for cannabis retail' },
+  platform: { name: 'Nexus', tagline: 'Intelligence dashboard for dispensary operators' },
+  marketplace: { name: 'Connect', tagline: 'Where brands meet retailers' },
+  consumer: { name: 'Bloom', tagline: 'AI-powered cannabis discovery for consumers' },
+};
+
+// ============================================================
+// SUBCOMPONENTS
+// ============================================================
+
+function SectionHeader({ number, title, subtitle, t }) {
   return (
-    <div style={{ marginBottom: 48 }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 8 }}>
-        <span style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: 14,
-          fontWeight: 700,
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          color: t.accentGold,
-        }}>
+    <div style={{ marginBottom: 48, paddingTop: 64 }}>
+      <div style={{
+        display: 'inline-block',
+        padding: '4px 14px',
+        borderRadius: 20,
+        background: `${t.accentGold}18`,
+        border: `1px solid ${t.accentGold}40`,
+        marginBottom: 16,
+      }}>
+        <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600, color: t.accentGold, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
           Section {number}
         </span>
-        <div style={{ flex: 1, height: 1, background: t.border }} />
       </div>
       <h2 style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontSize: 42,
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 40,
         fontWeight: 800,
         color: t.text,
-        margin: 0,
+        margin: '0 0 8px 0',
         lineHeight: 1.15,
+        letterSpacing: '-0.02em',
       }}>
         {title}
       </h2>
       {subtitle && (
         <p style={{
-          fontFamily: '"DM Sans", sans-serif',
+          fontFamily: 'DM Sans, sans-serif',
           fontSize: 18,
           color: t.textMuted,
-          margin: '12px 0 0 0',
+          margin: 0,
+          maxWidth: 680,
           lineHeight: 1.6,
-          maxWidth: 720,
         }}>
           {subtitle}
         </p>
@@ -190,2202 +298,1725 @@ function SectionHeader({ t, number, title, subtitle }) {
   );
 }
 
-function Card({ t, children, style = {} }) {
+function ScoreBar({ label, value, maxValue = 5, t }) {
+  const pct = (value / maxValue) * 100;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+      <span style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 11,
+        fontWeight: 500,
+        color: t.textFaint,
+        width: 100,
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+        flexShrink: 0,
+      }}>
+        {label}
+      </span>
+      <div style={{
+        flex: 1,
+        height: 6,
+        borderRadius: 3,
+        background: `${t.textFaint}25`,
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          width: `${pct}%`,
+          height: '100%',
+          borderRadius: 3,
+          background: value >= 4 ? t.accentGreen : value >= 3 ? t.accentGold : t.textFaint,
+          transition: 'width 0.6s ease',
+        }} />
+      </div>
+      <span style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 12,
+        fontWeight: 700,
+        color: value >= 4 ? t.accentGreen : value >= 3 ? t.accentGold : t.textFaint,
+        width: 20,
+        textAlign: 'right',
+        flexShrink: 0,
+      }}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function Wordmark({ name, size = 48, color, t }) {
+  return (
+    <span style={{
+      fontFamily: 'DM Sans, sans-serif',
+      fontSize: size,
+      fontWeight: 800,
+      color: color || t.text,
+      letterSpacing: '-0.03em',
+      lineHeight: 1,
+    }}>
+      {name}
+    </span>
+  );
+}
+
+function ConversationBubble({ text, t }) {
+  return (
+    <div style={{
+      background: `${t.accentGold}12`,
+      border: `1px solid ${t.accentGold}30`,
+      borderRadius: 12,
+      padding: '10px 16px',
+      fontFamily: 'DM Sans, sans-serif',
+      fontSize: 14,
+      color: t.textMuted,
+      fontStyle: 'italic',
+      lineHeight: 1.5,
+    }}>
+      &ldquo;{text}&rdquo;
+    </div>
+  );
+}
+
+function QuoteMockup({ label, text, t }) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 11,
+        fontWeight: 600,
+        color: t.accentGold,
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        marginBottom: 6,
+      }}>
+        {label}
+      </div>
+      <div style={{
+        background: `${t.textFaint}08`,
+        border: `1px solid ${t.border}`,
+        borderRadius: 8,
+        padding: '12px 16px',
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 14,
+        color: t.textMuted,
+        fontStyle: 'italic',
+        lineHeight: 1.6,
+      }}>
+        {text}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SECTION 1: The Agent Name
+// ============================================================
+
+function AgentNameSection({ t }) {
+  return (
+    <div>
+      <SectionHeader
+        number="1"
+        title="The Agent Name"
+        subtitle="The AI agent is the product people TALK TO. It needs a name you can say out loud naturally \u2014 in conversation with your team, in a shout across the dispensary floor. It should sound like it could be a person, without being a common real name."
+        t={t}
+      />
+
+      <div style={{
+        background: `${t.accentGold}08`,
+        border: `1px solid ${t.accentGold}25`,
+        borderRadius: 12,
+        padding: '24px 28px',
+        marginBottom: 40,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 14,
+          fontWeight: 600,
+          color: t.accentGold,
+          marginBottom: 12,
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+        }}>
+          Why does the agent name matter most?
+        </div>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 15,
+          color: t.textMuted,
+          lineHeight: 1.7,
+        }}>
+          When a budtender says &ldquo;Hey Dex, how are sales today?&rdquo; the name becomes part of their daily language.
+          No other product in the suite gets spoken aloud this way. The platform is a screen you open. The marketplace
+          is a tool you use. But the agent is someone you talk to. That is why this name carries the most weight.
+        </div>
+      </div>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(340, 1fr))',
+        gap: 20,
+      }}>
+        {agentCandidates.map((c) => (
+          <AgentCandidateCard key={c.name} candidate={c} t={t} />
+        ))}
+      </div>
+
+      <div style={{
+        marginTop: 48,
+        padding: '32px 28px',
+        background: t.cardBg,
+        border: `1px solid ${t.border}`,
+        borderRadius: 14,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 20,
+          fontWeight: 700,
+          color: t.text,
+          marginBottom: 16,
+        }}>
+          Agent Name Leaderboard
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[...agentCandidates]
+            .sort((a, b) => {
+              const totalA = a.scores.approachability + a.scores.uniqueness + a.scores.professionalism;
+              const totalB = b.scores.approachability + b.scores.uniqueness + b.scores.professionalism;
+              return totalB - totalA;
+            })
+            .map((c, idx) => {
+              const total = c.scores.approachability + c.scores.uniqueness + c.scores.professionalism;
+              const maxTotal = 15;
+              const pct = (total / maxTotal) * 100;
+              return (
+                <div key={c.name} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 16,
+                  padding: '10px 16px',
+                  borderRadius: 8,
+                  background: idx === 0 ? `${t.accentGold}12` : 'transparent',
+                  border: idx === 0 ? `1px solid ${t.accentGold}30` : `1px solid transparent`,
+                }}>
+                  <span style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: idx === 0 ? t.accentGold : t.textFaint,
+                    width: 24,
+                    textAlign: 'right',
+                    flexShrink: 0,
+                  }}>
+                    {idx + 1}
+                  </span>
+                  <span style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: idx === 0 ? t.accentGold : t.text,
+                    width: 60,
+                    flexShrink: 0,
+                  }}>
+                    {c.name}
+                  </span>
+                  <div style={{ flex: 1, height: 8, borderRadius: 4, background: `${t.textFaint}18`, overflow: 'hidden' }}>
+                    <div style={{
+                      width: `${pct}%`,
+                      height: '100%',
+                      borderRadius: 4,
+                      background: idx === 0 ? t.accentGold : idx < 3 ? t.accentGreen : t.textMuted,
+                    }} />
+                  </div>
+                  <span style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: idx === 0 ? t.accentGold : t.textMuted,
+                    width: 36,
+                    textAlign: 'right',
+                    flexShrink: 0,
+                  }}>
+                    {total}/15
+                  </span>
+                </div>
+              );
+            })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AgentCandidateCard({ candidate: c, t }) {
+  const total = c.scores.approachability + c.scores.uniqueness + c.scores.professionalism;
+  return (
+    <div style={{
+      background: t.cardBg,
+      border: `1px solid ${t.border}`,
+      borderRadius: 14,
+      padding: '28px 24px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 16,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <Wordmark name={c.name} size={52} t={t} />
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 11,
+          fontWeight: 600,
+          color: t.textFaint,
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          padding: '3px 10px',
+          borderRadius: 12,
+          background: `${t.textFaint}15`,
+        }}>
+          {c.origin}
+        </div>
+      </div>
+
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 14,
+        color: t.textMuted,
+        lineHeight: 1.5,
+      }}>
+        {c.personality}
+      </div>
+
+      <div>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 10,
+          fontWeight: 600,
+          color: t.textFaint,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          marginBottom: 6,
+        }}>
+          The Conversation Test
+        </div>
+        <ConversationBubble text={c.conversationTest} t={t} />
+      </div>
+
+      <div style={{ marginTop: 4 }}>
+        <ScoreBar label="Approachable" value={c.scores.approachability} t={t} />
+        <ScoreBar label="Unique" value={c.scores.uniqueness} t={t} />
+        <ScoreBar label="Professional" value={c.scores.professionalism} t={t} />
+      </div>
+
+      <div style={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginTop: 4,
+      }}>
+        <span style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 13,
+          fontWeight: 700,
+          color: total >= 13 ? t.accentGreen : total >= 11 ? t.accentGold : t.textFaint,
+        }}>
+          Total: {total}/15
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SECTION 2: The Platform Name
+// ============================================================
+
+function PlatformNameSection({ t }) {
+  return (
+    <div>
+      <SectionHeader
+        number="2"
+        title="The Platform Name"
+        subtitle="The intelligence dashboard doesn't need to sound like a person. It should sound like a PRODUCT \u2014 something you open, something you log into, something you trust with your business data."
+        t={t}
+      />
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: 20,
+      }}>
+        {platformCandidates.map((c) => (
+          <PlatformCard key={c.name} candidate={c} t={t} />
+        ))}
+      </div>
+
+      <div style={{
+        marginTop: 40,
+        padding: '24px 28px',
+        background: `${t.accentGold}06`,
+        border: `1px solid ${t.accentGold}20`,
+        borderRadius: 12,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 16,
+          fontWeight: 700,
+          color: t.text,
+          marginBottom: 12,
+        }}>
+          Platform Naming Principles
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+          {[
+            { principle: 'Sounds like software', detail: 'You open it, you check it, you log into it.' },
+            { principle: 'Implies intelligence', detail: 'It sees patterns, predicts, illuminates.' },
+            { principle: 'Works with Dutchie', detail: '"Dutchie Nexus" sounds professional and complete.' },
+            { principle: 'No person needed', detail: 'Nobody says "Hey Nexus" \u2014 they say "Open Nexus."' },
+          ].map((p) => (
+            <div key={p.principle} style={{
+              fontFamily: 'DM Sans, sans-serif',
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: t.accentGold, marginBottom: 4 }}>
+                {p.principle}
+              </div>
+              <div style={{ fontSize: 13, color: t.textMuted, lineHeight: 1.5 }}>
+                {p.detail}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PlatformCard({ candidate: c, t }) {
+  return (
+    <div style={{
+      background: t.cardBg,
+      border: `1px solid ${t.border}`,
+      borderRadius: 14,
+      padding: '28px 24px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 14,
+    }}>
+      <Wordmark name={c.name} size={44} t={t} />
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 15,
+        color: t.textMuted,
+        lineHeight: 1.5,
+      }}>
+        {c.tagline}
+      </div>
+      <div>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 10,
+          fontWeight: 600,
+          color: t.textFaint,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          marginBottom: 6,
+        }}>
+          In Use
+        </div>
+        <ConversationBubble text={c.usage} t={t} />
+      </div>
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 12,
+        color: t.textFaint,
+        marginTop: 4,
+      }}>
+        Dutchie {c.name}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SECTION 3: The Marketplace Name
+// ============================================================
+
+function MarketplaceNameSection({ t }) {
+  return (
+    <div>
+      <SectionHeader
+        number="3"
+        title="The Marketplace Name"
+        subtitle="B2B commerce \u2014 where brands sell to retailers. This name should convey connection, commerce, and trust. It can lean into the cannabis space or stay generic."
+        t={t}
+      />
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: 20,
+      }}>
+        {marketplaceCandidates.map((c) => (
+          <MarketplaceCard key={c.name} candidate={c} t={t} />
+        ))}
+      </div>
+
+      <div style={{
+        marginTop: 40,
+        padding: '24px 28px',
+        background: t.cardBg,
+        border: `1px solid ${t.border}`,
+        borderRadius: 12,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 16,
+          fontWeight: 700,
+          color: t.text,
+          marginBottom: 16,
+        }}>
+          Cannabis Resonance Scale
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {[
+            { name: 'Canopy', level: 5, label: 'Deeply cannabis' },
+            { name: 'Grove', level: 4, label: 'Nature / cannabis adjacent' },
+            { name: 'Harvest', level: 4, label: 'Agricultural / cannabis' },
+            { name: 'Source', level: 2, label: 'Generic but fitting' },
+            { name: 'Bridge', level: 1, label: 'Fully generic' },
+            { name: 'Connect', level: 1, label: 'Fully generic' },
+            { name: 'Market', level: 1, label: 'Fully generic' },
+            { name: 'Exchange', level: 1, label: 'Fully generic' },
+            { name: 'Link', level: 1, label: 'Fully generic' },
+            { name: 'Relay', level: 1, label: 'Fully generic' },
+          ].map((item) => (
+            <div key={item.name} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 14,
+                fontWeight: 600,
+                color: t.text,
+                width: 80,
+                flexShrink: 0,
+              }}>
+                {item.name}
+              </span>
+              <div style={{
+                flex: 1,
+                height: 6,
+                borderRadius: 3,
+                background: `${t.textFaint}18`,
+                overflow: 'hidden',
+              }}>
+                <div style={{
+                  width: `${(item.level / 5) * 100}%`,
+                  height: '100%',
+                  borderRadius: 3,
+                  background: item.level >= 4 ? t.accentGreen : item.level >= 2 ? t.accentGold : t.textFaint,
+                }} />
+              </div>
+              <span style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 11,
+                color: t.textFaint,
+                width: 140,
+                flexShrink: 0,
+              }}>
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MarketplaceCard({ candidate: c, t }) {
+  return (
+    <div style={{
+      background: t.cardBg,
+      border: `1px solid ${t.border}`,
+      borderRadius: 14,
+      padding: '28px 24px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 14,
+    }}>
+      <Wordmark name={c.name} size={42} t={t} />
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 15,
+        color: t.textMuted,
+        lineHeight: 1.5,
+      }}>
+        {c.tagline}
+      </div>
+      <div>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 10,
+          fontWeight: 600,
+          color: t.textFaint,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          marginBottom: 6,
+        }}>
+          In Use
+        </div>
+        <ConversationBubble text={c.usage} t={t} />
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SECTION 4: The Consumer Name
+// ============================================================
+
+function ConsumerNameSection({ t }) {
+  return (
+    <div>
+      <SectionHeader
+        number="4"
+        title="The Consumer Name"
+        subtitle="AI-powered product recommendations for end consumers. This name shows up in app stores, on phones, in texts between friends. It needs to feel inviting, personal, and just a little magical."
+        t={t}
+      />
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: 20,
+      }}>
+        {consumerCandidates.map((c) => (
+          <ConsumerCard key={c.name} candidate={c} t={t} />
+        ))}
+      </div>
+
+      <div style={{
+        marginTop: 40,
+        padding: '24px 28px',
+        background: t.cardBg,
+        border: `1px solid ${t.border}`,
+        borderRadius: 12,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 16,
+          fontWeight: 700,
+          color: t.text,
+          marginBottom: 16,
+        }}>
+          The Friend Test: Would you text this name to someone?
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+          {consumerCandidates.map((c) => {
+            const friendScore = ['Bloom', 'Discover', 'Glow', 'Wander'].includes(c.name) ? 'high' :
+              ['Guide', 'Match', 'Path'].includes(c.name) ? 'medium' : 'low';
+            const friendColor = friendScore === 'high' ? t.accentGreen : friendScore === 'medium' ? t.accentGold : t.textFaint;
+            return (
+              <div key={c.name} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '8px 14px',
+                borderRadius: 8,
+                background: friendScore === 'high' ? `${t.accentGreen}10` : 'transparent',
+                border: `1px solid ${friendScore === 'high' ? `${t.accentGreen}25` : t.border}`,
+              }}>
+                <span style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: friendColor,
+                  width: 70,
+                  flexShrink: 0,
+                }}>
+                  {c.name}
+                </span>
+                <span style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 12,
+                  color: t.textMuted,
+                  fontStyle: 'italic',
+                }}>
+                  &ldquo;Check out {c.name}, it found me the perfect strain&rdquo;
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ConsumerCard({ candidate: c, t }) {
+  return (
+    <div style={{
+      background: t.cardBg,
+      border: `1px solid ${t.border}`,
+      borderRadius: 14,
+      padding: '28px 24px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 14,
+    }}>
+      <Wordmark name={c.name} size={42} t={t} />
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 15,
+        color: t.textMuted,
+        lineHeight: 1.5,
+      }}>
+        {c.tagline}
+      </div>
+      <div>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 10,
+          fontWeight: 600,
+          color: t.textFaint,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          marginBottom: 6,
+        }}>
+          How a Customer Says It
+        </div>
+        <ConversationBubble text={c.usage} t={t} />
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SECTION 5: Best Suite Combinations
+// ============================================================
+
+function SuiteCombinationsSection({ t }) {
+  return (
+    <div>
+      <SectionHeader
+        number="5"
+        title="Best Suite Combinations"
+        subtitle="Each product is strong alone. But the four-name suite has to feel cohesive, memorable, and differentiated as a family. Here are eight complete suites."
+        t={t}
+      />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+        {suiteCombinations.map((suite) => (
+          <SuiteRow key={suite.id} suite={suite} t={t} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SuiteRow({ suite: s, t }) {
+  const roleLabels = ['AI Agent', 'Platform', 'Marketplace', 'Consumer'];
+  const names = [s.agent, s.platform, s.marketplace, s.consumer];
+  const roleColors = [t.accentGold, t.accentGreen, t.accentGoldLight, t.textMuted];
+
   return (
     <div style={{
       background: t.cardBg,
       border: `1px solid ${t.border}`,
       borderRadius: 16,
-      padding: 32,
-      ...style,
-    }}>
-      {children}
-    </div>
-  );
-}
-
-function MoodTag({ t, mood }) {
-  const moodColors = {
-    bold: t.accentGold,
-    techy: '#5B9BD5',
-    warm: '#E8834A',
-    playful: '#C06BD0',
-    precise: t.accentGreen,
-    authoritative: '#7B8CDE',
-  };
-  const color = moodColors[mood] || t.textMuted;
-  return (
-    <span style={{
-      fontFamily: '"DM Sans", sans-serif',
-      fontSize: 10,
-      fontWeight: 700,
-      letterSpacing: '0.1em',
-      textTransform: 'uppercase',
-      color: color,
-      background: `${color}18`,
-      padding: '3px 8px',
-      borderRadius: 4,
-    }}>
-      {mood}
-    </span>
-  );
-}
-
-function RoleBadge({ t, role }) {
-  const roleColors = {
-    retail: t.accentGold,
-    agent: t.accentGreen,
-    b2b: '#5B9BD5',
-    consumer: '#C06BD0',
-  };
-  const roleLabels = {
-    retail: 'Retail Platform',
-    agent: 'AI Agent',
-    b2b: 'B2B Marketplace',
-    consumer: 'Consumer',
-  };
-  const color = roleColors[role] || t.textMuted;
-  return (
-    <span style={{
-      fontFamily: '"DM Sans", sans-serif',
-      fontSize: 10,
-      fontWeight: 700,
-      letterSpacing: '0.12em',
-      textTransform: 'uppercase',
-      color: color,
-      border: `1px solid ${color}40`,
-      background: `${color}12`,
-      padding: '4px 10px',
-      borderRadius: 6,
-      display: 'inline-block',
-    }}>
-      {roleLabels[role]}
-    </span>
-  );
-}
-
-function NamePill({ t, name, meaning, mood, roleColor, size = 'normal' }) {
-  const isLarge = size === 'large';
-  return (
-    <div style={{
-      background: t.cardBg,
-      border: `1px solid ${t.border}`,
-      borderRadius: 12,
-      padding: isLarge ? '20px 24px' : '14px 18px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 6,
-      borderLeft: `3px solid ${roleColor}`,
-      transition: 'border-color 0.2s',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-        <span style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: isLarge ? 28 : 22,
-          fontWeight: 800,
-          color: t.text,
-          letterSpacing: '-0.02em',
-        }}>
-          {name}
-        </span>
-        <MoodTag t={t} mood={mood} />
-      </div>
-      <span style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontSize: 13,
-        color: t.textMuted,
-        lineHeight: 1.4,
-      }}>
-        {meaning}
-      </span>
-    </div>
-  );
-}
-
-function ScoreBar({ t, label, value, maxValue = 5 }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-      <span style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontSize: 12,
-        color: t.textMuted,
-        width: 120,
-        textAlign: 'right',
-        flexShrink: 0,
-      }}>
-        {label}
-      </span>
-      <div style={{ display: 'flex', gap: 4 }}>
-        {Array.from({ length: maxValue }).map((_, i) => (
-          <div
-            key={i}
-            style={{
-              width: 18,
-              height: 18,
-              borderRadius: '50%',
-              background: i < value ? t.accentGold : `${t.textFaint}30`,
-              border: i < value ? 'none' : `1px solid ${t.textFaint}40`,
-              transition: 'background 0.2s',
-            }}
-          />
-        ))}
-      </div>
-      <span style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontSize: 14,
-        fontWeight: 700,
-        color: value >= 4 ? t.accentGold : t.textFaint,
-        width: 28,
-      }}>
-        {value}/{maxValue}
-      </span>
-    </div>
-  );
-}
-
-function WordmarkLockup({ t, names, roles, large = false }) {
-  const roleColors = {
-    retail: t.accentGold,
-    agent: t.accentGreen,
-    b2b: '#5B9BD5',
-    consumer: '#C06BD0',
-  };
-  const roleLabels = {
-    retail: 'Retail',
-    agent: 'Agent',
-    b2b: 'B2B',
-    consumer: 'Consumer',
-  };
-  return (
-    <div style={{ display: 'flex', gap: large ? 36 : 24, flexWrap: 'wrap', justifyContent: 'center' }}>
-      {names.map((name, i) => (
-        <div key={i} style={{ textAlign: 'center' }}>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: large ? 48 : 34,
-            fontWeight: 800,
-            color: t.text,
-            letterSpacing: '-0.03em',
-            lineHeight: 1,
-            marginBottom: 8,
-          }}>
-            {name}
-          </div>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: roleColors[roles[i]],
-          }}>
-            {roleLabels[roles[i]]}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function QuoteCard({ t, quote, attribution }) {
-  return (
-    <div style={{
-      background: `${t.accentGold}08`,
-      border: `1px solid ${t.accentGold}25`,
-      borderLeft: `4px solid ${t.accentGold}`,
-      borderRadius: 12,
-      padding: '28px 32px',
-      margin: '24px 0',
+      padding: '28px 28px 24px',
+      overflow: 'hidden',
     }}>
       <div style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontSize: 22,
-        fontWeight: 500,
-        fontStyle: 'italic',
-        color: t.text,
-        lineHeight: 1.5,
-        marginBottom: attribution ? 12 : 0,
-      }}>
-        "{quote}"
-      </div>
-      {attribution && (
-        <div style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: 13,
-          color: t.textMuted,
-        }}>
-          -- {attribution}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ComparisonRow({ t, label, values, highlight }) {
-  return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: '180px 1fr 1fr 1fr',
-      gap: 1,
-      background: t.border,
-    }}>
-      <div style={{
-        background: t.cardBg,
-        padding: '14px 16px',
-        fontFamily: '"DM Sans", sans-serif',
-        fontSize: 13,
-        fontWeight: 700,
-        color: t.textMuted,
         display: 'flex',
         alignItems: 'center',
-      }}>
-        {label}
-      </div>
-      {values.map((val, i) => (
-        <div
-          key={i}
-          style={{
-            background: highlight === i ? `${t.accentGold}10` : t.cardBg,
-            padding: '14px 16px',
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 14,
-            color: t.text,
-            lineHeight: 1.5,
-            borderLeft: highlight === i ? `2px solid ${t.accentGold}` : 'none',
-          }}
-        >
-          {val}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function DexApproachCard({ t, title, subtitle, names, description, pros, cons }) {
-  return (
-    <Card t={t} style={{ flex: 1, minWidth: 320 }}>
-      <div style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontSize: 13,
-        fontWeight: 700,
-        letterSpacing: '0.1em',
-        textTransform: 'uppercase',
-        color: t.accentGold,
-        marginBottom: 8,
-      }}>
-        {subtitle}
-      </div>
-      <div style={{
-        fontFamily: '"DM Sans", sans-serif',
-        fontSize: 26,
-        fontWeight: 800,
-        color: t.text,
-        marginBottom: 16,
-        lineHeight: 1.2,
-      }}>
-        {title}
-      </div>
-      <div style={{
-        display: 'flex',
-        gap: 12,
-        flexWrap: 'wrap',
+        justifyContent: 'space-between',
         marginBottom: 20,
       }}>
-        {names.map((n, i) => (
-          <span key={i} style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 18,
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 14,
+            fontWeight: 800,
+            color: t.accentGold,
+            background: `${t.accentGold}15`,
+            padding: '2px 10px',
+            borderRadius: 10,
+          }}>
+            #{s.id}
+          </span>
+          <span style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 20,
             fontWeight: 700,
             color: t.text,
-            background: `${t.accentGold}15`,
-            border: `1px solid ${t.accentGold}30`,
-            padding: '6px 16px',
-            borderRadius: 8,
           }}>
-            {n}
+            {s.label}
           </span>
+        </div>
+      </div>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: 16,
+        marginBottom: 20,
+      }}>
+        {names.map((name, i) => (
+          <div key={name + i} style={{
+            textAlign: 'center',
+            padding: '16px 8px',
+            borderRadius: 10,
+            background: `${roleColors[i]}08`,
+            border: `1px solid ${roleColors[i]}20`,
+          }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 10,
+              fontWeight: 600,
+              color: roleColors[i],
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              marginBottom: 8,
+            }}>
+              {roleLabels[i]}
+            </div>
+            <Wordmark name={name} size={32} color={roleColors[i]} t={t} />
+          </div>
         ))}
       </div>
-      <p style={{
-        fontFamily: '"DM Sans", sans-serif',
+
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
         fontSize: 14,
         color: t.textMuted,
         lineHeight: 1.6,
         marginBottom: 20,
+        paddingBottom: 16,
+        borderBottom: `1px solid ${t.border}`,
       }}>
-        {description}
-      </p>
-      <div style={{ marginBottom: 12 }}>
-        <div style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: 12,
-          fontWeight: 700,
-          color: t.accentGreen,
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          marginBottom: 8,
-        }}>
-          Strengths
-        </div>
-        {pros.map((p, i) => (
-          <div key={i} style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 13,
-            color: t.textMuted,
-            padding: '4px 0',
-            paddingLeft: 16,
-            position: 'relative',
-          }}>
-            <span style={{
-              position: 'absolute',
-              left: 0,
-              color: t.accentGreen,
-              fontWeight: 700,
-            }}>+</span>
-            {p}
-          </div>
-        ))}
+        {s.vibe}
       </div>
-      <div>
-        <div style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: 12,
-          fontWeight: 700,
-          color: '#E85B5B',
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          marginBottom: 8,
-        }}>
-          Risks
-        </div>
-        {cons.map((c, i) => (
-          <div key={i} style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 13,
-            color: t.textMuted,
-            padding: '4px 0',
-            paddingLeft: 16,
-            position: 'relative',
-          }}>
-            <span style={{
-              position: 'absolute',
-              left: 0,
-              color: '#E85B5B',
-              fontWeight: 700,
-            }}>-</span>
-            {c}
-          </div>
-        ))}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        <ScoreBar label="Memorable" value={s.scores.memorability} t={t} />
+        <ScoreBar label="Professional" value={s.scores.professionalism} t={t} />
+        <ScoreBar label="Cannabis Fit" value={s.scores.cannabisFit} t={t} />
+        <ScoreBar label="Cohesion" value={s.scores.cohesion} t={t} />
       </div>
-    </Card>
+    </div>
   );
 }
 
-// ---- Main Component ----
+// ============================================================
+// SECTION 6: Head-to-Head Top 3
+// ============================================================
+
+function HeadToHeadSection({ t }) {
+  const suiteColors = [t.accentGold, t.accentGreen, t.accentGoldLight];
+  return (
+    <div>
+      <SectionHeader
+        number="6"
+        title="Head-to-Head: Top 3 Suites"
+        subtitle="We take the three strongest contenders and stress-test them across four real-world scenarios: a team meeting, a customer email, an app store listing, and an investor pitch."
+        t={t}
+      />
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 20,
+        marginBottom: 40,
+      }}>
+        {topThreeSuites.map((s, idx) => (
+          <div key={s.label} style={{
+            background: t.cardBg,
+            border: `2px solid ${suiteColors[idx]}40`,
+            borderRadius: 16,
+            padding: '24px 20px',
+            textAlign: 'center',
+          }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 12,
+              fontWeight: 700,
+              color: suiteColors[idx],
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              marginBottom: 12,
+            }}>
+              Contender {idx + 1}
+            </div>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 22,
+              fontWeight: 800,
+              color: t.text,
+              marginBottom: 8,
+            }}>
+              {s.label}
+            </div>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 8,
+              flexWrap: 'wrap',
+            }}>
+              {[s.agent, s.platform, s.marketplace, s.consumer].map((name) => (
+                <span key={name} style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: suiteColors[idx],
+                  background: `${suiteColors[idx]}12`,
+                  padding: '3px 10px',
+                  borderRadius: 8,
+                }}>
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+        {[
+          { testName: 'Say It In a Meeting', key: 'meetingTest', icon: 'Meeting room' },
+          { testName: 'Customer Email Subject Line', key: 'emailTest', icon: 'Inbox' },
+          { testName: 'App Store Listing', key: 'appStoreTest', icon: 'App store' },
+          { testName: 'Investor Pitch', key: 'investorTest', icon: 'Boardroom' },
+        ].map((test) => (
+          <div key={test.testName}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 18,
+              fontWeight: 700,
+              color: t.text,
+              marginBottom: 16,
+              paddingBottom: 8,
+              borderBottom: `1px solid ${t.border}`,
+            }}>
+              {test.testName}
+            </div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 16,
+            }}>
+              {topThreeSuites.map((s, idx) => (
+                <div key={s.label + test.key} style={{
+                  background: t.cardBg,
+                  border: `1px solid ${t.border}`,
+                  borderRadius: 12,
+                  padding: '16px 18px',
+                }}>
+                  <div style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: suiteColors[idx],
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    marginBottom: 8,
+                  }}>
+                    {s.label}
+                  </div>
+                  <div style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    color: t.textMuted,
+                    fontStyle: 'italic',
+                    lineHeight: 1.6,
+                  }}>
+                    {s[test.key]}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{
+        marginTop: 48,
+        padding: '28px',
+        background: t.cardBg,
+        border: `1px solid ${t.border}`,
+        borderRadius: 16,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 20,
+          fontWeight: 700,
+          color: t.text,
+          marginBottom: 20,
+        }}>
+          Side-by-Side Visual Comparison
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 20,
+        }}>
+          {topThreeSuites.map((s, idx) => {
+            const roleLabels = ['Agent', 'Platform', 'Marketplace', 'Consumer'];
+            const names = [s.agent, s.platform, s.marketplace, s.consumer];
+            return (
+              <div key={s.label + '-visual'} style={{
+                padding: '24px 20px',
+                borderRadius: 14,
+                background: `${suiteColors[idx]}06`,
+                border: `1px solid ${suiteColors[idx]}25`,
+              }}>
+                <div style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: suiteColors[idx],
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  marginBottom: 20,
+                  textAlign: 'center',
+                }}>
+                  {s.label}
+                </div>
+                {names.map((name, ni) => (
+                  <div key={name + ni} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 0',
+                    borderBottom: ni < 3 ? `1px solid ${t.border}` : 'none',
+                  }}>
+                    <span style={{
+                      fontFamily: 'DM Sans, sans-serif',
+                      fontSize: 11,
+                      color: t.textFaint,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                    }}>
+                      {roleLabels[ni]}
+                    </span>
+                    <span style={{
+                      fontFamily: 'DM Sans, sans-serif',
+                      fontSize: 24,
+                      fontWeight: 800,
+                      color: t.text,
+                      letterSpacing: '-0.02em',
+                    }}>
+                      {name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{
+          marginTop: 24,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 20,
+        }}>
+          {topThreeSuites.map((s, idx) => {
+            const criteria = [
+              { label: 'Rolls off the tongue', score: idx === 0 ? 5 : idx === 1 ? 4 : 4 },
+              { label: 'Looks great in writing', score: idx === 0 ? 5 : idx === 1 ? 5 : 4 },
+              { label: 'Cannabis resonance', score: idx === 0 ? 3 : idx === 1 ? 5 : 2 },
+              { label: 'Enterprise-ready', score: idx === 0 ? 5 : idx === 1 ? 4 : 5 },
+              { label: 'Consumer-friendly', score: idx === 0 ? 5 : idx === 1 ? 4 : 4 },
+            ];
+            const total = criteria.reduce((sum, c) => sum + c.score, 0);
+            return (
+              <div key={s.label + '-scores'} style={{
+                padding: '16px 18px',
+                borderRadius: 12,
+                background: t.cardBg,
+                border: `1px solid ${t.border}`,
+              }}>
+                <div style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: suiteColors[idx],
+                  marginBottom: 12,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                }}>
+                  {s.label} \u2014 Score
+                </div>
+                {criteria.map((c) => (
+                  <ScoreBar key={c.label} label={c.label} value={c.score} t={t} />
+                ))}
+                <div style={{
+                  marginTop: 8,
+                  paddingTop: 8,
+                  borderTop: `1px solid ${t.border}`,
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                }}>
+                  <span style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    fontWeight: 800,
+                    color: suiteColors[idx],
+                  }}>
+                    {total}/25
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SECTION 7: The Winner
+// ============================================================
+
+function WinnerSection({ t }) {
+  const w = winnerSuite;
+  return (
+    <div>
+      <SectionHeader
+        number="7"
+        title="The Winner"
+        subtitle="After testing every angle \u2014 conversation, email, app store, investor pitch, visual cohesion \u2014 one suite rises above the rest."
+        t={t}
+      />
+
+      {/* Dramatic reveal */}
+      <div style={{
+        background: `linear-gradient(145deg, ${t.cardBg}, ${t.accentGold}08)`,
+        border: `2px solid ${t.accentGold}40`,
+        borderRadius: 24,
+        padding: '60px 40px',
+        textAlign: 'center',
+        marginBottom: 40,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 13,
+          fontWeight: 600,
+          color: t.accentGold,
+          textTransform: 'uppercase',
+          letterSpacing: '0.15em',
+          marginBottom: 24,
+        }}>
+          The Dutchie Product Suite
+        </div>
+
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 32,
+          flexWrap: 'wrap',
+          marginBottom: 40,
+        }}>
+          {[
+            { name: w.agent.name, role: 'AI Agent', color: t.accentGold },
+            { name: w.platform.name, role: 'Platform', color: t.accentGreen },
+            { name: w.marketplace.name, role: 'Marketplace', color: t.accentGoldLight },
+            { name: w.consumer.name, role: 'Consumer', color: t.accentGoldLighter },
+          ].map((item, idx) => (
+            <React.Fragment key={item.name}>
+              {idx > 0 && (
+                <span style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 28,
+                  color: t.textFaint,
+                  fontWeight: 300,
+                }}>
+                  +
+                </span>
+              )}
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 56,
+                  fontWeight: 800,
+                  color: item.color,
+                  letterSpacing: '-0.03em',
+                  lineHeight: 1,
+                  marginBottom: 8,
+                }}>
+                  {item.name}
+                </div>
+                <div style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: t.textFaint,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                }}>
+                  {item.role}
+                </div>
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 18,
+          color: t.textMuted,
+          fontStyle: 'italic',
+          maxWidth: 600,
+          margin: '0 auto',
+          lineHeight: 1.6,
+        }}>
+          &ldquo;The Flagship&rdquo; \u2014 familiar, strong, and already the frontrunner.
+        </div>
+      </div>
+
+      {/* Taglines */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: 20,
+        marginBottom: 40,
+      }}>
+        {[
+          { ...w.agent, role: 'AI Agent / Copilot', color: t.accentGold },
+          { ...w.platform, role: 'Intelligence Dashboard', color: t.accentGreen },
+          { ...w.marketplace, role: 'B2B Marketplace', color: t.accentGoldLight },
+          { ...w.consumer, role: 'Consumer Discovery', color: t.accentGoldLighter },
+        ].map((product) => (
+          <div key={product.name} style={{
+            background: t.cardBg,
+            border: `1px solid ${t.border}`,
+            borderRadius: 14,
+            padding: '28px 24px',
+          }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 10,
+              fontWeight: 600,
+              color: product.color,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              marginBottom: 8,
+            }}>
+              {product.role}
+            </div>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 36,
+              fontWeight: 800,
+              color: t.text,
+              letterSpacing: '-0.02em',
+              marginBottom: 8,
+            }}>
+              {product.name}
+            </div>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 15,
+              color: t.textMuted,
+              lineHeight: 1.5,
+            }}>
+              {product.tagline}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* How they work together */}
+      <div style={{
+        background: t.cardBg,
+        border: `1px solid ${t.border}`,
+        borderRadius: 16,
+        padding: '32px 28px',
+        marginBottom: 40,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 22,
+          fontWeight: 700,
+          color: t.text,
+          marginBottom: 20,
+        }}>
+          How They Work Together
+        </div>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 15,
+          color: t.textMuted,
+          lineHeight: 1.8,
+        }}>
+          <p style={{ margin: '0 0 16px 0' }}>
+            <strong style={{ color: t.accentGold }}>Dex</strong> is the AI copilot that dispensary staff talk to every day.
+            It answers questions, runs reports, flags issues, and suggests actions. Dex is the conversational heart of the
+            Dutchie suite \u2014 the teammate that never clocks out.
+          </p>
+          <p style={{ margin: '0 0 16px 0' }}>
+            <strong style={{ color: t.accentGreen }}>Nexus</strong> is where operators go to see the big picture.
+            Analytics, forecasting, inventory intelligence, and performance tracking all live here.
+            If Dex is the voice, Nexus is the screen.
+          </p>
+          <p style={{ margin: '0 0 16px 0' }}>
+            <strong style={{ color: t.accentGoldLight }}>Connect</strong> is the B2B marketplace where brands and
+            retailers find each other. Ordering, wholesale pricing, vendor discovery, and supply chain management.
+            The commerce layer that keeps shelves stocked.
+          </p>
+          <p style={{ margin: 0 }}>
+            <strong style={{ color: t.accentGoldLighter }}>Bloom</strong> is the consumer-facing product that helps
+            end customers discover cannabis products matched to their preferences. AI-powered recommendations that
+            make first-time and experienced customers alike feel confident in their choices.
+          </p>
+        </div>
+      </div>
+
+      {/* Mock nav bar */}
+      <div style={{
+        background: t.cardBg,
+        border: `1px solid ${t.border}`,
+        borderRadius: 16,
+        padding: '28px',
+        marginBottom: 40,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 18,
+          fontWeight: 700,
+          color: t.text,
+          marginBottom: 20,
+        }}>
+          Mock Navigation Bar
+        </div>
+
+        <div style={{
+          background: t.bg,
+          border: `1px solid ${t.border}`,
+          borderRadius: 12,
+          padding: '14px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 18,
+            fontWeight: 800,
+            color: t.text,
+            letterSpacing: '-0.02em',
+          }}>
+            <span style={{ color: t.accentGold }}>dutchie</span>
+          </div>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {[
+              { name: 'Dex', active: true },
+              { name: 'Nexus', active: false },
+              { name: 'Connect', active: false },
+              { name: 'Bloom', active: false },
+            ].map((item) => (
+              <div key={item.name} style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 14,
+                fontWeight: item.active ? 700 : 500,
+                color: item.active ? t.accentGold : t.textMuted,
+                padding: '6px 16px',
+                borderRadius: 8,
+                background: item.active ? `${t.accentGold}12` : 'transparent',
+                cursor: 'pointer',
+              }}>
+                {item.name}
+              </div>
+            ))}
+          </div>
+          <div style={{
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            background: `${t.accentGold}20`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <span style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 13,
+              fontWeight: 700,
+              color: t.accentGold,
+            }}>
+              JD
+            </span>
+          </div>
+        </div>
+
+        <div style={{
+          marginTop: 16,
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 12,
+          color: t.textFaint,
+          textAlign: 'center',
+        }}>
+          Every product accessible from one unified Dutchie navigation. The parent brand ties everything together.
+        </div>
+      </div>
+
+      {/* Dutchie brand relationship */}
+      <div style={{
+        background: `linear-gradient(145deg, ${t.accentGold}08, ${t.cardBg})`,
+        border: `1px solid ${t.accentGold}25`,
+        borderRadius: 16,
+        padding: '32px 28px',
+        marginBottom: 40,
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 22,
+          fontWeight: 700,
+          color: t.text,
+          marginBottom: 20,
+        }}>
+          The Dutchie Parent Brand Relationship
+        </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 20,
+        }}>
+          <div>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 14,
+              fontWeight: 700,
+              color: t.accentGold,
+              marginBottom: 8,
+            }}>
+              Endorsed Model
+            </div>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 13,
+              color: t.textMuted,
+              lineHeight: 1.7,
+            }}>
+              Each product carries the Dutchie name as an endorsement: &ldquo;Dex by Dutchie,&rdquo; &ldquo;Nexus by Dutchie,&rdquo;
+              &ldquo;Connect by Dutchie,&rdquo; &ldquo;Bloom by Dutchie.&rdquo; The parent brand provides trust and credibility
+              while each product name carries its own personality.
+            </div>
+          </div>
+          <div>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 14,
+              fontWeight: 700,
+              color: t.accentGold,
+              marginBottom: 8,
+            }}>
+              Visual System
+            </div>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 13,
+              color: t.textMuted,
+              lineHeight: 1.7,
+            }}>
+              All four products share the same typographic system (DM Sans), color palette roots, and layout patterns.
+              But each gets its own accent color and icon language. Together they look like siblings \u2014 clearly related,
+              each with their own character.
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          marginTop: 28,
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 12,
+          flexWrap: 'wrap',
+        }}>
+          {[
+            { full: 'Dex by Dutchie', color: t.accentGold },
+            { full: 'Nexus by Dutchie', color: t.accentGreen },
+            { full: 'Connect by Dutchie', color: t.accentGoldLight },
+            { full: 'Bloom by Dutchie', color: t.accentGoldLighter },
+          ].map((item) => (
+            <div key={item.full} style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 14,
+              fontWeight: 600,
+              color: item.color,
+              background: `${item.color}10`,
+              border: `1px solid ${item.color}25`,
+              padding: '8px 18px',
+              borderRadius: 24,
+            }}>
+              {item.full}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Final statement */}
+      <div style={{
+        textAlign: 'center',
+        padding: '48px 32px',
+      }}>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 32,
+          fontWeight: 800,
+          color: t.text,
+          marginBottom: 16,
+          letterSpacing: '-0.02em',
+        }}>
+          One Suite. Four Products. Clear Roles.
+        </div>
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 16,
+          color: t.textMuted,
+          maxWidth: 600,
+          margin: '0 auto',
+          lineHeight: 1.7,
+        }}>
+          Dex talks. Nexus shows. Connect trades. Bloom discovers.
+          Together under the Dutchie umbrella, they form the most complete
+          cannabis technology platform in the industry.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// MAIN COMPONENT
+// ============================================================
 
 export function SuiteNamingDeepDive({ theme = 'dark' }) {
   const t = themes[theme];
-  const [expandedSuite, setExpandedSuite] = useState(null);
+  const [activeSection, setActiveSection] = useState(null);
 
-  const roleColors = {
-    retail: t.accentGold,
-    agent: t.accentGreen,
-    b2b: '#5B9BD5',
-    consumer: '#C06BD0',
-  };
-
-  const topThree = suites.filter(s => topThreeIds.includes(s.id));
+  const sections = [
+    { id: 1, label: 'Agent Name', shortLabel: 'Agent' },
+    { id: 2, label: 'Platform Name', shortLabel: 'Platform' },
+    { id: 3, label: 'Marketplace Name', shortLabel: 'Marketplace' },
+    { id: 4, label: 'Consumer Name', shortLabel: 'Consumer' },
+    { id: 5, label: 'Suite Combinations', shortLabel: 'Suites' },
+    { id: 6, label: 'Head-to-Head', shortLabel: 'H2H' },
+    { id: 7, label: 'The Winner', shortLabel: 'Winner' },
+  ];
 
   return (
     <div style={{
       background: t.bg,
       minHeight: '100vh',
-      fontFamily: '"DM Sans", sans-serif',
+      fontFamily: 'DM Sans, sans-serif',
       color: t.text,
     }}>
-      {/* Hero */}
+      {/* Page header */}
       <div style={{
-        padding: '80px 48px 60px',
         maxWidth: 1200,
         margin: '0 auto',
+        padding: '48px 32px 0',
       }}>
         <div style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: 13,
-          fontWeight: 700,
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: t.accentGold,
+          display: 'inline-block',
+          padding: '4px 14px',
+          borderRadius: 20,
+          background: `${t.accentGold}12`,
+          border: `1px solid ${t.accentGold}30`,
           marginBottom: 20,
         }}>
-          Dutchie Brand Strategy / Naming Deep Dive
+          <span style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 12,
+            fontWeight: 600,
+            color: t.accentGold,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+          }}>
+            Dutchie AI Suite \u2014 Naming Deep Dive
+          </span>
         </div>
+
         <h1 style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: 64,
-          fontWeight: 900,
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 52,
+          fontWeight: 800,
           color: t.text,
-          margin: 0,
-          lineHeight: 1.05,
+          margin: '0 0 16px 0',
+          lineHeight: 1.1,
           letterSpacing: '-0.03em',
-          maxWidth: 900,
+          maxWidth: 800,
         }}>
-          Finding the Perfect
-          <br />
-          <span style={{ color: t.accentGold }}>D-Names</span> for
-          <br />
-          Dutchie's AI Suite
+          What Do We Call These Things?
         </h1>
+
         <p style={{
-          fontFamily: '"DM Sans", sans-serif',
-          fontSize: 20,
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 18,
           color: t.textMuted,
-          margin: '24px 0 0 0',
+          margin: '0 0 12px 0',
+          maxWidth: 720,
           lineHeight: 1.6,
-          maxWidth: 680,
         }}>
-          A comprehensive exploration of alliterative naming for four AI products.
-          Forty-plus candidates. Ten curated suites. One winner. This is the work
-          that turns a portfolio of tools into a recognizable brand family.
+          Four products. Four names. One suite. The AI agent needs a human-ish name because people talk to it.
+          Everything else just needs to sound like excellent software.
         </p>
 
-        {/* Product legend */}
+        <p style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 14,
+          color: t.textFaint,
+          margin: '0 0 32px 0',
+          maxWidth: 720,
+          lineHeight: 1.6,
+        }}>
+          This page walks through candidates for each product, scores them, assembles them into complete suites,
+          stress-tests the top three, and presents a final recommendation.
+        </p>
+
+        {/* Quick summary cards */}
         <div style={{
-          display: 'flex',
-          gap: 24,
-          marginTop: 40,
-          flexWrap: 'wrap',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: 16,
+          marginBottom: 32,
         }}>
           {[
-            { role: 'retail', label: 'Retail AI Platform', desc: 'Intelligence dashboard' },
-            { role: 'agent', label: 'AI Agent / Copilot', desc: 'Conversational assistant' },
-            { role: 'b2b', label: 'B2B Marketplace', desc: 'Brands to retailers' },
-            { role: 'consumer', label: 'Consumer Discovery', desc: 'Product recommendations' },
-          ].map(({ role, label, desc }) => (
-            <div key={role} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              padding: '12px 20px',
+            { role: 'AI Agent', description: 'Conversational AI for dispensary staff. People talk to it.', count: '12 candidates', color: t.accentGold },
+            { role: 'Platform', description: 'Intelligence dashboard for operators. Analytics and forecasting.', count: '10 candidates', color: t.accentGreen },
+            { role: 'Marketplace', description: 'B2B commerce. Brands sell to retailers.', count: '10 candidates', color: t.accentGoldLight },
+            { role: 'Consumer', description: 'AI recommendations for end consumers.', count: '10 candidates', color: t.accentGoldLighter },
+          ].map((item) => (
+            <div key={item.role} style={{
               background: t.cardBg,
               border: `1px solid ${t.border}`,
-              borderRadius: 10,
+              borderRadius: 12,
+              padding: '20px 18px',
             }}>
               <div style={{
-                width: 10,
-                height: 10,
-                borderRadius: '50%',
-                background: roleColors[role],
-                flexShrink: 0,
-              }} />
-              <div>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: t.text,
-                }}>
-                  {label}
-                </div>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 12,
-                  color: t.textFaint,
-                }}>
-                  {desc}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ============================================ */}
-      {/* SECTION 1: Why D-Names Work */}
-      {/* ============================================ */}
-      <div style={{ padding: '60px 48px', maxWidth: 1200, margin: '0 auto' }}>
-        <SectionHeader
-          t={t}
-          number="01"
-          title="Why D-Names Work"
-          subtitle="The strategic rationale behind alliterative product naming and why the letter D is uniquely suited to Dutchie's brand architecture."
-        />
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
-          <Card t={t}>
-            <div style={{
-              fontSize: 48,
-              fontWeight: 900,
-              color: t.accentGold,
-              marginBottom: 12,
-              lineHeight: 1,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              D
-            </div>
-            <div style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: t.text,
-              marginBottom: 8,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              Alliterative Cohesion
-            </div>
-            <p style={{
-              fontSize: 14,
-              color: t.textMuted,
-              lineHeight: 1.6,
-              margin: 0,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              Dutchie + D-products creates an instant family connection. Every product
-              name reinforces the parent brand without needing "Dutchie" in the name.
-              Customers hear the D and feel the brand.
-            </p>
-          </Card>
-
-          <Card t={t}>
-            <div style={{
-              fontSize: 48,
-              fontWeight: 900,
-              color: t.accentGold,
-              marginBottom: 12,
-              lineHeight: 1,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              1x
-            </div>
-            <div style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: t.text,
-              marginBottom: 8,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              Scalable Prefix
-            </div>
-            <p style={{
-              fontSize: 14,
-              color: t.textMuted,
-              lineHeight: 1.6,
-              margin: 0,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              A single-letter prefix scales infinitely. Whether Dutchie ships 4 products
-              or 40, the naming convention holds. No "powered by" qualifiers needed.
-              The D does the work.
-            </p>
-          </Card>
-
-          <Card t={t}>
-            <div style={{
-              fontSize: 40,
-              fontWeight: 900,
-              color: t.accentGold,
-              marginBottom: 12,
-              lineHeight: 1,
-              fontFamily: '"DM Sans", sans-serif',
-              letterSpacing: '-0.04em',
-            }}>
-              G / i / m
-            </div>
-            <div style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: t.text,
-              marginBottom: 8,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              Proven Precedent
-            </div>
-            <p style={{
-              fontSize: 14,
-              color: t.textMuted,
-              lineHeight: 1.6,
-              margin: 0,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              Google has G-Suite (Gmail, GDrive, GCal). Apple has i-everything (iPhone, iPad, iMac).
-              Meta has meta-prefix. Single-letter branding is the playbook of the most
-              successful tech companies on the planet.
-            </p>
-          </Card>
-
-          <Card t={t}>
-            <div style={{
-              fontSize: 48,
-              fontWeight: 900,
-              color: t.accentGold,
-              marginBottom: 12,
-              lineHeight: 1,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              /d/
-            </div>
-            <div style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: t.text,
-              marginBottom: 8,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              The D Sound
-            </div>
-            <p style={{
-              fontSize: 14,
-              color: t.textMuted,
-              lineHeight: 1.6,
-              margin: 0,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              Phonetically, D is a voiced dental plosive. It is strong, decisive, and
-              modern. It punches without being harsh. It starts words with authority.
-              Think: direct, dynamic, deliver, define, design.
-            </p>
-          </Card>
-        </div>
-      </div>
-
-      {/* ============================================ */}
-      {/* SECTION 2: The Long List */}
-      {/* ============================================ */}
-      <div style={{ padding: '60px 48px', maxWidth: 1200, margin: '0 auto' }}>
-        <SectionHeader
-          t={t}
-          number="02"
-          title="The Long List"
-          subtitle="Forty-plus D-name candidates organized by product role. Each name evaluated for meaning, etymology, and mood."
-        />
-
-        {/* Retail Platform Names */}
-        <div style={{ marginBottom: 48 }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            marginBottom: 20,
-          }}>
-            <div style={{
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              background: roleColors.retail,
-            }} />
-            <span style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 22,
-              fontWeight: 700,
-              color: t.text,
-            }}>
-              Retail AI Platform
-            </span>
-            <span style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 14,
-              color: t.textFaint,
-            }}>
-              -- {retailNames.length} candidates
-            </span>
-          </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-            gap: 12,
-          }}>
-            {retailNames.map((n) => (
-              <NamePill key={n.name} t={t} {...n} roleColor={roleColors.retail} />
-            ))}
-          </div>
-        </div>
-
-        {/* AI Agent Names */}
-        <div style={{ marginBottom: 48 }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            marginBottom: 20,
-          }}>
-            <div style={{
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              background: roleColors.agent,
-            }} />
-            <span style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 22,
-              fontWeight: 700,
-              color: t.text,
-            }}>
-              AI Agent / Copilot
-            </span>
-            <span style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 14,
-              color: t.textFaint,
-            }}>
-              -- {agentNames.length} candidates
-            </span>
-          </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-            gap: 12,
-          }}>
-            {agentNames.map((n) => (
-              <NamePill key={n.name} t={t} {...n} roleColor={roleColors.agent} />
-            ))}
-          </div>
-        </div>
-
-        {/* B2B Names */}
-        <div style={{ marginBottom: 48 }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            marginBottom: 20,
-          }}>
-            <div style={{
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              background: roleColors.b2b,
-            }} />
-            <span style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 22,
-              fontWeight: 700,
-              color: t.text,
-            }}>
-              B2B Marketplace
-            </span>
-            <span style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 14,
-              color: t.textFaint,
-            }}>
-              -- {b2bNames.length} candidates (currently "Connect")
-            </span>
-          </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-            gap: 12,
-          }}>
-            {b2bNames.map((n) => (
-              <NamePill key={n.name} t={t} {...n} roleColor={roleColors.b2b} />
-            ))}
-          </div>
-        </div>
-
-        {/* Consumer Names */}
-        <div style={{ marginBottom: 24 }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            marginBottom: 20,
-          }}>
-            <div style={{
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              background: roleColors.consumer,
-            }} />
-            <span style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 22,
-              fontWeight: 700,
-              color: t.text,
-            }}>
-              Consumer Discovery
-            </span>
-            <span style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 14,
-              color: t.textFaint,
-            }}>
-              -- {consumerNames.length} candidates
-            </span>
-          </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-            gap: 12,
-          }}>
-            {consumerNames.map((n) => (
-              <NamePill key={n.name} t={t} {...n} roleColor={roleColors.consumer} />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ============================================ */}
-      {/* SECTION 3: Top 10 Suites */}
-      {/* ============================================ */}
-      <div style={{ padding: '60px 48px', maxWidth: 1200, margin: '0 auto' }}>
-        <SectionHeader
-          t={t}
-          number="03"
-          title="Top 10 Suites"
-          subtitle="Ten carefully curated four-name combinations. Each suite is evaluated for memorability, professionalism, cannabis industry fit, and distinctiveness."
-        />
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-          {suites.map((suite) => {
-            const isExpanded = expandedSuite === suite.id;
-            const isTopThree = topThreeIds.includes(suite.id);
-
-            return (
-              <Card
-                key={suite.id}
-                t={t}
-                style={{
-                  border: isTopThree
-                    ? `1px solid ${t.accentGold}40`
-                    : `1px solid ${t.border}`,
-                  cursor: 'pointer',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                {/* Top three badge */}
-                {isTopThree && (
-                  <div style={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 20,
-                    fontFamily: '"DM Sans", sans-serif',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
-                    color: t.accentGold,
-                    background: `${t.accentGold}15`,
-                    padding: '4px 12px',
-                    borderRadius: 6,
-                  }}>
-                    Finalist
-                  </div>
-                )}
-
-                {/* Suite header */}
-                <div
-                  onClick={() => setExpandedSuite(isExpanded ? null : suite.id)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: 16,
-                    marginBottom: 20,
-                  }}>
-                    <span style={{
-                      fontFamily: '"DM Sans", sans-serif',
-                      fontSize: 14,
-                      fontWeight: 800,
-                      color: t.textFaint,
-                    }}>
-                      #{suite.id}
-                    </span>
-                    <span style={{
-                      fontFamily: '"DM Sans", sans-serif',
-                      fontSize: 20,
-                      fontWeight: 700,
-                      color: isTopThree ? t.accentGold : t.text,
-                    }}>
-                      {suite.suiteName}
-                    </span>
-                  </div>
-
-                  {/* Wordmark lockup */}
-                  <WordmarkLockup
-                    t={t}
-                    names={[suite.retail, suite.agent, suite.b2b, suite.consumer]}
-                    roles={['retail', 'agent', 'b2b', 'consumer']}
-                  />
-                </div>
-
-                {/* Vibe description */}
-                <p style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 14,
-                  color: t.textMuted,
-                  lineHeight: 1.6,
-                  margin: '20px 0',
-                  textAlign: 'center',
-                  maxWidth: 640,
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                  fontStyle: 'italic',
-                }}>
-                  {suite.vibe}
-                </p>
-
-                {/* Scores */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  padding: '16px 0 0',
-                  borderTop: `1px solid ${t.border}`,
-                }}>
-                  <div>
-                    <ScoreBar t={t} label="Memorability" value={suite.scores.memorability} />
-                    <ScoreBar t={t} label="Professionalism" value={suite.scores.professionalism} />
-                    <ScoreBar t={t} label="Cannabis Fit" value={suite.scores.cannabisFit} />
-                    <ScoreBar t={t} label="Distinctiveness" value={suite.scores.distinctiveness} />
-                  </div>
-                </div>
-
-                {/* Total score */}
-                <div style={{
-                  textAlign: 'center',
-                  marginTop: 12,
-                }}>
-                  <span style={{
-                    fontFamily: '"DM Sans", sans-serif',
-                    fontSize: 13,
-                    color: t.textFaint,
-                  }}>
-                    Total Score:{' '}
-                  </span>
-                  <span style={{
-                    fontFamily: '"DM Sans", sans-serif',
-                    fontSize: 18,
-                    fontWeight: 800,
-                    color: t.accentGold,
-                  }}>
-                    {Object.values(suite.scores).reduce((a, b) => a + b, 0)}/20
-                  </span>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ============================================ */}
-      {/* SECTION 4: Head-to-Head Finals */}
-      {/* ============================================ */}
-      <div style={{ padding: '60px 48px', maxWidth: 1200, margin: '0 auto' }}>
-        <SectionHeader
-          t={t}
-          number="04"
-          title="Head-to-Head Finals"
-          subtitle="The top three suites tested rigorously across five real-world scenarios. Which names survive contact with reality?"
-        />
-
-        {/* Finalist headers */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '180px 1fr 1fr 1fr',
-          gap: 1,
-          background: t.border,
-          borderRadius: '12px 12px 0 0',
-          overflow: 'hidden',
-          marginBottom: 1,
-        }}>
-          <div style={{
-            background: t.cardBg,
-            padding: 20,
-          }} />
-          {topThree.map((suite) => (
-            <div key={suite.id} style={{
-              background: t.cardBg,
-              padding: 20,
-              textAlign: 'center',
-            }}>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 14,
-                fontWeight: 700,
-                color: t.accentGold,
-                marginBottom: 4,
-              }}>
-                #{suite.id}
-              </div>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 18,
-                fontWeight: 800,
-                color: t.text,
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 10,
+                fontWeight: 600,
+                color: item.color,
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
                 marginBottom: 8,
               }}>
-                {suite.suiteName}
+                {item.role}
               </div>
               <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 22,
-                fontWeight: 700,
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 13,
                 color: t.textMuted,
-                letterSpacing: '-0.01em',
+                lineHeight: 1.5,
+                marginBottom: 8,
               }}>
-                {suite.retail} / {suite.agent} / {suite.b2b} / {suite.consumer}
+                {item.description}
+              </div>
+              <div style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 12,
+                fontWeight: 700,
+                color: item.color,
+              }}>
+                {item.count}
               </div>
             </div>
           ))}
         </div>
 
-        {/* The Sentence Test */}
-        <ComparisonRow
-          t={t}
-          label="The Sentence Test"
-          highlight={0}
-          values={[
-            `"Our Dash platform powered by Dex AI helps you close more Deals while customers find their perfect Dose."`,
-            `"Our Deck gives you a command view while Dex handles the details, products Dock seamlessly, and customers Dive into discovery."`,
-            `"Delta transforms your operations, Dex sharpens your team, Direct connects you with brands, and Dawn gives customers a fresh start."`,
-          ]}
-        />
-
-        {/* The Support Ticket Test */}
-        <ComparisonRow
-          t={t}
-          label="The Support Ticket Test"
-          highlight={0}
-          values={[
-            `"I'm having an issue with Dash" -- Clear, unambiguous. Nobody confuses it with anything else.`,
-            `"I'm having an issue with Deck" -- Solid, but might get confused with decking/hardware.`,
-            `"I'm having an issue with Delta" -- Could be confused with Delta Air Lines or Delta-8 THC. Risky.`,
-          ]}
-        />
-
-        {/* The Conference Badge Test */}
-        <ComparisonRow
-          t={t}
-          label="The Badge/Shirt Test"
-          highlight={0}
-          values={[
-            `DASH looks sharp. Four letters, strong kerning. Great on merch. Dex is even better -- three letters, bold.`,
-            `DECK is solid. Dex still great. DOCK has nice weight. DIVE feels sporty and fun.`,
-            `DELTA is longer, harder to badge at large scale. DIRECT is too long for a badge. DAWN is pretty though.`,
-          ]}
-        />
-
-        {/* The URL Test */}
-        <ComparisonRow
-          t={t}
-          label="The URL Test"
-          highlight={0}
-          values={[
-            `dash.dutchie.com, dex.dutchie.com, deal.dutchie.com, dose.dutchie.com -- All clean, all short, all available-looking.`,
-            `deck.dutchie.com, dex.dutchie.com, dock.dutchie.com, dive.dutchie.com -- Also excellent. Minimal syllables.`,
-            `delta.dutchie.com, dex.dutchie.com, direct.dutchie.com, dawn.dutchie.com -- "direct" is 6 chars. Others fine.`,
-          ]}
-        />
-
-        {/* The Verb Test */}
-        <ComparisonRow
-          t={t}
-          label="The Verb Test"
-          highlight={0}
-          values={[
-            `"Just Dex it." "Dash your analytics." "Dose me." -- All three verb beautifully. Natural and fun.`,
-            `"Just Dex it." "Deck out your reports." "Dock your inventory." -- Works, but "Deck out" sounds odd.`,
-            `"Just Dex it." "Delta your strategy..." Hmm. "Dawn your..." Nope. Delta and Dawn don't verb well.`,
-          ]}
-        />
-
-        {/* Bottom border radius */}
-        <div style={{
-          height: 12,
-          background: t.border,
-          borderRadius: '0 0 12px 12px',
-          marginBottom: 1,
-        }} />
-
-        {/* Finals summary */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 24,
-          marginTop: 40,
-        }}>
-          {topThree.map((suite, idx) => {
-            const wins = idx === 0 ? 5 : idx === 1 ? 0 : 0;
-            return (
-              <Card key={suite.id} t={t} style={{
-                textAlign: 'center',
-                border: idx === 0 ? `2px solid ${t.accentGold}` : `1px solid ${t.border}`,
-              }}>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 48,
-                  fontWeight: 900,
-                  color: idx === 0 ? t.accentGold : t.textFaint,
-                  marginBottom: 8,
-                }}>
-                  {idx === 0 ? '5/5' : idx === 1 ? '3/5' : '1/5'}
-                </div>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: t.textMuted,
-                  marginBottom: 12,
-                }}>
-                  Tests Won
-                </div>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: t.text,
-                }}>
-                  {suite.suiteName}
-                </div>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 14,
-                  color: t.textMuted,
-                  marginTop: 4,
-                }}>
-                  {suite.retail} + {suite.agent} + {suite.b2b} + {suite.consumer}
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-
-        <QuoteCard
-          t={t}
-          quote="The Sharp Suite wins every test. Short names, strong verbs, clear URLs, clean badges. Dash, Dex, Deal, and Dose pass every gauntlet we throw at them."
-          attribution="Head-to-Head Analysis Summary"
-        />
-      </div>
-
-      {/* ============================================ */}
-      {/* SECTION 5: The Dex Question */}
-      {/* ============================================ */}
-      <div style={{ padding: '60px 48px', maxWidth: 1200, margin: '0 auto' }}>
-        <SectionHeader
-          t={t}
-          number="05"
-          title="The Dex Question"
-          subtitle="Dex has the most personality of any candidate name. The question: should it be just the agent, or should Dex be the umbrella brand for all of Dutchie AI?"
-        />
-
-        {/* Big Dex reveal */}
-        <div style={{
-          textAlign: 'center',
-          padding: '48px 0 40px',
-        }}>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 120,
-            fontWeight: 900,
-            color: t.accentGreen,
-            letterSpacing: '-0.04em',
-            lineHeight: 1,
-            marginBottom: 12,
-          }}>
-            Dex
-          </div>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 18,
-            color: t.textMuted,
-            fontStyle: 'italic',
-          }}>
-            /deks/ -- noun. Dexterity, skill, cleverness.
-            <br />
-            Three letters. One syllable. Infinite personality.
-          </div>
-        </div>
-
-        {/* Two approaches side by side */}
+        {/* Section navigation */}
         <div style={{
           display: 'flex',
-          gap: 24,
+          gap: 6,
+          padding: '16px 0 32px',
+          borderTop: `1px solid ${t.border}`,
+          borderBottom: `1px solid ${t.border}`,
+          marginBottom: 0,
           flexWrap: 'wrap',
-          marginBottom: 40,
         }}>
-          <DexApproachCard
-            t={t}
-            title="Dex as Umbrella"
-            subtitle="Approach A"
-            names={['Dex Retail', 'Dex Agent', 'Dex Connect', 'Dex Consumer']}
-            description={
-              'Dex becomes the parent brand for all AI products. "Dex by Dutchie" is the AI platform. ' +
-              'Sub-products carry the Dex prefix. Everything is Dex.'
-            }
-            pros={[
-              'One name to remember, one brand to build',
-              '"Hey Dex" works as a universal wake word',
-              'Massive marketing efficiency -- one campaign, one brand',
-              'Tech press loves a single hero name',
-            ]}
-            cons={[
-              'Sub-products lose individual identity',
-              '"Dex Retail" is two words, less punchy than "Dash"',
-              'If Dex stumbles, everything stumbles',
-              'Harder to position different products to different audiences',
-            ]}
-          />
-
-          <DexApproachCard
-            t={t}
-            title="Dex as Agent Only"
-            subtitle="Approach B"
-            names={['Dash', 'Dex', 'Deal', 'Dose']}
-            description={
-              'Dex is specifically the AI agent/copilot -- the most personal, most conversational product. ' +
-              'Other products get their own distinct D-names. Dex stands out because it is the one you talk to.'
-            }
-            pros={[
-              'Each product has a unique, memorable identity',
-              '"Hey Dex" is specifically the agent -- clear mental model',
-              'Dash, Deal, Dose each tell their own story',
-              'One product failing does not taint the others',
-            ]}
-            cons={[
-              'Four names to build brand awareness for (more expensive)',
-              'Customers might not connect the D-family at first',
-              'Marketing has to explain the system, not just one name',
-              'Risk of naming fatigue with too many brands',
-            ]}
-          />
+          <div
+            onClick={() => setActiveSection(null)}
+            style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 13,
+              fontWeight: activeSection === null ? 700 : 500,
+              color: activeSection === null ? t.accentGold : t.textMuted,
+              padding: '6px 14px',
+              borderRadius: 8,
+              background: activeSection === null ? `${t.accentGold}12` : 'transparent',
+              cursor: 'pointer',
+              border: `1px solid ${activeSection === null ? `${t.accentGold}30` : 'transparent'}`,
+              userSelect: 'none',
+            }}
+          >
+            All Sections
+          </div>
+          {sections.map((s) => (
+            <div
+              key={s.id}
+              onClick={() => setActiveSection(s.id)}
+              style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 13,
+                fontWeight: activeSection === s.id ? 700 : 500,
+                color: activeSection === s.id ? t.accentGold : t.textMuted,
+                padding: '6px 14px',
+                borderRadius: 8,
+                background: activeSection === s.id ? `${t.accentGold}12` : 'transparent',
+                cursor: 'pointer',
+                border: `1px solid ${activeSection === s.id ? `${t.accentGold}30` : 'transparent'}`,
+                userSelect: 'none',
+              }}
+            >
+              {s.id}. {s.label}
+            </div>
+          ))}
         </div>
-
-        {/* Scenario comparison */}
-        <Card t={t} style={{ marginBottom: 32 }}>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 16,
-            fontWeight: 700,
-            color: t.text,
-            marginBottom: 20,
-          }}>
-            Scenario Comparison
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 24,
-          }}>
-            <div>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: t.textFaint,
-                marginBottom: 12,
-              }}>
-                Approach A: Dex Umbrella
-              </div>
-              <QuoteCard
-                t={t}
-                quote="Hey Dex, how are sales today?"
-              />
-              <QuoteCard
-                t={t}
-                quote="Open up Dex Retail and check the dashboard."
-              />
-              <QuoteCard
-                t={t}
-                quote="We just listed on Dex Connect."
-              />
-            </div>
-            <div>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: t.textFaint,
-                marginBottom: 12,
-              }}>
-                Approach B: Dex Agent Only
-              </div>
-              <QuoteCard
-                t={t}
-                quote="Hey Dex, how are sales today?"
-              />
-              <QuoteCard
-                t={t}
-                quote="Pull up Dash and check the dashboard."
-              />
-              <QuoteCard
-                t={t}
-                quote="We just listed on Deal."
-              />
-            </div>
-          </div>
-        </Card>
-
-        {/* Verdict */}
-        <Card t={t} style={{
-          border: `1px solid ${t.accentGreen}40`,
-          background: `${t.accentGreen}06`,
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            marginBottom: 16,
-          }}>
-            <div style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: t.accentGreen,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              fontWeight: 900,
-              fontSize: 16,
-              fontFamily: '"DM Sans", sans-serif',
-            }}>
-              B
-            </div>
-            <div style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 20,
-              fontWeight: 700,
-              color: t.text,
-            }}>
-              Recommendation: Dex as Agent Only (Approach B)
-            </div>
-          </div>
-          <p style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 15,
-            color: t.textMuted,
-            lineHeight: 1.7,
-            margin: 0,
-          }}>
-            Dex is too good a name to dilute across sub-brands. When someone says "Hey Dex,"
-            they should be talking to one thing: the AI agent. That specificity is what makes it powerful.
-            Meanwhile, Dash, Deal, and Dose each stand on their own as short, punchy, memorable names
-            that clearly signal what they do. The D-family connection handles brand cohesion.
-            Dex gets to be the star. The others get to be sharp.
-          </p>
-        </Card>
       </div>
 
-      {/* ============================================ */}
-      {/* SECTION 6: The Winner */}
-      {/* ============================================ */}
-      <div style={{ padding: '60px 48px 100px', maxWidth: 1200, margin: '0 auto' }}>
-        <SectionHeader
-          t={t}
-          number="06"
-          title="Final Recommendation"
-          subtitle="After evaluating 40+ candidates, 10 suites, and 5 real-world tests -- here is the winning name system for Dutchie's AI product family."
-        />
+      {/* Sections */}
+      <div style={{
+        maxWidth: 1200,
+        margin: '0 auto',
+        padding: '0 32px 80px',
+      }}>
+        {(activeSection === null || activeSection === 1) && <AgentNameSection t={t} />}
+        {(activeSection === null || activeSection === 2) && <PlatformNameSection t={t} />}
+        {(activeSection === null || activeSection === 3) && <MarketplaceNameSection t={t} />}
+        {(activeSection === null || activeSection === 4) && <ConsumerNameSection t={t} />}
+        {(activeSection === null || activeSection === 5) && <SuiteCombinationsSection t={t} />}
+        {(activeSection === null || activeSection === 6) && <HeadToHeadSection t={t} />}
+        {(activeSection === null || activeSection === 7) && <WinnerSection t={t} />}
+      </div>
 
-        {/* Dramatic reveal card */}
-        <div style={{
-          background: `linear-gradient(135deg, ${t.cardBg} 0%, ${t.accentGold}08 100%)`,
-          border: `2px solid ${t.accentGold}50`,
-          borderRadius: 24,
-          padding: '64px 48px',
-          textAlign: 'center',
-          marginBottom: 48,
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          {/* Background decorative element */}
-          <div style={{
-            position: 'absolute',
-            top: -100,
-            right: -100,
-            width: 400,
-            height: 400,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${t.accentGold}08 0%, transparent 70%)`,
-            pointerEvents: 'none',
-          }} />
-          <div style={{
-            position: 'absolute',
-            bottom: -80,
-            left: -80,
-            width: 300,
-            height: 300,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${t.accentGreen}06 0%, transparent 70%)`,
-            pointerEvents: 'none',
-          }} />
-
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 13,
-            fontWeight: 700,
-            letterSpacing: '0.25em',
-            textTransform: 'uppercase',
-            color: t.accentGold,
-            marginBottom: 32,
-            position: 'relative',
-          }}>
-            The Winner -- The Sharp Suite
-          </div>
-
-          {/* Large wordmarks */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: 48,
-            flexWrap: 'wrap',
-            marginBottom: 40,
-            position: 'relative',
-          }}>
-            {[
-              { name: 'Dash', role: 'retail', tagline: 'See everything.' },
-              { name: 'Dex', role: 'agent', tagline: 'Ask anything.' },
-              { name: 'Deal', role: 'b2b', tagline: 'Move everything.' },
-              { name: 'Dose', role: 'consumer', tagline: 'Find your fit.' },
-            ].map(({ name, role, tagline }) => (
-              <div key={name} style={{ textAlign: 'center' }}>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 72,
-                  fontWeight: 900,
-                  color: t.text,
-                  letterSpacing: '-0.04em',
-                  lineHeight: 1,
-                  marginBottom: 8,
-                }}>
-                  {name}
-                </div>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: roleColors[role],
-                  marginBottom: 6,
-                }}>
-                  {role === 'retail' ? 'Retail Platform' : role === 'agent' ? 'AI Agent' : role === 'b2b' ? 'B2B Marketplace' : 'Consumer'}
-                </div>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 16,
-                  fontStyle: 'italic',
-                  color: t.textMuted,
-                }}>
-                  {tagline}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Divider */}
-          <div style={{
-            width: 80,
-            height: 2,
-            background: t.accentGold,
-            margin: '0 auto 32px',
-            borderRadius: 1,
-          }} />
-
-          {/* One-liner */}
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 24,
-            fontWeight: 500,
-            color: t.text,
-            lineHeight: 1.5,
-            maxWidth: 700,
-            margin: '0 auto',
-            position: 'relative',
-          }}>
-            Four products. Four syllables. One unmistakable brand family.
-          </div>
-        </div>
-
-        {/* Product detail cards */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 24,
-          marginBottom: 48,
-        }}>
-          {/* Dash */}
-          <Card t={t} style={{ borderTop: `3px solid ${roleColors.retail}` }}>
-            <div style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 36,
-              fontWeight: 900,
-              color: t.text,
-              letterSpacing: '-0.03em',
-              marginBottom: 4,
-            }}>
-              Dash
-            </div>
-            <RoleBadge t={t} role="retail" />
-            <p style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 14,
-              color: t.textMuted,
-              lineHeight: 1.7,
-              margin: '16px 0 0 0',
-            }}>
-              The intelligence dashboard for dispensary operators. Sales analytics,
-              inventory forecasting, customer insights, and AI-driven recommendations --
-              all at a glance. Dash is where you go to see the truth about your business.
-            </p>
-            <div style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 13,
-              color: t.textFaint,
-              marginTop: 12,
-              fontStyle: 'italic',
-            }}>
-              dash.dutchie.com
-            </div>
-          </Card>
-
-          {/* Dex */}
-          <Card t={t} style={{ borderTop: `3px solid ${roleColors.agent}` }}>
-            <div style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 36,
-              fontWeight: 900,
-              color: t.text,
-              letterSpacing: '-0.03em',
-              marginBottom: 4,
-            }}>
-              Dex
-            </div>
-            <RoleBadge t={t} role="agent" />
-            <p style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 14,
-              color: t.textMuted,
-              lineHeight: 1.7,
-              margin: '16px 0 0 0',
-            }}>
-              The AI copilot for dispensary staff. Budtenders ask Dex about product info.
-              Managers ask Dex about performance. Everyone asks Dex because Dex always
-              has the answer. Conversational, fast, and genuinely helpful.
-            </p>
-            <div style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 13,
-              color: t.textFaint,
-              marginTop: 12,
-              fontStyle: 'italic',
-            }}>
-              dex.dutchie.com
-            </div>
-          </Card>
-
-          {/* Deal */}
-          <Card t={t} style={{ borderTop: `3px solid ${roleColors.b2b}` }}>
-            <div style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 36,
-              fontWeight: 900,
-              color: t.text,
-              letterSpacing: '-0.03em',
-              marginBottom: 4,
-            }}>
-              Deal
-            </div>
-            <RoleBadge t={t} role="b2b" />
-            <p style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 14,
-              color: t.textMuted,
-              lineHeight: 1.7,
-              margin: '16px 0 0 0',
-            }}>
-              The B2B marketplace where brands and retailers do business. Product listings,
-              wholesale ordering, promotional deals, and relationship management.
-              Deal is where commerce happens. Replaces or evolves the existing "Connect" brand.
-            </p>
-            <div style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 13,
-              color: t.textFaint,
-              marginTop: 12,
-              fontStyle: 'italic',
-            }}>
-              deal.dutchie.com
-            </div>
-          </Card>
-
-          {/* Dose */}
-          <Card t={t} style={{ borderTop: `3px solid ${roleColors.consumer}` }}>
-            <div style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 36,
-              fontWeight: 900,
-              color: t.text,
-              letterSpacing: '-0.03em',
-              marginBottom: 4,
-            }}>
-              Dose
-            </div>
-            <RoleBadge t={t} role="consumer" />
-            <p style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 14,
-              color: t.textMuted,
-              lineHeight: 1.7,
-              margin: '16px 0 0 0',
-            }}>
-              AI-powered product discovery for end consumers. Personalized recommendations,
-              strain matching, effect-based browsing, and curated collections.
-              Dose helps every customer find exactly the right product for them.
-            </p>
-            <div style={{
-              fontFamily: '"DM Sans", sans-serif',
-              fontSize: 13,
-              color: t.textFaint,
-              marginTop: 12,
-              fontStyle: 'italic',
-            }}>
-              dose.dutchie.com
-            </div>
-          </Card>
-        </div>
-
-        {/* How they work together narrative */}
-        <Card t={t} style={{ marginBottom: 48 }}>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 22,
-            fontWeight: 800,
-            color: t.text,
-            marginBottom: 20,
-          }}>
-            How It All Fits Together
-          </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 32,
-          }}>
-            <div>
-              <p style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 15,
-                color: t.textMuted,
-                lineHeight: 1.8,
-                margin: '0 0 16px 0',
-              }}>
-                A dispensary manager opens <strong style={{ color: t.text }}>Dash</strong> every
-                morning to see overnight sales, check inventory levels, and review AI
-                recommendations. When they need to dig deeper, they ask{' '}
-                <strong style={{ color: t.text }}>Dex</strong>: "Hey Dex, why did flower sales
-                drop last Tuesday?"
-              </p>
-              <p style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 15,
-                color: t.textMuted,
-                lineHeight: 1.8,
-                margin: 0,
-              }}>
-                Dex responds with analysis and suggests checking a new brand on{' '}
-                <strong style={{ color: t.text }}>Deal</strong> that is trending in the region.
-                The manager places a wholesale order right from Deal.
-              </p>
-            </div>
-            <div>
-              <p style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 15,
-                color: t.textMuted,
-                lineHeight: 1.8,
-                margin: '0 0 16px 0',
-              }}>
-                Meanwhile, a customer browses <strong style={{ color: t.text }}>Dose</strong> on
-                their phone. They tell Dose they want something relaxing for sleep.
-                Dose recommends three products available at their nearest dispensary, ranked
-                by match quality and customer reviews.
-              </p>
-              <p style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 15,
-                color: t.textMuted,
-                lineHeight: 1.8,
-                margin: 0,
-              }}>
-                The budtender, guided by <strong style={{ color: t.text }}>Dex</strong>, confirms
-                the recommendation and adds a terpene-matched edible to the order.
-                Every product in the suite talked to every other. That is the power of a unified
-                AI platform.
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Parent brand relationship */}
-        <Card t={t} style={{ marginBottom: 48 }}>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 22,
-            fontWeight: 800,
-            color: t.text,
-            marginBottom: 20,
-          }}>
-            Brand Architecture
-          </div>
-
-          {/* Hierarchy visualization */}
-          <div style={{ textAlign: 'center', padding: '24px 0' }}>
-            {/* Dutchie parent */}
-            <div style={{
-              display: 'inline-block',
-              padding: '16px 40px',
-              background: `${t.accentGold}12`,
-              border: `2px solid ${t.accentGold}40`,
-              borderRadius: 12,
-              marginBottom: 24,
-            }}>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 28,
-                fontWeight: 900,
-                color: t.text,
-                letterSpacing: '-0.02em',
-              }}>
-                Dutchie
-              </div>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 12,
-                color: t.textMuted,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-              }}>
-                Parent Brand
-              </div>
-            </div>
-
-            {/* Connector line */}
-            <div style={{
-              width: 2,
-              height: 24,
-              background: t.border,
-              margin: '0 auto',
-            }} />
-
-            {/* Dutchie AI */}
-            <div style={{
-              display: 'inline-block',
-              padding: '12px 32px',
-              background: t.cardBg,
-              border: `1px solid ${t.border}`,
-              borderRadius: 10,
-              marginBottom: 24,
-            }}>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 20,
-                fontWeight: 700,
-                color: t.text,
-              }}>
-                Dutchie AI
-              </div>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 11,
-                color: t.textFaint,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-              }}>
-                Platform Umbrella
-              </div>
-            </div>
-
-            {/* Connector lines */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: 0,
-              position: 'relative',
-              height: 32,
-              marginBottom: 0,
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: '50%',
-                width: 2,
-                height: 16,
-                background: t.border,
-                transform: 'translateX(-1px)',
-              }} />
-              <div style={{
-                position: 'absolute',
-                top: 16,
-                left: 'calc(50% - 300px)',
-                width: 600,
-                height: 2,
-                background: t.border,
-              }} />
-              {[0, 1, 2, 3].map(i => (
-                <div key={i} style={{
-                  position: 'absolute',
-                  top: 16,
-                  left: `calc(50% - 300px + ${i * 200}px)`,
-                  width: 2,
-                  height: 16,
-                  background: t.border,
-                }} />
-              ))}
-            </div>
-
-            {/* Product names */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: 24,
-              flexWrap: 'wrap',
-            }}>
-              {[
-                { name: 'Dash', role: 'retail', desc: 'Intelligence' },
-                { name: 'Dex', role: 'agent', desc: 'AI Agent' },
-                { name: 'Deal', role: 'b2b', desc: 'Marketplace' },
-                { name: 'Dose', role: 'consumer', desc: 'Discovery' },
-              ].map(({ name, role, desc }) => (
-                <div key={name} style={{
-                  padding: '16px 28px',
-                  background: `${roleColors[role]}10`,
-                  border: `1px solid ${roleColors[role]}30`,
-                  borderRadius: 10,
-                  textAlign: 'center',
-                  minWidth: 120,
-                }}>
-                  <div style={{
-                    fontFamily: '"DM Sans", sans-serif',
-                    fontSize: 24,
-                    fontWeight: 800,
-                    color: t.text,
-                    letterSpacing: '-0.02em',
-                  }}>
-                    {name}
-                  </div>
-                  <div style={{
-                    fontFamily: '"DM Sans", sans-serif',
-                    fontSize: 11,
-                    color: roleColors[role],
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    fontWeight: 700,
-                  }}>
-                    {desc}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-
-        {/* Nav bar mockup */}
-        <Card t={t} style={{ marginBottom: 48 }}>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 22,
-            fontWeight: 800,
-            color: t.text,
-            marginBottom: 20,
-          }}>
-            Navigation Mockup
-          </div>
-          <div style={{
-            background: theme === 'dark' ? '#0D0C0A' : '#F5F4F2',
-            borderRadius: 12,
-            padding: '0',
-            border: `1px solid ${t.border}`,
-            overflow: 'hidden',
-          }}>
-            {/* Top nav */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '12px 24px',
-              borderBottom: `1px solid ${t.border}`,
-              gap: 32,
-            }}>
-              {/* Dutchie logo placeholder */}
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 18,
-                fontWeight: 800,
-                color: t.text,
-                letterSpacing: '-0.02em',
-                marginRight: 8,
-              }}>
-                dutchie
-              </div>
-
-              {/* Nav items */}
-              {[
-                { name: 'Dash', role: 'retail', active: true },
-                { name: 'Dex', role: 'agent', active: false },
-                { name: 'Deal', role: 'b2b', active: false },
-                { name: 'Dose', role: 'consumer', active: false },
-              ].map(({ name, role, active }) => (
-                <div key={name} style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 14,
-                  fontWeight: active ? 700 : 500,
-                  color: active ? t.text : t.textFaint,
-                  padding: '8px 0',
-                  borderBottom: active ? `2px solid ${roleColors[role]}` : '2px solid transparent',
-                  cursor: 'pointer',
-                }}>
-                  {name}
-                </div>
-              ))}
-
-              {/* Spacer */}
-              <div style={{ flex: 1 }} />
-
-              {/* Profile placeholder */}
-              <div style={{
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                background: t.border,
-              }} />
-            </div>
-
-            {/* Content area */}
-            <div style={{
-              padding: '32px 24px',
-              minHeight: 120,
-            }}>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 24,
-                fontWeight: 800,
-                color: t.text,
-                marginBottom: 8,
-              }}>
-                Good morning, Sarah.
-              </div>
-              <div style={{
-                fontFamily: '"DM Sans", sans-serif',
-                fontSize: 14,
-                color: t.textMuted,
-              }}>
-                Your dispensary is up 12% this week. Dex flagged 3 items running low on stock.
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Marketing one-liner card */}
-        <Card t={t} style={{ marginBottom: 48 }}>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 22,
-            fontWeight: 800,
-            color: t.text,
-            marginBottom: 24,
-          }}>
-            Marketing Taglines
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {[
-              {
-                context: 'Platform hero line',
-                line: 'Dash. Dex. Deal. Dose. The AI suite built for cannabis.',
-              },
-              {
-                context: 'Dash launch',
-                line: 'Dash by Dutchie -- See your dispensary like never before.',
-              },
-              {
-                context: 'Dex launch',
-                line: 'Meet Dex. Your AI-powered dispensary copilot.',
-              },
-              {
-                context: 'Deal launch',
-                line: 'Deal by Dutchie -- Where brands and retailers do business.',
-              },
-              {
-                context: 'Dose launch',
-                line: 'Dose -- Discover the perfect product, powered by AI.',
-              },
-              {
-                context: 'Full platform',
-                line: 'Dutchie AI. Four products. One platform. Every advantage.',
-              },
-            ].map(({ context, line }) => (
-              <div key={context} style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: 20,
-                padding: '16px 20px',
-                background: `${t.bg}`,
-                borderRadius: 10,
-                border: `1px solid ${t.border}`,
-              }}>
-                <span style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: t.textFaint,
-                  width: 140,
-                  flexShrink: 0,
-                }}>
-                  {context}
-                </span>
-                <span style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 17,
-                  fontWeight: 600,
-                  color: t.text,
-                  lineHeight: 1.4,
-                }}>
-                  {line}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Icon concepts mockup */}
-        <Card t={t} style={{ marginBottom: 48 }}>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 22,
-            fontWeight: 800,
-            color: t.text,
-            marginBottom: 24,
-          }}>
-            Icon Concepts
-          </div>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: 48,
-            flexWrap: 'wrap',
-            padding: '24px 0',
-          }}>
-            {[
-              { name: 'Dash', role: 'retail', icon: '\u2014', desc: 'Horizontal dash/bar' },
-              { name: 'Dex', role: 'agent', icon: 'Dx', desc: 'Stylized Dx letterform' },
-              { name: 'Deal', role: 'b2b', icon: '\u21C4', desc: 'Exchange arrows' },
-              { name: 'Dose', role: 'consumer', icon: '\u25CE', desc: 'Target/bullseye' },
-            ].map(({ name, role, icon, desc }) => (
-              <div key={name} style={{ textAlign: 'center' }}>
-                <div style={{
-                  width: 72,
-                  height: 72,
-                  borderRadius: 18,
-                  background: `${roleColors[role]}18`,
-                  border: `2px solid ${roleColors[role]}35`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px',
-                }}>
-                  <span style={{
-                    fontFamily: '"DM Sans", sans-serif',
-                    fontSize: 28,
-                    fontWeight: 900,
-                    color: roleColors[role],
-                  }}>
-                    {icon}
-                  </span>
-                </div>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 16,
-                  fontWeight: 700,
-                  color: t.text,
-                  marginBottom: 4,
-                }}>
-                  {name}
-                </div>
-                <div style={{
-                  fontFamily: '"DM Sans", sans-serif',
-                  fontSize: 12,
-                  color: t.textFaint,
-                }}>
-                  {desc}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Final quote */}
-        <div style={{
-          textAlign: 'center',
-          padding: '48px 0 24px',
-        }}>
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 32,
-            fontWeight: 700,
-            color: t.text,
-            lineHeight: 1.4,
-            maxWidth: 800,
-            margin: '0 auto 24px',
-          }}>
-            "Dash to see it. Dex to ask it.
-            <br />
-            Deal to move it. Dose to find it."
-          </div>
-          <div style={{
-            width: 48,
-            height: 3,
-            background: t.accentGold,
-            margin: '0 auto 24px',
-            borderRadius: 2,
-          }} />
-          <div style={{
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: 16,
-            color: t.textMuted,
-            lineHeight: 1.6,
-            maxWidth: 600,
-            margin: '0 auto',
-          }}>
-            Four words. Four products. One platform. The D-suite by Dutchie
-            turns a portfolio of AI tools into a brand family that is short, sharp,
-            and impossible to forget.
-          </div>
-        </div>
-
-        {/* Footer divider */}
-        <div style={{
-          height: 1,
-          background: t.border,
-          margin: '48px 0 32px',
-        }} />
-
-        {/* Footer */}
+      {/* Footer */}
+      <div style={{
+        maxWidth: 1200,
+        margin: '0 auto',
+        padding: '32px',
+        borderTop: `1px solid ${t.border}`,
+      }}>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
           <div style={{
-            fontFamily: '"DM Sans", sans-serif',
+            fontFamily: 'DM Sans, sans-serif',
             fontSize: 12,
             color: t.textFaint,
           }}>
-            Dutchie Brand Strategy -- Suite Naming Deep Dive
+            Dutchie AI Suite \u2014 Naming Deep Dive \u2014 Internal Document
           </div>
           <div style={{
-            fontFamily: '"DM Sans", sans-serif',
+            fontFamily: 'DM Sans, sans-serif',
             fontSize: 12,
             color: t.textFaint,
           }}>
-            Confidential
+            42 candidates \u2014 8 suites \u2014 1 recommendation
           </div>
         </div>
       </div>

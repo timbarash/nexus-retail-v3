@@ -1,1470 +1,2131 @@
 import { useState, useMemo } from 'react';
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   D-NAME EXPLORATION SECTION
-   A deep exploration of the "D-prefix" naming convention for the Dutchie AI suite.
-   Every product starts with D — brand cohesion like Apple's "i" prefix.
+   AGENT NAME EXPLORATION SECTION
+   The AI agent is the ONE product that needs a human-ish name.
+   People talk to it. It lives in chat bubbles. It needs personality.
+   Deep dive into "Dex" as the frontrunner and 19 alternatives.
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-/* ─── Shared Styles ─── */
-const COLORS = {
-  bg: '#0A0908',
-  card: '#141210',
-  cardHover: '#1A1815',
-  border: '#282724',
-  borderLight: '#38332B',
-  textPrimary: '#F0EDE8',
-  textSecondary: '#ADA599',
-  textMuted: '#6B6359',
-  textDim: '#4A453E',
-  gold: '#D4A03A',
-  goldLight: '#FFC02A',
-  goldBright: '#FFD666',
-  green: '#00C27C',
-  blue: '#64A8E0',
-  red: '#E05252',
-  orange: '#E0A052',
-  teal: '#52C2B8',
+const themes = {
+  dark: {
+    bg: '#0A0908',
+    cardBg: '#141210',
+    border: '#282724',
+    text: '#F0EDE8',
+    textMuted: '#ADA599',
+    textFaint: '#6B6359',
+    accentGold: '#D4A03A',
+    accentGoldLight: '#FFC02A',
+    accentGoldLighter: '#FFD666',
+    accentGreen: '#00C27C',
+  },
+  light: {
+    bg: '#FAFAF8',
+    cardBg: '#FFFFFF',
+    border: '#E5E2DC',
+    text: '#1A1917',
+    textMuted: '#5C574F',
+    textFaint: '#8C8680',
+    accentGold: '#B8860B',
+    accentGoldLight: '#DAA520',
+    accentGoldLighter: '#F0C75E',
+    accentGreen: '#059669',
+  },
 };
 
-const baseCard = {
-  background: COLORS.card,
-  borderRadius: 16,
-  padding: 32,
-  border: `1px solid ${COLORS.border}`,
-};
-
-const dividerStyle = {
-  height: 1,
-  background: `linear-gradient(90deg, transparent, ${COLORS.borderLight}, transparent)`,
-  margin: '64px 0',
-};
-
-const sectionTitleStyle = {
-  fontSize: 14,
-  fontWeight: 600,
-  color: COLORS.textMuted,
-  textTransform: 'uppercase',
-  letterSpacing: '0.1em',
-  marginBottom: 24,
-};
-
-const bodyTextStyle = {
-  fontSize: 14,
-  color: COLORS.textSecondary,
-  lineHeight: 1.7,
-  maxWidth: 640,
-  marginBottom: 32,
-};
-
-/* ─── Star Rating Component ─── */
-function Stars({ count, max = 5, colors }) {
-  const c = colors || COLORS;
-  return (
-    <span style={{ letterSpacing: 2, fontSize: 14 }}>
-      {Array.from({ length: max }, (_, i) => (
-        <span key={i} style={{ color: i < count ? (c.accentGoldLight || c.goldLight) : (c.textDim || c.textFaint) }}>
-          {i < count ? '\u2605' : '\u2606'}
-        </span>
-      ))}
-    </span>
-  );
-}
-
-/* ─── Indicator Dot (green/yellow/red) ─── */
-function StatusDot({ status }) {
-  const colorMap = { green: '#34D399', yellow: '#FBBF24', red: '#F87171' };
-  return (
-    <span style={{
-      display: 'inline-block',
-      width: 10,
-      height: 10,
-      borderRadius: '50%',
-      background: colorMap[status] || colorMap.yellow,
-      boxShadow: `0 0 6px ${colorMap[status] || colorMap.yellow}44`,
-      marginRight: 8,
-      flexShrink: 0,
-    }} />
-  );
-}
-
-/* ─── Section Divider ─── */
-function Divider({ style }) {
-  return <div style={style || dividerStyle} />;
-}
-
-/* ─── Sub Title ─── */
-function SubTitle({ children, style }) {
-  return <h3 style={style || sectionTitleStyle}>{children}</h3>;
-}
-
-/* ─── Section Number Badge ─── */
-function SectionBadge({ number, colors }) {
-  const c = colors || { accentGold: COLORS.gold, goldRgb: '212,160,58', goldLightRgb: '255,192,42' };
+/* ─── Chat Bubble Component ─── */
+function ChatBubble({ sender, message, isAgent, t }) {
   return (
     <div style={{
-      width: 40,
-      height: 40,
-      borderRadius: '50%',
-      background: `linear-gradient(135deg, rgba(${c.goldRgb},0.15), rgba(${c.goldLightRgb},0.08))`,
-      border: `1px solid rgba(${c.goldRgb},0.25)`,
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: 16,
-      fontWeight: 700,
-      color: c.accentGold,
-      flexShrink: 0,
-      marginBottom: 16,
+      flexDirection: 'column',
+      alignItems: isAgent ? 'flex-start' : 'flex-end',
+      marginBottom: 12,
     }}>
-      {number}
+      <div style={{
+        fontSize: 11,
+        fontFamily: 'DM Sans, sans-serif',
+        color: t.textFaint,
+        marginBottom: 4,
+        marginLeft: isAgent ? 8 : 0,
+        marginRight: isAgent ? 0 : 8,
+      }}>
+        {sender}
+      </div>
+      <div style={{
+        background: isAgent
+          ? `linear-gradient(135deg, ${t.accentGold}18, ${t.accentGold}0C)`
+          : `${t.text}0A`,
+        border: `1px solid ${isAgent ? t.accentGold + '30' : t.border}`,
+        borderRadius: isAgent ? '4px 16px 16px 16px' : '16px 4px 16px 16px',
+        padding: '12px 18px',
+        maxWidth: 400,
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 14,
+        lineHeight: 1.6,
+        color: t.text,
+      }}>
+        {message}
+      </div>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   DATA
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* ─── Score Bar Component ─── */
+function ScoreBar({ label, score, t }) {
+  const pct = (score / 10) * 100;
+  return (
+    <div style={{ marginBottom: 8 }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: 4,
+        fontFamily: 'DM Sans, sans-serif',
+      }}>
+        <span style={{ fontSize: 11, color: t.textMuted }}>{label}</span>
+        <span style={{ fontSize: 11, color: t.accentGold, fontWeight: 600 }}>{score}/10</span>
+      </div>
+      <div style={{
+        height: 6,
+        borderRadius: 3,
+        background: `${t.text}0A`,
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          height: '100%',
+          width: `${pct}%`,
+          borderRadius: 3,
+          background: pct >= 80
+            ? `linear-gradient(90deg, ${t.accentGreen}, ${t.accentGreen}CC)`
+            : pct >= 60
+              ? `linear-gradient(90deg, ${t.accentGold}, ${t.accentGoldLight})`
+              : `linear-gradient(90deg, ${t.textFaint}, ${t.textMuted})`,
+          transition: 'width 0.6s ease',
+        }} />
+      </div>
+    </div>
+  );
+}
 
-const NAME_ROLES = [
-  {
-    role: 'The Platform',
-    currently: 'Nexus',
-    description: 'The central dashboard and command center for dispensary operations.',
-    accent: '#8B6FE0',
-    candidates: [
-      { name: 'Dash', weight: 700, spacing: '0.03em', rationale: 'Dashboard meets velocity. Immediate, punchy, suggests speed and oversight.' },
-      { name: 'Depot', weight: 600, spacing: '0.02em', rationale: 'Central hub, warehouse of data. Grounded and substantial, implies a storehouse of value.' },
-      { name: 'Deck', weight: 700, spacing: '0.04em', rationale: 'Command deck, flight deck, presentation deck. Authoritative control surface.' },
-      { name: 'Domain', weight: 500, spacing: '0.03em', rationale: 'Your territory, your realm of control. Regal, expansive, implies ownership.' },
-      { name: 'Dial', weight: 600, spacing: '0.04em', rationale: 'Tuning into your business. Precision control, fine adjustments, analog warmth.' },
-      { name: 'Den', weight: 700, spacing: '0.05em', rationale: 'Your private workspace. Cozy, personal, a safe space for strategic thinking.' },
-    ],
-  },
-  {
-    role: 'The AI Agent',
-    currently: 'Dex',
-    description: 'The intelligent assistant that answers questions, analyzes data, and automates tasks.',
-    accent: COLORS.gold,
-    candidates: [
-      { name: 'Dex', weight: 700, spacing: '0.02em', rationale: 'Dexterity meets index. Already established, sharp and technical. Keep it.' },
-      { name: 'Dart', weight: 700, spacing: '0.03em', rationale: 'Precision and speed. Hits the target every time. Action-oriented.' },
-      { name: 'Drift', weight: 400, spacing: '0.04em', rationale: 'Autonomous navigation through data. Flowing, effortless, AI that moves on its own.' },
-      { name: 'Djinn', weight: 500, spacing: '0.03em', rationale: 'A wish-granting spirit. AI as magic, fulfilling requests with supernatural ease.' },
-      { name: 'Delve', weight: 600, spacing: '0.02em', rationale: 'Going deep. Thorough investigation, leaving no stone unturned in the data.' },
-      { name: 'Droid', weight: 600, spacing: '0.04em', rationale: 'Robotic assistant. Immediately signals AI/automation. Familiar sci-fi connotation.' },
-    ],
-  },
-  {
-    role: 'The B2B Marketplace',
-    currently: 'Connect',
-    description: 'The platform where retailers discover brands, place orders, and manage supply chain.',
-    accent: COLORS.green,
-    candidates: [
-      { name: 'Deal', weight: 700, spacing: '0.02em', rationale: 'Commerce at its core. Transactions, agreements, handshakes. Direct and unmistakable.' },
-      { name: 'Dock', weight: 700, spacing: '0.04em', rationale: 'Where goods arrive. Shipping, receiving, the physical endpoint of commerce.' },
-      { name: 'Duct', weight: 600, spacing: '0.03em', rationale: 'Conduit, pipeline, flow between parties. Invisible infrastructure enabling trade.' },
-      { name: 'District', weight: 500, spacing: '0.02em', rationale: 'A marketplace district, commercial zone. Evokes a bustling area of trade.' },
-      { name: 'Dwell', weight: 400, spacing: '0.04em', rationale: 'Where brands and retailers live together. Community, cohabitation, shared space.' },
-      { name: 'Depot', weight: 600, spacing: '0.02em', rationale: 'Supply depot. Where inventory meets demand. Substantial and reliable.' },
-    ],
-  },
-  {
-    role: 'The Consumer Experience',
-    currently: 'New Product',
-    description: 'The customer-facing discovery and purchasing experience for cannabis consumers.',
-    accent: COLORS.blue,
-    candidates: [
-      { name: 'Drop', weight: 700, spacing: '0.03em', rationale: 'Product drops, delivery drops, cultural currency. Hype meets convenience.' },
-      { name: 'Dose', weight: 600, spacing: '0.02em', rationale: 'Cannabis-native language. Personalized recommendations, measured experiences.' },
-      { name: 'Daze', weight: 500, spacing: '0.04em', rationale: 'Discovery and wonderment. Getting lost in the browse. Dreamy, aspirational.' },
-      { name: 'Dawn', weight: 400, spacing: '0.03em', rationale: 'New beginnings. Fresh experience, first light of discovery. Optimistic.' },
-      { name: 'Drift', weight: 400, spacing: '0.04em', rationale: 'Browsing without a plan. Exploring, discovering, pleasant meandering.' },
-      { name: 'Drip', weight: 700, spacing: '0.03em', rationale: 'Style, culture, steady flow. Cannabis culture meets streetwear vernacular.' },
-    ],
-  },
-];
+/* ─── Large Wordmark Component ─── */
+function Wordmark({ name, size = 48, t, isHighlighted = false }) {
+  return (
+    <div style={{
+      fontFamily: 'DM Sans, sans-serif',
+      fontSize: size,
+      fontWeight: 700,
+      letterSpacing: '-0.02em',
+      color: isHighlighted ? t.accentGold : t.text,
+      lineHeight: 1.1,
+      textShadow: isHighlighted ? `0 0 40px ${t.accentGold}30` : 'none',
+    }}>
+      {name}
+    </div>
+  );
+}
 
-const SUITES = [
-  {
-    id: 'sharp',
-    label: 'The Sharp Set',
-    names: ['Dash', 'Dex', 'Deal', 'Drop'],
-    colors: ['#8B6FE0', COLORS.gold, COLORS.green, COLORS.blue],
-    vibe: 'Fast, decisive, action-oriented. Every name is one syllable, punchy, and impossible to forget. This suite says "we mean business" while staying approachable.',
-    ratings: { memorability: 5, distinctiveness: 4, professional: 4, cannabis: 4 },
-  },
-  {
-    id: 'deep',
-    label: 'The Deep Set',
-    names: ['Depot', 'Delve', 'Dock', 'Dose'],
-    colors: ['#8B6FE0', COLORS.gold, COLORS.green, COLORS.blue],
-    vibe: 'Substantial, thorough, grounded. These names suggest depth and reliability. Each evokes a physical or experiential metaphor that feels tangible.',
-    ratings: { memorability: 3, distinctiveness: 4, professional: 5, cannabis: 4 },
-  },
-  {
-    id: 'dynamic',
-    label: 'The Dynamic Set',
-    names: ['Domain', 'Dart', 'District', 'Dawn'],
-    colors: ['#8B6FE0', COLORS.gold, COLORS.green, COLORS.blue],
-    vibe: 'Expansive, precise, aspirational. A mix of territorial confidence and bright-eyed optimism. Feels like a company building something big.',
-    ratings: { memorability: 3, distinctiveness: 5, professional: 5, cannabis: 3 },
-  },
-  {
-    id: 'smooth',
-    label: 'The Smooth Set',
-    names: ['Deck', 'Drift', 'Duct', 'Daze'],
-    colors: ['#8B6FE0', COLORS.gold, COLORS.green, COLORS.blue],
-    vibe: 'Effortless, flowing, experiential. These names feel like gliding through software. Less corporate, more creative. The cannabis culture undercurrent is strong.',
-    ratings: { memorability: 3, distinctiveness: 4, professional: 3, cannabis: 5 },
-  },
-  {
-    id: 'bold',
-    label: 'The Bold Set',
-    names: ['Dash', 'Dex', 'Dock', 'Dose'],
-    colors: ['#8B6FE0', COLORS.gold, COLORS.green, COLORS.blue],
-    vibe: 'The best of both worlds. Combines sharp monosyllables with industry-specific language. "Dose" is a cannabis-native word that no other B2B SaaS would use. This suite owns its vertical.',
-    ratings: { memorability: 5, distinctiveness: 5, professional: 4, cannabis: 5 },
-  },
-];
+/* ─── Personality Slider Component ─── */
+function PersonalitySlider({ leftLabel, rightLabel, value, t }) {
+  const pct = (value / 10) * 100;
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: 6,
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 11,
+        color: t.textMuted,
+      }}>
+        <span>{leftLabel}</span>
+        <span>{rightLabel}</span>
+      </div>
+      <div style={{
+        height: 8,
+        borderRadius: 4,
+        background: `linear-gradient(90deg, ${t.textFaint}40, ${t.accentGold}40)`,
+        position: 'relative',
+      }}>
+        <div style={{
+          position: 'absolute',
+          left: `${pct}%`,
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 18,
+          height: 18,
+          borderRadius: '50%',
+          background: t.accentGold,
+          border: `3px solid ${t.cardBg}`,
+          boxShadow: `0 0 12px ${t.accentGold}50`,
+        }} />
+      </div>
+    </div>
+  );
+}
 
-const PHONETICS = [
-  { name: 'Dash', syllables: 1, feel: 'Hard attack, short vowel, decisive', domain: 'Likely available', verbal: 'Excellent -- crisp, unmistakable', emoji: '\u26A1' },
-  { name: 'Dex', syllables: 1, feel: 'Hard-soft, quick, technical edge', domain: 'Likely available', verbal: 'Excellent -- tech-native, unique', emoji: '\uD83E\uDDE0' },
-  { name: 'Deal', syllables: 1, feel: 'Warm, open vowel, commercial', domain: 'May conflict', verbal: 'Good -- very common word though', emoji: '\uD83E\uDD1D' },
-  { name: 'Dock', syllables: 1, feel: 'Hard, solid, grounded stop', domain: 'Likely available', verbal: 'Good -- clear and concrete', emoji: '\u2693' },
-  { name: 'Dose', syllables: 1, feel: 'Soft onset, open vowel, gentle', domain: 'May conflict', verbal: 'Good -- cannabis-resonant', emoji: '\uD83D\uDC9A' },
-  { name: 'Drop', syllables: 1, feel: 'Hard, percussive, urgent', domain: 'Likely available', verbal: 'Excellent -- culturally loaded', emoji: '\uD83D\uDCA7' },
-  { name: 'Dart', syllables: 1, feel: 'Hard attack, sharp, precise', domain: 'May conflict', verbal: 'Good -- sports connotation', emoji: '\uD83C\uDFAF' },
-  { name: 'Drift', syllables: 1, feel: 'Soft flow, dreamy, continuous', domain: 'Likely available', verbal: 'Good -- automotive connotation', emoji: '\uD83C\uDF0A' },
-  { name: 'Delve', syllables: 1, feel: 'Soft, deep, exploratory', domain: 'May conflict', verbal: 'Fair -- less common word', emoji: '\uD83D\uDD0D' },
-  { name: 'Depot', syllables: 2, feel: 'Hard-soft, substantial, grounded', domain: 'May conflict', verbal: 'Fair -- Home Depot association', emoji: '\uD83C\uDFED' },
-  { name: 'Deck', syllables: 1, feel: 'Hard, flat, commanding', domain: 'Likely available', verbal: 'Good -- multiple meanings', emoji: '\uD83C\uDCCF' },
-  { name: 'Domain', syllables: 2, feel: 'Regal, expansive, authoritative', domain: 'May conflict', verbal: 'Fair -- web domain confusion', emoji: '\uD83D\uDC51' },
-  { name: 'Dawn', syllables: 1, feel: 'Soft, warm, optimistic', domain: 'May conflict', verbal: 'Good -- poetic, memorable', emoji: '\uD83C\uDF05' },
-  { name: 'Daze', syllables: 1, feel: 'Soft buzz, dreamy, suspended', domain: 'Likely available', verbal: 'Fair -- negative connotation risk', emoji: '\u2728' },
-  { name: 'Djinn', syllables: 1, feel: 'Exotic, mystical, unusual', domain: 'Likely available', verbal: 'Poor -- pronunciation unclear', emoji: '\uD83E\uDDDE' },
-  { name: 'Drip', syllables: 1, feel: 'Hard, punchy, cultural', domain: 'Likely available', verbal: 'Good -- slang-forward', emoji: '\uD83D\uDCA8' },
-];
+/* ─── Candidate Card Component ─── */
+function CandidateCard({ candidate, t, expanded, onToggle }) {
+  return (
+    <div
+      onClick={onToggle}
+      style={{
+        background: expanded
+          ? `linear-gradient(135deg, ${t.cardBg}, ${t.accentGold}08)`
+          : t.cardBg,
+        borderRadius: 16,
+        border: `1px solid ${expanded ? t.accentGold + '40' : t.border}`,
+        padding: 24,
+        cursor: 'pointer',
+        transition: 'all 0.3s ease',
+        fontFamily: 'DM Sans, sans-serif',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <Wordmark name={candidate.name} size={42} t={t} isHighlighted={expanded} />
+        {candidate.isFrontrunner && (
+          <span style={{
+            fontSize: 10,
+            fontWeight: 700,
+            color: t.accentGold,
+            background: `${t.accentGold}15`,
+            border: `1px solid ${t.accentGold}30`,
+            borderRadius: 20,
+            padding: '4px 12px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+          }}>
+            Frontrunner
+          </span>
+        )}
+      </div>
 
-const DEX_FAMILY = [
-  { name: 'Dex', sub: 'Core AI Agent', description: 'The intelligent assistant. Answers questions, runs analyses, automates workflows.', tier: 'core' },
-  { name: 'Dex Hub', sub: 'Platform Dashboard', description: 'The central command view. All your metrics, insights, and controls in one place.', tier: 'product' },
-  { name: 'Dex Market', sub: 'B2B Marketplace', description: 'Where retailers and brands connect. Orders, catalogs, and supply chain management.', tier: 'product' },
-  { name: 'Dex Shop', sub: 'Consumer Experience', description: 'The customer-facing storefront. Discovery, recommendations, and checkout.', tier: 'product' },
-  { name: 'Dex Insights', sub: 'Analytics Engine', description: 'Deep data analysis. Trends, forecasts, competitive intelligence.', tier: 'extension' },
-  { name: 'Dex Comply', sub: 'Compliance Automation', description: 'Regulatory monitoring. Automatic state-level compliance checks.', tier: 'extension' },
-];
+      <div style={{ fontSize: 12, color: t.textFaint, marginBottom: 4 }}>
+        {candidate.origin}
+      </div>
+      <div style={{ fontSize: 13, color: t.textMuted, marginBottom: 16 }}>
+        {candidate.vibe}
+      </div>
 
-const TRADEMARK_CHECKS = [
-  {
-    name: 'Dash',
-    existingTech: { status: 'yellow', text: 'Dash by Plotly (Python framework), DoorDash (delivery)' },
-    commonWord: { status: 'yellow', text: 'Common English word -- harder to trademark broadly' },
-    cannabis: { status: 'green', text: 'No direct cannabis association, which is fine for B2B' },
-    negative: { status: 'green', text: 'No negative connotations. Universally positive.' },
-  },
+      {/* The Chat Test */}
+      <div style={{
+        background: `${t.text}06`,
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+        border: `1px solid ${t.border}`,
+      }}>
+        <div style={{ fontSize: 10, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+          The Chat Test
+        </div>
+        <ChatBubble
+          sender={candidate.name}
+          message={candidate.chatMessage}
+          isAgent={true}
+          t={t}
+        />
+      </div>
+
+      {/* Score Bars */}
+      <ScoreBar label="Natural (sounds like a real conversation)" score={candidate.scores.natural} t={t} />
+      <ScoreBar label="Memorable" score={candidate.scores.memorable} t={t} />
+      <ScoreBar label="Professional" score={candidate.scores.professional} t={t} />
+
+      {expanded && candidate.expandedNotes && (
+        <div style={{
+          marginTop: 16,
+          padding: 16,
+          borderRadius: 10,
+          background: `${t.accentGold}08`,
+          border: `1px solid ${t.accentGold}18`,
+          fontSize: 13,
+          lineHeight: 1.7,
+          color: t.textMuted,
+        }}>
+          {candidate.expandedNotes}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Main Data: 20 Agent Name Candidates ─── */
+const CANDIDATES = [
   {
     name: 'Dex',
-    existingTech: { status: 'yellow', text: 'DexCom (medical devices), various crypto DEXs' },
-    commonWord: { status: 'green', text: 'Not a common word -- strong trademark potential' },
-    cannabis: { status: 'green', text: 'Clean. Technical feel suits AI positioning.' },
-    negative: { status: 'green', text: 'None. Dexterity connotation is purely positive.' },
+    origin: 'From "dexterity" — nimble, skillful, quick-handed',
+    vibe: 'Sharp, capable, modern',
+    chatMessage: "Based on yesterday's sales, you should reorder Blue Dream. You're down to 14 units and it's been averaging 8/day.",
+    scores: { natural: 9, memorable: 9, professional: 8 },
+    isFrontrunner: true,
+    expandedNotes: 'Dex hits the sweet spot: it sounds like it could be someone you know, but also sounds techy enough to be an AI. Think "Dexter" but cooler. Single syllable makes it fast in conversation — "Hey Dex" rolls off the tongue. The dexterity connection adds a layer of meaning: this agent is nimble with data.',
+    group: 'D-name',
   },
   {
-    name: 'Dock',
-    existingTech: { status: 'yellow', text: 'Docker (containerization) -- close phonetic match' },
-    commonWord: { status: 'yellow', text: 'Common English word with many uses' },
-    cannabis: { status: 'green', text: 'Loading dock metaphor works for supply chain' },
-    negative: { status: 'green', text: 'No negative connotations.' },
+    name: 'Dash',
+    origin: 'Speed, energy — a dash of insight',
+    vibe: 'Quick, energetic, optimistic',
+    chatMessage: "Quick heads-up: your weekend rush starts in 2 hours and you're low on pre-rolls. Want me to flag the top 5 SKUs to restock?",
+    scores: { natural: 8, memorable: 8, professional: 6 },
+    isFrontrunner: false,
+    expandedNotes: 'Dash has great energy but might skew too playful for serious business contexts. The name suggests speed, which is good for an agent that delivers fast insights. Concern: Dash from The Incredibles might dominate associations.',
+    group: 'D-name',
   },
   {
-    name: 'Dose',
-    existingTech: { status: 'green', text: 'No major tech conflicts found' },
-    commonWord: { status: 'yellow', text: 'Common word, especially in pharma/medical' },
-    cannabis: { status: 'green', text: 'Strong positive cannabis association -- dosing is key' },
-    negative: { status: 'yellow', text: 'Potential medical/pharma confusion. "Overdose" proximity.' },
+    name: 'Drew',
+    origin: 'Human name + "drew insights/conclusions"',
+    vibe: 'Warm, trustworthy, understated',
+    chatMessage: "I drew some patterns from last quarter — your edibles category grew 34% but margins dropped. Want me to dig into pricing?",
+    scores: { natural: 9, memorable: 7, professional: 9 },
+    isFrontrunner: false,
+    expandedNotes: 'Drew is perhaps the most genuinely human-sounding option. The double meaning ("Drew insights") is subtle and clever. Risk: it might feel TOO human — some users could forget they are talking to an AI, which raises ethical questions.',
+    group: 'D-name',
   },
   {
-    name: 'Drop',
-    existingTech: { status: 'yellow', text: 'Dropbox (storage), various "drop" branded services' },
-    commonWord: { status: 'yellow', text: 'Very common word -- broad trademark difficult' },
-    cannabis: { status: 'green', text: 'Product drops, delivery drops -- culturally perfect' },
-    negative: { status: 'green', text: 'Mostly positive. "Drop" in ecommerce is exciting.' },
+    name: 'Dale',
+    origin: 'Old English for "valley" — a familiar, friendly name',
+    vibe: 'Friendly, approachable, reliable',
+    chatMessage: "Hey there! Your afternoon lull usually hits around 2pm. Last Tuesday you ran a flash deal on concentrates and it bumped traffic 18%. Want to try that again?",
+    scores: { natural: 8, memorable: 6, professional: 7 },
+    isFrontrunner: false,
+    expandedNotes: 'Dale is undeniably friendly but might lack the edge a tech product needs. It sounds like a helpful neighbor rather than a powerful AI. Could work for dispensaries that prioritize warmth over sophistication.',
+    group: 'D-name',
   },
   {
-    name: 'Deal',
-    existingTech: { status: 'yellow', text: 'Many deal/deals sites exist (Groupon, RetailMeNot)' },
-    commonWord: { status: 'red', text: 'Extremely common -- very hard to trademark' },
-    cannabis: { status: 'yellow', text: 'Could imply discounting, which cheapens the brand' },
-    negative: { status: 'yellow', text: '"Dealer" connotation in cannabis context. Risky.' },
+    name: 'Kip',
+    origin: 'Short for "kipper" or just a punchy nickname — energy in a small package',
+    vibe: 'Energetic, scrappy, upbeat',
+    chatMessage: "Your top seller just shifted! Sour Diesel overtook Blue Dream at 11am. Want me to update the featured shelf?",
+    scores: { natural: 7, memorable: 8, professional: 6 },
+    isFrontrunner: false,
+    expandedNotes: 'Kip has a plucky quality — it sounds like a scrappy startup assistant. The energy is great but it might not scale well to enterprise contexts. Napoleon Dynamite association could be a factor.',
+    group: 'other',
   },
   {
-    name: 'Drift',
-    existingTech: { status: 'red', text: 'Drift.com (conversational marketing) -- direct conflict' },
-    commonWord: { status: 'yellow', text: 'Common word but less crowded in tech' },
-    cannabis: { status: 'green', text: 'Dreamy, experiential -- fits consumer cannabis well' },
-    negative: { status: 'yellow', text: '"Drifting" can imply lack of direction or purpose.' },
+    name: 'Nev',
+    origin: 'Short for "Neville" or standing alone — sounds calm and knowing',
+    vibe: 'Wise, calm, composed',
+    chatMessage: "I have been tracking your flower-to-edibles ratio. It has shifted 12% toward edibles this quarter. That is consistent with regional trends I am seeing across similar dispensaries.",
+    scores: { natural: 7, memorable: 7, professional: 8 },
+    isFrontrunner: false,
+    expandedNotes: 'Nev has a measured, thoughtful quality. It sounds like someone who thinks before they speak. Good for analytics-heavy use cases where users want to feel like they are consulting an expert.',
+    group: 'other',
   },
   {
-    name: 'Delve',
-    existingTech: { status: 'red', text: 'Microsoft Delve (Office 365 product) -- direct conflict' },
-    commonWord: { status: 'green', text: 'Less common word -- decent trademark opportunity' },
-    cannabis: { status: 'green', text: 'Exploration metaphor works well' },
-    negative: { status: 'green', text: 'No negative connotations. Purely positive.' },
+    name: 'Ren',
+    origin: 'Japanese for "lotus" / renaissance — clean and modern',
+    vibe: 'Clean, modern, precise',
+    chatMessage: "Three patterns worth noting today: morning traffic is up 15%, your loyalty redemptions spiked, and one budtender is outperforming the team by 2x on upsells.",
+    scores: { natural: 7, memorable: 8, professional: 8 },
+    isFrontrunner: false,
+    expandedNotes: 'Ren is sleek and international. The lotus/renaissance connection adds depth. Could appeal to premium dispensaries. Concern: Ren and Stimpy is a strong cultural association for some demographics.',
+    group: 'other',
+  },
+  {
+    name: 'Joss',
+    origin: 'A warm, gender-neutral name — "joss" also means luck/fortune',
+    vibe: 'Warm, approachable, genuine',
+    chatMessage: "Good morning! Based on the weather forecast (sunny, 78F), I would expect a busier-than-usual day. Your last sunny Saturday did 23% above average.",
+    scores: { natural: 8, memorable: 7, professional: 7 },
+    isFrontrunner: false,
+    expandedNotes: 'Joss feels like a genuinely warm companion. The luck/fortune meaning adds a nice layer. Joss Whedon association could be polarizing. The two-syllable feel (even though it is one) gives it a softer landing.',
+    group: 'other',
+  },
+  {
+    name: 'Cal',
+    origin: 'Short for "calculate" — also a solid human name',
+    vibe: 'Calculated, reliable, grounded',
+    chatMessage: "I have calculated your optimal reorder points for this week. Three SKUs need attention by Thursday. Want the full breakdown?",
+    scores: { natural: 8, memorable: 7, professional: 9 },
+    isFrontrunner: false,
+    expandedNotes: 'Cal walks the line between human and functional beautifully. "I asked Cal" sounds natural. The calculation connection is obvious but not forced. Risk: might feel too plain for some brand visions.',
+    group: 'other',
+  },
+  {
+    name: 'Taz',
+    origin: 'Energetic, a bit wild — short and punchy',
+    vibe: 'Fast, memorable, bold',
+    chatMessage: "Whoa, your online orders just spiked 40% in the last hour. Looks like that Instagram post hit. Want me to make sure inventory is synced?",
+    scores: { natural: 6, memorable: 9, professional: 5 },
+    isFrontrunner: false,
+    expandedNotes: 'Taz is impossible to forget but might be too informal for business software. The Tasmanian Devil association adds chaos energy. Best for brands that lean playful and irreverent.',
+    group: 'other',
+  },
+  {
+    name: 'Lex',
+    origin: 'From "lexicon" — words, knowledge, analysis',
+    vibe: 'Smart, precise, authoritative',
+    chatMessage: "Analyzing your pricing strategy: you are 8% above market average on flower but 12% below on edibles. I would recommend a targeted price adjustment on your top 10 edible SKUs.",
+    scores: { natural: 8, memorable: 8, professional: 9 },
+    isFrontrunner: false,
+    expandedNotes: 'Lex is one of the strongest alternatives to Dex. The lexicon connection is perfect for a data-centric agent. Sounds authoritative without being cold. Concern: Lex Luthor is the dominant pop culture reference, and Amazon Alexa is phonetically close.',
+    group: 'other',
+  },
+  {
+    name: 'Wren',
+    origin: 'A small, observant bird — notices everything',
+    vibe: 'Observant, natural, thoughtful',
+    chatMessage: "I noticed something interesting: customers who buy your house brand flower come back 2.3 days sooner than those who buy name brands. Might be worth expanding that line.",
+    scores: { natural: 7, memorable: 8, professional: 7 },
+    isFrontrunner: false,
+    expandedNotes: 'Wren is poetic and distinctive. The bird connection implies watchfulness and attention to detail. Works beautifully for a cannabis brand given the nature association. Might feel too soft for some users.',
+    group: 'other',
+  },
+  {
+    name: 'Finn',
+    origin: 'Irish for "fair" — adventurous, open, bold',
+    vibe: 'Adventurous, friendly, bold',
+    chatMessage: "Discovered a new trend in your data: first-time customers who get a staff recommendation are 3x more likely to return. Want me to create a prompt card for your team?",
+    scores: { natural: 9, memorable: 8, professional: 7 },
+    isFrontrunner: false,
+    expandedNotes: 'Finn is extremely likable and conversational. "Hey Finn" feels completely natural. Star Wars and Adventure Time associations are both positive. Might feel too casual for enterprise deployment.',
+    group: 'other',
+  },
+  {
+    name: 'Sage',
+    origin: 'Wisdom + an actual herb — perfect for cannabis',
+    vibe: 'Wise, herbal, grounded',
+    chatMessage: "Here is my take on your Q1 performance: revenue is up 18% but you are leaving margin on the table with your discount strategy. Let me show you a smarter approach.",
+    scores: { natural: 7, memorable: 9, professional: 8 },
+    isFrontrunner: false,
+    expandedNotes: 'Sage is thematically perfect for cannabis retail — it is both "wise advisor" and an actual herb. The double meaning is elegant. Risk: might feel too on-the-nose for a cannabis company. Also a popular baby name right now, which could cause confusion.',
+    group: 'other',
+  },
+  {
+    name: 'Rue',
+    origin: 'An aromatic herb — also means "to reflect on"',
+    vibe: 'Contemplative, herbal, elegant',
+    chatMessage: "Looking back at your February numbers, there is a clear pattern: your weekend staff needs different product knowledge training than weekday staff. The upsell gaps are very different.",
+    scores: { natural: 6, memorable: 7, professional: 7 },
+    isFrontrunner: false,
+    expandedNotes: 'Rue has a literary, contemplative quality. The herb connection works for cannabis. Concern: "rue" means regret in common usage, which is not ideal. Hunger Games character Rue adds emotional weight.',
+    group: 'other',
+  },
+  {
+    name: 'Kit',
+    origin: 'A toolkit, a helper, a collection of useful things',
+    vibe: 'Helpful, practical, complete',
+    chatMessage: "I have put together your daily kit: 3 items need reordering, 1 compliance deadline this week, and your best-performing budtender deserves a shoutout.",
+    scores: { natural: 8, memorable: 7, professional: 7 },
+    isFrontrunner: false,
+    expandedNotes: 'Kit is wonderfully functional — it implies having everything you need. "My kit" or "ask Kit" both work. Knight Rider association (KITT) adds a helpful AI precedent. Might feel too utilitarian for some.',
+    group: 'other',
+  },
+  {
+    name: 'Pip',
+    origin: 'Small but mighty — a seed, a beginning, a signal',
+    vibe: 'Energetic, small-but-mighty, cheerful',
+    chatMessage: "Small thing that could be big: your Google reviews dropped from 4.8 to 4.6 this month. I found 3 recent negative reviews about wait times. Want to see them?",
+    scores: { natural: 7, memorable: 8, professional: 5 },
+    isFrontrunner: false,
+    expandedNotes: 'Pip is charming and distinctive. The seed connection is perfect for growth narratives. Great Expectations adds literary depth. Risk: might sound too cute for serious business analytics. Works better for small/indie dispensaries.',
+    group: 'other',
+  },
+  {
+    name: 'Rye',
+    origin: 'A grain, earthy and real — cannabis-adjacent in vibe',
+    vibe: 'Earthy, honest, grounded',
+    chatMessage: "Keeping it real: your margins on pre-rolls have been sliding for 3 weeks. The main culprit is your supplier cost on the Sativa blend. Want me to pull competitor pricing?",
+    scores: { natural: 7, memorable: 7, professional: 7 },
+    isFrontrunner: false,
+    expandedNotes: 'Rye has a down-to-earth, honest quality that fits cannabis culture well. The grain/earth connection feels authentic. Catcher in the Rye adds cultural depth. Might not stand out enough in a crowded field.',
+    group: 'other',
+  },
+  {
+    name: 'Ash',
+    origin: 'A tree, remains of fire — strong, simple, elemental',
+    vibe: 'Strong, simple, direct',
+    chatMessage: "Straight to it: you had your best Tuesday ever yesterday. Revenue up 28%. The driver was your new loyalty tier launch. Here is what to double down on.",
+    scores: { natural: 8, memorable: 8, professional: 7 },
+    isFrontrunner: false,
+    expandedNotes: 'Ash is strong and elemental. The tree connection works for cannabis. Pokemon association is overwhelmingly positive for millennials. Concern: "ash" can connote destruction/endings, which might not be the vibe for a growth-oriented tool.',
+    group: 'other',
   },
 ];
 
+/* ─── Top 5 Alternatives Data ─── */
+const TOP_5_ALTERNATIVES = [
+  {
+    name: 'Lex',
+    tagline: 'The Brains',
+    personality: 'Lex is the smartest person in the room and knows it, but is never arrogant about it. Think of a brilliant analyst who genuinely enjoys explaining things to you. Lex speaks with precision and backs everything with data.',
+    pros: ['Lexicon connection is perfect for a data agent', 'Sounds authoritative and trustworthy', 'Gender-neutral and culturally flexible', 'Works in formal and informal contexts'],
+    cons: ['Lex Luthor is a villain association', 'Phonetically close to "Alexa" which could cause confusion', 'Might feel cold to users who want warmth'],
+    firstImpression: 'Smart. Probably knows more than me. I trust this.',
+    hundredthTime: 'Still feels crisp. "Hey Lex" never gets old.',
+    chatExample: { sender: 'You', agentResponse: 'Your pricing is 8% above market on flower. Based on elasticity data, a 5% reduction would likely increase volume by 12%, netting you an additional $2,400/week.' },
+  },
+  {
+    name: 'Finn',
+    tagline: 'The Friend',
+    personality: 'Finn is the coworker who makes your day better. Always upbeat, always finding something interesting in the data, always framing things as opportunities rather than problems. Finn makes business analytics feel like an adventure.',
+    pros: ['Extremely natural in conversation', 'Universally likable associations', 'Perfect balance of casual and competent', 'Easy to say, easy to spell'],
+    cons: ['Might feel too casual for enterprise', 'Very common name — less distinctive', 'Adventure Time / Star Wars could dominate associations'],
+    firstImpression: 'Friendly! This feels easy to talk to.',
+    hundredthTime: 'Like talking to a buddy. Never annoying.',
+    chatExample: { sender: 'You', agentResponse: 'Ooh, interesting find today: customers who visit on Mondays spend 22% more per ticket than Friday shoppers. I think it is because Monday customers are more intentional. Want to explore this?' },
+  },
+  {
+    name: 'Cal',
+    tagline: 'The Professional',
+    personality: 'Cal is the reliable senior analyst you always wanted on your team. Not flashy, never wrong, always prepared. Cal does not waste words and respects your time. When Cal says something matters, it matters.',
+    pros: ['Calculate/calibrate connections are perfect', 'Sounds competent and reliable', 'Works perfectly in professional settings', 'Nobody has a negative Cal association'],
+    cons: ['Might feel too plain for brand differentiation', 'Lacks the spark that makes people excited', 'Could blend into the background'],
+    firstImpression: 'Solid. Professional. I can rely on this.',
+    hundredthTime: 'Comfortable. Like a well-worn tool. Never distracting.',
+    chatExample: { sender: 'You', agentResponse: 'Three items require attention today: Blue Dream hits reorder threshold by end of day, your Thursday compliance filing is due, and last week\'s promotion underperformed target by 15%. Shall I prioritize?' },
+  },
+  {
+    name: 'Sage',
+    tagline: 'The Advisor',
+    personality: 'Sage is the wise mentor who has seen it all. Patient, knowledgeable, and always offering perspective rather than just data. Sage connects the dots between what is happening now and what it means for the future. The herb connection makes it feel native to cannabis.',
+    pros: ['Wisdom + herb double meaning is perfect', 'Feels native to cannabis industry', 'Implies deep knowledge, not just data', 'Elegant and distinctive'],
+    cons: ['Too on-the-nose for cannabis?', 'Popular baby name — could cause confusion', 'Might feel pretentious to some users'],
+    firstImpression: 'This knows things. The cannabis connection is clever.',
+    hundredthTime: 'Feels important every time. Might be slightly heavy.',
+    chatExample: { sender: 'You', agentResponse: 'Here is the bigger picture: your store is transitioning from a flower-dominant shop to a wellness destination. Edibles are up 34%, topicals up 28%. I would recommend leaning into this shift with your next marketing push.' },
+  },
+  {
+    name: 'Ash',
+    tagline: 'The Direct One',
+    personality: 'Ash does not do fluff. Short sentences, clear recommendations, no hedging. If something is wrong, Ash tells you. If something is great, Ash says so and moves on. The most no-nonsense option on the list.',
+    pros: ['Strong and elemental feel', 'Pokemon association is overwhelmingly positive', 'Works for cannabis (tree, earth, natural)', 'Direct communication style stands out'],
+    cons: ['Ash can connote destruction/endings', 'Might feel too blunt for some users', 'Less warm than other options'],
+    firstImpression: 'Bold. This is going to be direct with me.',
+    hundredthTime: 'Efficient. I know what I am getting. Never annoyed.',
+    chatExample: { sender: 'You', agentResponse: 'Your margins dropped 3 points this week. Cause: you over-discounted the weekend sale by 10%. Fix: cap future discounts at 15%. Your top seller is fine. Focus on the bottom 5 SKUs dragging you down.' },
+  },
+];
+
+/* ─── Dex Voice Samples ─── */
+const DEX_VOICE_SAMPLES = {
+  casual: [
+    { user: "Dex, what's selling today?", agent: "Blue Dream is having a moment — up 23% this week. Sour Diesel is right behind it. Your edibles are quiet though, might be worth a shelf refresh." },
+    { user: "Anything I should worry about?", agent: "Nothing urgent. Your afternoon budtender called out sick, so you might want to shuffle the schedule. Other than that, you're cruising." },
+  ],
+  professional: [
+    { user: "Dex, generate the monthly report.", agent: "Here's your March report. Revenue: $148,200 (+12% MoM). Top category: Flower at 44% of sales. Key insight: your loyalty program members spend 2.8x more than walk-ins. Full breakdown attached." },
+    { user: "What's our compliance status?", agent: "All clear. Your monthly METRC reconciliation is due March 28th. I've pre-filled the data — you'll need to review and submit. Three product labels need updating for the new state requirements effective April 1st." },
+  ],
+  alert: [
+    { user: null, agent: "Heads up — your OG Kush inventory hits reorder level tomorrow at current sell-through rates. Want me to draft the PO?" },
+    { user: null, agent: "Unusual activity: your downtown location just processed a $0 transaction. Might be a training mode left on, but worth checking." },
+  ],
+  celebratory: [
+    { user: null, agent: "Nice! You just hit your best Wednesday ever. Revenue was $8,420, beating the previous record by 11%. Your new budtender Sarah crushed it with a 34% upsell rate." },
+  ],
+};
+
+/* ─── Dex Associations Data ─── */
+const DEX_ASSOCIATIONS = [
+  { term: 'Dexterity', context: 'Nimble, skillful — perfect for an agent that handles data nimbly', sentiment: 'positive' },
+  { term: 'Dexter (TV show)', context: 'A genius with a dark side — memorable, but violent connotations', sentiment: 'mixed' },
+  { term: 'Dexter\'s Lab', context: 'Brilliant kid inventor — playful, smart, very positive', sentiment: 'positive' },
+  { term: 'Index', context: 'Organization, finding things — aligns perfectly with agent function', sentiment: 'positive' },
+  { term: 'Pokedex', context: 'An encyclopedia of knowledge — great association for a data agent', sentiment: 'positive' },
+  { term: 'Dextrose', context: 'Sugar, energy — neutral, unlikely to come to mind', sentiment: 'neutral' },
+];
+
 /* ═══════════════════════════════════════════════════════════════════════════════
-   MAIN EXPORT
+   MAIN COMPONENT
    ═══════════════════════════════════════════════════════════════════════════════ */
-
 export function DNameExplorationSection({ theme = 'dark' }) {
-  const themes = {
-    dark: {
-      bg: '#0A0908', cardBg: '#141210', border: '#282724',
-      text: '#F0EDE8', textMuted: '#ADA599', textFaint: '#6B6359',
-      accentGold: '#D4A03A', accentGoldLight: '#FFC02A', accentGoldLighter: '#FFD666',
-      accentGreen: '#00C27C',
-    },
-    light: {
-      bg: '#FAFAF8', cardBg: '#FFFFFF', border: '#E5E2DC',
-      text: '#1A1917', textMuted: '#5C574F', textFaint: '#8C8680',
-      accentGold: '#B8860B', accentGoldLight: '#DAA520', accentGoldLighter: '#F0C75E',
-      accentGreen: '#059669',
-    }
-  };
   const t = themes[theme];
+  const [expandedCandidate, setExpandedCandidate] = useState(null);
+  const [personalitySlider, setPersonalitySlider] = useState(7);
+  const [selectedVoiceTab, setSelectedVoiceTab] = useState('casual');
+  const [selectedAltIndex, setSelectedAltIndex] = useState(0);
 
-  // Theme-aware helpers for rgba gold values
-  const goldRgb = theme === 'dark' ? '212,160,58' : '184,134,11';
-  const goldLightRgb = theme === 'dark' ? '255,192,42' : '218,165,32';
-  const goldLighterRgb = theme === 'dark' ? '255,214,102' : '240,199,94';
-  const greenRgb = theme === 'dark' ? '0,194,124' : '5,150,105';
-  const cardBgRgb = theme === 'dark' ? '20,18,16' : '255,255,255';
-  const bgRgb = theme === 'dark' ? '10,9,8' : '250,250,248';
-  const blueRgb = '100,168,224';
-  const borderLight = theme === 'dark' ? '#38332B' : '#D5D0C8';
-  const cardHover = theme === 'dark' ? '#1A1815' : '#F5F5F2';
-  const textDim = theme === 'dark' ? '#4A453E' : '#B0AAA2';
+  const dNames = useMemo(() => CANDIDATES.filter(c => c.group === 'D-name'), []);
+  const otherNames = useMemo(() => CANDIDATES.filter(c => c.group === 'other'), []);
 
-  const themedBaseCard = {
+  /* ─── Shared Styles ─── */
+  const sectionGap = { marginBottom: 80 };
+  const cardStyle = {
     background: t.cardBg,
     borderRadius: 16,
     padding: 32,
     border: `1px solid ${t.border}`,
   };
-
-  const themedDividerStyle = {
-    height: 1,
-    background: `linear-gradient(90deg, transparent, ${borderLight}, transparent)`,
-    margin: '64px 0',
-  };
-
-  const themedSectionTitleStyle = {
-    fontSize: 14,
-    fontWeight: 600,
-    color: t.textFaint,
+  const sectionLabel = {
+    fontFamily: 'DM Sans, sans-serif',
+    fontSize: 12,
+    fontWeight: 700,
+    color: t.accentGold,
     textTransform: 'uppercase',
-    letterSpacing: '0.1em',
-    marginBottom: 24,
+    letterSpacing: '0.12em',
+    marginBottom: 12,
   };
-
-  const themedBodyTextStyle = {
-    fontSize: 14,
+  const sectionTitle = {
+    fontFamily: 'DM Sans, sans-serif',
+    fontSize: 36,
+    fontWeight: 700,
+    color: t.text,
+    letterSpacing: '-0.02em',
+    lineHeight: 1.2,
+    marginBottom: 16,
+  };
+  const bodyText = {
+    fontFamily: 'DM Sans, sans-serif',
+    fontSize: 15,
     color: t.textMuted,
-    lineHeight: 1.7,
-    maxWidth: 640,
-    marginBottom: 32,
+    lineHeight: 1.8,
+    maxWidth: 680,
   };
-
-  const [hoveredSuite, setHoveredSuite] = useState(null);
-  const [expandedRole, setExpandedRole] = useState(null);
+  const divider = {
+    height: 1,
+    background: `linear-gradient(90deg, transparent, ${t.border}, transparent)`,
+    margin: '80px 0',
+  };
 
   return (
     <div style={{
-      fontFamily: "'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       background: t.bg,
       color: t.text,
-      minHeight: '100vh',
-      padding: '0 24px 120px',
-      maxWidth: 1100,
+      fontFamily: 'DM Sans, sans-serif',
+      padding: '80px 40px',
+      maxWidth: 1200,
       margin: '0 auto',
     }}>
-      {/* ═══════════════════════ HERO ═══════════════════════ */}
-      <div style={{ paddingTop: 80, paddingBottom: 48, textAlign: 'center' }}>
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '8px 20px',
-          borderRadius: 24,
-          background: `rgba(${goldRgb},0.08)`,
-          border: `1px solid rgba(${goldRgb},0.15)`,
-          marginBottom: 32,
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: t.accentGold, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-            Naming Strategy
-          </span>
-        </div>
 
-        <h1 style={{
-          fontSize: 56,
+      {/* ═══════════════════════════════════════════════════════════════
+          HEADER
+          ═══════════════════════════════════════════════════════════════ */}
+      <div style={{ textAlign: 'center', marginBottom: 100 }}>
+        <div style={{
+          display: 'inline-block',
+          fontSize: 11,
           fontWeight: 700,
-          letterSpacing: '-0.02em',
-          lineHeight: 1.1,
+          color: t.accentGold,
+          textTransform: 'uppercase',
+          letterSpacing: '0.15em',
+          background: `${t.accentGold}10`,
+          border: `1px solid ${t.accentGold}25`,
+          borderRadius: 20,
+          padding: '6px 20px',
+          marginBottom: 24,
+        }}>
+          Agent Identity
+        </div>
+        <h1 style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 52,
+          fontWeight: 800,
           color: t.text,
+          letterSpacing: '-0.03em',
+          lineHeight: 1.15,
           marginBottom: 20,
         }}>
-          The{' '}
-          <span style={{
-            background: `linear-gradient(135deg, ${t.accentGold}, ${t.accentGoldLight}, ${t.accentGoldLighter})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>
-            D-Suite
-          </span>
-          {' '}Exploration
+          What Do You Name the Thing<br />
+          People <span style={{ color: t.accentGold }}>Talk To</span>?
         </h1>
-
         <p style={{
+          fontFamily: 'DM Sans, sans-serif',
           fontSize: 18,
           color: t.textMuted,
-          lineHeight: 1.6,
-          maxWidth: 600,
-          margin: '0 auto 16px',
+          lineHeight: 1.7,
+          maxWidth: 620,
+          margin: '0 auto',
         }}>
-          What if every Dutchie AI product started with the letter D?
-          Brand cohesion through a single-letter naming convention.
+          The other products are tools. The agent is a companion. It lives in chat
+          bubbles, answers questions, and builds a relationship with every user.
+          It is the only product that needs a human-ish name.
+        </p>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          SECTION 1: WHY THE AGENT GETS A NAME
+          ═══════════════════════════════════════════════════════════════ */}
+      <div style={sectionGap}>
+        <div style={sectionLabel}>Section 1</div>
+        <h2 style={sectionTitle}>Why the Agent Gets a Name</h2>
+        <p style={{ ...bodyText, marginBottom: 40 }}>
+          The POS does not need a name. The analytics dashboard does not need a name.
+          The compliance module does not need a name. They are tools — you click them,
+          they do things, you move on. But the AI agent is fundamentally different.
         </p>
 
+        {/* Four reasons grid */}
         <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 32,
-          marginTop: 40,
-          flexWrap: 'wrap',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+          gap: 16,
+          marginBottom: 48,
         }}>
           {[
-            { letter: 'D', label: 'Dutchie', sub: 'The parent brand' },
-            { letter: 'D', label: 'Dispensary', sub: 'The industry' },
-            { letter: 'D', label: 'Data', sub: 'The fuel' },
-            { letter: 'D', label: 'Dank', sub: 'The culture' },
+            {
+              icon: '💬',
+              title: 'People literally talk to it',
+              desc: '"Hey ___, what sold best today?" You cannot have a conversation with a product called "Analytics Module v3."',
+            },
+            {
+              icon: '🔔',
+              title: 'It shows up everywhere',
+              desc: 'Chat bubbles, push notifications, voice responses, email digests. The name appears hundreds of times per day.',
+            },
+            {
+              icon: '🎭',
+              title: 'It needs personality',
+              desc: 'A tool can be sterile. An agent that helps you run your store needs warmth, reliability, and a voice you trust.',
+            },
+            {
+              icon: '🤝',
+              title: 'It is a companion, not a feature',
+              desc: 'Users build a relationship with it over months. That relationship needs a name to anchor to.',
+            },
           ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div key={i} style={{
+              ...cardStyle,
+              padding: 24,
+            }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>{item.icon}</div>
               <div style={{
-                width: 56,
-                height: 56,
-                borderRadius: 14,
-                background: `linear-gradient(135deg, rgba(${goldRgb},${0.15 - i * 0.02}), rgba(${goldLightRgb},${0.08 - i * 0.01}))`,
-                border: `1px solid rgba(${goldRgb},0.2)`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 28,
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 15,
                 fontWeight: 700,
+                color: t.text,
+                marginBottom: 8,
+              }}>
+                {item.title}
+              </div>
+              <div style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 13,
+                color: t.textMuted,
+                lineHeight: 1.7,
+              }}>
+                {item.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* The sweet spot explanation */}
+        <div style={{
+          ...cardStyle,
+          background: `linear-gradient(135deg, ${t.cardBg}, ${t.accentGold}06)`,
+          border: `1px solid ${t.accentGold}20`,
+          marginBottom: 40,
+        }}>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 13,
+            fontWeight: 700,
+            color: t.accentGold,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            marginBottom: 16,
+          }}>
+            The Sweet Spot
+          </div>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 22,
+            fontWeight: 700,
+            color: t.text,
+            lineHeight: 1.4,
+            marginBottom: 16,
+          }}>
+            Sounds like it <span style={{ color: t.accentGold }}>could</span> be a person's name,
+            but you are not 100% sure.
+          </div>
+          <p style={{ ...bodyText, marginBottom: 24 }}>
+            Think about it: "Alexa" before Amazon — is that a name? Could be. "Siri" — name-ish,
+            but also kind of not? "Dex" — yeah, it could be a person, but it also sounds
+            a little techy. That ambiguity is the sweet spot. It lets users project personality
+            onto the agent without the uncanny valley of a clearly-human name like "Jennifer."
+          </p>
+
+          {/* Spectrum visualization */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: 20,
+            borderRadius: 12,
+            background: `${t.text}05`,
+          }}>
+            <div style={{ fontSize: 12, color: t.textFaint, whiteSpace: 'nowrap', minWidth: 100 }}>
+              Too Robotic
+            </div>
+            <div style={{
+              flex: 1,
+              height: 8,
+              borderRadius: 4,
+              background: `linear-gradient(90deg, ${t.textFaint}40, ${t.accentGold}40, ${t.accentGreen}40)`,
+              position: 'relative',
+            }}>
+              {/* Markers */}
+              {[
+                { name: 'X-900', pos: 5 },
+                { name: 'ChatBot', pos: 18 },
+                { name: 'Siri', pos: 50 },
+                { name: 'Dex', pos: 62, highlight: true },
+                { name: 'Alexa', pos: 55 },
+                { name: 'Drew', pos: 80 },
+                { name: 'Jennifer', pos: 95 },
+              ].map((m, i) => (
+                <div key={i} style={{
+                  position: 'absolute',
+                  left: `${m.pos}%`,
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}>
+                  <div style={{
+                    fontSize: 9,
+                    fontWeight: m.highlight ? 700 : 500,
+                    color: m.highlight ? t.accentGold : t.textFaint,
+                    marginBottom: 8,
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {m.name}
+                  </div>
+                  <div style={{
+                    width: m.highlight ? 12 : 8,
+                    height: m.highlight ? 12 : 8,
+                    borderRadius: '50%',
+                    background: m.highlight ? t.accentGold : t.textFaint,
+                    boxShadow: m.highlight ? `0 0 10px ${t.accentGold}50` : 'none',
+                  }} />
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: 12, color: t.textFaint, whiteSpace: 'nowrap', minWidth: 100, textAlign: 'right' }}>
+              Too Human
+            </div>
+          </div>
+        </div>
+
+        {/* Agent chat mockup */}
+        <div style={{
+          ...cardStyle,
+          maxWidth: 500,
+        }}>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 11,
+            fontWeight: 700,
+            color: t.textFaint,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            marginBottom: 20,
+          }}>
+            What this looks like in practice
+          </div>
+          <ChatBubble sender="You" message="What sold best today?" isAgent={false} t={t} />
+          <ChatBubble
+            sender="Dex"
+            message="Blue Dream is your top seller today with 34 units. That's 18% above your daily average. Sour Diesel and OG Kush are rounding out the top 3. Want me to check if you need to reorder?"
+            isAgent={true}
+            t={t}
+          />
+          <ChatBubble sender="You" message="Yeah, check reorder levels" isAgent={false} t={t} />
+          <ChatBubble
+            sender="Dex"
+            message="Blue Dream is fine — you have 4 days of stock. But heads up: OG Kush will hit your reorder point by Friday at current velocity. Want me to draft the PO?"
+            isAgent={true}
+            t={t}
+          />
+          <div style={{
+            textAlign: 'center',
+            fontSize: 12,
+            color: t.textFaint,
+            marginTop: 16,
+            fontStyle: 'italic',
+          }}>
+            Natural, helpful, and it has a name you can call.
+          </div>
+        </div>
+      </div>
+
+      <div style={divider} />
+
+      {/* ═══════════════════════════════════════════════════════════════
+          SECTION 2: 20 AGENT NAME CANDIDATES
+          ═══════════════════════════════════════════════════════════════ */}
+      <div style={sectionGap}>
+        <div style={sectionLabel}>Section 2</div>
+        <h2 style={sectionTitle}>20 Agent Name Candidates</h2>
+        <p style={{ ...bodyText, marginBottom: 48 }}>
+          We explored names that live in the sweet spot: they sound like they could be a person,
+          but you are not sure. Each one is tested in a chat bubble, scored on three axes, and
+          given a personality read. Click any card to expand.
+        </p>
+
+        {/* D-Names Subsection */}
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 14,
+          fontWeight: 700,
+          color: t.accentGold,
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          marginBottom: 20,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+        }}>
+          <div style={{
+            width: 20,
+            height: 2,
+            background: t.accentGold,
+            borderRadius: 1,
+          }} />
+          D-Names — The Original Direction
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+          gap: 16,
+          marginBottom: 48,
+        }}>
+          {dNames.map((c, i) => (
+            <CandidateCard
+              key={c.name + i}
+              candidate={c}
+              t={t}
+              expanded={expandedCandidate === c.name}
+              onToggle={() => setExpandedCandidate(expandedCandidate === c.name ? null : c.name)}
+            />
+          ))}
+        </div>
+
+        {/* Other Short Human-ish Names */}
+        <div style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 14,
+          fontWeight: 700,
+          color: t.accentGold,
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          marginBottom: 20,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+        }}>
+          <div style={{
+            width: 20,
+            height: 2,
+            background: t.accentGold,
+            borderRadius: 1,
+          }} />
+          Other Short Human-ish Names
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+          gap: 16,
+          marginBottom: 20,
+        }}>
+          {otherNames.map((c, i) => (
+            <CandidateCard
+              key={c.name + i}
+              candidate={c}
+              t={t}
+              expanded={expandedCandidate === c.name}
+              onToggle={() => setExpandedCandidate(expandedCandidate === c.name ? null : c.name)}
+            />
+          ))}
+        </div>
+
+        {/* Summary stats */}
+        <div style={{
+          display: 'flex',
+          gap: 16,
+          flexWrap: 'wrap',
+          marginTop: 32,
+        }}>
+          {[
+            { label: 'D-Names Explored', value: dNames.length },
+            { label: 'Other Candidates', value: otherNames.length },
+            { label: 'Total Evaluated', value: CANDIDATES.length },
+            { label: 'Avg Natural Score', value: (CANDIDATES.reduce((s, c) => s + c.scores.natural, 0) / CANDIDATES.length).toFixed(1) },
+            { label: 'Avg Memorable Score', value: (CANDIDATES.reduce((s, c) => s + c.scores.memorable, 0) / CANDIDATES.length).toFixed(1) },
+          ].map((stat, i) => (
+            <div key={i} style={{
+              ...cardStyle,
+              padding: '16px 24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              flex: '1 1 180px',
+            }}>
+              <div style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 28,
+                fontWeight: 800,
                 color: t.accentGold,
               }}>
-                {item.letter}
+                {stat.value}
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: t.text }}>{item.label}</span>
-              <span style={{ fontSize: 11, color: t.textFaint }}>{item.sub}</span>
+              <div style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 12,
+                color: t.textMuted,
+              }}>
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      <Divider style={themedDividerStyle} />
+      <div style={divider} />
 
-      {/* ═══════════════════════ SECTION 1: D-NAME CANDIDATE MATRIX ═══════════════════════ */}
-      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={1} />
-      <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
-        D-Name Candidate Matrix
-      </h2>
-      <p style={themedBodyTextStyle}>
-        For each product role in the Dutchie AI suite, we explore six D-name candidates.
-        Each is rendered as a wordmark in DM Sans with typography tuned to its personality.
-      </p>
+      {/* ═══════════════════════════════════════════════════════════════
+          SECTION 3: THE DEX DEEP DIVE
+          ═══════════════════════════════════════════════════════════════ */}
+      <div style={sectionGap}>
+        <div style={sectionLabel}>Section 3</div>
+        <h2 style={sectionTitle}>The Dex Deep Dive</h2>
+        <p style={{ ...bodyText, marginBottom: 48 }}>
+          Dex is the frontrunner. Before we commit, let us stress-test it from every angle:
+          conversation, brand, personality, voice, and cultural associations.
+        </p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
-        {NAME_ROLES.map((role, roleIdx) => (
-          <div key={role.role}>
-            {/* Role Header */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 16,
-              marginBottom: 24,
-              cursor: 'pointer',
-            }}
-            onClick={() => setExpandedRole(expandedRole === roleIdx ? null : roleIdx)}
-            >
-              <div style={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: role.accent,
-                boxShadow: `0 0 12px ${role.accent}66`,
-              }} />
-              <div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, color: t.text, margin: 0 }}>
-                  {role.role}
-                </h3>
-                <span style={{ fontSize: 12, color: t.textFaint }}>
-                  Currently: <span style={{ color: role.accent }}>{role.currently}</span>
-                  {' '}&mdash; {role.description}
-                </span>
-              </div>
-            </div>
-
-            {/* Candidate Cards Grid */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-              gap: 12,
-            }}>
-              {role.candidates.map((c, ci) => (
-                <div key={c.name} style={{
-                  ...themedBaseCard,
-                  padding: '24px 28px',
-                  borderRadius: 14,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 12,
-                  transition: 'border-color 0.2s, background 0.2s',
-                  borderColor: t.border,
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}>
-                  {/* Subtle accent line at top */}
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 28,
-                    right: 28,
-                    height: 2,
-                    background: `linear-gradient(90deg, ${role.accent}44, transparent)`,
-                    borderRadius: '0 0 2px 2px',
-                  }} />
-
-                  {/* Number + Wordmark row */}
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
-                    <span style={{
-                      fontSize: 11,
-                      fontWeight: 600,
-                      color: role.accent,
-                      fontFamily: 'monospace',
-                      opacity: 0.7,
-                      alignSelf: 'flex-start',
-                      marginTop: 8,
-                    }}>
-                      {String(ci + 1).padStart(2, '0')}
-                    </span>
-                    <span style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontWeight: c.weight,
-                      fontSize: 42,
-                      letterSpacing: c.spacing,
-                      color: t.text,
-                      lineHeight: 1,
-                    }}>
-                      {c.name}
-                    </span>
-                  </div>
-
-                  {/* Typography meta */}
-                  <div style={{
-                    fontSize: 10,
-                    color: textDim,
-                    fontFamily: 'monospace',
-                    display: 'flex',
-                    gap: 12,
-                  }}>
-                    <span>wt {c.weight}</span>
-                    <span>ls {c.spacing}</span>
-                  </div>
-
-                  {/* Rationale */}
-                  <p style={{
-                    fontSize: 13,
-                    color: t.textMuted,
-                    lineHeight: 1.6,
-                    margin: 0,
-                  }}>
-                    {c.rationale}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <Divider style={themedDividerStyle} />
-
-      {/* ═══════════════════════ SECTION 2: BEST D-SUITE COMBINATIONS ═══════════════════════ */}
-      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={2} />
-      <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
-        Best D-Suite Combinations
-      </h2>
-      <p style={themedBodyTextStyle}>
-        Five curated suites where all four product names share the D-prefix and create a cohesive family.
-        Each is evaluated for memorability, distinctiveness, professional tone, and cannabis culture fit.
-      </p>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        {SUITES.map((suite, si) => (
-          <div
-            key={suite.id}
-            style={{
-              ...themedBaseCard,
-              padding: 0,
-              overflow: 'hidden',
-              transition: 'border-color 0.25s',
-              borderColor: hoveredSuite === si ? borderLight : t.border,
-            }}
-            onMouseEnter={() => setHoveredSuite(si)}
-            onMouseLeave={() => setHoveredSuite(null)}
-          >
-            {/* Suite Header */}
-            <div style={{
-              padding: '24px 32px 16px',
-              borderBottom: `1px solid ${t.border}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: 16,
-            }}>
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: t.accentGold, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
-                  Suite {si + 1}
-                </div>
-                <h3 style={{ fontSize: 22, fontWeight: 700, color: t.text, margin: 0 }}>
-                  {suite.label}
-                </h3>
-              </div>
-              {/* Ratings summary */}
-              <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-                {Object.entries(suite.ratings).map(([key, val]) => (
-                  <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                    <Stars count={val} colors={{ accentGoldLight: t.accentGoldLight, textFaint: textDim }} />
-                    <span style={{ fontSize: 9, color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      {key === 'cannabis' ? 'Culture' : key.charAt(0).toUpperCase() + key.slice(1)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Branded Lockup */}
-            <div style={{ padding: '32px 32px 24px' }}>
-              {/* Parent brand */}
-              <div style={{
-                fontSize: 12,
-                fontWeight: 500,
-                color: t.textFaint,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                marginBottom: 20,
-              }}>
-                Dutchie AI
-              </div>
-
-              {/* Name lockup */}
-              <div style={{
-                display: 'flex',
-                gap: 24,
-                flexWrap: 'wrap',
-                alignItems: 'flex-end',
-              }}>
-                {suite.names.map((name, ni) => (
-                  <div key={name} style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    gap: 6,
-                  }}>
-                    <span style={{
-                      fontSize: 9,
-                      fontWeight: 600,
-                      color: suite.colors[ni],
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
-                      opacity: 0.8,
-                    }}>
-                      {NAME_ROLES[ni].role.replace('The ', '')}
-                    </span>
-                    <span style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontWeight: 700,
-                      fontSize: 36,
-                      letterSpacing: '0.02em',
-                      color: t.text,
-                      lineHeight: 1,
-                      borderBottom: `3px solid ${suite.colors[ni]}`,
-                      paddingBottom: 6,
-                    }}>
-                      {name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Vibe description */}
-            <div style={{
-              padding: '0 32px 28px',
-            }}>
-              <p style={{
-                fontSize: 13,
-                color: t.textMuted,
-                lineHeight: 1.7,
-                margin: 0,
-                maxWidth: 700,
-              }}>
-                {suite.vibe}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <Divider style={themedDividerStyle} />
-
-      {/* ═══════════════════════ SECTION 3: PHONETIC ANALYSIS ═══════════════════════ */}
-      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={3} />
-      <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
-        Phonetic Analysis
-      </h2>
-      <p style={themedBodyTextStyle}>
-        A detailed breakdown of each D-name candidate by syllable count, phonetic feel, domain plausibility,
-        verbal distinctiveness, and natural emoji pairing.
-      </p>
-
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{
-          width: '100%',
-          borderCollapse: 'separate',
-          borderSpacing: 0,
-          fontSize: 13,
-        }}>
-          <thead>
-            <tr>
-              {['Name', 'Syl.', 'Phonetic Feel', 'Domain Hint', 'Verbal Test', 'Emoji'].map((h, i) => (
-                <th key={h} style={{
-                  padding: '14px 16px',
-                  textAlign: 'left',
-                  fontSize: 10,
-                  fontWeight: 600,
-                  color: t.textFaint,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  borderBottom: `2px solid ${borderLight}`,
-                  background: t.cardBg,
-                  position: 'sticky',
-                  top: 0,
-                  whiteSpace: 'nowrap',
-                  ...(i === 0 ? { borderRadius: '12px 0 0 0' } : {}),
-                  ...(i === 5 ? { borderRadius: '0 12px 0 0', textAlign: 'center' } : {}),
-                }}>
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {PHONETICS.map((p, pi) => (
-              <tr key={p.name} style={{
-                background: pi % 2 === 0 ? 'transparent' : `rgba(${cardBgRgb},0.5)`,
-              }}>
-                <td style={{
-                  padding: '14px 16px',
-                  fontWeight: 700,
-                  fontSize: 16,
-                  color: t.text,
-                  borderBottom: `1px solid ${t.border}`,
-                  fontFamily: "'DM Sans', sans-serif",
-                }}>
-                  {p.name}
-                </td>
-                <td style={{
-                  padding: '14px 16px',
-                  borderBottom: `1px solid ${t.border}`,
-                  textAlign: 'center',
-                }}>
-                  <span style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 28,
-                    height: 28,
-                    borderRadius: 8,
-                    background: p.syllables === 1 ? 'rgba(52,211,153,0.12)' : 'rgba(251,191,36,0.12)',
-                    color: p.syllables === 1 ? '#34D399' : '#FBBF24',
-                    fontWeight: 700,
-                    fontSize: 14,
-                  }}>
-                    {p.syllables}
-                  </span>
-                </td>
-                <td style={{
-                  padding: '14px 16px',
-                  color: t.textMuted,
-                  borderBottom: `1px solid ${t.border}`,
-                  maxWidth: 220,
-                }}>
-                  {p.feel}
-                </td>
-                <td style={{
-                  padding: '14px 16px',
-                  borderBottom: `1px solid ${t.border}`,
-                }}>
-                  <span style={{
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    background: p.domain === 'Likely available' ? 'rgba(52,211,153,0.1)' : 'rgba(251,191,36,0.1)',
-                    color: p.domain === 'Likely available' ? '#34D399' : '#FBBF24',
-                    border: `1px solid ${p.domain === 'Likely available' ? 'rgba(52,211,153,0.2)' : 'rgba(251,191,36,0.2)'}`,
-                    whiteSpace: 'nowrap',
-                  }}>
-                    {p.domain}
-                  </span>
-                </td>
-                <td style={{
-                  padding: '14px 16px',
-                  color: t.textMuted,
-                  borderBottom: `1px solid ${t.border}`,
-                  maxWidth: 200,
-                }}>
-                  {p.verbal}
-                </td>
-                <td style={{
-                  padding: '14px 16px',
-                  borderBottom: `1px solid ${t.border}`,
-                  textAlign: 'center',
-                  fontSize: 22,
-                }}>
-                  {p.emoji}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <Divider style={themedDividerStyle} />
-
-      {/* ═══════════════════════ SECTION 4: THE DEX FAMILY DIRECTION ═══════════════════════ */}
-      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={4} />
-      <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
-        The "Dex Family" Direction
-      </h2>
-      <p style={themedBodyTextStyle}>
-        An alternative approach: what if Dex is the anchor name and everything branches from it?
-        A single brand name with sub-product extensions, like Salesforce's naming model.
-      </p>
-
-      {/* Dex Family Hierarchy */}
-      <div style={{
-        ...themedBaseCard,
-        padding: 0,
-        overflow: 'hidden',
-      }}>
-        {/* Top Bar: Dex parent brand */}
+        {/* ─── Dex Wordmark Display ─── */}
         <div style={{
-          padding: '28px 36px',
-          background: `linear-gradient(135deg, rgba(${goldRgb},0.06), rgba(${goldLightRgb},0.03))`,
-          borderBottom: `1px solid ${t.border}`,
+          ...cardStyle,
           textAlign: 'center',
+          padding: '60px 32px',
+          background: `linear-gradient(180deg, ${t.cardBg}, ${t.accentGold}05)`,
+          marginBottom: 24,
         }}>
           <div style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: t.accentGold,
-            textTransform: 'uppercase',
-            letterSpacing: '0.12em',
-            marginBottom: 12,
-          }}>
-            Dutchie AI Platform
-          </div>
-          <div style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontWeight: 700,
-            fontSize: 52,
-            letterSpacing: '0.02em',
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 96,
+            fontWeight: 800,
             color: t.text,
+            letterSpacing: '-0.04em',
             lineHeight: 1,
+            marginBottom: 8,
+            textShadow: `0 0 80px ${t.accentGold}20`,
           }}>
             Dex
           </div>
           <div style={{
+            fontFamily: 'DM Sans, sans-serif',
             fontSize: 14,
-            color: t.textMuted,
-            marginTop: 10,
-          }}>
-            The intelligent backbone of Dutchie
-          </div>
-        </div>
-
-        {/* Product hierarchy */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: 0,
-        }}>
-          {DEX_FAMILY.map((item, i) => {
-            const isCore = item.tier === 'core';
-            const isExtension = item.tier === 'extension';
-            return (
-              <div key={item.name} style={{
-                padding: '28px 32px',
-                borderRight: `1px solid ${t.border}`,
-                borderBottom: `1px solid ${t.border}`,
-                background: isCore ? `rgba(${goldRgb},0.04)` : 'transparent',
-                position: 'relative',
-              }}>
-                {/* Tier badge */}
-                <div style={{
-                  display: 'inline-flex',
-                  padding: '3px 10px',
-                  borderRadius: 6,
-                  fontSize: 9,
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  marginBottom: 14,
-                  background: isCore
-                    ? `rgba(${goldRgb},0.12)`
-                    : isExtension
-                    ? `rgba(${blueRgb},0.1)`
-                    : `rgba(${greenRgb},0.1)`,
-                  color: isCore
-                    ? t.accentGold
-                    : isExtension
-                    ? COLORS.blue
-                    : t.accentGreen,
-                  border: `1px solid ${isCore
-                    ? `rgba(${goldRgb},0.2)`
-                    : isExtension
-                    ? `rgba(${blueRgb},0.2)`
-                    : `rgba(${greenRgb},0.2)`}`,
-                }}>
-                  {isCore ? 'Core' : isExtension ? 'Extension' : 'Product'}
-                </div>
-
-                {/* Name */}
-                <div style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontWeight: 700,
-                  fontSize: 26,
-                  color: t.text,
-                  letterSpacing: '0.01em',
-                  marginBottom: 4,
-                }}>
-                  {item.name}
-                </div>
-                <div style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: t.textFaint,
-                  marginBottom: 12,
-                }}>
-                  {item.sub}
-                </div>
-                <p style={{
-                  fontSize: 13,
-                  color: t.textMuted,
-                  lineHeight: 1.6,
-                  margin: 0,
-                }}>
-                  {item.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Pros / Cons */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 0,
-        }}>
-          <div style={{
-            padding: '24px 32px',
-            borderRight: `1px solid ${t.border}`,
-          }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#34D399', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
-              Advantages
-            </div>
-            {[
-              'Single brand to build equity around',
-              'Clear hierarchy -- everyone knows "it\'s a Dex thing"',
-              'Easier marketing -- one name to remember',
-              'Natural extensibility for future products',
-            ].map((pro, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, fontSize: 13, color: t.textMuted, lineHeight: 1.5 }}>
-                <span style={{ color: '#34D399', flexShrink: 0 }}>+</span>
-                <span>{pro}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ padding: '24px 32px' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#F87171', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
-              Drawbacks
-            </div>
-            {[
-              'Sub-products feel less distinct and independent',
-              '"Dex Market" is two words vs. one-word alternatives',
-              'Harder to sell individual products standalone',
-              'Risk of brand fatigue -- "Dex everything"',
-            ].map((con, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, fontSize: 13, color: t.textMuted, lineHeight: 1.5 }}>
-                <span style={{ color: '#F87171', flexShrink: 0 }}>&ndash;</span>
-                <span>{con}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <Divider style={themedDividerStyle} />
-
-      {/* ═══════════════════════ SECTION 5: NAME COLLISION & TRADEMARK CHECK ═══════════════════════ */}
-      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={5} />
-      <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
-        Name Collision & Trademark Check
-      </h2>
-      <p style={themedBodyTextStyle}>
-        A quick vibes check on the top eight D-name candidates. Green means clear,
-        yellow means proceed with caution, red means significant concern.
-      </p>
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(480px, 1fr))',
-        gap: 16,
-      }}>
-        {TRADEMARK_CHECKS.map((item) => (
-          <div key={item.name} style={{
-            ...themedBaseCard,
-            padding: '24px 28px',
-            borderRadius: 14,
-          }}>
-            {/* Name header */}
-            <div style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontWeight: 700,
-              fontSize: 28,
-              color: t.text,
-              letterSpacing: '0.02em',
-              marginBottom: 20,
-              paddingBottom: 16,
-              borderBottom: `1px solid ${t.border}`,
-            }}>
-              {item.name}
-            </div>
-
-            {/* Check rows */}
-            {[
-              { key: 'existingTech', label: 'Existing Tech Products' },
-              { key: 'commonWord', label: 'Common Word Risk' },
-              { key: 'cannabis', label: 'Cannabis Association' },
-              { key: 'negative', label: 'Negative Connotations' },
-            ].map((check) => {
-              const data = item[check.key];
-              return (
-                <div key={check.key} style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  marginBottom: 14,
-                }}>
-                  <div style={{ marginTop: 4, flexShrink: 0 }}>
-                    <StatusDot status={data.status} />
-                  </div>
-                  <div>
-                    <div style={{
-                      fontSize: 11,
-                      fontWeight: 600,
-                      color: t.textFaint,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      marginBottom: 3,
-                    }}>
-                      {check.label}
-                    </div>
-                    <div style={{
-                      fontSize: 12,
-                      color: t.textMuted,
-                      lineHeight: 1.5,
-                    }}>
-                      {data.text}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-
-      <Divider style={themedDividerStyle} />
-
-      {/* ═══════════════════════ SECTION 6: FINAL RECOMMENDATION ═══════════════════════ */}
-      <SectionBadge colors={{ accentGold: t.accentGold, goldRgb, goldLightRgb }} number={6} />
-      <h2 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>
-        Final Recommendation
-      </h2>
-      <p style={themedBodyTextStyle}>
-        After evaluating phonetics, trademark risk, brand cohesion, and cannabis culture fit,
-        one suite emerges as the clear winner.
-      </p>
-
-      {/* Winner Card */}
-      <div style={{
-        position: 'relative',
-        borderRadius: 20,
-        overflow: 'hidden',
-        background: t.cardBg,
-        border: `2px solid rgba(${goldRgb},0.35)`,
-        boxShadow: `0 0 60px rgba(${goldRgb},0.08), 0 4px 30px rgba(0,0,0,0.3)`,
-      }}>
-        {/* Gold shimmer gradient at top */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 4,
-          background: `linear-gradient(90deg, ${t.accentGold}, ${t.accentGoldLight}, ${t.accentGoldLighter}, ${t.accentGoldLight}, ${t.accentGold})`,
-        }} />
-
-        {/* Winner badge */}
-        <div style={{
-          padding: '36px 40px 0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 16,
-        }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '6px 16px',
-            borderRadius: 20,
-            background: `linear-gradient(135deg, rgba(${goldRgb},0.15), rgba(${goldLighterRgb},0.08))`,
-            border: `1px solid rgba(${goldRgb},0.3)`,
-          }}>
-            <span style={{ fontSize: 16 }}>{'\uD83C\uDFC6'}</span>
-            <span style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: t.accentGoldLight,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-            }}>
-              Recommended Suite
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', gap: 20 }}>
-            {[
-              { label: 'Memorability', val: 5 },
-              { label: 'Distinctiveness', val: 5 },
-              { label: 'Professional', val: 4 },
-              { label: 'Culture Fit', val: 5 },
-            ].map(r => (
-              <div key={r.label} style={{ textAlign: 'center' }}>
-                <Stars count={r.val} colors={{ accentGoldLight: t.accentGoldLight, textFaint: textDim }} />
-                <div style={{ fontSize: 9, color: t.textFaint, marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{r.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* The suite title */}
-        <div style={{ padding: '28px 40px 0' }}>
-          <h3 style={{
-            fontSize: 16,
-            fontWeight: 600,
-            color: t.accentGold,
-            margin: '0 0 8px',
-          }}>
-            Suite 5: The Bold Set
-          </h3>
-          <div style={{
-            fontSize: 11,
-            fontWeight: 500,
             color: t.textFaint,
-            letterSpacing: '0.1em',
+            letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            marginBottom: 28,
           }}>
-            Dutchie AI
+            Your AI-Powered Retail Companion
+          </div>
+
+          {/* Wordmark Variations */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 48,
+            marginTop: 48,
+            flexWrap: 'wrap',
+          }}>
+            {[
+              { label: 'Bold', weight: 800, size: 48, spacing: '-0.03em' },
+              { label: 'Light', weight: 300, size: 48, spacing: '0.02em' },
+              { label: 'Caps', weight: 700, size: 40, spacing: '0.15em', transform: 'uppercase' },
+              { label: 'Monospace Feel', weight: 600, size: 44, spacing: '0.08em' },
+            ].map((variant, i) => (
+              <div key={i} style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: variant.size,
+                  fontWeight: variant.weight,
+                  color: t.text,
+                  letterSpacing: variant.spacing,
+                  textTransform: variant.transform || 'none',
+                  marginBottom: 8,
+                }}>
+                  Dex
+                </div>
+                <div style={{ fontSize: 10, color: t.textFaint }}>{variant.label}</div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* The 4 names in dramatic lockup */}
+        {/* ─── Dex in Conversation ─── */}
         <div style={{
-          padding: '0 40px 36px',
-          display: 'flex',
-          gap: 40,
-          flexWrap: 'wrap',
-          alignItems: 'flex-end',
+          ...cardStyle,
+          marginBottom: 24,
         }}>
-          {[
-            { name: 'Dash', role: 'Platform', color: '#8B6FE0', desc: 'Command center for your dispensary empire' },
-            { name: 'Dex', role: 'AI Agent', color: t.accentGold, desc: 'Your intelligent copilot' },
-            { name: 'Dock', role: 'B2B Marketplace', color: t.accentGreen, desc: 'Where retailers and brands meet' },
-            { name: 'Dose', role: 'Consumer', color: COLORS.blue, desc: 'Personalized cannabis experiences' },
-          ].map((item) => (
-            <div key={item.name} style={{ flex: '1 1 180px', minWidth: 160 }}>
-              <span style={{
-                fontSize: 9,
-                fontWeight: 700,
-                color: item.color,
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                display: 'block',
-                marginBottom: 8,
-              }}>
-                {item.role}
-              </span>
-              <span style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontWeight: 700,
-                fontSize: 48,
-                letterSpacing: '0.02em',
-                color: t.text,
-                lineHeight: 1,
-                display: 'block',
-                marginBottom: 8,
-              }}>
-                {item.name}
-              </span>
-              <span style={{
-                fontSize: 12,
-                color: t.textMuted,
-                lineHeight: 1.4,
-              }}>
-                {item.desc}
-              </span>
-            </div>
-          ))}
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 18,
+            fontWeight: 700,
+            color: t.text,
+            marginBottom: 8,
+          }}>
+            Dex in Conversation
+          </div>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 13,
+            color: t.textMuted,
+            marginBottom: 24,
+          }}>
+            How does Dex sound across different interaction types?
+          </div>
+
+          {/* Voice Tabs */}
+          <div style={{
+            display: 'flex',
+            gap: 8,
+            marginBottom: 24,
+            flexWrap: 'wrap',
+          }}>
+            {[
+              { key: 'casual', label: 'Casual' },
+              { key: 'professional', label: 'Professional' },
+              { key: 'alert', label: 'Proactive Alert' },
+              { key: 'celebratory', label: 'Celebratory' },
+            ].map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setSelectedVoiceTab(tab.key)}
+                style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 13,
+                  fontWeight: selectedVoiceTab === tab.key ? 700 : 500,
+                  color: selectedVoiceTab === tab.key ? t.accentGold : t.textMuted,
+                  background: selectedVoiceTab === tab.key ? `${t.accentGold}15` : 'transparent',
+                  border: `1px solid ${selectedVoiceTab === tab.key ? t.accentGold + '30' : t.border}`,
+                  borderRadius: 20,
+                  padding: '8px 18px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Voice Content */}
+          <div style={{
+            background: `${t.text}04`,
+            borderRadius: 12,
+            padding: 24,
+          }}>
+            {DEX_VOICE_SAMPLES[selectedVoiceTab].map((sample, i) => (
+              <div key={i} style={{ marginBottom: i < DEX_VOICE_SAMPLES[selectedVoiceTab].length - 1 ? 24 : 0 }}>
+                {sample.user && (
+                  <ChatBubble sender="You" message={sample.user} isAgent={false} t={t} />
+                )}
+                <ChatBubble sender="Dex" message={sample.agent} isAgent={true} t={t} />
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Reasoning */}
+        {/* ─── Dex Personality Spectrum ─── */}
         <div style={{
-          padding: '28px 40px 36px',
-          borderTop: `1px solid ${t.border}`,
-          background: `rgba(${bgRgb},0.4)`,
+          ...cardStyle,
+          marginBottom: 24,
         }}>
-          <h4 style={{ fontSize: 14, fontWeight: 700, color: t.text, marginBottom: 16 }}>
-            Why This Suite Wins
-          </h4>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 18,
+            fontWeight: 700,
+            color: t.text,
+            marginBottom: 8,
+          }}>
+            Dex Personality Spectrum
+          </div>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 13,
+            color: t.textMuted,
+            marginBottom: 32,
+          }}>
+            Where should Dex land on these personality dimensions? The gold dot represents our recommendation.
+          </div>
+
+          <PersonalitySlider leftLabel="Robotic Assistant" rightLabel="Friendly Coworker" value={7} t={t} />
+          <PersonalitySlider leftLabel="Terse / Just Facts" rightLabel="Conversational / Explains" value={6.5} t={t} />
+          <PersonalitySlider leftLabel="Reactive (waits for you)" rightLabel="Proactive (reaches out)" value={6} t={t} />
+          <PersonalitySlider leftLabel="Formal Language" rightLabel="Casual Language" value={6} t={t} />
+          <PersonalitySlider leftLabel="Data-First" rightLabel="Insight-First" value={7} t={t} />
+          <PersonalitySlider leftLabel="Humble / Uncertain" rightLabel="Confident / Opinionated" value={7.5} t={t} />
+
+          <div style={{
+            marginTop: 24,
+            padding: 16,
+            borderRadius: 10,
+            background: `${t.accentGold}08`,
+            border: `1px solid ${t.accentGold}18`,
+          }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 14,
+              fontWeight: 700,
+              color: t.accentGold,
+              marginBottom: 8,
+            }}>
+              Recommended Position
+            </div>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 13,
+              color: t.textMuted,
+              lineHeight: 1.7,
+            }}>
+              Dex should feel like a <strong style={{ color: t.text }}>confident, knowledgeable coworker</strong> who
+              genuinely cares about helping you succeed. Not a butler. Not a robot. Think: the smartest
+              person on your team who also happens to be approachable and never condescending. Dex has
+              opinions and shares them, but always explains the reasoning. Dex is proactive enough to
+              flag important things but not so aggressive that it feels nagging.
+            </div>
+          </div>
+        </div>
+
+        {/* ─── Dex Voice Examples ─── */}
+        <div style={{
+          ...cardStyle,
+          marginBottom: 24,
+        }}>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 18,
+            fontWeight: 700,
+            color: t.text,
+            marginBottom: 8,
+          }}>
+            How Dex Writes
+          </div>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 13,
+            color: t.textMuted,
+            marginBottom: 24,
+          }}>
+            The voice guide for consistent Dex communication across all contexts.
+          </div>
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: 20,
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: 16,
           }}>
             {[
               {
-                title: 'All Monosyllabic',
-                text: 'Dash, Dex, Dock, Dose -- each is exactly one syllable. Maximum punch, minimum cognitive load. Easy to say in conversation: "Check Dash for metrics, ask Dex to analyze it, order through Dock."',
+                context: 'Push Notification',
+                example: 'OG Kush hits reorder level tomorrow. Tap to review.',
+                note: 'Short, direct, actionable. No fluff in notifications.',
               },
               {
-                title: 'No Major Conflicts',
-                text: 'Dex and Dock have minor adjacencies (DexCom, Docker) but within "Dutchie Dock" and "Dutchie Dex" the context is unambiguous. Dash and Dose are clean.',
+                context: 'Daily Digest Email',
+                example: 'Good morning. Yesterday was solid: $6,200 revenue, up 8% from last Tuesday. One thing to watch: your Sativa category is softening. Details inside.',
+                note: 'Conversational but efficient. Leads with the headline.',
               },
               {
-                title: 'Cannabis-Native',
-                text: '"Dose" is the hero here. No other B2B SaaS vertical would use this word. It signals cannabis expertise and makes the consumer product feel native to the industry, not generic.',
+                context: 'In-App Chat',
+                example: 'I have been looking at your weekend patterns. Saturdays between 2-4pm are your weakest window. Historically, a flash deal on concentrates during that slot lifts revenue 15-20%. Want me to set one up?',
+                note: 'Full sentences, explains reasoning, offers to act.',
               },
               {
-                title: 'Natural Verb Forms',
-                text: '"Dash to your dashboard." "Dex it." "Dock your inventory." "Dose your customers." Each name doubles as a verb, enabling organic brand language in marketing and conversation.',
+                context: 'Error / Warning',
+                example: 'Something looks off: your downtown register processed a $0 transaction at 3:42pm. Could be training mode left on. Worth a quick check.',
+                note: 'Does not panic. States what happened, suggests the most likely explanation, recommends action.',
               },
-            ].map((point) => (
-              <div key={point.title}>
+              {
+                context: 'Celebration',
+                example: 'You just hit your best Wednesday ever! $8,420 revenue, beating your previous record by 11%. Sarah was your MVP with a 34% upsell rate.',
+                note: 'Genuine enthusiasm. Credits the team. Specific numbers.',
+              },
+              {
+                context: 'Compliance Reminder',
+                example: 'Your METRC reconciliation is due March 28th. I have pre-filled the data. You will need about 15 minutes to review and submit. Want to schedule a reminder?',
+                note: 'Helpful, not scary. Estimates time commitment. Offers to help.',
+              },
+            ].map((item, i) => (
+              <div key={i} style={{
+                padding: 20,
+                borderRadius: 12,
+                background: `${t.text}04`,
+                border: `1px solid ${t.border}`,
+              }}>
                 <div style={{
-                  fontSize: 13,
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 11,
                   fontWeight: 700,
                   color: t.accentGold,
-                  marginBottom: 8,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  marginBottom: 10,
                 }}>
-                  {point.title}
+                  {item.context}
                 </div>
-                <p style={{
-                  fontSize: 12,
-                  color: t.textMuted,
+                <div style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 14,
+                  color: t.text,
                   lineHeight: 1.6,
-                  margin: 0,
+                  marginBottom: 12,
+                  fontStyle: 'italic',
                 }}>
-                  {point.text}
-                </p>
+                  "{item.example}"
+                </div>
+                <div style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 11,
+                  color: t.textFaint,
+                  lineHeight: 1.6,
+                }}>
+                  {item.note}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ─── Dex Associations ─── */}
+        <div style={{
+          ...cardStyle,
+        }}>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 18,
+            fontWeight: 700,
+            color: t.text,
+            marginBottom: 8,
+          }}>
+            "Dex" Associations
+          </div>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 13,
+            color: t.textMuted,
+            marginBottom: 24,
+          }}>
+            What comes to mind when people hear "Dex"? And is that good or bad for us?
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: 12,
+          }}>
+            {DEX_ASSOCIATIONS.map((assoc, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 12,
+                padding: 16,
+                borderRadius: 10,
+                background: `${t.text}04`,
+                border: `1px solid ${t.border}`,
+              }}>
+                <div style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  marginTop: 5,
+                  flexShrink: 0,
+                  background: assoc.sentiment === 'positive'
+                    ? t.accentGreen
+                    : assoc.sentiment === 'mixed'
+                      ? t.accentGoldLight
+                      : t.textFaint,
+                }} />
+                <div>
+                  <div style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: t.text,
+                    marginBottom: 4,
+                  }}>
+                    {assoc.term}
+                  </div>
+                  <div style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 12,
+                    color: t.textMuted,
+                    lineHeight: 1.6,
+                  }}>
+                    {assoc.context}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Final sentence */}
           <div style={{
-            marginTop: 28,
-            padding: '20px 24px',
-            borderRadius: 12,
-            background: `rgba(${goldRgb},0.05)`,
-            border: `1px solid rgba(${goldRgb},0.15)`,
+            marginTop: 20,
+            display: 'flex',
+            gap: 16,
+            fontSize: 11,
+            color: t.textFaint,
+            fontFamily: 'DM Sans, sans-serif',
           }}>
-            <p style={{
-              fontSize: 14,
-              color: t.textMuted,
-              lineHeight: 1.7,
-              margin: 0,
-              textAlign: 'center',
-            }}>
-              <strong style={{ color: t.accentGoldLight }}>The D-prefix convention</strong> gives Dutchie a naming system as recognizable as Apple's "i" or Google's "G" suite.
-              When a customer hears <strong style={{ color: t.text }}>"Dash, Dex, Dock, Dose"</strong> -- they know
-              it's Dutchie. Four letters. Four syllables. Four products. One unmistakable brand.
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: t.accentGreen }} />
+              Positive
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: t.accentGoldLight }} />
+              Mixed
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: t.textFaint }} />
+              Neutral
+            </div>
+          </div>
+
+          <div style={{
+            marginTop: 24,
+            padding: 16,
+            borderRadius: 10,
+            background: `${t.accentGreen}08`,
+            border: `1px solid ${t.accentGreen}20`,
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 13,
+            color: t.textMuted,
+            lineHeight: 1.7,
+          }}>
+            <strong style={{ color: t.accentGreen }}>Verdict on associations:</strong> Overwhelmingly
+            positive. The only concern is Dexter the TV show (serial killer), but "Dex" is far enough
+            removed that it is unlikely to trigger that association unprompted. Dexter's Lab, Pokedex,
+            and dexterity are all strong positive connections. The index connection is perfect for a
+            data-centric agent.
           </div>
         </div>
       </div>
 
-      {/* ═══════════════════════ APPENDIX: FULL SCORING MATRIX ═══════════════════════ */}
-      <Divider style={themedDividerStyle} />
+      <div style={divider} />
 
-      <div style={{ marginBottom: 32 }}>
-        <SubTitle style={themedSectionTitleStyle}>Appendix: Quick-Reference Scoring</SubTitle>
-        <p style={themedBodyTextStyle}>
-          A consolidated view of all five suites, scored across four dimensions.
-          The Bold Set leads with a total of 19/20.
+      {/* ═══════════════════════════════════════════════════════════════
+          SECTION 4: TOP 5 ALTERNATIVES TO DEX
+          ═══════════════════════════════════════════════════════════════ */}
+      <div style={sectionGap}>
+        <div style={sectionLabel}>Section 4</div>
+        <h2 style={sectionTitle}>Top 5 Alternatives to Dex</h2>
+        <p style={{ ...bodyText, marginBottom: 48 }}>
+          If not Dex, then what? Here are the five strongest alternatives, each explored
+          in detail with chat mockups, personality descriptions, and the two tests that matter
+          most: first impression and 100th repetition.
         </p>
 
-        <div style={{ overflowX: 'auto' }}>
+        {/* Alternative Selector Tabs */}
+        <div style={{
+          display: 'flex',
+          gap: 8,
+          marginBottom: 32,
+          overflowX: 'auto',
+          paddingBottom: 8,
+        }}>
+          {TOP_5_ALTERNATIVES.map((alt, i) => (
+            <button
+              key={alt.name}
+              onClick={() => setSelectedAltIndex(i)}
+              style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 15,
+                fontWeight: selectedAltIndex === i ? 700 : 500,
+                color: selectedAltIndex === i ? t.accentGold : t.textMuted,
+                background: selectedAltIndex === i ? `${t.accentGold}12` : 'transparent',
+                border: `1px solid ${selectedAltIndex === i ? t.accentGold + '35' : t.border}`,
+                borderRadius: 12,
+                padding: '12px 24px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+            >
+              {alt.name}
+              <span style={{
+                fontSize: 11,
+                color: selectedAltIndex === i ? t.accentGold + 'AA' : t.textFaint,
+                marginLeft: 8,
+              }}>
+                {alt.tagline}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Selected Alternative Detail */}
+        {(() => {
+          const alt = TOP_5_ALTERNATIVES[selectedAltIndex];
+          return (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 24,
+            }}>
+              {/* Left column */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                {/* Name + Personality */}
+                <div style={cardStyle}>
+                  <Wordmark name={alt.name} size={56} t={t} isHighlighted={true} />
+                  <div style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: t.textMuted,
+                    marginTop: 4,
+                    marginBottom: 20,
+                  }}>
+                    {alt.tagline}
+                  </div>
+                  <p style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    color: t.textMuted,
+                    lineHeight: 1.8,
+                  }}>
+                    {alt.personality}
+                  </p>
+                </div>
+
+                {/* Chat Mockup */}
+                <div style={cardStyle}>
+                  <div style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: t.textFaint,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    marginBottom: 16,
+                  }}>
+                    Chat Mockup
+                  </div>
+                  <ChatBubble sender="You" message="How are things looking today?" isAgent={false} t={t} />
+                  <ChatBubble sender={alt.name} message={alt.chatExample.agentResponse} isAgent={true} t={t} />
+                </div>
+              </div>
+
+              {/* Right column */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                {/* Pros & Cons */}
+                <div style={cardStyle}>
+                  <div style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: t.text,
+                    marginBottom: 16,
+                  }}>
+                    Pros & Cons
+                  </div>
+                  <div style={{ marginBottom: 20 }}>
+                    {alt.pros.map((pro, i) => (
+                      <div key={i} style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 8,
+                        marginBottom: 8,
+                        fontFamily: 'DM Sans, sans-serif',
+                        fontSize: 13,
+                        color: t.textMuted,
+                        lineHeight: 1.5,
+                      }}>
+                        <span style={{ color: t.accentGreen, flexShrink: 0, marginTop: 2 }}>+</span>
+                        {pro}
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    {alt.cons.map((con, i) => (
+                      <div key={i} style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 8,
+                        marginBottom: 8,
+                        fontFamily: 'DM Sans, sans-serif',
+                        fontSize: 13,
+                        color: t.textMuted,
+                        lineHeight: 1.5,
+                      }}>
+                        <span style={{ color: '#E05252', flexShrink: 0, marginTop: 2 }}>-</span>
+                        {con}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Impression Tests */}
+                <div style={cardStyle}>
+                  <div style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: t.text,
+                    marginBottom: 16,
+                  }}>
+                    The Repetition Tests
+                  </div>
+
+                  <div style={{
+                    padding: 16,
+                    borderRadius: 10,
+                    background: `${t.text}04`,
+                    marginBottom: 12,
+                  }}>
+                    <div style={{
+                      fontFamily: 'DM Sans, sans-serif',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: t.accentGold,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      marginBottom: 8,
+                    }}>
+                      First Impression Test
+                    </div>
+                    <div style={{
+                      fontFamily: 'DM Sans, sans-serif',
+                      fontSize: 13,
+                      color: t.textMuted,
+                      lineHeight: 1.6,
+                      fontStyle: 'italic',
+                    }}>
+                      "{alt.firstImpression}"
+                    </div>
+                  </div>
+
+                  <div style={{
+                    padding: 16,
+                    borderRadius: 10,
+                    background: `${t.text}04`,
+                  }}>
+                    <div style={{
+                      fontFamily: 'DM Sans, sans-serif',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: t.accentGold,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      marginBottom: 8,
+                    }}>
+                      100th Time Test
+                    </div>
+                    <div style={{
+                      fontFamily: 'DM Sans, sans-serif',
+                      fontSize: 13,
+                      color: t.textMuted,
+                      lineHeight: 1.6,
+                      fontStyle: 'italic',
+                    }}>
+                      "{alt.hundredthTime}"
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Comparison matrix */}
+        <div style={{
+          ...cardStyle,
+          marginTop: 32,
+          overflowX: 'auto',
+        }}>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 14,
+            fontWeight: 700,
+            color: t.text,
+            marginBottom: 20,
+          }}>
+            Head-to-Head Comparison
+          </div>
           <table style={{
             width: '100%',
-            borderCollapse: 'separate',
-            borderSpacing: 0,
+            borderCollapse: 'collapse',
+            fontFamily: 'DM Sans, sans-serif',
             fontSize: 13,
           }}>
             <thead>
               <tr>
-                {['Suite', 'Names', 'Mem.', 'Dist.', 'Prof.', 'Culture', 'Total'].map((h, i) => (
-                  <th key={h} style={{
-                    padding: '14px 16px',
-                    textAlign: i >= 2 ? 'center' : 'left',
-                    fontSize: 10,
-                    fontWeight: 600,
+                {['Name', 'Natural', 'Memorable', 'Professional', 'First Feel', 'Fatigue Risk'].map(header => (
+                  <th key={header} style={{
+                    textAlign: 'left',
+                    padding: '10px 16px',
+                    borderBottom: `1px solid ${t.border}`,
                     color: t.textFaint,
+                    fontSize: 11,
+                    fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
-                    borderBottom: `2px solid ${borderLight}`,
-                    background: t.cardBg,
-                    whiteSpace: 'nowrap',
-                    ...(i === 0 ? { borderRadius: '12px 0 0 0' } : {}),
-                    ...(i === 6 ? { borderRadius: '0 12px 0 0' } : {}),
                   }}>
-                    {h}
+                    {header}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {SUITES.map((suite, si) => {
-                const total = Object.values(suite.ratings).reduce((a, b) => a + b, 0);
-                const isWinner = suite.id === 'bold';
-                return (
-                  <tr key={suite.id} style={{
-                    background: isWinner ? `rgba(${goldRgb},0.06)` : (si % 2 === 0 ? 'transparent' : `rgba(${cardBgRgb},0.5)`),
+              {[
+                { name: 'Dex', natural: 9, mem: 9, prof: 8, feel: 'Sharp & modern', fatigue: 'Low' },
+                ...TOP_5_ALTERNATIVES.map(a => {
+                  const cand = CANDIDATES.find(c => c.name === a.name);
+                  return {
+                    name: a.name,
+                    natural: cand ? cand.scores.natural : '-',
+                    mem: cand ? cand.scores.memorable : '-',
+                    prof: cand ? cand.scores.professional : '-',
+                    feel: a.tagline,
+                    fatigue: a.name === 'Finn' || a.name === 'Cal' ? 'Very Low' : 'Low',
+                  };
+                }),
+              ].map((row, i) => (
+                <tr key={row.name} style={{
+                  background: i === 0 ? `${t.accentGold}08` : 'transparent',
+                }}>
+                  <td style={{
+                    padding: '12px 16px',
+                    borderBottom: `1px solid ${t.border}`,
+                    fontWeight: i === 0 ? 700 : 500,
+                    color: i === 0 ? t.accentGold : t.text,
                   }}>
-                    <td style={{
-                      padding: '14px 16px',
-                      fontWeight: 700,
-                      color: isWinner ? t.accentGoldLight : t.text,
-                      borderBottom: `1px solid ${t.border}`,
-                      whiteSpace: 'nowrap',
-                    }}>
-                      {suite.label}
-                      {isWinner && (
-                        <span style={{
-                          marginLeft: 8,
-                          fontSize: 9,
-                          fontWeight: 700,
-                          padding: '2px 8px',
-                          borderRadius: 4,
-                          background: `rgba(${goldRgb},0.15)`,
-                          color: t.accentGold,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                        }}>
-                          Winner
-                        </span>
-                      )}
-                    </td>
-                    <td style={{
-                      padding: '14px 16px',
-                      color: t.textMuted,
-                      borderBottom: `1px solid ${t.border}`,
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontWeight: 500,
-                    }}>
-                      {suite.names.join(' / ')}
-                    </td>
-                    {Object.values(suite.ratings).map((val, vi) => (
-                      <td key={vi} style={{
-                        padding: '14px 16px',
-                        textAlign: 'center',
-                        borderBottom: `1px solid ${t.border}`,
-                      }}>
-                        <span style={{
-                          fontWeight: 700,
-                          fontSize: 16,
-                          color: val >= 5 ? '#34D399' : val >= 4 ? t.accentGoldLight : t.textMuted,
-                        }}>
-                          {val}
-                        </span>
-                      </td>
-                    ))}
-                    <td style={{
-                      padding: '14px 16px',
-                      textAlign: 'center',
-                      borderBottom: `1px solid ${t.border}`,
-                      fontWeight: 700,
-                      fontSize: 18,
-                      color: isWinner ? t.accentGoldLight : t.text,
-                    }}>
-                      {total}<span style={{ fontSize: 12, color: t.textFaint, fontWeight: 400 }}>/20</span>
-                    </td>
-                  </tr>
-                );
-              })}
+                    {row.name} {i === 0 ? '(frontrunner)' : ''}
+                  </td>
+                  <td style={{ padding: '12px 16px', borderBottom: `1px solid ${t.border}`, color: t.textMuted }}>
+                    {row.natural}/10
+                  </td>
+                  <td style={{ padding: '12px 16px', borderBottom: `1px solid ${t.border}`, color: t.textMuted }}>
+                    {row.mem}/10
+                  </td>
+                  <td style={{ padding: '12px 16px', borderBottom: `1px solid ${t.border}`, color: t.textMuted }}>
+                    {row.prof}/10
+                  </td>
+                  <td style={{ padding: '12px 16px', borderBottom: `1px solid ${t.border}`, color: t.textMuted }}>
+                    {row.feel}
+                  </td>
+                  <td style={{ padding: '12px 16px', borderBottom: `1px solid ${t.border}`, color: t.textMuted }}>
+                    {row.fatigue}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* ═══════════════════════ FOOTER ═══════════════════════ */}
-      <div style={{
-        textAlign: 'center',
-        padding: '48px 0 0',
-        borderTop: `1px solid ${t.border}`,
-        marginTop: 48,
-      }}>
+      <div style={divider} />
+
+      {/* ═══════════════════════════════════════════════════════════════
+          SECTION 5: THE VERDICT
+          ═══════════════════════════════════════════════════════════════ */}
+      <div style={{ marginBottom: 40 }}>
+        <div style={sectionLabel}>Section 5</div>
+        <h2 style={sectionTitle}>The Verdict</h2>
+
+        {/* Confidence meter */}
         <div style={{
-          fontSize: 11,
-          color: textDim,
-          letterSpacing: '0.06em',
+          ...cardStyle,
+          textAlign: 'center',
+          padding: '48px 32px',
+          background: `linear-gradient(180deg, ${t.cardBg}, ${t.accentGold}08)`,
+          border: `1px solid ${t.accentGold}25`,
+          marginBottom: 32,
         }}>
-          D-NAME EXPLORATION &mdash; DUTCHIE AI NAMING STRATEGY &mdash; 2026
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 11,
+            fontWeight: 700,
+            color: t.accentGold,
+            textTransform: 'uppercase',
+            letterSpacing: '0.15em',
+            marginBottom: 16,
+          }}>
+            Final Recommendation
+          </div>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 80,
+            fontWeight: 800,
+            color: t.accentGold,
+            letterSpacing: '-0.04em',
+            lineHeight: 1,
+            marginBottom: 8,
+            textShadow: `0 0 60px ${t.accentGold}25`,
+          }}>
+            Dex
+          </div>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 16,
+            color: t.textMuted,
+            marginBottom: 32,
+          }}>
+            The AI agent should be called <strong style={{ color: t.text }}>Dex</strong>.
+          </div>
+
+          {/* Confidence bar */}
+          <div style={{
+            maxWidth: 400,
+            margin: '0 auto',
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginBottom: 8,
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 12,
+              color: t.textMuted,
+            }}>
+              <span>Confidence Level</span>
+              <span style={{ color: t.accentGold, fontWeight: 700 }}>87%</span>
+            </div>
+            <div style={{
+              height: 10,
+              borderRadius: 5,
+              background: `${t.text}0A`,
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                height: '100%',
+                width: '87%',
+                borderRadius: 5,
+                background: `linear-gradient(90deg, ${t.accentGold}, ${t.accentGoldLight})`,
+                boxShadow: `0 0 20px ${t.accentGold}30`,
+              }} />
+            </div>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11,
+              color: t.textFaint,
+              marginTop: 6,
+            }}>
+              High confidence — Dex is clearly the strongest option, though Lex is a legitimate alternative.
+            </div>
+          </div>
+        </div>
+
+        {/* Why Dex Wins */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 24,
+          marginBottom: 32,
+        }}>
+          <div style={cardStyle}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 16,
+              fontWeight: 700,
+              color: t.accentGreen,
+              marginBottom: 16,
+            }}>
+              Why Dex Wins
+            </div>
+            {[
+              'Highest combined score across Natural + Memorable + Professional',
+              '"Hey Dex" is fast, easy, and feels natural in conversation',
+              'The dexterity connection adds real meaning — this agent is nimble with data',
+              'Sits perfectly in the "could be a person, could be tech" sweet spot',
+              'Single syllable keeps it efficient in daily use',
+              'Cultural associations (Pokedex, Dexter\'s Lab) are overwhelmingly positive',
+              'Works in casual, professional, and alert contexts equally well',
+              'D-prefix ties it back to Dutchie without being forced',
+            ].map((point, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 10,
+                marginBottom: 10,
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 13,
+                color: t.textMuted,
+                lineHeight: 1.6,
+              }}>
+                <span style={{
+                  color: t.accentGreen,
+                  fontSize: 16,
+                  flexShrink: 0,
+                  lineHeight: 1.3,
+                }}>+</span>
+                {point}
+              </div>
+            ))}
+          </div>
+
+          <div style={cardStyle}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 16,
+              fontWeight: 700,
+              color: t.textMuted,
+              marginBottom: 16,
+            }}>
+              What Gives Us Pause
+            </div>
+            {[
+              'Dexter (the TV show about a serial killer) is a known association, though "Dex" is sufficiently different',
+              'It is not the most unique name in the world — someone else could use it',
+              'Lacks the thematic cannabis connection that "Sage" or "Rye" would offer',
+            ].map((point, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 10,
+                marginBottom: 10,
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 13,
+                color: t.textMuted,
+                lineHeight: 1.6,
+              }}>
+                <span style={{
+                  color: '#E05252',
+                  fontSize: 16,
+                  flexShrink: 0,
+                  lineHeight: 1.3,
+                }}>-</span>
+                {point}
+              </div>
+            ))}
+
+            <div style={{
+              marginTop: 24,
+              padding: 16,
+              borderRadius: 10,
+              background: `${t.text}04`,
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 13,
+              color: t.textFaint,
+              lineHeight: 1.7,
+            }}>
+              None of these concerns are dealbreakers. The Dexter association fades quickly once users
+              form their own relationship with Dex. The uniqueness concern is mitigated by the
+              Dutchie brand context. And the cannabis thematic angle is nice-to-have, not essential.
+            </div>
+          </div>
+        </div>
+
+        {/* Runner Up */}
+        <div style={{
+          ...cardStyle,
+          marginBottom: 32,
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16,
+            marginBottom: 20,
+          }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11,
+              fontWeight: 700,
+              color: t.textFaint,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              background: `${t.text}08`,
+              borderRadius: 20,
+              padding: '4px 14px',
+            }}>
+              Runner-Up
+            </div>
+            <Wordmark name="Lex" size={36} t={t} isHighlighted={false} />
+          </div>
+          <p style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 14,
+            color: t.textMuted,
+            lineHeight: 1.8,
+            marginBottom: 16,
+          }}>
+            Lex is the strongest alternative and would be the recommendation if Dex did not exist.
+            The lexicon connection is perfect, it sounds authoritative and smart, and it works in
+            every context. The two main reasons it falls behind Dex:
+          </p>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 16,
+          }}>
+            <div style={{
+              padding: 16,
+              borderRadius: 10,
+              background: `${t.text}04`,
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 13,
+              color: t.textMuted,
+              lineHeight: 1.6,
+            }}>
+              <strong style={{ color: t.text }}>1. Lex Luthor association.</strong> The most famous
+              "Lex" in pop culture is a supervillain. While not fatal, it is a headwind that Dex
+              does not have.
+            </div>
+            <div style={{
+              padding: 16,
+              borderRadius: 10,
+              background: `${t.text}04`,
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 13,
+              color: t.textMuted,
+              lineHeight: 1.6,
+            }}>
+              <strong style={{ color: t.text }}>2. Alexa proximity.</strong> "Lex" is phonetically
+              close to "Alexa," which creates confusion risk and comparison to Amazon's assistant.
+              Dex is more distinct in the AI assistant landscape.
+            </div>
+          </div>
+
+          <div style={{
+            marginTop: 20,
+            padding: 16,
+            borderRadius: 10,
+            background: `${t.accentGold}08`,
+            border: `1px solid ${t.accentGold}18`,
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 13,
+            color: t.textMuted,
+            lineHeight: 1.7,
+          }}>
+            <strong style={{ color: t.accentGold }}>When to choose Lex instead:</strong> If user
+            research reveals that "Dex" triggers the Dexter TV show association more strongly than
+            expected, or if the team wants a slightly more authoritative, data-analyst personality
+            rather than the friendly-coworker vibe.
+          </div>
+        </div>
+
+        {/* Recommended Personality */}
+        <div style={{
+          ...cardStyle,
+          background: `linear-gradient(135deg, ${t.cardBg}, ${t.accentGold}06)`,
+          border: `1px solid ${t.accentGold}20`,
+        }}>
+          <div style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 18,
+            fontWeight: 700,
+            color: t.accentGold,
+            marginBottom: 20,
+          }}>
+            Recommended Personality & Voice for Dex
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: 16,
+            marginBottom: 24,
+          }}>
+            {[
+              {
+                trait: 'Tone',
+                value: 'Confident but never arrogant. Think "smart coworker" not "all-knowing oracle."',
+              },
+              {
+                trait: 'Humor',
+                value: 'Dry, occasional, and always secondary to usefulness. A well-placed observation, never a joke for the sake of it.',
+              },
+              {
+                trait: 'Formality',
+                value: 'Business casual. Uses contractions. Avoids jargon unless the user uses it first. Never says "Hello, I am Dex, your AI assistant."',
+              },
+              {
+                trait: 'Proactivity',
+                value: 'Flags important things without being asked. Does not over-notify. Each alert should feel like it was worth the interruption.',
+              },
+              {
+                trait: 'Opinions',
+                value: 'Has them. Shares them. Always backs them up with data. "I would recommend X because Y" rather than "here are some options."',
+              },
+              {
+                trait: 'Mistakes',
+                value: 'Acknowledges them directly. "I was wrong about that — here is the correct number." No corporate hedging or blame-shifting.',
+              },
+            ].map((item, i) => (
+              <div key={i} style={{
+                padding: 20,
+                borderRadius: 12,
+                background: `${t.text}04`,
+                border: `1px solid ${t.border}`,
+              }}>
+                <div style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: t.accentGold,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  marginBottom: 8,
+                }}>
+                  {item.trait}
+                </div>
+                <div style={{
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: 13,
+                  color: t.textMuted,
+                  lineHeight: 1.7,
+                }}>
+                  {item.value}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Final chat */}
+          <div style={{
+            padding: 24,
+            borderRadius: 12,
+            background: `${t.text}04`,
+            border: `1px solid ${t.border}`,
+          }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11,
+              fontWeight: 700,
+              color: t.textFaint,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              marginBottom: 20,
+            }}>
+              This is what Dex sounds like
+            </div>
+            <ChatBubble
+              sender="You"
+              message="Dex, how did we do this week?"
+              isAgent={false}
+              t={t}
+            />
+            <ChatBubble
+              sender="Dex"
+              message="Good week. Revenue was $42,100, up 7% from last week. Your flower category carried the load — Blue Dream alone was 12% of sales. One thing I would flag: your edibles margin dropped 2 points because of the Thursday promotion. It drove traffic but ate into profit. I would suggest a smaller discount next time — 15% instead of 25% — and see if the traffic holds."
+              isAgent={true}
+              t={t}
+            />
+            <ChatBubble
+              sender="You"
+              message="Makes sense. Set that up for next Thursday."
+              isAgent={false}
+              t={t}
+            />
+            <ChatBubble
+              sender="Dex"
+              message="Done. 15% off edibles, Thursday only, same time window as last week. I will ping you Wednesday night with a reminder and the current inventory levels so you are prepared."
+              isAgent={true}
+              t={t}
+            />
+          </div>
+
+          <div style={{
+            textAlign: 'center',
+            marginTop: 32,
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 14,
+            color: t.textFaint,
+            fontStyle: 'italic',
+          }}>
+            Dex: sharp, helpful, opinionated, and always backed by data.
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default DNameExplorationSection;
