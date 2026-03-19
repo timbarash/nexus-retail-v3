@@ -7,6 +7,8 @@ import { DNameExplorationSection } from './DNameExplorationSection';
 import { VisualStylesSection } from './VisualStylesSection';
 import { PositioningDeepDive } from './PositioningDeepDive';
 import { SuiteNamingDeepDive } from './SuiteNamingDeepDive';
+import { ExecutiveSummary } from './ExecutiveSummary';
+import { DexB2CvsB2BSection } from './DexB2CvsB2BSection';
 
 /* ─── Theme Definitions ─── */
 const themes = {
@@ -19,7 +21,7 @@ const themes = {
     accentGreen: '#00C27C',
   },
   light: {
-    bg: '#FFFFFF', cardBg: '#F8F7F5', border: '#E8E5E0',
+    bg: '#F5F4F2', cardBg: '#FAFAF9', border: '#E8E5E0',
     text: '#1C1917', textMuted: '#57534E', textFaint: '#A8A29E',
     navBg: 'rgba(255,255,255,0.95)',
     divider: '#E8E5E0',
@@ -172,6 +174,7 @@ function Swatch({ color, name, hex, theme = 'dark' }) {
 
 /* ─── Section Nav ─── */
 const SECTIONS = [
+  { id: 'summary', label: 'Summary' },
   { id: 'hero', label: 'Intro' },
   { id: 'nexus', label: 'Nexus' },
   { id: 'dex', label: 'Dex' },
@@ -183,6 +186,7 @@ const SECTIONS = [
   { id: 'styles', label: 'Styles' },
   { id: 'positioning', label: 'Positioning' },
   { id: 'naming', label: 'Naming' },
+  { id: 'b2c-b2b', label: 'B2C vs B2B' },
 ];
 
 function SectionNav({ active, theme = 'dark', setTheme }) {
@@ -1788,6 +1792,13 @@ export default function DesignStudy() {
       <SectionNav active={activeSection} theme={theme} setTheme={setTheme} />
 
       <div style={container}>
+        {/* ═══ EXECUTIVE SUMMARY ═══ */}
+        <Section id="summary">
+          <ExecutiveSummary theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
         {/* ═══ HERO ═══ */}
         <Section id="hero">
           <div style={{ textAlign: 'center', paddingTop: 40 }}>
@@ -2245,6 +2256,13 @@ export default function DesignStudy() {
         {/* ═══ SUITE NAMING DEEP DIVE ═══ */}
         <Section id="naming">
           <SuiteNamingDeepDive theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ DEX B2C vs B2B ═══ */}
+        <Section id="b2c-b2b">
+          <DexB2CvsB2BSection theme={theme} />
         </Section>
 
         {/* Footer */}
