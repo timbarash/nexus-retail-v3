@@ -29,6 +29,7 @@ import NexusMobileApp from './pages/NexusMobileApp';
 import MobileDesignReview from './pages/MobileDesignReview';
 import NexusMobileWeb from './pages/NexusMobileWeb';
 import DesignStudy from './pages/DesignStudy';
+import DeckStructureExploration from './pages/DeckStructureExploration';
 import SlackPanel from './components/slack/SlackPanel';
 import DtchPanel from './components/dtch/DtchPanel';
 import CommandPalette from './components/common/CommandPalette';
@@ -99,6 +100,7 @@ export default function App() {
   if (location.pathname === '/mobile-review') return <MobileDesignReview />;
   if (location.pathname === '/mobile') return <NexusMobileWeb />;
   if (location.pathname === '/design-study') return <DesignStudy />;
+  if (location.pathname === '/deck-structures') return <DeckStructureExploration />;
 
   return (
     <div className="min-h-screen bg-[#141210] flex">

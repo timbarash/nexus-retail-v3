@@ -11,6 +11,8 @@ import { ExecutiveSummary } from './ExecutiveSummary';
 import { DexB2CvsB2BSection } from './DexB2CvsB2BSection';
 import { SalesDeckIntegration } from './SalesDeckIntegration';
 import { HierarchyPMMAnalysis } from './HierarchyPMMAnalysis';
+import { DeckStructureExploration } from './DeckStructureExploration';
+import { CompetitorDeckPatterns } from './CompetitorDeckPatterns';
 
 /* ─── Theme Definitions ─── */
 const themes = {
@@ -190,6 +192,8 @@ const SECTIONS = [
   { id: 'naming', label: 'Naming' },
   { id: 'b2c-b2b', label: 'B2C vs B2B' },
   { id: 'sales-deck', label: 'Sales Deck' },
+  { id: 'deck-structures', label: 'Structures' },
+  { id: 'competitors', label: 'Comp Intel' },
   { id: 'pmm', label: 'PMM Strategy' },
 ];
 
@@ -2274,6 +2278,20 @@ export default function DesignStudy() {
         {/* ═══ SALES DECK INTEGRATION ═══ */}
         <Section id="sales-deck">
           <SalesDeckIntegration theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ DECK STRUCTURE EXPLORATION ═══ */}
+        <Section id="deck-structures">
+          <DeckStructureExploration theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ COMPETITOR DECK PATTERNS ═══ */}
+        <Section id="competitors">
+          <CompetitorDeckPatterns theme={theme} />
         </Section>
 
         <div style={divider} />
