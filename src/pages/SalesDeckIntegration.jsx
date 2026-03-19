@@ -1,9 +1,8 @@
 import React from 'react';
 
 // ============================================================================
-// SalesDeckIntegration Component
-// Polished presentation-quality recreation of Dutchie sales deck slides,
-// exploring how AI/Dex integrates into the product hierarchy.
+// SalesDeckIntegration — SVG-based sales deck recreation
+// Each slide is a single inline SVG with coordinate-based positioning.
 // ============================================================================
 
 const themes = {
@@ -20,1328 +19,1055 @@ const themes = {
 };
 
 // ============================================================================
-// Deck Color Palettes (these are slide-internal, NOT theme-dependent)
+// Shared SVG Defs — gradients, patterns
 // ============================================================================
-const deck = {
-  forestGreen: '#1A3A2A',
-  forestGreenDeep: '#142E22',
-  forestGreenDark: '#0F2119',
-  forestGreenLight: '#2D6A4F',
-  cream: '#F5F0E8',
-  creamLight: '#FAF8F4',
-  creamDark: '#E8E0D4',
-  burgundy: '#5C2434',
-  burgundyDeep: '#4A1C2A',
-  white: '#FFFFFF',
-  textDark: '#1C1917',
-  textMedium: '#44403A',
-  textGreen: '#2D6A4F',
-  checkGreen: '#40916C',
-  gold: '#D4A03A',
-  goldLight: '#FFC02A',
-  goldBright: '#FFD666',
-  gradientStart: '#FF6B6B',
-  gradientMid1: '#FFA500',
-  gradientMid2: '#FFD700',
-  gradientMid3: '#40916C',
-  gradientEnd: '#4A90D9',
-};
 
-// ============================================================================
-// SVG Icons — clean, professional, 20-24px stroked outlines
-// ============================================================================
-const Icons = {
-  ecommerce: (color = '#fff', size = 22) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3 6h18" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
-      <path d="M16 10a4 4 0 01-8 0" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  loyalty: (color = '#fff', size = 22) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M12 8v4M10 10h4" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
-    </svg>
-  ),
-  retail: (color = '#fff', size = 22) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="2" y="7" width="20" height="14" rx="2" stroke={color} strokeWidth="1.6"/>
-      <path d="M16 7V5a4 4 0 00-8 0v2" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
-      <path d="M2 11h20" stroke={color} strokeWidth="1.2" opacity="0.5"/>
-      <rect x="9" y="13" width="6" height="4" rx="1" stroke={color} strokeWidth="1.2"/>
-    </svg>
-  ),
-  nexus: (color = '#fff', size = 22) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="6" r="2" stroke={color} strokeWidth="1.4"/>
-      <circle cx="18" cy="12" r="2" stroke={color} strokeWidth="1.4"/>
-      <circle cx="12" cy="18" r="2" stroke={color} strokeWidth="1.4"/>
-      <circle cx="6" cy="12" r="2" stroke={color} strokeWidth="1.4"/>
-      <path d="M12 8v2.5M12 13.5V16M14 6.8l2.5 3.5M8 13.7l-0.5.6M14 17.2l2.5-3.5M8 10.3l-0.5-.6" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
-      <circle cx="12" cy="12" r="2.5" fill={color} opacity="0.2"/>
-    </svg>
-  ),
-  connect: (color = '#fff', size = 22) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8.5" cy="12" r="4.5" stroke={color} strokeWidth="1.6" fill="none"/>
-      <circle cx="15.5" cy="12" r="4.5" stroke={color} strokeWidth="1.6" fill="none"/>
-    </svg>
-  ),
-  intelligence: (color = '#fff', size = 22) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2a7 7 0 017 7c0 2.5-1.2 4.7-3 6v2a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2c-1.8-1.3-3-3.5-3-6a7 7 0 017-7z" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M9 21h6" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
-      <path d="M10 17v-3.5c0-.3-.2-.5-.5-.7l-1-1" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
-      <path d="M14 17v-3.5c0-.3.2-.5.5-.7l1-1" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
-    </svg>
-  ),
-  brain: (color = '#fff', size = 20) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2a7 7 0 017 7c0 2.5-1.2 4.7-3 6v2a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2c-1.8-1.3-3-3.5-3-6a7 7 0 017-7z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M9 21h6" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  ),
-};
-
-// ============================================================================
-// Dutchie Logo (simplified leaf/swirl)
-// ============================================================================
-function DutchieLogo({ color = '#40916C', size = 32 }) {
+function SlideDefsStandard({ id }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <path d="M16 4C10 4 4 10 4 16s6 12 12 12c0-4 1-8 3-12S22 8 16 4z" fill={color} opacity="0.8"/>
-      <path d="M16 4c6 0 12 6 12 12s-6 12-12 12c0-4-1-8-3-12S10 8 16 4z" fill={color} opacity="0.5"/>
-    </svg>
+    <defs>
+      {/* Main background gradient */}
+      <radialGradient id={`${id}-bgGrad`} cx="50%" cy="50%" r="70%">
+        <stop offset="0%" stopColor="#1E4535" />
+        <stop offset="60%" stopColor="#1B3D2F" />
+        <stop offset="100%" stopColor="#142E23" />
+      </radialGradient>
+
+      {/* Rainbow gradient for intelligence bar */}
+      <linearGradient id={`${id}-rainbow`} x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#C0504D" />
+        <stop offset="16%" stopColor="#D4834D" />
+        <stop offset="33%" stopColor="#D4C04D" />
+        <stop offset="50%" stopColor="#5DA06B" />
+        <stop offset="66%" stopColor="#4D7EC0" />
+        <stop offset="83%" stopColor="#7B5DA0" />
+        <stop offset="100%" stopColor="#A05D8B" />
+      </linearGradient>
+
+      {/* Card shadow filter */}
+      <filter id={`${id}-cardShadow`} x="-4%" y="-2%" width="108%" height="108%">
+        <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#0A1F15" floodOpacity="0.35" />
+      </filter>
+
+      {/* Gold gradient for badges */}
+      <linearGradient id={`${id}-goldGrad`} x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#D4A03A" />
+        <stop offset="100%" stopColor="#FFC02A" />
+      </linearGradient>
+
+      {/* Leaf decoration path (corner accent) */}
+      <path id={`${id}-leafBL`}
+        d="M0,540 C30,510 20,480 10,460 C25,475 40,490 60,500 C40,510 20,530 0,540Z"
+        fill="#1E4535" opacity="0.3" />
+      <path id={`${id}-leafTR`}
+        d="M960,0 C930,30 940,60 950,80 C935,65 920,50 900,40 C920,30 940,10 960,0Z"
+        fill="#1E4535" opacity="0.3" />
+    </defs>
   );
 }
 
 // ============================================================================
-// Data
+// Icon components — simple SVG paths for each product icon
 // ============================================================================
-const pillarsBase = [
-  {
-    id: 'ecommerce', name: 'E-Commerce', icon: 'ecommerce',
-    features: ['Collections + Outlets', 'Branded Mobile App', 'Digital Payments', 'Sponsored Placement', 'Kiosk'],
-  },
-  {
-    id: 'loyalty', name: 'Loyalty + Marketing', icon: 'loyalty',
-    features: ['Marketing Automation', 'Dynamic Segments', 'Email / Text / Push', 'Refer A Friend', 'IRL Events'],
-  },
-  {
-    id: 'retail', name: 'Retail', icon: 'retail', highlighted: true,
-    features: ['Register', 'Dynamic Pricing', 'Compliance', 'Discount Engine', 'Reporting'],
-  },
-  {
-    id: 'nexus', name: 'Nexus', icon: 'nexus',
-    features: ['AI Command Center', 'Pricing Insights', 'Loyalty Score', 'Inventory Alerts', 'Brand Leaderboard'],
-  },
-  {
-    id: 'connect', name: 'Connect', icon: 'connect',
-    features: ['Global Catalog', 'Brand Discounts', 'POs + Invoices', 'Brand Intelligence', 'Cultivation & Mfg'],
-  },
-];
 
-const intelligenceItemsBase = [
-  'Agentic Commerce', 'Voice AI', 'Intelligent Summaries',
-  'Intelligence Everywhere', 'AI Sales Assistant', 'Consumer Sentiment', 'Dutchie Agent'
-];
-
-
-// ============================================================================
-// Shared: Slide Frame
-// Wraps each slide in a 16:10 frame with shadow and border
-// ============================================================================
-function SlideFrame({ children, style = {} }) {
+function IconEcommerce({ cx, cy, r, circleFill, iconColor }) {
   return (
-    <div style={{
-      maxWidth: 920,
-      margin: '0 auto',
-      aspectRatio: '16 / 10',
-      borderRadius: 20,
-      overflow: 'hidden',
-      boxShadow: '0 4px 32px rgba(0,0,0,0.25), 0 1px 4px rgba(0,0,0,0.15)',
-      border: '1px solid rgba(255,255,255,0.06)',
-      position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-      ...style,
-    }}>
-      {children}
-    </div>
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill={circleFill} />
+      {/* Shopping bag */}
+      <rect x={cx - 8} y={cy - 4} width="16" height="14" rx="2"
+        fill="none" stroke={iconColor} strokeWidth="1.8" />
+      <path d={`M${cx - 4},${cy - 4} L${cx - 4},${cy - 8} A4,4 0 0,1 ${cx + 4},${cy - 8} L${cx + 4},${cy - 4}`}
+        fill="none" stroke={iconColor} strokeWidth="1.8" />
+    </g>
+  );
+}
+
+function IconLoyalty({ cx, cy, r, circleFill, iconColor }) {
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill={circleFill} />
+      {/* Heart */}
+      <path d={`M${cx},${cy + 6} C${cx - 12},${cy - 4} ${cx - 6},${cy - 12} ${cx},${cy - 4} C${cx + 6},${cy - 12} ${cx + 12},${cy - 4} ${cx},${cy + 6}Z`}
+        fill="none" stroke={iconColor} strokeWidth="1.6" strokeLinejoin="round" />
+    </g>
+  );
+}
+
+function IconRetail({ cx, cy, r, circleFill, iconColor }) {
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill={circleFill} />
+      {/* Register/receipt */}
+      <rect x={cx - 7} y={cy - 5} width="14" height="10" rx="1.5"
+        fill="none" stroke={iconColor} strokeWidth="1.6" />
+      <line x1={cx - 4} y1={cy - 2} x2={cx + 4} y2={cy - 2} stroke={iconColor} strokeWidth="1.2" />
+      <line x1={cx - 4} y1={cy + 1} x2={cx + 2} y2={cy + 1} stroke={iconColor} strokeWidth="1.2" />
+      <path d={`M${cx - 3},${cy + 5} L${cx - 3},${cy + 9} L${cx + 3},${cy + 7} L${cx + 3},${cy + 5}`}
+        fill="none" stroke={iconColor} strokeWidth="1.2" />
+    </g>
+  );
+}
+
+function IconNexus({ cx, cy, r, circleFill, iconColor }) {
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill={circleFill} />
+      {/* Network: 4 dots with connecting lines */}
+      <circle cx={cx - 5} cy={cy - 5} r="2" fill={iconColor} />
+      <circle cx={cx + 5} cy={cy - 5} r="2" fill={iconColor} />
+      <circle cx={cx - 5} cy={cy + 5} r="2" fill={iconColor} />
+      <circle cx={cx + 5} cy={cy + 5} r="2" fill={iconColor} />
+      <line x1={cx - 5} y1={cy - 5} x2={cx + 5} y2={cy - 5} stroke={iconColor} strokeWidth="1" />
+      <line x1={cx - 5} y1={cy - 5} x2={cx - 5} y2={cy + 5} stroke={iconColor} strokeWidth="1" />
+      <line x1={cx + 5} y1={cy - 5} x2={cx + 5} y2={cy + 5} stroke={iconColor} strokeWidth="1" />
+      <line x1={cx - 5} y1={cy + 5} x2={cx + 5} y2={cy + 5} stroke={iconColor} strokeWidth="1" />
+      <line x1={cx - 5} y1={cy - 5} x2={cx + 5} y2={cy + 5} stroke={iconColor} strokeWidth="1" opacity="0.5" />
+      <line x1={cx + 5} y1={cy - 5} x2={cx - 5} y2={cy + 5} stroke={iconColor} strokeWidth="1" opacity="0.5" />
+    </g>
+  );
+}
+
+function IconConnect({ cx, cy, r, circleFill, iconColor }) {
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill={circleFill} />
+      {/* Two chain links */}
+      <ellipse cx={cx - 3} cy={cy} rx="5" ry="7" fill="none" stroke={iconColor} strokeWidth="1.6"
+        transform={`rotate(-20,${cx - 3},${cy})`} />
+      <ellipse cx={cx + 3} cy={cy} rx="5" ry="7" fill="none" stroke={iconColor} strokeWidth="1.6"
+        transform={`rotate(20,${cx + 3},${cy})`} />
+    </g>
+  );
+}
+
+function IconDex({ cx, cy, r, circleFill, iconColor }) {
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill={circleFill} />
+      {/* Star / sparkle */}
+      <path d={`M${cx},${cy - 8} L${cx + 2},${cy - 2} L${cx + 8},${cy} L${cx + 2},${cy + 2} L${cx},${cy + 8} L${cx - 2},${cy + 2} L${cx - 8},${cy} L${cx - 2},${cy - 2}Z`}
+        fill={iconColor} />
+    </g>
   );
 }
 
 // ============================================================================
-// Shared: Slide Caption (below each slide)
+// Card Feature Lines — checkmark + text
 // ============================================================================
-function SlideCaption({ children, t }) {
+
+function FeatureLines({ features, x, startY, lineHeight, checkColor, textColor, fontSize }) {
+  return features.map((feat, i) => (
+    <g key={i}>
+      <text x={x} y={startY + i * lineHeight}
+        fontFamily="'DM Sans', sans-serif" fontSize={fontSize || 11} fill={checkColor} fontWeight="700">
+        {'✓'}
+      </text>
+      <text x={x + 14} y={startY + i * lineHeight}
+        fontFamily="'DM Sans', sans-serif" fontSize={fontSize || 11} fill={textColor}>
+        {feat}
+      </text>
+    </g>
+  ));
+}
+
+// ============================================================================
+// Standard 5-Card Layout
+// ============================================================================
+
+function FiveCards({ cardY, cardH, id, retailSpecial, nexusBadge, connectBadge }) {
+  const cardW = 150;
+  const gap = 14;
+  const totalW = 5 * cardW + 4 * gap;
+  const startX = (960 - totalW) / 2;
+
+  const cards = [
+    {
+      name: 'E-Commerce',
+      icon: IconEcommerce,
+      features: ['Online Menus', 'Marketplace', 'Payments', 'Checkout', 'Kiosk'],
+      special: false
+    },
+    {
+      name: 'Loyalty',
+      icon: IconLoyalty,
+      features: ['Rewards Programs', 'Customer Profiles', 'Promotions', 'Engagement', 'Analytics'],
+      special: false
+    },
+    {
+      name: 'Retail',
+      icon: IconRetail,
+      features: ['POS System', 'Inventory', 'Compliance', 'Reporting', 'Staff Mgmt'],
+      special: true
+    },
+    {
+      name: 'Nexus',
+      icon: IconNexus,
+      features: ['Data Platform', 'Integrations', 'API Access', 'Webhooks', 'Analytics'],
+      special: false,
+      leftAccent: true
+    },
+    {
+      name: 'Connect',
+      icon: IconConnect,
+      features: ['Partner Network', 'Marketplace', 'Onboarding', 'Support', 'Growth Tools'],
+      special: false,
+      leftAccent: true
+    }
+  ];
+
   return (
-    <div style={{
-      maxWidth: 920,
-      margin: '16px auto 0',
-      textAlign: 'center',
-      fontFamily: 'DM Sans, sans-serif',
-      fontSize: 14,
-      color: t.textMuted,
-      fontStyle: 'italic',
-      lineHeight: 1.6,
-      padding: '0 20px',
-    }}>
-      {children}
-    </div>
+    <g>
+      {/* Cards container background */}
+      <rect x={startX - 14} y={cardY - 8} width={totalW + 28} height={cardH + 16}
+        rx="14" fill="#163829" stroke="#2A5A45" strokeWidth="1" />
+
+      {cards.map((card, i) => {
+        const cx = startX + i * (cardW + gap);
+        const centerX = cx + cardW / 2;
+        const isRetail = card.special && retailSpecial !== false;
+
+        const bgFill = isRetail ? '#5C2434' : '#F5EFE3';
+        const circleFill = isRetail ? '#F5EFE3' : '#2D6A4F';
+        const iconClr = isRetail ? '#5C2434' : '#FFFFFF';
+        const titleColor = isRetail ? '#F5EFE3' : '#2C2520';
+        const featColor = isRetail ? '#D4BFC5' : '#5C554A';
+        const checkClr = isRetail ? '#D4A03A' : '#2D6A4F';
+
+        return (
+          <g key={i}>
+            {/* Left accent for Nexus/Connect */}
+            {card.leftAccent && (
+              <rect x={cx - 1} y={cardY + 4} width="2" height={cardH - 8}
+                rx="1" fill="#3D8B6A" opacity="0.7" />
+            )}
+
+            {/* Card body */}
+            <rect x={cx} y={cardY} width={cardW} height={cardH}
+              rx="12" fill={bgFill} filter={`url(#${id}-cardShadow)`} />
+
+            {/* Icon */}
+            <card.icon cx={centerX} cy={cardY + 42} r={22}
+              circleFill={circleFill} iconColor={iconClr} />
+
+            {/* Title */}
+            <text x={centerX} y={cardY + 80} textAnchor="middle"
+              fontFamily="'DM Sans', sans-serif" fontSize="14" fontWeight="700" fill={titleColor}>
+              {card.name}
+            </text>
+
+            {/* Features */}
+            <FeatureLines
+              features={card.features}
+              x={cx + 16}
+              startY={cardY + 102}
+              lineHeight={20}
+              checkColor={checkClr}
+              textColor={featColor}
+              fontSize={11}
+            />
+
+            {/* Nexus AI badge */}
+            {card.name === 'Nexus' && nexusBadge && (
+              <g>
+                <rect x={cx + cardW - 38} y={cardY + 4} width="34" height="16" rx="8"
+                  fill="#D4A03A" />
+                <text x={cx + cardW - 21} y={cardY + 15} textAnchor="middle"
+                  fontFamily="'DM Sans', sans-serif" fontSize="9" fontWeight="700" fill="#1A1400">
+                  {'✦ AI'}
+                </text>
+              </g>
+            )}
+          </g>
+        );
+      })}
+    </g>
   );
 }
 
 // ============================================================================
-// Shared: Section Header (above each slide)
+// Six-Card Layout (for Slide 3)
 // ============================================================================
-function SlideHeader({ number, title, t }) {
+
+function SixCards({ cardY, cardH, id }) {
+  const cardW = 122;
+  const gap = 12;
+  const totalW = 6 * cardW + 5 * gap;
+  const startX = (960 - totalW) / 2;
+
+  const cards = [
+    {
+      name: 'E-Commerce',
+      icon: IconEcommerce,
+      features: ['Online Menus', 'Marketplace', 'Payments', 'Checkout'],
+      special: false, dex: false
+    },
+    {
+      name: 'Loyalty',
+      icon: IconLoyalty,
+      features: ['Rewards', 'Profiles', 'Promotions', 'Engagement'],
+      special: false, dex: false
+    },
+    {
+      name: 'Retail',
+      icon: IconRetail,
+      features: ['POS System', 'Inventory', 'Compliance', 'Reporting'],
+      special: true, dex: false
+    },
+    {
+      name: 'Nexus',
+      icon: IconNexus,
+      features: ['Data Platform', 'Integrations', 'API Access', 'Analytics'],
+      special: false, leftAccent: true, dex: false
+    },
+    {
+      name: 'Connect',
+      icon: IconConnect,
+      features: ['Partners', 'Marketplace', 'Onboarding', 'Growth'],
+      special: false, leftAccent: true, dex: false
+    },
+    {
+      name: 'Dex',
+      icon: IconDex,
+      features: ['Agentic Commerce', 'Voice AI', 'Smart Summaries', 'Sales Assistant', 'Consumer Insight'],
+      special: false, dex: true
+    }
+  ];
+
   return (
-    <div style={{ maxWidth: 920, margin: '0 auto 24px', padding: '0 4px' }}>
-      <div style={{
-        fontFamily: 'DM Sans, sans-serif',
-        fontSize: 12,
-        fontWeight: 700,
-        color: t.accentGold,
-        textTransform: 'uppercase',
-        letterSpacing: '0.1em',
-        marginBottom: 6,
-      }}>
-        Slide {number}
-      </div>
-      <h2 style={{
-        fontFamily: 'DM Sans, sans-serif',
-        fontSize: 26,
-        fontWeight: 700,
-        color: t.text,
-        margin: 0,
-        letterSpacing: '-0.02em',
-      }}>
-        {title}
-      </h2>
-    </div>
+    <g>
+      {/* Cards container */}
+      <rect x={startX - 12} y={cardY - 8} width={totalW + 24} height={cardH + 16}
+        rx="14" fill="#163829" stroke="#2A5A45" strokeWidth="1" />
+
+      {cards.map((card, i) => {
+        const cx = startX + i * (cardW + gap);
+        const centerX = cx + cardW / 2;
+        const isRetail = card.special;
+        const isDex = card.dex;
+
+        const bgFill = isDex ? '#C49A2A' : (isRetail ? '#5C2434' : '#F5EFE3');
+        const circleFill = isDex ? '#1A1400' : (isRetail ? '#F5EFE3' : '#2D6A4F');
+        const iconClr = isDex ? '#FFD666' : (isRetail ? '#5C2434' : '#FFFFFF');
+        const titleColor = isDex ? '#1A1400' : (isRetail ? '#F5EFE3' : '#2C2520');
+        const featColor = isDex ? '#3D2A0F' : (isRetail ? '#D4BFC5' : '#5C554A');
+        const checkClr = isDex ? '#1A1400' : (isRetail ? '#D4A03A' : '#2D6A4F');
+
+        return (
+          <g key={i}>
+            {card.leftAccent && (
+              <rect x={cx - 1} y={cardY + 4} width="2" height={cardH - 8}
+                rx="1" fill="#3D8B6A" opacity="0.7" />
+            )}
+
+            <rect x={cx} y={cardY} width={cardW} height={cardH}
+              rx="12" fill={bgFill} filter={`url(#${id}-cardShadow)`} />
+
+            <card.icon cx={centerX} cy={cardY + 38} r={19}
+              circleFill={circleFill} iconColor={iconClr} />
+
+            <text x={centerX} y={cardY + 72} textAnchor="middle"
+              fontFamily="'DM Sans', sans-serif" fontSize="13" fontWeight="700" fill={titleColor}>
+              {card.name}
+            </text>
+
+            <FeatureLines
+              features={card.features}
+              x={cx + 12}
+              startY={cardY + 92}
+              lineHeight={18}
+              checkColor={checkClr}
+              textColor={featColor}
+              fontSize={10}
+            />
+          </g>
+        );
+      })}
+    </g>
   );
 }
 
 // ============================================================================
-// Shared: Pillar Card (the cream/colored product card inside a slide)
+// Header Area
 // ============================================================================
-function PillarCard({
-  name,
-  icon,
-  features,
-  highlighted = false,
-  cardBg,
-  textColor,
-  checkColor,
-  iconBg,
-  iconColor,
-  badge,
-  badgeBg,
-  badgeColor,
-  featureDecorator,
-  minH = 220,
-  style = {},
-}) {
-  const bg = cardBg || (highlighted ? deck.burgundy : deck.cream);
-  const txt = textColor || (highlighted ? '#FAFAF4' : deck.textDark);
-  const chk = checkColor || (highlighted ? deck.goldLight : deck.checkGreen);
-  const iBg = iconBg || (highlighted ? 'rgba(255,215,0,0.18)' : deck.forestGreenLight);
-  const iClr = iconColor || '#FFFFFF';
-  const IconFn = Icons[icon];
+
+function SlideHeader({ subtitle, id }) {
+  return (
+    <g>
+      {/* Subtitle label */}
+      <text x="480" y="35" textAnchor="middle"
+        fontFamily="'DM Sans', sans-serif" fontSize="11" fill="#4CAF7D"
+        fontWeight="600" letterSpacing="3" textDecoration="none">
+        INTRODUCING DUTCHIE:
+      </text>
+
+      {/* Main title */}
+      <text x="480" y="72" textAnchor="middle"
+        fontFamily="Georgia, 'Times New Roman', serif" fontSize="32"
+        fontStyle="italic" fill="#F0EAD6" fontWeight="400">
+        {subtitle || 'The Industry Standard for a Reason'}
+      </text>
+
+      {/* Dutchie swirl logo */}
+      <g transform="translate(480, 95)">
+        <path d="M-8,-6 C-4,-14 8,-12 8,-4 C8,2 2,6 -2,8 C-6,10 -10,6 -8,2 C-6,-2 0,-4 4,-2"
+          fill="none" stroke="#3D8B6A" strokeWidth="2" strokeLinecap="round" />
+      </g>
+    </g>
+  );
+}
+
+// ============================================================================
+// Corner Leaf Decorations
+// ============================================================================
+
+function CornerLeaves() {
+  return (
+    <g>
+      {/* Bottom-left leaf cluster */}
+      <path d="M0,540 C20,520 15,495 8,478 C20,490 35,505 50,512 C35,520 18,535 0,540Z"
+        fill="#1E4535" opacity="0.25" />
+      <path d="M0,520 C15,508 12,490 6,478 C15,486 28,498 38,504 C28,510 14,522 0,528Z"
+        fill="#1E4535" opacity="0.15" />
+
+      {/* Top-right leaf cluster */}
+      <path d="M960,0 C940,20 945,45 952,62 C940,50 925,35 910,28 C925,20 942,5 960,0Z"
+        fill="#1E4535" opacity="0.25" />
+      <path d="M960,20 C945,32 948,50 954,62 C945,54 932,42 922,36 C932,30 946,18 960,12Z"
+        fill="#1E4535" opacity="0.15" />
+
+      {/* Top-left subtle accent */}
+      <path d="M0,0 C15,12 12,30 6,42 C14,32 26,22 36,18 C26,12 14,2 0,0Z"
+        fill="#1E4535" opacity="0.12" />
+
+      {/* Bottom-right subtle accent */}
+      <path d="M960,540 C945,528 948,510 954,498 C946,508 934,518 924,522 C934,528 946,538 960,540Z"
+        fill="#1E4535" opacity="0.12" />
+    </g>
+  );
+}
+
+// ============================================================================
+// Intelligence Bar — Standard (with tags)
+// ============================================================================
+
+function IntelligenceBar({ y, id, poweredByDex, replaceDutchieAgent }) {
+  const barX = 55;
+  const barW = 850;
+  const barH = 95;
+
+  const tags1 = [
+    { icon: '✦', label: 'Agentic Commerce' },
+    { icon: '🎙', label: 'Voice AI' },
+    { icon: '📋', label: 'Intelligent Summaries' },
+    { icon: '★', label: 'Intelligence Everywhere' }
+  ];
+
+  const lastTag = replaceDutchieAgent
+    ? { icon: '✦', label: 'Dex', gold: true }
+    : { icon: '🤖', label: 'Dutchie Agent', gold: false };
+
+  const tags2 = [
+    { icon: '💼', label: 'AI Sales Assistant' },
+    { icon: '♥', label: 'Consumer Sentiment' },
+    lastTag
+  ];
 
   return (
-    <div style={{
-      background: bg,
-      borderRadius: 14,
-      padding: '22px 18px 20px',
-      flex: '1 1 0',
-      minWidth: 0,
-      minHeight: minH,
-      position: 'relative',
-      boxShadow: highlighted
-        ? '0 6px 24px rgba(92,36,52,0.35)'
-        : '0 2px 8px rgba(0,0,0,0.06)',
-      display: 'flex',
-      flexDirection: 'column',
-      ...style,
-    }}>
-      {/* Badge */}
-      {badge && (
-        <div style={{
-          position: 'absolute',
-          top: -8,
-          right: 10,
-          background: badgeBg || deck.goldLight,
-          color: badgeColor || deck.textDark,
-          fontSize: 9,
-          fontWeight: 800,
-          padding: '2px 8px',
-          borderRadius: 8,
-          fontFamily: 'DM Sans, sans-serif',
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          lineHeight: '16px',
-        }}>
-          {badge}
-        </div>
+    <g>
+      {/* Bar background */}
+      <rect x={barX} y={y} width={barW} height={barH}
+        rx="12" fill="#163829" stroke="#2A5A45" strokeWidth="1" />
+
+      {/* Rainbow gradient strip at top */}
+      <rect x={barX + 1} y={y + 1} width={barW - 2} height="3"
+        rx="1" fill={`url(#${id}-rainbow)`} opacity="0.6" />
+
+      {/* Brain icon */}
+      <circle cx={barX + 30} cy={y + 28} r="12" fill="none" stroke="#4CAF7D" strokeWidth="1.5" />
+      <path d={`M${barX + 25},${y + 28} C${barX + 28},${y + 22} ${barX + 32},${y + 22} ${barX + 35},${y + 28} C${barX + 32},${y + 34} ${barX + 28},${y + 34} ${barX + 25},${y + 28}`}
+        fill="none" stroke="#4CAF7D" strokeWidth="1.2" />
+      <path d={`M${barX + 30},${y + 20} L${barX + 30},${y + 36}`}
+        fill="none" stroke="#4CAF7D" strokeWidth="0.8" opacity="0.5" />
+
+      {/* "intelligence" text */}
+      <text x={barX + 52} y={y + 33}
+        fontFamily="'DM Sans', sans-serif" fontSize="16" fontWeight="600" fill="#F0EAD6">
+        intelligence
+      </text>
+
+      {/* Powered by Dex subtitle */}
+      {poweredByDex && (
+        <text x={barX + 170} y={y + 33}
+          fontFamily="'DM Sans', sans-serif" fontSize="12" fontWeight="600" fill="#D4A03A">
+          — Powered by Dex
+        </text>
       )}
 
-      {/* Icon Circle */}
-      <div style={{
-        width: 44,
-        height: 44,
-        borderRadius: '50%',
-        background: iBg,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: '0 auto 14px',
-        flexShrink: 0,
-      }}>
-        {IconFn && IconFn(iClr, 22)}
-      </div>
+      {/* Row 1 tags */}
+      {tags1.map((tag, i) => {
+        const tx = barX + 52 + i * 200;
+        return (
+          <g key={`t1-${i}`}>
+            <text x={tx} y={y + 55}
+              fontFamily="'DM Sans', sans-serif" fontSize="10" fill="#A8C5B5">
+              {tag.icon} {tag.label}
+            </text>
+          </g>
+        );
+      })}
 
-      {/* Title */}
-      <div style={{
-        fontFamily: 'DM Sans, sans-serif',
-        fontSize: 15,
-        fontWeight: 700,
-        color: txt,
-        textAlign: 'center',
-        marginBottom: 14,
-        lineHeight: 1.2,
-      }}>
-        {name}
-      </div>
-
-      {/* Features */}
-      <div style={{ flex: 1 }}>
-        {features.map((f, i) => (
-          <div key={i} style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 7,
-            marginBottom: 5,
-            lineHeight: 1.35,
-          }}>
-            <span style={{
-              color: chk,
-              fontWeight: 700,
-              fontSize: 13,
-              flexShrink: 0,
-              marginTop: 0,
-              lineHeight: 1.35,
-            }}>
-              {featureDecorator ? featureDecorator(f, i) : '\u2713'}
-            </span>
-            <span style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 12.5,
-              color: highlighted ? 'rgba(255,255,255,0.88)' : deck.textMedium,
-              lineHeight: 1.35,
-            }}>
-              {f}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
+      {/* Row 2 tags */}
+      {tags2.map((tag, i) => {
+        const tx = barX + 52 + i * 200;
+        const isGold = tag.gold;
+        return (
+          <g key={`t2-${i}`}>
+            {isGold && (
+              <rect x={tx - 6} y={y + 62} width={54} height="18" rx="9"
+                fill="none" stroke="#D4A03A" strokeWidth="1" />
+            )}
+            <text x={tx} y={y + 76}
+              fontFamily="'DM Sans', sans-serif" fontSize="10"
+              fill={isGold ? '#D4A03A' : '#A8C5B5'}
+              fontWeight={isGold ? '700' : '400'}>
+              {tag.icon} {tag.label}
+            </text>
+          </g>
+        );
+      })}
+    </g>
   );
 }
 
 // ============================================================================
-// Shared: Intelligence Bar
+// Intelligence Bar — Simplified (for Slide 3)
 // ============================================================================
-function IntelBar({
-  items = intelligenceItemsBase,
-  label = 'Intelligence',
-  labelIcon,
-  sublabel,
-  highlightItem,
-  highlightColor = deck.goldLight,
-  barBg = 'rgba(255,255,255,0.06)',
-  textColor = 'rgba(255,255,255,0.85)',
-  gradient,
-  style = {},
-}) {
-  const grad = gradient || `linear-gradient(to right, ${deck.gradientStart}, ${deck.gradientMid1}, ${deck.gradientMid2}, ${deck.gradientMid3}, ${deck.gradientEnd})`;
+
+function IntelligenceBarSimple({ y, id }) {
+  const barX = 55;
+  const barW = 850;
+  const barH = 55;
 
   return (
-    <div style={{ ...style }}>
+    <g>
+      <rect x={barX} y={y} width={barW} height={barH}
+        rx="12" fill="#163829" stroke="#2A5A45" strokeWidth="1" />
+
       {/* Rainbow gradient strip */}
-      <div style={{
-        height: 3,
-        background: grad,
-        borderRadius: '3px 3px 0 0',
-      }} />
-      <div style={{
-        background: barBg,
-        borderRadius: '0 0 12px 12px',
-        padding: '14px 20px 16px',
-      }}>
-        {/* Label row */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          marginBottom: 10,
-        }}>
-          {labelIcon && <span style={{ display: 'flex', alignItems: 'center' }}>{labelIcon}</span>}
-          <span style={{
-            fontFamily: 'DM Sans, sans-serif',
-            fontSize: 13,
-            fontWeight: 700,
-            color: textColor,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            opacity: 0.75,
-          }}>
-            {label}
-          </span>
-          {sublabel && (
-            <span style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 11,
-              color: highlightColor,
-              fontWeight: 600,
-              marginLeft: 4,
-              opacity: 0.9,
-            }}>
-              {sublabel}
-            </span>
-          )}
-        </div>
-        {/* Tags */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 8px' }}>
-          {items.map((item, i) => {
-            const isHL = highlightItem === item;
-            return (
-              <span key={i} style={{
-                fontFamily: 'DM Sans, sans-serif',
-                fontSize: 11.5,
-                fontWeight: isHL ? 700 : 500,
-                color: isHL ? highlightColor : textColor,
-                background: isHL ? `${highlightColor}22` : 'rgba(255,255,255,0.06)',
-                padding: '4px 10px',
-                borderRadius: 7,
-                border: isHL ? `1px solid ${highlightColor}44` : '1px solid transparent',
-                transition: 'all 0.2s',
-              }}>
-                {item}
-              </span>
-            );
-          })}
-        </div>
-      </div>
-    </div>
+      <rect x={barX + 1} y={y + 1} width={barW - 2} height="3"
+        rx="1" fill={`url(#${id}-rainbow)`} opacity="0.6" />
+
+      {/* Brain icon */}
+      <circle cx={barX + 30} cy={y + 30} r="12" fill="none" stroke="#4CAF7D" strokeWidth="1.5" />
+      <path d={`M${barX + 25},${y + 30} C${barX + 28},${y + 24} ${barX + 32},${y + 24} ${barX + 35},${y + 30} C${barX + 32},${y + 36} ${barX + 28},${y + 36} ${barX + 25},${y + 30}`}
+        fill="none" stroke="#4CAF7D" strokeWidth="1.2" />
+
+      {/* Main text */}
+      <text x={barX + 52} y={y + 35}
+        fontFamily="'DM Sans', sans-serif" fontSize="16" fontWeight="600" fill="#F0EAD6">
+        Powered by Dex Intelligence
+      </text>
+
+      {/* Sparkle accent */}
+      <text x={barX + 260} y={y + 35}
+        fontFamily="'DM Sans', sans-serif" fontSize="14" fill="#D4A03A">
+        ✦
+      </text>
+    </g>
   );
 }
-
 
 // ============================================================================
 // SLIDE 1: The Current Deck (faithful recreation)
 // ============================================================================
-function Slide1({ t }) {
+
+function Slide1() {
+  const id = 's1';
+  const cardY = 120;
+  const cardH = 265;
+
   return (
-    <div>
-      <SlideHeader number={1} title="The Current Deck" t={t} />
-      <SlideFrame style={{ background: deck.forestGreen }}>
-        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+    <svg width="100%" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg"
+      style={{ display: 'block', borderRadius: 12 }}>
+      <SlideDefsStandard id={id} />
 
-          {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: 8 }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 11,
-              fontWeight: 700,
-              color: deck.checkGreen,
-              textTransform: 'uppercase',
-              letterSpacing: '0.18em',
-              marginBottom: 6,
-            }}>
-              Introducing Dutchie:
-            </div>
-          </div>
+      {/* Background */}
+      <rect x="0" y="0" width="960" height="540" rx="16" ry="16"
+        fill={`url(#${id}-bgGrad)`} />
 
-          {/* Logo */}
-          <div style={{ textAlign: 'center', marginBottom: 10 }}>
-            <DutchieLogo color={deck.checkGreen} size={36} />
-          </div>
+      {/* Outer frame border */}
+      <rect x="0.5" y="0.5" width="959" height="539" rx="16" ry="16"
+        fill="none" stroke="#2A5A45" strokeWidth="1" />
 
-          {/* Title */}
-          <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <h3 style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize: 24,
-              fontWeight: 400,
-              fontStyle: 'italic',
-              color: deck.cream,
-              margin: 0,
-              lineHeight: 1.3,
-            }}>
-              The Industry Standard for a Reason
-            </h3>
-          </div>
+      {/* Corner leaf decorations */}
+      <CornerLeaves />
 
-          {/* 5 Pillar Cards */}
-          <div style={{
-            display: 'flex',
-            gap: 14,
-            alignItems: 'stretch',
-            flex: 1,
-            minHeight: 0,
-          }}>
-            {pillarsBase.map((p) => (
-              <PillarCard
-                key={p.id}
-                name={p.name}
-                icon={p.icon}
-                features={p.features}
-                highlighted={p.highlighted}
-                minH={0}
-                style={{ flex: '1 1 0' }}
-              />
-            ))}
-          </div>
+      {/* Header */}
+      <SlideHeader id={id} />
 
-          {/* Intelligence Bar */}
-          <div style={{ marginTop: 16 }}>
-            <IntelBar
-              labelIcon={Icons.brain('rgba(255,255,255,0.6)', 16)}
-            />
-          </div>
-        </div>
-      </SlideFrame>
-      <SlideCaption t={t}>
-        The current Dutchie sales deck: forest green background, cream cards, burgundy Retail highlight,
-        rainbow Intelligence bar along the bottom. This is the baseline we are evolving from.
-      </SlideCaption>
-    </div>
+      {/* Product cards */}
+      <FiveCards cardY={cardY} cardH={cardH} id={id} />
+
+      {/* Intelligence bar */}
+      <IntelligenceBar y={415} id={id} />
+    </svg>
   );
 }
 
+// ============================================================================
+// SLIDE 2: Proposed — Dex Integrated
+// ============================================================================
 
-// ============================================================================
-// SLIDE 2: With Dex Integrated (minimal change)
-// ============================================================================
-function Slide2({ t }) {
+function Slide2() {
+  const id = 's2';
+  const cardY = 120;
+  const cardH = 265;
+
   return (
-    <div>
-      <SlideHeader number={2} title="With Dex Integrated" t={t} />
-      <SlideFrame style={{ background: deck.forestGreen }}>
-        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+    <svg width="100%" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg"
+      style={{ display: 'block', borderRadius: 12 }}>
+      <SlideDefsStandard id={id} />
 
-          {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: 8 }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 11,
-              fontWeight: 700,
-              color: deck.checkGreen,
-              textTransform: 'uppercase',
-              letterSpacing: '0.18em',
-              marginBottom: 6,
-            }}>
-              Introducing Dutchie:
-            </div>
-          </div>
+      {/* Background */}
+      <rect x="0" y="0" width="960" height="540" rx="16" ry="16"
+        fill={`url(#${id}-bgGrad)`} />
+      <rect x="0.5" y="0.5" width="959" height="539" rx="16" ry="16"
+        fill="none" stroke="#2A5A45" strokeWidth="1" />
 
-          <div style={{ textAlign: 'center', marginBottom: 10 }}>
-            <DutchieLogo color={deck.checkGreen} size={36} />
-          </div>
+      <CornerLeaves />
+      <SlideHeader id={id} />
 
-          <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <h3 style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize: 24,
-              fontWeight: 400,
-              fontStyle: 'italic',
-              color: deck.cream,
-              margin: 0,
-              lineHeight: 1.3,
-            }}>
-              The Industry Standard for a Reason
-            </h3>
-          </div>
+      {/* Cards with Nexus badge */}
+      <FiveCards cardY={cardY} cardH={cardH} id={id} nexusBadge={true} />
 
-          {/* 5 Pillar Cards — Nexus gets a subtle badge */}
-          <div style={{
-            display: 'flex',
-            gap: 14,
-            alignItems: 'stretch',
-            flex: 1,
-            minHeight: 0,
-          }}>
-            {pillarsBase.map((p) => (
-              <PillarCard
-                key={p.id}
-                name={p.name}
-                icon={p.icon}
-                features={p.features}
-                highlighted={p.highlighted}
-                badge={p.id === 'nexus' ? 'AI-Powered' : undefined}
-                minH={0}
-                style={{ flex: '1 1 0' }}
-              />
-            ))}
-          </div>
-
-          {/* Intelligence Bar — "Dutchie Agent" highlighted, "Powered by Dex" */}
-          <div style={{ marginTop: 16 }}>
-            <IntelBar
-              labelIcon={Icons.brain('rgba(255,255,255,0.6)', 16)}
-              sublabel="Powered by Dex"
-              highlightItem="Dutchie Agent"
-              highlightColor={deck.goldLight}
-            />
-          </div>
-        </div>
-      </SlideFrame>
-      <SlideCaption t={t}>
-        Minimal change: "Dutchie Agent" is highlighted with a gold accent and branded as "Powered by Dex."
-        The Nexus card gets an "AI-Powered" badge. Everything else is identical to the current deck.
-      </SlideCaption>
-    </div>
+      {/* Intelligence bar with Dex replacement */}
+      <IntelligenceBar y={415} id={id} poweredByDex={true} replaceDutchieAgent={true} />
+    </svg>
   );
 }
 
+// ============================================================================
+// SLIDE 3: Proposed — Intelligence Elevated (6 cards)
+// ============================================================================
 
-// ============================================================================
-// SLIDE 3: Intelligence Elevated (6th pillar)
-// ============================================================================
-function Slide3({ t }) {
-  const sixPillars = [
-    ...pillarsBase,
-    {
-      id: 'intelligence', name: 'Intelligence', icon: 'intelligence',
-      features: ['Agentic Commerce', 'Voice AI', 'Smart Summaries', 'Sales Assistant', 'Consumer Sentiment'],
-    },
-  ];
+function Slide3() {
+  const id = 's3';
+  const cardY = 120;
+  const cardH = 245;
 
   return (
-    <div>
-      <SlideHeader number={3} title="Intelligence Elevated" t={t} />
-      <SlideFrame style={{ background: deck.forestGreen }}>
-        <div style={{ padding: '48px 44px 40px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+    <svg width="100%" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg"
+      style={{ display: 'block', borderRadius: 12 }}>
+      <SlideDefsStandard id={id} />
 
-          {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: 8 }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 11,
-              fontWeight: 700,
-              color: deck.checkGreen,
-              textTransform: 'uppercase',
-              letterSpacing: '0.18em',
-              marginBottom: 6,
-            }}>
-              Introducing Dutchie:
-            </div>
-          </div>
+      {/* Background */}
+      <rect x="0" y="0" width="960" height="540" rx="16" ry="16"
+        fill={`url(#${id}-bgGrad)`} />
+      <rect x="0.5" y="0.5" width="959" height="539" rx="16" ry="16"
+        fill="none" stroke="#2A5A45" strokeWidth="1" />
 
-          <div style={{ textAlign: 'center', marginBottom: 10 }}>
-            <DutchieLogo color={deck.checkGreen} size={36} />
-          </div>
+      <CornerLeaves />
 
-          <div style={{ textAlign: 'center', marginBottom: 26 }}>
-            <h3 style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize: 23,
-              fontWeight: 400,
-              fontStyle: 'italic',
-              color: deck.cream,
-              margin: 0,
-              lineHeight: 1.3,
-            }}>
-              The Industry Standard for a Reason
-            </h3>
-          </div>
+      {/* Modified header */}
+      <g>
+        <text x="480" y="35" textAnchor="middle"
+          fontFamily="'DM Sans', sans-serif" fontSize="11" fill="#4CAF7D"
+          fontWeight="600" letterSpacing="3">
+          INTRODUCING DUTCHIE:
+        </text>
+        <text x="480" y="72" textAnchor="middle"
+          fontFamily="Georgia, 'Times New Roman', serif" fontSize="32"
+          fontStyle="italic" fill="#F0EAD6" fontWeight="400">
+          The Complete Dutchie Platform
+        </text>
+        <g transform="translate(480, 95)">
+          <path d="M-8,-6 C-4,-14 8,-12 8,-4 C8,2 2,6 -2,8 C-6,10 -10,6 -8,2 C-6,-2 0,-4 4,-2"
+            fill="none" stroke="#3D8B6A" strokeWidth="2" strokeLinecap="round" />
+        </g>
+      </g>
 
-          {/* 6 Pillar Cards */}
-          <div style={{
-            display: 'flex',
-            gap: 12,
-            alignItems: 'stretch',
-            flex: 1,
-            minHeight: 0,
-          }}>
-            {sixPillars.map((p) => {
-              const isIntel = p.id === 'intelligence';
+      {/* 6 cards */}
+      <SixCards cardY={cardY} cardH={cardH} id={id} />
+
+      {/* Simplified intelligence bar */}
+      <IntelligenceBarSimple y={478} id={id} />
+    </svg>
+  );
+}
+
+// ============================================================================
+// SLIDE 4: Proposed — Dark Premium
+// ============================================================================
+
+function Slide4() {
+  const id = 's4';
+
+  return (
+    <svg width="100%" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg"
+      style={{ display: 'block', borderRadius: 12 }}>
+      <defs>
+        {/* Dark background gradient */}
+        <radialGradient id={`${id}-bgGrad`} cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stopColor="#131210" />
+          <stop offset="60%" stopColor="#0C0B0A" />
+          <stop offset="100%" stopColor="#080706" />
+        </radialGradient>
+
+        {/* Gold gradient for icon circles */}
+        <linearGradient id={`${id}-goldCircle`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#D4A03A" />
+          <stop offset="100%" stopColor="#FFC02A" />
+        </linearGradient>
+
+        {/* Rainbow gradient — gold-tinted */}
+        <linearGradient id={`${id}-rainbow`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#C0504D" />
+          <stop offset="16%" stopColor="#D4834D" />
+          <stop offset="33%" stopColor="#D4C04D" />
+          <stop offset="50%" stopColor="#D4A03A" />
+          <stop offset="66%" stopColor="#C49A2A" />
+          <stop offset="83%" stopColor="#B8862A" />
+          <stop offset="100%" stopColor="#D4A03A" />
+        </linearGradient>
+
+        {/* Card shadow */}
+        <filter id={`${id}-cardShadow`} x="-4%" y="-2%" width="108%" height="108%">
+          <feDropShadow dx="0" dy="2" stdDeviation="5" floodColor="#000000" floodOpacity="0.5" />
+        </filter>
+      </defs>
+
+      {/* Background */}
+      <rect x="0" y="0" width="960" height="540" rx="16" ry="16"
+        fill={`url(#${id}-bgGrad)`} />
+      <rect x="0.5" y="0.5" width="959" height="539" rx="16" ry="16"
+        fill="none" stroke="#3D350F" strokeWidth="1" />
+
+      {/* Subtle corner decorations — dark gold */}
+      <path d="M0,540 C20,520 15,495 8,478 C20,490 35,505 50,512 C35,520 18,535 0,540Z"
+        fill="#1A1400" opacity="0.3" />
+      <path d="M960,0 C940,20 945,45 952,62 C940,50 925,35 910,28 C925,20 942,5 960,0Z"
+        fill="#1A1400" opacity="0.3" />
+
+      {/* Header — gold text */}
+      <text x="480" y="35" textAnchor="middle"
+        fontFamily="'DM Sans', sans-serif" fontSize="11" fill="#D4A03A"
+        fontWeight="600" letterSpacing="3">
+        INTRODUCING DUTCHIE:
+      </text>
+      <text x="480" y="72" textAnchor="middle"
+        fontFamily="Georgia, 'Times New Roman', serif" fontSize="32"
+        fontStyle="italic" fill="#F0EAD6" fontWeight="400">
+        The Industry Standard for a Reason
+      </text>
+      <g transform="translate(480, 95)">
+        <path d="M-8,-6 C-4,-14 8,-12 8,-4 C8,2 2,6 -2,8 C-6,10 -10,6 -8,2 C-6,-2 0,-4 4,-2"
+          fill="none" stroke="#D4A03A" strokeWidth="2" strokeLinecap="round" />
+      </g>
+
+      {/* Dark premium cards */}
+      {(() => {
+        const cardW = 150;
+        const gap = 14;
+        const totalW = 5 * cardW + 4 * gap;
+        const startX = (960 - totalW) / 2;
+        const cardY = 120;
+        const cardH = 265;
+
+        const cards = [
+          { name: 'E-Commerce', icon: IconEcommerce, features: ['Online Menus', 'Marketplace', 'Payments', 'Checkout', 'Kiosk'], retail: false },
+          { name: 'Loyalty', icon: IconLoyalty, features: ['Rewards Programs', 'Customer Profiles', 'Promotions', 'Engagement', 'Analytics'], retail: false },
+          { name: 'Retail', icon: IconRetail, features: ['POS System', 'Inventory', 'Compliance', 'Reporting', 'Staff Mgmt'], retail: true },
+          { name: 'Nexus', icon: IconNexus, features: ['Data Platform', 'Integrations', 'API Access', 'Webhooks', 'Analytics'], retail: false, leftAccent: true },
+          { name: 'Connect', icon: IconConnect, features: ['Partner Network', 'Marketplace', 'Onboarding', 'Support', 'Growth Tools'], retail: false, leftAccent: true }
+        ];
+
+        return (
+          <g>
+            {/* Container */}
+            <rect x={startX - 14} y={cardY - 8} width={totalW + 28} height={cardH + 16}
+              rx="14" fill="#141210" stroke="#3D350F" strokeWidth="1" />
+
+            {cards.map((card, i) => {
+              const cx = startX + i * (cardW + gap);
+              const centerX = cx + cardW / 2;
+              const isRetail = card.retail;
+
+              const bgFill = isRetail ? '#3D2A0F' : '#1A1917';
+              const borderClr = isRetail ? '#5C3D0F' : '#3D350F';
+              const circleFill = `url(#${id}-goldCircle)`;
+              const iconClr = '#0C0B0A';
+              const titleColor = '#E8E3D8';
+              const featColor = isRetail ? '#C4A878' : '#8A8278';
+              const checkClr = '#D4A03A';
+
               return (
-                <PillarCard
-                  key={p.id}
-                  name={p.name}
-                  icon={p.icon}
-                  features={p.features}
-                  highlighted={p.highlighted}
-                  cardBg={isIntel ? '#C49A2A' : undefined}
-                  textColor={isIntel ? '#1C1917' : undefined}
-                  checkColor={isIntel ? '#5C4A10' : undefined}
-                  iconBg={isIntel ? 'rgba(0,0,0,0.15)' : undefined}
-                  iconColor={isIntel ? '#FFFFFF' : undefined}
-                  badge={isIntel ? 'NEW' : undefined}
-                  badgeBg={isIntel ? '#1C1917' : undefined}
-                  badgeColor={isIntel ? deck.goldBright : undefined}
-                  minH={0}
-                  style={{ flex: '1 1 0' }}
-                />
-              );
-            })}
-          </div>
-
-          {/* No intelligence bar — it is now a pillar */}
-          <div style={{
-            marginTop: 14,
-            textAlign: 'center',
-            fontFamily: 'DM Sans, sans-serif',
-            fontSize: 11,
-            color: 'rgba(255,255,255,0.4)',
-            letterSpacing: '0.06em',
-          }}>
-            Intelligence is no longer a layer -- it is a pillar
-          </div>
-        </div>
-      </SlideFrame>
-      <SlideCaption t={t}>
-        AI gets a seat at the table as a first-class product. The Intelligence bar is removed;
-        its capabilities are promoted to a 6th gold pillar alongside the original five.
-      </SlideCaption>
-    </div>
-  );
-}
-
-
-// ============================================================================
-// SLIDE 4: The AI-First Deck
-// ============================================================================
-function Slide4({ t }) {
-  const aiFirstPillars = [
-    {
-      id: 'ecommerce', name: 'E-Commerce', icon: 'ecommerce',
-      features: ['AI-Powered Recommendations', 'Collections + Outlets', 'Branded Mobile App', 'Digital Payments', 'Kiosk'],
-    },
-    {
-      id: 'loyalty', name: 'Loyalty + Marketing', icon: 'loyalty',
-      features: ['AI Audience Builder', 'Marketing Automation', 'Dynamic Segments', 'Email / Text / Push', 'Refer A Friend'],
-    },
-    {
-      id: 'retail', name: 'Retail', icon: 'retail', highlighted: true,
-      features: ['AI Sales Assistant', 'Register', 'Dynamic Pricing', 'Compliance', 'Discount Engine'],
-    },
-    {
-      id: 'nexus', name: 'Nexus', icon: 'nexus',
-      features: ['AI Command Center', 'Intelligent Insights', 'Pricing Optimization', 'Inventory Alerts', 'Brand Leaderboard'],
-    },
-    {
-      id: 'connect', name: 'Connect', icon: 'connect',
-      features: ['AI Catalog Matching', 'Global Catalog', 'Brand Discounts', 'POs + Invoices', 'Brand Intelligence'],
-    },
-  ];
-
-  return (
-    <div>
-      <SlideHeader number={4} title="The AI-First Deck" t={t} />
-      <SlideFrame style={{ background: deck.forestGreen }}>
-        <div style={{ padding: '40px 48px 36px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-
-          {/* TOP: Intelligence Bar (moved to top) */}
-          <div style={{ marginBottom: 20 }}>
-            <IntelBar
-              label="Dex Intelligence"
-              labelIcon={Icons.brain(deck.goldLight, 16)}
-              sublabel="Powering Every Product"
-              highlightItem="Dutchie Agent"
-              highlightColor={deck.goldLight}
-              barBg="rgba(255,255,255,0.08)"
-              gradient={`linear-gradient(to right, ${deck.gold}, ${deck.goldLight}, ${deck.goldBright}, ${deck.goldLight}, ${deck.gold})`}
-            />
-          </div>
-
-          {/* Gold banner headline */}
-          <div style={{ textAlign: 'center', marginBottom: 6 }}>
-            <div style={{
-              display: 'inline-block',
-              background: `linear-gradient(135deg, ${deck.gold}, ${deck.goldLight})`,
-              padding: '4px 16px',
-              borderRadius: 6,
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 10,
-              fontWeight: 800,
-              color: deck.textDark,
-              textTransform: 'uppercase',
-              letterSpacing: '0.14em',
-              marginBottom: 8,
-            }}>
-              Powered by Dex Intelligence
-            </div>
-          </div>
-
-          {/* Title */}
-          <div style={{ textAlign: 'center', marginBottom: 22 }}>
-            <h3 style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize: 22,
-              fontWeight: 400,
-              fontStyle: 'italic',
-              color: deck.cream,
-              margin: 0,
-              lineHeight: 1.3,
-            }}>
-              The Industry Standard. Now with AI.
-            </h3>
-          </div>
-
-          {/* 5 Pillar Cards with AI badges */}
-          <div style={{
-            display: 'flex',
-            gap: 14,
-            alignItems: 'stretch',
-            flex: 1,
-            minHeight: 0,
-          }}>
-            {aiFirstPillars.map((p) => (
-              <PillarCard
-                key={p.id}
-                name={p.name}
-                icon={p.icon}
-                features={p.features}
-                highlighted={p.highlighted}
-                badge={'\u2726 AI'}
-                badgeBg={deck.gold}
-                badgeColor="#fff"
-                minH={0}
-                style={{ flex: '1 1 0' }}
-              />
-            ))}
-          </div>
-        </div>
-      </SlideFrame>
-      <SlideCaption t={t}>
-        AI-first positioning: the Intelligence bar moves to the top, each card gets an AI badge,
-        and every pillar leads with an AI feature. Intelligence leads, products follow.
-      </SlideCaption>
-    </div>
-  );
-}
-
-
-// ============================================================================
-// SLIDE 5: The Premium Dark Variant
-// ============================================================================
-function Slide5({ t }) {
-  const darkSlide = {
-    bg: '#0A0908',
-    cardBg: '#141210',
-    cardBorder: `1px solid ${deck.gold}33`,
-    iconBg: `linear-gradient(135deg, ${deck.gold}, ${deck.goldLight})`,
-    retailBg: '#2A1F0A',
-    retailBorder: `1px solid ${deck.gold}55`,
-    textLight: '#F0EDE8',
-    textMuted: '#ADA599',
-    barBg: '#0E0D0B',
-  };
-
-  return (
-    <div>
-      <SlideHeader number={5} title="The Premium Dark Variant" t={t} />
-      <SlideFrame style={{ background: darkSlide.bg, border: `1px solid ${deck.gold}22` }}>
-        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-
-          {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: 8 }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 11,
-              fontWeight: 700,
-              color: deck.gold,
-              textTransform: 'uppercase',
-              letterSpacing: '0.18em',
-              marginBottom: 6,
-            }}>
-              Introducing Dutchie:
-            </div>
-          </div>
-
-          <div style={{ textAlign: 'center', marginBottom: 10 }}>
-            <DutchieLogo color={deck.gold} size={36} />
-          </div>
-
-          <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <h3 style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize: 24,
-              fontWeight: 400,
-              fontStyle: 'italic',
-              color: darkSlide.textLight,
-              margin: 0,
-              lineHeight: 1.3,
-            }}>
-              The Industry Standard for a Reason
-            </h3>
-          </div>
-
-          {/* 5 Dark Pillar Cards */}
-          <div style={{
-            display: 'flex',
-            gap: 14,
-            alignItems: 'stretch',
-            flex: 1,
-            minHeight: 0,
-          }}>
-            {pillarsBase.map((p) => {
-              const isRetail = p.highlighted;
-              return (
-                <div key={p.id} style={{
-                  background: isRetail ? darkSlide.retailBg : darkSlide.cardBg,
-                  borderRadius: 14,
-                  padding: '22px 18px 20px',
-                  flex: '1 1 0',
-                  minWidth: 0,
-                  position: 'relative',
-                  border: isRetail ? darkSlide.retailBorder : darkSlide.cardBorder,
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}>
-                  {/* Dex badge on Nexus */}
-                  {p.id === 'nexus' && (
-                    <div style={{
-                      position: 'absolute',
-                      top: -8,
-                      right: 10,
-                      background: `linear-gradient(135deg, ${deck.gold}, ${deck.goldLight})`,
-                      color: '#0A0908',
-                      fontSize: 9,
-                      fontWeight: 800,
-                      padding: '2px 8px',
-                      borderRadius: 8,
-                      fontFamily: 'DM Sans, sans-serif',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      lineHeight: '16px',
-                    }}>
-                      Dex Inside
-                    </div>
+                <g key={i}>
+                  {card.leftAccent && (
+                    <rect x={cx - 1} y={cardY + 4} width="2" height={cardH - 8}
+                      rx="1" fill="#D4A03A" opacity="0.4" />
                   )}
 
-                  {/* Gold gradient icon circle */}
-                  <div style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${deck.gold}, ${deck.goldLight})`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 14px',
-                    flexShrink: 0,
-                  }}>
-                    {Icons[p.icon] && Icons[p.icon]('#0A0908', 20)}
-                  </div>
+                  <rect x={cx} y={cardY} width={cardW} height={cardH}
+                    rx="12" fill={bgFill} stroke={borderClr} strokeWidth="1"
+                    filter={`url(#${id}-cardShadow)`} />
 
-                  {/* Title */}
-                  <div style={{
-                    fontFamily: 'DM Sans, sans-serif',
-                    fontSize: 15,
-                    fontWeight: 700,
-                    color: isRetail ? deck.goldLight : darkSlide.textLight,
-                    textAlign: 'center',
-                    marginBottom: 14,
-                    lineHeight: 1.2,
-                  }}>
-                    {p.name}
-                  </div>
+                  <card.icon cx={centerX} cy={cardY + 42} r={22}
+                    circleFill={circleFill} iconColor={iconClr} />
 
-                  {/* Features */}
-                  <div style={{ flex: 1 }}>
-                    {p.features.map((f, i) => (
-                      <div key={i} style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: 7,
-                        marginBottom: 5,
-                        lineHeight: 1.35,
-                      }}>
-                        <span style={{
-                          color: isRetail ? deck.goldLight : deck.gold,
-                          fontWeight: 700,
-                          fontSize: 13,
-                          flexShrink: 0,
-                          lineHeight: 1.35,
-                        }}>
-                          {'\u2713'}
-                        </span>
-                        <span style={{
-                          fontFamily: 'DM Sans, sans-serif',
-                          fontSize: 12.5,
-                          color: isRetail ? 'rgba(255,225,150,0.85)' : darkSlide.textMuted,
-                          lineHeight: 1.35,
-                        }}>
-                          {f}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  <text x={centerX} y={cardY + 80} textAnchor="middle"
+                    fontFamily="'DM Sans', sans-serif" fontSize="14" fontWeight="700" fill={titleColor}>
+                    {card.name}
+                  </text>
+
+                  <FeatureLines
+                    features={card.features}
+                    x={cx + 16}
+                    startY={cardY + 102}
+                    lineHeight={20}
+                    checkColor={checkClr}
+                    textColor={featColor}
+                    fontSize={11}
+                  />
+
+                  {/* Nexus AI badge */}
+                  {card.name === 'Nexus' && (
+                    <g>
+                      <rect x={cx + cardW - 38} y={cardY + 4} width="34" height="16" rx="8"
+                        fill="#D4A03A" />
+                      <text x={cx + cardW - 21} y={cardY + 15} textAnchor="middle"
+                        fontFamily="'DM Sans', sans-serif" fontSize="9" fontWeight="700" fill="#0C0B0A">
+                        {'✦ AI'}
+                      </text>
+                    </g>
+                  )}
+                </g>
               );
             })}
-          </div>
+          </g>
+        );
+      })()}
 
-          {/* Intelligence Bar — dark with gold gradient */}
-          <div style={{ marginTop: 16 }}>
-            <IntelBar
-              label="Intelligence"
-              sublabel="Powered by Dex"
-              labelIcon={Icons.brain(deck.gold, 16)}
-              highlightItem="Dutchie Agent"
-              highlightColor={deck.goldLight}
-              barBg={darkSlide.barBg}
-              textColor="rgba(240,237,232,0.75)"
-              gradient={`linear-gradient(to right, ${deck.gold}88, ${deck.goldLight}, ${deck.goldBright}, ${deck.goldLight}, ${deck.gold}88)`}
-            />
-          </div>
-        </div>
-      </SlideFrame>
-      <SlideCaption t={t}>
-        What if the deck matched the premium dark brand direction? Near-black background, gold accents,
-        dark amber Retail highlight. Same hierarchy, dramatically different feel.
-      </SlideCaption>
-    </div>
-  );
-}
+      {/* Dark premium intelligence bar */}
+      {(() => {
+        const y = 415;
+        const barX = 55;
+        const barW = 850;
+        const barH = 95;
 
+        const tags1 = [
+          { icon: '✦', label: 'Agentic Commerce' },
+          { icon: '🎙', label: 'Voice AI' },
+          { icon: '📋', label: 'Intelligent Summaries' },
+          { icon: '★', label: 'Intelligence Everywhere' }
+        ];
+        const tags2 = [
+          { icon: '💼', label: 'AI Sales Assistant' },
+          { icon: '♥', label: 'Consumer Sentiment' },
+          { icon: '✦', label: 'Dex', gold: true }
+        ];
 
-// ============================================================================
-// SLIDE 6: Recommended Final Version
-// ============================================================================
-function Slide6({ t }) {
-  const sixPillarsRec = [
-    ...pillarsBase,
-    {
-      id: 'dex', name: 'Dex', icon: 'intelligence',
-      features: ['Agentic Commerce', 'Voice AI', 'Smart Summaries', 'Sales Assistant', 'Consumer Sentiment'],
-    },
-  ];
+        return (
+          <g>
+            <rect x={barX} y={y} width={barW} height={barH}
+              rx="12" fill="#141210" stroke="#3D350F" strokeWidth="1" />
 
-  // Features that should show the AI sparkle marker
-  const aiFeatures = new Set([
-    'AI Command Center', 'Pricing Insights', 'Loyalty Score',
-    'Marketing Automation', 'Dynamic Segments',
-    'Dynamic Pricing', 'Discount Engine',
-    'Brand Intelligence', 'Sponsored Placement',
-  ]);
+            {/* Gold gradient strip */}
+            <rect x={barX + 1} y={y + 1} width={barW - 2} height="3"
+              rx="1" fill={`url(#${id}-rainbow)`} opacity="0.7" />
 
-  return (
-    <div>
-      <SlideHeader number={6} title="Recommended Final Version" t={t} />
-      <SlideFrame style={{ background: deck.forestGreen }}>
-        <div style={{ padding: '44px 44px 36px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+            {/* Brain icon — gold */}
+            <circle cx={barX + 30} cy={y + 28} r="12" fill="none" stroke="#D4A03A" strokeWidth="1.5" />
+            <path d={`M${barX + 25},${y + 28} C${barX + 28},${y + 22} ${barX + 32},${y + 22} ${barX + 35},${y + 28} C${barX + 32},${y + 34} ${barX + 28},${y + 34} ${barX + 25},${y + 28}`}
+              fill="none" stroke="#D4A03A" strokeWidth="1.2" />
+            <path d={`M${barX + 30},${y + 20} L${barX + 30},${y + 36}`}
+              fill="none" stroke="#D4A03A" strokeWidth="0.8" opacity="0.5" />
 
-          {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: 6 }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 11,
-              fontWeight: 700,
-              color: deck.checkGreen,
-              textTransform: 'uppercase',
-              letterSpacing: '0.18em',
-              marginBottom: 6,
-            }}>
-              Dutchie
-            </div>
-          </div>
+            <text x={barX + 52} y={y + 33}
+              fontFamily="'DM Sans', sans-serif" fontSize="16" fontWeight="600" fill="#F0EAD6">
+              intelligence
+            </text>
 
-          <div style={{ textAlign: 'center', marginBottom: 10 }}>
-            <DutchieLogo color={deck.checkGreen} size={34} />
-          </div>
+            <text x={barX + 170} y={y + 33}
+              fontFamily="'DM Sans', sans-serif" fontSize="12" fontWeight="600" fill="#D4A03A">
+              — Powered by Dex
+            </text>
 
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <h3 style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize: 23,
-              fontWeight: 400,
-              fontStyle: 'italic',
-              color: deck.cream,
-              margin: 0,
-              lineHeight: 1.3,
-            }}>
-              The Complete Dutchie Platform
-            </h3>
-          </div>
+            {tags1.map((tag, i) => (
+              <text key={`dt1-${i}`} x={barX + 52 + i * 200} y={y + 55}
+                fontFamily="'DM Sans', sans-serif" fontSize="10" fill="#8A7A5A">
+                {tag.icon} {tag.label}
+              </text>
+            ))}
 
-          {/* 6 Cards: 5 original + Dex */}
-          <div style={{
-            display: 'flex',
-            gap: 12,
-            alignItems: 'stretch',
-            flex: 1,
-            minHeight: 0,
-          }}>
-            {sixPillarsRec.map((p) => {
-              const isDex = p.id === 'dex';
+            {tags2.map((tag, i) => {
+              const tx = barX + 52 + i * 200;
               return (
-                <PillarCard
-                  key={p.id}
-                  name={p.name}
-                  icon={p.icon}
-                  features={p.features}
-                  highlighted={p.highlighted}
-                  cardBg={isDex ? '#B8860B' : undefined}
-                  textColor={isDex ? '#FFFFFF' : undefined}
-                  checkColor={isDex ? '#FFF8E1' : undefined}
-                  iconBg={isDex ? 'rgba(255,255,255,0.2)' : undefined}
-                  iconColor={isDex ? '#FFFFFF' : undefined}
-                  badge={isDex ? 'NEW' : undefined}
-                  badgeBg={isDex ? '#1C1917' : undefined}
-                  badgeColor={isDex ? deck.goldBright : undefined}
-                  featureDecorator={!isDex && !p.highlighted ? (f) => {
-                    if (aiFeatures.has(f)) {
-                      return (
-                        <span>
-                          <span style={{ color: deck.checkGreen }}>{'\u2713'}</span>
-                          <span style={{ color: deck.goldLight, fontSize: 10, marginLeft: 2 }}>{'\u2726'}</span>
-                        </span>
-                      );
-                    }
-                    return '\u2713';
-                  } : undefined}
-                  minH={0}
-                  style={{ flex: '1 1 0' }}
-                />
+                <g key={`dt2-${i}`}>
+                  {tag.gold && (
+                    <rect x={tx - 6} y={y + 62} width={54} height="18" rx="9"
+                      fill="none" stroke="#D4A03A" strokeWidth="1" />
+                  )}
+                  <text x={tx} y={y + 76}
+                    fontFamily="'DM Sans', sans-serif" fontSize="10"
+                    fill={tag.gold ? '#D4A03A' : '#8A7A5A'}
+                    fontWeight={tag.gold ? '700' : '400'}>
+                    {tag.icon} {tag.label}
+                  </text>
+                </g>
               );
             })}
-          </div>
-
-          {/* Intelligence Bar with "Powered by Dex" */}
-          <div style={{ marginTop: 14 }}>
-            <IntelBar
-              label="Intelligence"
-              sublabel="Powered by Dex"
-              labelIcon={Icons.brain('rgba(255,255,255,0.6)', 16)}
-              highlightItem="Dutchie Agent"
-              highlightColor={deck.goldLight}
-            />
-          </div>
-        </div>
-      </SlideFrame>
-      <SlideCaption t={t}>
-        Our recommendation: keep the iconic forest green, add Dex as a warm gold 6th pillar,
-        brand the Intelligence layer as "Powered by Dex," and mark AI-relevant features with a sparkle indicator.
-      </SlideCaption>
-    </div>
+          </g>
+        );
+      })()}
+    </svg>
   );
 }
 
-
 // ============================================================================
-// Summary: What Changed Card
+// Slide Wrapper — label, title, SVG, caption
 // ============================================================================
-function WhatChangedSummary({ t }) {
-  const changes = [
-    {
-      num: '1',
-      title: 'Added Dex as a 6th product pillar',
-      desc: 'Intelligence is no longer hidden in a bottom bar. Dex stands alongside E-Commerce, Retail, and the rest as a first-class product with its own distinct gold card.',
-    },
-    {
-      num: '2',
-      title: 'Branded the Intelligence layer',
-      desc: 'The rainbow gradient Intelligence bar now reads "Powered by Dex," giving the AI capabilities a clear identity and connecting them to the new pillar.',
-    },
-    {
-      num: '3',
-      title: 'AI indicators on existing features',
-      desc: 'Existing AI-relevant features across all pillars get a subtle sparkle marker, showing that intelligence runs through the entire platform, not just one product.',
-    },
-  ];
 
+function SlideSection({ number, title, caption, children, t }) {
   return (
-    <div style={{
-      maxWidth: 920,
-      margin: '80px auto 0',
-      background: t.cardBg,
-      border: `1px solid ${t.border}`,
-      borderRadius: 16,
-      padding: '36px 40px',
-    }}>
-      <h3 style={{
-        fontFamily: 'DM Sans, sans-serif',
-        fontSize: 20,
+    <div style={{ marginBottom: 64 }}>
+      {/* Slide label */}
+      <div style={{
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: 11,
+        fontWeight: 700,
+        letterSpacing: 3,
+        color: t.accentGold,
+        textTransform: 'uppercase',
+        marginBottom: 6
+      }}>
+        SLIDE {number}
+      </div>
+
+      {/* Slide title */}
+      <div style={{
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: 22,
         fontWeight: 700,
         color: t.text,
-        margin: '0 0 8px 0',
-        textAlign: 'center',
+        marginBottom: 16
       }}>
-        What Changed: Current to Recommended
-      </h3>
-      <p style={{
-        fontFamily: 'DM Sans, sans-serif',
-        fontSize: 14,
-        color: t.textMuted,
-        margin: '0 0 28px 0',
-        textAlign: 'center',
-        lineHeight: 1.5,
-      }}>
-        Three key changes from the current sales deck to our recommended version
-      </p>
+        {title}
+      </div>
 
+      {/* SVG container */}
       <div style={{
-        display: 'flex',
-        gap: 20,
+        width: '100%',
+        maxWidth: 920,
+        margin: '0 auto',
+        borderRadius: 12,
+        overflow: 'hidden',
+        border: `1px solid ${t.border}`
       }}>
-        {changes.map((c) => (
-          <div key={c.num} style={{
-            flex: '1 1 0',
-            position: 'relative',
-            padding: '20px 20px 18px',
-            background: `${t.accentGold}08`,
-            border: `1px solid ${t.border}`,
-            borderRadius: 12,
-          }}>
-            {/* Number badge */}
-            <div style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: `linear-gradient(135deg, ${t.accentGold}, ${t.accentGoldLight})`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 14,
-              fontWeight: 800,
-              color: '#FFFFFF',
-              marginBottom: 14,
-            }}>
-              {c.num}
-            </div>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 15,
-              fontWeight: 700,
-              color: t.text,
-              marginBottom: 8,
-              lineHeight: 1.3,
-            }}>
-              {c.title}
-            </div>
-            <p style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: 13,
-              color: t.textMuted,
-              margin: 0,
-              lineHeight: 1.55,
-            }}>
-              {c.desc}
-            </p>
-          </div>
-        ))}
+        {children}
+      </div>
+
+      {/* Caption */}
+      <div style={{
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: 13,
+        color: t.textMuted,
+        marginTop: 12,
+        fontStyle: 'italic',
+        textAlign: 'center'
+      }}>
+        {caption}
       </div>
     </div>
   );
 }
 
+// ============================================================================
+// Main Export
+// ============================================================================
 
-// ============================================================================
-// MAIN EXPORT
-// ============================================================================
 export function SalesDeckIntegration({ theme = 'dark' }) {
   const t = themes[theme];
 
   return (
     <div style={{
-      fontFamily: 'DM Sans, sans-serif',
       background: t.bg,
       minHeight: '100vh',
-      padding: '60px 32px 80px',
-      color: t.text,
+      padding: '48px 32px',
+      fontFamily: "'DM Sans', sans-serif"
     }}>
-      {/* Page Title */}
-      <div style={{
-        maxWidth: 920,
-        margin: '0 auto 20px',
-        textAlign: 'center',
-      }}>
+      {/* Page header */}
+      <div style={{ maxWidth: 920, margin: '0 auto 48px auto' }}>
         <div style={{
-          fontFamily: 'DM Sans, sans-serif',
           fontSize: 11,
           fontWeight: 700,
+          letterSpacing: 3,
           color: t.accentGold,
           textTransform: 'uppercase',
-          letterSpacing: '0.14em',
-          marginBottom: 12,
+          marginBottom: 8
         }}>
-          Brand Study
+          SALES DECK INTEGRATION
         </div>
         <h1 style={{
-          fontFamily: 'DM Sans, sans-serif',
-          fontSize: 38,
+          fontSize: 36,
           fontWeight: 700,
           color: t.text,
-          margin: 0,
-          letterSpacing: '-0.03em',
-          lineHeight: 1.15,
+          margin: '0 0 12px 0',
+          lineHeight: 1.2
         }}>
-          Sales Deck Integration
+          Where Dex Lives in the Dutchie Story
         </h1>
         <p style={{
-          fontFamily: 'DM Sans, sans-serif',
-          fontSize: 16,
+          fontSize: 15,
           color: t.textMuted,
-          marginTop: 14,
+          margin: 0,
           lineHeight: 1.6,
-          maxWidth: 600,
-          marginLeft: 'auto',
-          marginRight: 'auto',
+          maxWidth: 640
         }}>
-          Exploring how Dex and AI capabilities integrate into the Dutchie sales deck's
-          product hierarchy, from minimal changes to a full rethink.
+          Four options for positioning Dex within the existing Dutchie product hierarchy,
+          from minimal branding changes to a full visual rebrand.
         </p>
       </div>
 
-      {/* Divider */}
-      <div style={{
-        maxWidth: 920,
-        margin: '48px auto',
-        height: 1,
-        background: `linear-gradient(to right, transparent, ${t.border}, transparent)`,
-      }} />
+      {/* Slides */}
+      <div style={{ maxWidth: 920, margin: '0 auto' }}>
+        <SlideSection
+          number={1}
+          title="The Current Deck"
+          caption="The current Dutchie product hierarchy from the sales deck."
+          t={t}
+        >
+          <Slide1 />
+        </SlideSection>
 
-      {/* Slide 1 */}
-      <Slide1 t={t} />
+        <SlideSection
+          number={2}
+          title="Proposed: Dex Integrated"
+          caption="Minimal change — just name the agent and badge the AI product."
+          t={t}
+        >
+          <Slide2 />
+        </SlideSection>
 
-      <div style={{ height: 72 }} />
+        <SlideSection
+          number={3}
+          title="Proposed: Intelligence Elevated"
+          caption="Dex gets a seat at the table as the 6th pillar."
+          t={t}
+        >
+          <Slide3 />
+        </SlideSection>
 
-      {/* Slide 2 */}
-      <Slide2 t={t} />
-
-      <div style={{ height: 72 }} />
-
-      {/* Slide 3 */}
-      <Slide3 t={t} />
-
-      <div style={{ height: 72 }} />
-
-      {/* Slide 4 */}
-      <Slide4 t={t} />
-
-      <div style={{ height: 72 }} />
-
-      {/* Slide 5 */}
-      <Slide5 t={t} />
-
-      <div style={{ height: 72 }} />
-
-      {/* Slide 6 */}
-      <Slide6 t={t} />
-
-      {/* Summary */}
-      <WhatChangedSummary t={t} />
-
-      {/* Footer spacer */}
-      <div style={{ height: 40 }} />
+        <SlideSection
+          number={4}
+          title="Proposed: Dark Premium"
+          caption="The premium dark brand direction."
+          t={t}
+        >
+          <Slide4 />
+        </SlideSection>
+      </div>
     </div>
   );
 }
+
+export default SalesDeckIntegration;
