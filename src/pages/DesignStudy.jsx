@@ -10,6 +10,7 @@ import { SuiteNamingDeepDive } from './SuiteNamingDeepDive';
 import { ExecutiveSummary } from './ExecutiveSummary';
 import { DexB2CvsB2BSection } from './DexB2CvsB2BSection';
 import { SalesDeckIntegration } from './SalesDeckIntegration';
+import { HierarchyPMMAnalysis } from './HierarchyPMMAnalysis';
 
 /* ─── Theme Definitions ─── */
 const themes = {
@@ -189,6 +190,7 @@ const SECTIONS = [
   { id: 'naming', label: 'Naming' },
   { id: 'b2c-b2b', label: 'B2C vs B2B' },
   { id: 'sales-deck', label: 'Sales Deck' },
+  { id: 'pmm', label: 'PMM Strategy' },
 ];
 
 function SectionNav({ active, theme = 'dark', setTheme }) {
@@ -2272,6 +2274,13 @@ export default function DesignStudy() {
         {/* ═══ SALES DECK INTEGRATION ═══ */}
         <Section id="sales-deck">
           <SalesDeckIntegration theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ PMM STRATEGY ═══ */}
+        <Section id="pmm">
+          <HierarchyPMMAnalysis theme={theme} />
         </Section>
 
         {/* Footer */}

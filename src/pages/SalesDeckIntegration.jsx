@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 // ============================================================================
 // SalesDeckIntegration Component
-// Recreates the Dutchie sales deck's product hierarchy and explores how
-// AI/brand naming recommendations (Dex, Nexus) integrate with it.
+// Polished presentation-quality recreation of Dutchie sales deck slides,
+// exploring how AI/Dex integrates into the product hierarchy.
 // ============================================================================
 
 const themes = {
@@ -20,21 +20,26 @@ const themes = {
 };
 
 // ============================================================================
-// Sales Deck Color Palette (faithful to the original)
+// Deck Color Palettes (these are slide-internal, NOT theme-dependent)
 // ============================================================================
-const deckColors = {
-  forestGreen: '#1B4332',
+const deck = {
+  forestGreen: '#1A3A2A',
+  forestGreenDeep: '#142E22',
+  forestGreenDark: '#0F2119',
   forestGreenLight: '#2D6A4F',
-  forestGreenDark: '#143528',
   cream: '#F5F0E8',
+  creamLight: '#FAF8F4',
   creamDark: '#E8E0D4',
   burgundy: '#5C2434',
-  burgundyLight: '#7A3048',
+  burgundyDeep: '#4A1C2A',
   white: '#FFFFFF',
-  offWhite: '#FAFAF5',
-  textDark: '#1A1A18',
+  textDark: '#1C1917',
+  textMedium: '#44403A',
   textGreen: '#2D6A4F',
   checkGreen: '#40916C',
+  gold: '#D4A03A',
+  goldLight: '#FFC02A',
+  goldBright: '#FFD666',
   gradientStart: '#FF6B6B',
   gradientMid1: '#FFA500',
   gradientMid2: '#FFD700',
@@ -43,266 +48,386 @@ const deckColors = {
 };
 
 // ============================================================================
-// SVG Icons for Product Pillars
+// SVG Icons — clean, professional, 20-24px stroked outlines
 // ============================================================================
-const PillarIcons = {
-  ecommerce: (color = '#2D6A4F', size = 28) => (
-    <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
-      <path d="M4 4h2.5l1.2 2H24a1 1 0 0 1 .97 1.24l-2.5 10A1 1 0 0 1 21.5 18H9.5a1 1 0 0 1-.97-.76L5.8 6H4V4z" stroke={color} strokeWidth="1.8" fill="none" />
-      <circle cx="10" cy="22" r="2" fill={color} />
-      <circle cx="20" cy="22" r="2" fill={color} />
+const Icons = {
+  ecommerce: (color = '#fff', size = 22) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 6h18" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
+      <path d="M16 10a4 4 0 01-8 0" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
-  loyalty: (color = '#2D6A4F', size = 28) => (
-    <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
-      <path d="M14 24s-9-5.5-9-12c0-3.3 2.7-6 6-6 1.8 0 3.4.8 4.5 2.1C16.6 6.8 18.2 6 20 6c3.3 0 6 2.7 6 6 0 6.5-9 12-9 12h-3z" stroke={color} strokeWidth="1.8" fill="none" />
-      <path d="M10 14l2 2 4-4" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  loyalty: (color = '#fff', size = 22) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 8v4M10 10h4" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
     </svg>
   ),
-  retail: (color = '#2D6A4F', size = 28) => (
-    <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
-      <rect x="4" y="8" width="20" height="14" rx="2" stroke={color} strokeWidth="1.8" />
-      <rect x="8" y="12" width="12" height="4" rx="1" stroke={color} strokeWidth="1.2" />
-      <circle cx="19" cy="19" r="1.5" fill={color} />
-      <path d="M4 8l2-4h16l2 4" stroke={color} strokeWidth="1.8" />
+  retail: (color = '#fff', size = 22) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="7" width="20" height="14" rx="2" stroke={color} strokeWidth="1.6"/>
+      <path d="M16 7V5a4 4 0 00-8 0v2" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
+      <path d="M2 11h20" stroke={color} strokeWidth="1.2" opacity="0.5"/>
+      <rect x="9" y="13" width="6" height="4" rx="1" stroke={color} strokeWidth="1.2"/>
     </svg>
   ),
-  nexus: (color = '#2D6A4F', size = 28) => (
-    <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
-      <circle cx="14" cy="14" r="9" stroke={color} strokeWidth="1.8" />
-      <path d="M14 5v4M14 19v4M5 14h4M19 14h4" stroke={color} strokeWidth="1.2" />
-      <circle cx="14" cy="14" r="3" fill={color} opacity="0.3" />
-      <path d="M11 11l6 6M17 11l-6 6" stroke={color} strokeWidth="1" opacity="0.6" />
-      <path d="M14 8l2 3h-4l2-3z" fill={color} opacity="0.5" />
+  nexus: (color = '#fff', size = 22) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="6" r="2" stroke={color} strokeWidth="1.4"/>
+      <circle cx="18" cy="12" r="2" stroke={color} strokeWidth="1.4"/>
+      <circle cx="12" cy="18" r="2" stroke={color} strokeWidth="1.4"/>
+      <circle cx="6" cy="12" r="2" stroke={color} strokeWidth="1.4"/>
+      <path d="M12 8v2.5M12 13.5V16M14 6.8l2.5 3.5M8 13.7l-0.5.6M14 17.2l2.5-3.5M8 10.3l-0.5-.6" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+      <circle cx="12" cy="12" r="2.5" fill={color} opacity="0.2"/>
     </svg>
   ),
-  connect: (color = '#2D6A4F', size = 28) => (
-    <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
-      <circle cx="9" cy="14" r="4" stroke={color} strokeWidth="1.8" fill="none" />
-      <circle cx="19" cy="14" r="4" stroke={color} strokeWidth="1.8" fill="none" />
-      <path d="M13 14h2" stroke={color} strokeWidth="2" strokeLinecap="round" />
-      <path d="M9 7v3M19 7v3M9 18v3M19 18v3" stroke={color} strokeWidth="1.2" strokeLinecap="round" />
+  connect: (color = '#fff', size = 22) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8.5" cy="12" r="4.5" stroke={color} strokeWidth="1.6" fill="none"/>
+      <circle cx="15.5" cy="12" r="4.5" stroke={color} strokeWidth="1.6" fill="none"/>
     </svg>
   ),
-  intelligence: (color = '#FFD700', size = 28) => (
-    <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
-      <path d="M14 3l2 5h5l-4 3.5 1.5 5L14 13l-4.5 3.5L11 11.5 7 8h5l2-5z" fill={color} opacity="0.8" />
-      <circle cx="14" cy="14" r="5" stroke={color} strokeWidth="1.5" fill="none" />
+  intelligence: (color = '#fff', size = 22) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2a7 7 0 017 7c0 2.5-1.2 4.7-3 6v2a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2c-1.8-1.3-3-3.5-3-6a7 7 0 017-7z" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M9 21h6" stroke={color} strokeWidth="1.6" strokeLinecap="round"/>
+      <path d="M10 17v-3.5c0-.3-.2-.5-.5-.7l-1-1" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
+      <path d="M14 17v-3.5c0-.3.2-.5.5-.7l1-1" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
     </svg>
   ),
-  dex: (color = '#FFD700', size = 32) => (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <circle cx="16" cy="16" r="12" stroke={color} strokeWidth="1.5" strokeDasharray="3 2" />
-      <text x="16" y="20" textAnchor="middle" fontSize="12" fontWeight="700" fill={color} fontFamily="DM Sans">D</text>
+  brain: (color = '#fff', size = 20) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2a7 7 0 017 7c0 2.5-1.2 4.7-3 6v2a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2c-1.8-1.3-3-3.5-3-6a7 7 0 017-7z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M9 21h6" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   ),
 };
 
 // ============================================================================
-// Product Pillar Data
+// Dutchie Logo (simplified leaf/swirl)
 // ============================================================================
-const pillarsData = [
+function DutchieLogo({ color = '#40916C', size = 32 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+      <path d="M16 4C10 4 4 10 4 16s6 12 12 12c0-4 1-8 3-12S22 8 16 4z" fill={color} opacity="0.8"/>
+      <path d="M16 4c6 0 12 6 12 12s-6 12-12 12c0-4-1-8-3-12S10 8 16 4z" fill={color} opacity="0.5"/>
+    </svg>
+  );
+}
+
+// ============================================================================
+// Data
+// ============================================================================
+const pillarsBase = [
   {
-    id: 'ecommerce',
-    name: 'E-Commerce',
-    icon: 'ecommerce',
+    id: 'ecommerce', name: 'E-Commerce', icon: 'ecommerce',
     features: ['Collections + Outlets', 'Branded Mobile App', 'Digital Payments', 'Sponsored Placement', 'Kiosk'],
   },
   {
-    id: 'loyalty',
-    name: 'Loyalty + Marketing',
-    icon: 'loyalty',
+    id: 'loyalty', name: 'Loyalty + Marketing', icon: 'loyalty',
     features: ['Marketing Automation', 'Dynamic Segments', 'Email / Text / Push', 'Refer A Friend', 'IRL Events'],
   },
   {
-    id: 'retail',
-    name: 'Retail',
-    icon: 'retail',
+    id: 'retail', name: 'Retail', icon: 'retail', highlighted: true,
     features: ['Register', 'Dynamic Pricing', 'Compliance', 'Discount Engine', 'Reporting'],
-    highlighted: true,
   },
   {
-    id: 'nexus',
-    name: 'Nexus',
-    icon: 'nexus',
+    id: 'nexus', name: 'Nexus', icon: 'nexus',
     features: ['AI Command Center', 'Pricing Insights', 'Loyalty Score', 'Inventory Alerts', 'Brand Leaderboard'],
   },
   {
-    id: 'connect',
-    name: 'Connect',
-    icon: 'connect',
+    id: 'connect', name: 'Connect', icon: 'connect',
     features: ['Global Catalog', 'Brand Discounts', 'POs + Invoices', 'Brand Intelligence', 'Cultivation & Mfg'],
   },
 ];
 
-const intelligenceItems = [
+const intelligenceItemsBase = [
   'Agentic Commerce', 'Voice AI', 'Intelligent Summaries',
   'Intelligence Everywhere', 'AI Sales Assistant', 'Consumer Sentiment', 'Dutchie Agent'
 ];
 
-// ============================================================================
-// Reusable Sub-Components
-// ============================================================================
 
-function SectionTitle({ children, subtitle, t }) {
+// ============================================================================
+// Shared: Slide Frame
+// Wraps each slide in a 16:10 frame with shadow and border
+// ============================================================================
+function SlideFrame({ children, style = {} }) {
   return (
-    <div style={{ marginBottom: 48, textAlign: 'center' }}>
-      <h2 style={{
-        fontFamily: 'DM Sans, sans-serif', fontSize: 32, fontWeight: 700,
-        color: t.text, margin: 0, letterSpacing: '-0.02em', lineHeight: 1.2
-      }}>
-        {children}
-      </h2>
-      {subtitle && (
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 16, color: t.textMuted,
-          marginTop: 12, lineHeight: 1.6, maxWidth: 640, marginLeft: 'auto', marginRight: 'auto'
-        }}>
-          {subtitle}
-        </p>
-      )}
+    <div style={{
+      maxWidth: 920,
+      margin: '0 auto',
+      aspectRatio: '16 / 10',
+      borderRadius: 20,
+      overflow: 'hidden',
+      boxShadow: '0 4px 32px rgba(0,0,0,0.25), 0 1px 4px rgba(0,0,0,0.15)',
+      border: '1px solid rgba(255,255,255,0.06)',
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      ...style,
+    }}>
+      {children}
     </div>
   );
 }
 
-function SectionDivider({ t }) {
+// ============================================================================
+// Shared: Slide Caption (below each slide)
+// ============================================================================
+function SlideCaption({ children, t }) {
   return (
     <div style={{
-      height: 1, background: `linear-gradient(to right, transparent, ${t.border}, transparent)`,
-      margin: '80px 0'
-    }} />
+      maxWidth: 920,
+      margin: '16px auto 0',
+      textAlign: 'center',
+      fontFamily: 'DM Sans, sans-serif',
+      fontSize: 14,
+      color: t.textMuted,
+      fontStyle: 'italic',
+      lineHeight: 1.6,
+      padding: '0 20px',
+    }}>
+      {children}
+    </div>
   );
 }
 
 // ============================================================================
-// Deck Pillar Card
+// Shared: Section Header (above each slide)
 // ============================================================================
-function DeckPillarCard({
-  pillar,
+function SlideHeader({ number, title, t }) {
+  return (
+    <div style={{ maxWidth: 920, margin: '0 auto 24px', padding: '0 4px' }}>
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 12,
+        fontWeight: 700,
+        color: t.accentGold,
+        textTransform: 'uppercase',
+        letterSpacing: '0.1em',
+        marginBottom: 6,
+      }}>
+        Slide {number}
+      </div>
+      <h2 style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 26,
+        fontWeight: 700,
+        color: t.text,
+        margin: 0,
+        letterSpacing: '-0.02em',
+      }}>
+        {title}
+      </h2>
+    </div>
+  );
+}
+
+// ============================================================================
+// Shared: Pillar Card (the cream/colored product card inside a slide)
+// ============================================================================
+function PillarCard({
+  name,
+  icon,
+  features,
   highlighted = false,
-  customBg,
-  customTextColor,
-  customCheckColor,
+  cardBg,
+  textColor,
+  checkColor,
+  iconBg,
   iconColor,
   badge,
-  scale = 1,
+  badgeBg,
+  badgeColor,
+  featureDecorator,
+  minH = 220,
   style = {},
 }) {
-  const bg = customBg || (highlighted ? deckColors.burgundy : deckColors.cream);
-  const textColor = customTextColor || (highlighted ? '#FFFFFF' : deckColors.textDark);
-  const checkColor = customCheckColor || (highlighted ? '#FFD700' : deckColors.checkGreen);
-  const ic = iconColor || (highlighted ? '#FFD700' : deckColors.textGreen);
-
-  const IconComponent = PillarIcons[pillar.icon];
+  const bg = cardBg || (highlighted ? deck.burgundy : deck.cream);
+  const txt = textColor || (highlighted ? '#FAFAF4' : deck.textDark);
+  const chk = checkColor || (highlighted ? deck.goldLight : deck.checkGreen);
+  const iBg = iconBg || (highlighted ? 'rgba(255,215,0,0.18)' : deck.forestGreenLight);
+  const iClr = iconColor || '#FFFFFF';
+  const IconFn = Icons[icon];
 
   return (
     <div style={{
       background: bg,
-      borderRadius: 16 * scale,
-      padding: `${24 * scale}px ${20 * scale}px`,
-      flex: 1,
+      borderRadius: 14,
+      padding: '22px 18px 20px',
+      flex: '1 1 0',
       minWidth: 0,
+      minHeight: minH,
       position: 'relative',
       boxShadow: highlighted
-        ? '0 8px 32px rgba(92,36,52,0.3)'
-        : '0 2px 12px rgba(0,0,0,0.08)',
-      transition: 'transform 0.2s',
+        ? '0 6px 24px rgba(92,36,52,0.35)'
+        : '0 2px 8px rgba(0,0,0,0.06)',
+      display: 'flex',
+      flexDirection: 'column',
       ...style,
     }}>
+      {/* Badge */}
       {badge && (
         <div style={{
-          position: 'absolute', top: -10 * scale, right: 12 * scale,
-          background: '#FFD700', color: '#1A1A18', fontSize: 9 * scale,
-          fontWeight: 700, padding: `${2 * scale}px ${8 * scale}px`,
-          borderRadius: 10 * scale, fontFamily: 'DM Sans, sans-serif',
-          textTransform: 'uppercase', letterSpacing: '0.05em',
+          position: 'absolute',
+          top: -8,
+          right: 10,
+          background: badgeBg || deck.goldLight,
+          color: badgeColor || deck.textDark,
+          fontSize: 9,
+          fontWeight: 800,
+          padding: '2px 8px',
+          borderRadius: 8,
+          fontFamily: 'DM Sans, sans-serif',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          lineHeight: '16px',
         }}>
           {badge}
         </div>
       )}
+
+      {/* Icon Circle */}
       <div style={{
-        width: 44 * scale, height: 44 * scale, borderRadius: '50%',
-        background: highlighted ? 'rgba(255,215,0,0.15)' : 'rgba(45,106,79,0.1)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginBottom: 16 * scale,
+        width: 44,
+        height: 44,
+        borderRadius: '50%',
+        background: iBg,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '0 auto 14px',
+        flexShrink: 0,
       }}>
-        {IconComponent && IconComponent(ic, 24 * scale)}
+        {IconFn && IconFn(iClr, 22)}
       </div>
-      <h3 style={{
-        fontFamily: 'DM Sans, sans-serif', fontSize: 17 * scale, fontWeight: 700,
-        color: textColor, margin: 0, marginBottom: 14 * scale,
+
+      {/* Title */}
+      <div style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 15,
+        fontWeight: 700,
+        color: txt,
+        textAlign: 'center',
+        marginBottom: 14,
+        lineHeight: 1.2,
       }}>
-        {pillar.name}
-      </h3>
-      <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-        {pillar.features.map((f, i) => (
-          <li key={i} style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 13 * scale,
-            color: highlighted ? 'rgba(255,255,255,0.85)' : deckColors.textDark,
-            marginBottom: 6 * scale, display: 'flex', alignItems: 'flex-start', gap: 6 * scale,
+        {name}
+      </div>
+
+      {/* Features */}
+      <div style={{ flex: 1 }}>
+        {features.map((f, i) => (
+          <div key={i} style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 7,
+            marginBottom: 5,
+            lineHeight: 1.35,
           }}>
-            <span style={{ color: checkColor, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>
-              &#10003;
+            <span style={{
+              color: chk,
+              fontWeight: 700,
+              fontSize: 13,
+              flexShrink: 0,
+              marginTop: 0,
+              lineHeight: 1.35,
+            }}>
+              {featureDecorator ? featureDecorator(f, i) : '\u2713'}
             </span>
-            <span>{f}</span>
-          </li>
+            <span style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 12.5,
+              color: highlighted ? 'rgba(255,255,255,0.88)' : deck.textMedium,
+              lineHeight: 1.35,
+            }}>
+              {f}
+            </span>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
 
 // ============================================================================
-// Intelligence Bar
+// Shared: Intelligence Bar
 // ============================================================================
-function IntelligenceBar({
-  items = intelligenceItems,
-  highlightItem,
-  customBg,
-  customTextColor,
-  gradientColors,
+function IntelBar({
+  items = intelligenceItemsBase,
   label = 'Intelligence',
-  scale = 1,
+  labelIcon,
+  sublabel,
+  highlightItem,
+  highlightColor = deck.goldLight,
+  barBg = 'rgba(255,255,255,0.06)',
+  textColor = 'rgba(255,255,255,0.85)',
+  gradient,
   style = {},
 }) {
-  const bg = customBg || 'rgba(255,255,255,0.06)';
-  const textColor = customTextColor || 'rgba(255,255,255,0.85)';
-  const gradient = gradientColors || `linear-gradient(to right, ${deckColors.gradientStart}, ${deckColors.gradientMid1}, ${deckColors.gradientMid2}, ${deckColors.gradientMid3}, ${deckColors.gradientEnd})`;
+  const grad = gradient || `linear-gradient(to right, ${deck.gradientStart}, ${deck.gradientMid1}, ${deck.gradientMid2}, ${deck.gradientMid3}, ${deck.gradientEnd})`;
 
   return (
-    <div style={{ marginTop: 24 * scale, ...style }}>
+    <div style={{ ...style }}>
+      {/* Rainbow gradient strip */}
       <div style={{
-        height: 3 * scale,
-        background: gradient,
-        borderRadius: 2 * scale,
-        marginBottom: 12 * scale,
+        height: 3,
+        background: grad,
+        borderRadius: '3px 3px 0 0',
       }} />
       <div style={{
-        background: bg,
-        borderRadius: 12 * scale,
-        padding: `${16 * scale}px ${20 * scale}px`,
+        background: barBg,
+        borderRadius: '0 0 12px 12px',
+        padding: '14px 20px 16px',
       }}>
+        {/* Label row */}
         <div style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 13 * scale, fontWeight: 700,
-          color: textColor, marginBottom: 10 * scale, textTransform: 'uppercase',
-          letterSpacing: '0.08em', opacity: 0.7,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          marginBottom: 10,
         }}>
-          {label}
+          {labelIcon && <span style={{ display: 'flex', alignItems: 'center' }}>{labelIcon}</span>}
+          <span style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 13,
+            fontWeight: 700,
+            color: textColor,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            opacity: 0.75,
+          }}>
+            {label}
+          </span>
+          {sublabel && (
+            <span style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11,
+              color: highlightColor,
+              fontWeight: 600,
+              marginLeft: 4,
+              opacity: 0.9,
+            }}>
+              {sublabel}
+            </span>
+          )}
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: `${6 * scale}px ${10 * scale}px` }}>
+        {/* Tags */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 8px' }}>
           {items.map((item, i) => {
-            const isHighlighted = highlightItem === item;
+            const isHL = highlightItem === item;
             return (
               <span key={i} style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 12 * scale,
-                color: isHighlighted ? '#FFD700' : textColor,
-                background: isHighlighted
-                  ? 'rgba(255,215,0,0.15)'
-                  : 'rgba(255,255,255,0.05)',
-                padding: `${4 * scale}px ${10 * scale}px`,
-                borderRadius: 8 * scale,
-                fontWeight: isHighlighted ? 700 : 500,
-                border: isHighlighted ? '1px solid rgba(255,215,0,0.3)' : '1px solid transparent',
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: 11.5,
+                fontWeight: isHL ? 700 : 500,
+                color: isHL ? highlightColor : textColor,
+                background: isHL ? `${highlightColor}22` : 'rgba(255,255,255,0.06)',
+                padding: '4px 10px',
+                borderRadius: 7,
+                border: isHL ? `1px solid ${highlightColor}44` : '1px solid transparent',
+                transition: 'all 0.2s',
               }}>
                 {item}
               </span>
@@ -314,1795 +439,909 @@ function IntelligenceBar({
   );
 }
 
+
 // ============================================================================
-// Full Deck Hierarchy
+// SLIDE 1: The Current Deck (faithful recreation)
 // ============================================================================
-function DeckHierarchy({
-  pillars = pillarsData,
-  title,
-  subtitle,
-  intelligenceBarProps = {},
-  cardOverrides = {},
-  deckBg,
-  titleColor,
-  scale = 1,
-  containerStyle = {},
-  topBar,
-  bottomNote,
-}) {
-  const bg = deckBg || deckColors.forestGreen;
-  const tc = titleColor || '#FFFFFF';
+function Slide1({ t }) {
+  return (
+    <div>
+      <SlideHeader number={1} title="The Current Deck" t={t} />
+      <SlideFrame style={{ background: deck.forestGreen }}>
+        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11,
+              fontWeight: 700,
+              color: deck.checkGreen,
+              textTransform: 'uppercase',
+              letterSpacing: '0.18em',
+              marginBottom: 6,
+            }}>
+              Introducing Dutchie:
+            </div>
+          </div>
+
+          {/* Logo */}
+          <div style={{ textAlign: 'center', marginBottom: 10 }}>
+            <DutchieLogo color={deck.checkGreen} size={36} />
+          </div>
+
+          {/* Title */}
+          <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <h3 style={{
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontSize: 24,
+              fontWeight: 400,
+              fontStyle: 'italic',
+              color: deck.cream,
+              margin: 0,
+              lineHeight: 1.3,
+            }}>
+              The Industry Standard for a Reason
+            </h3>
+          </div>
+
+          {/* 5 Pillar Cards */}
+          <div style={{
+            display: 'flex',
+            gap: 14,
+            alignItems: 'stretch',
+            flex: 1,
+            minHeight: 0,
+          }}>
+            {pillarsBase.map((p) => (
+              <PillarCard
+                key={p.id}
+                name={p.name}
+                icon={p.icon}
+                features={p.features}
+                highlighted={p.highlighted}
+                minH={0}
+                style={{ flex: '1 1 0' }}
+              />
+            ))}
+          </div>
+
+          {/* Intelligence Bar */}
+          <div style={{ marginTop: 16 }}>
+            <IntelBar
+              labelIcon={Icons.brain('rgba(255,255,255,0.6)', 16)}
+            />
+          </div>
+        </div>
+      </SlideFrame>
+      <SlideCaption t={t}>
+        The current Dutchie sales deck: forest green background, cream cards, burgundy Retail highlight,
+        rainbow Intelligence bar along the bottom. This is the baseline we are evolving from.
+      </SlideCaption>
+    </div>
+  );
+}
+
+
+// ============================================================================
+// SLIDE 2: With Dex Integrated (minimal change)
+// ============================================================================
+function Slide2({ t }) {
+  return (
+    <div>
+      <SlideHeader number={2} title="With Dex Integrated" t={t} />
+      <SlideFrame style={{ background: deck.forestGreen }}>
+        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11,
+              fontWeight: 700,
+              color: deck.checkGreen,
+              textTransform: 'uppercase',
+              letterSpacing: '0.18em',
+              marginBottom: 6,
+            }}>
+              Introducing Dutchie:
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: 10 }}>
+            <DutchieLogo color={deck.checkGreen} size={36} />
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <h3 style={{
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontSize: 24,
+              fontWeight: 400,
+              fontStyle: 'italic',
+              color: deck.cream,
+              margin: 0,
+              lineHeight: 1.3,
+            }}>
+              The Industry Standard for a Reason
+            </h3>
+          </div>
+
+          {/* 5 Pillar Cards — Nexus gets a subtle badge */}
+          <div style={{
+            display: 'flex',
+            gap: 14,
+            alignItems: 'stretch',
+            flex: 1,
+            minHeight: 0,
+          }}>
+            {pillarsBase.map((p) => (
+              <PillarCard
+                key={p.id}
+                name={p.name}
+                icon={p.icon}
+                features={p.features}
+                highlighted={p.highlighted}
+                badge={p.id === 'nexus' ? 'AI-Powered' : undefined}
+                minH={0}
+                style={{ flex: '1 1 0' }}
+              />
+            ))}
+          </div>
+
+          {/* Intelligence Bar — "Dutchie Agent" highlighted, "Powered by Dex" */}
+          <div style={{ marginTop: 16 }}>
+            <IntelBar
+              labelIcon={Icons.brain('rgba(255,255,255,0.6)', 16)}
+              sublabel="Powered by Dex"
+              highlightItem="Dutchie Agent"
+              highlightColor={deck.goldLight}
+            />
+          </div>
+        </div>
+      </SlideFrame>
+      <SlideCaption t={t}>
+        Minimal change: "Dutchie Agent" is highlighted with a gold accent and branded as "Powered by Dex."
+        The Nexus card gets an "AI-Powered" badge. Everything else is identical to the current deck.
+      </SlideCaption>
+    </div>
+  );
+}
+
+
+// ============================================================================
+// SLIDE 3: Intelligence Elevated (6th pillar)
+// ============================================================================
+function Slide3({ t }) {
+  const sixPillars = [
+    ...pillarsBase,
+    {
+      id: 'intelligence', name: 'Intelligence', icon: 'intelligence',
+      features: ['Agentic Commerce', 'Voice AI', 'Smart Summaries', 'Sales Assistant', 'Consumer Sentiment'],
+    },
+  ];
+
+  return (
+    <div>
+      <SlideHeader number={3} title="Intelligence Elevated" t={t} />
+      <SlideFrame style={{ background: deck.forestGreen }}>
+        <div style={{ padding: '48px 44px 40px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11,
+              fontWeight: 700,
+              color: deck.checkGreen,
+              textTransform: 'uppercase',
+              letterSpacing: '0.18em',
+              marginBottom: 6,
+            }}>
+              Introducing Dutchie:
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: 10 }}>
+            <DutchieLogo color={deck.checkGreen} size={36} />
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: 26 }}>
+            <h3 style={{
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontSize: 23,
+              fontWeight: 400,
+              fontStyle: 'italic',
+              color: deck.cream,
+              margin: 0,
+              lineHeight: 1.3,
+            }}>
+              The Industry Standard for a Reason
+            </h3>
+          </div>
+
+          {/* 6 Pillar Cards */}
+          <div style={{
+            display: 'flex',
+            gap: 12,
+            alignItems: 'stretch',
+            flex: 1,
+            minHeight: 0,
+          }}>
+            {sixPillars.map((p) => {
+              const isIntel = p.id === 'intelligence';
+              return (
+                <PillarCard
+                  key={p.id}
+                  name={p.name}
+                  icon={p.icon}
+                  features={p.features}
+                  highlighted={p.highlighted}
+                  cardBg={isIntel ? '#C49A2A' : undefined}
+                  textColor={isIntel ? '#1C1917' : undefined}
+                  checkColor={isIntel ? '#5C4A10' : undefined}
+                  iconBg={isIntel ? 'rgba(0,0,0,0.15)' : undefined}
+                  iconColor={isIntel ? '#FFFFFF' : undefined}
+                  badge={isIntel ? 'NEW' : undefined}
+                  badgeBg={isIntel ? '#1C1917' : undefined}
+                  badgeColor={isIntel ? deck.goldBright : undefined}
+                  minH={0}
+                  style={{ flex: '1 1 0' }}
+                />
+              );
+            })}
+          </div>
+
+          {/* No intelligence bar — it is now a pillar */}
+          <div style={{
+            marginTop: 14,
+            textAlign: 'center',
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: 11,
+            color: 'rgba(255,255,255,0.4)',
+            letterSpacing: '0.06em',
+          }}>
+            Intelligence is no longer a layer -- it is a pillar
+          </div>
+        </div>
+      </SlideFrame>
+      <SlideCaption t={t}>
+        AI gets a seat at the table as a first-class product. The Intelligence bar is removed;
+        its capabilities are promoted to a 6th gold pillar alongside the original five.
+      </SlideCaption>
+    </div>
+  );
+}
+
+
+// ============================================================================
+// SLIDE 4: The AI-First Deck
+// ============================================================================
+function Slide4({ t }) {
+  const aiFirstPillars = [
+    {
+      id: 'ecommerce', name: 'E-Commerce', icon: 'ecommerce',
+      features: ['AI-Powered Recommendations', 'Collections + Outlets', 'Branded Mobile App', 'Digital Payments', 'Kiosk'],
+    },
+    {
+      id: 'loyalty', name: 'Loyalty + Marketing', icon: 'loyalty',
+      features: ['AI Audience Builder', 'Marketing Automation', 'Dynamic Segments', 'Email / Text / Push', 'Refer A Friend'],
+    },
+    {
+      id: 'retail', name: 'Retail', icon: 'retail', highlighted: true,
+      features: ['AI Sales Assistant', 'Register', 'Dynamic Pricing', 'Compliance', 'Discount Engine'],
+    },
+    {
+      id: 'nexus', name: 'Nexus', icon: 'nexus',
+      features: ['AI Command Center', 'Intelligent Insights', 'Pricing Optimization', 'Inventory Alerts', 'Brand Leaderboard'],
+    },
+    {
+      id: 'connect', name: 'Connect', icon: 'connect',
+      features: ['AI Catalog Matching', 'Global Catalog', 'Brand Discounts', 'POs + Invoices', 'Brand Intelligence'],
+    },
+  ];
+
+  return (
+    <div>
+      <SlideHeader number={4} title="The AI-First Deck" t={t} />
+      <SlideFrame style={{ background: deck.forestGreen }}>
+        <div style={{ padding: '40px 48px 36px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+          {/* TOP: Intelligence Bar (moved to top) */}
+          <div style={{ marginBottom: 20 }}>
+            <IntelBar
+              label="Dex Intelligence"
+              labelIcon={Icons.brain(deck.goldLight, 16)}
+              sublabel="Powering Every Product"
+              highlightItem="Dutchie Agent"
+              highlightColor={deck.goldLight}
+              barBg="rgba(255,255,255,0.08)"
+              gradient={`linear-gradient(to right, ${deck.gold}, ${deck.goldLight}, ${deck.goldBright}, ${deck.goldLight}, ${deck.gold})`}
+            />
+          </div>
+
+          {/* Gold banner headline */}
+          <div style={{ textAlign: 'center', marginBottom: 6 }}>
+            <div style={{
+              display: 'inline-block',
+              background: `linear-gradient(135deg, ${deck.gold}, ${deck.goldLight})`,
+              padding: '4px 16px',
+              borderRadius: 6,
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 10,
+              fontWeight: 800,
+              color: deck.textDark,
+              textTransform: 'uppercase',
+              letterSpacing: '0.14em',
+              marginBottom: 8,
+            }}>
+              Powered by Dex Intelligence
+            </div>
+          </div>
+
+          {/* Title */}
+          <div style={{ textAlign: 'center', marginBottom: 22 }}>
+            <h3 style={{
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontSize: 22,
+              fontWeight: 400,
+              fontStyle: 'italic',
+              color: deck.cream,
+              margin: 0,
+              lineHeight: 1.3,
+            }}>
+              The Industry Standard. Now with AI.
+            </h3>
+          </div>
+
+          {/* 5 Pillar Cards with AI badges */}
+          <div style={{
+            display: 'flex',
+            gap: 14,
+            alignItems: 'stretch',
+            flex: 1,
+            minHeight: 0,
+          }}>
+            {aiFirstPillars.map((p) => (
+              <PillarCard
+                key={p.id}
+                name={p.name}
+                icon={p.icon}
+                features={p.features}
+                highlighted={p.highlighted}
+                badge={'\u2726 AI'}
+                badgeBg={deck.gold}
+                badgeColor="#fff"
+                minH={0}
+                style={{ flex: '1 1 0' }}
+              />
+            ))}
+          </div>
+        </div>
+      </SlideFrame>
+      <SlideCaption t={t}>
+        AI-first positioning: the Intelligence bar moves to the top, each card gets an AI badge,
+        and every pillar leads with an AI feature. Intelligence leads, products follow.
+      </SlideCaption>
+    </div>
+  );
+}
+
+
+// ============================================================================
+// SLIDE 5: The Premium Dark Variant
+// ============================================================================
+function Slide5({ t }) {
+  const darkSlide = {
+    bg: '#0A0908',
+    cardBg: '#141210',
+    cardBorder: `1px solid ${deck.gold}33`,
+    iconBg: `linear-gradient(135deg, ${deck.gold}, ${deck.goldLight})`,
+    retailBg: '#2A1F0A',
+    retailBorder: `1px solid ${deck.gold}55`,
+    textLight: '#F0EDE8',
+    textMuted: '#ADA599',
+    barBg: '#0E0D0B',
+  };
+
+  return (
+    <div>
+      <SlideHeader number={5} title="The Premium Dark Variant" t={t} />
+      <SlideFrame style={{ background: darkSlide.bg, border: `1px solid ${deck.gold}22` }}>
+        <div style={{ padding: '48px 48px 40px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11,
+              fontWeight: 700,
+              color: deck.gold,
+              textTransform: 'uppercase',
+              letterSpacing: '0.18em',
+              marginBottom: 6,
+            }}>
+              Introducing Dutchie:
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: 10 }}>
+            <DutchieLogo color={deck.gold} size={36} />
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <h3 style={{
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontSize: 24,
+              fontWeight: 400,
+              fontStyle: 'italic',
+              color: darkSlide.textLight,
+              margin: 0,
+              lineHeight: 1.3,
+            }}>
+              The Industry Standard for a Reason
+            </h3>
+          </div>
+
+          {/* 5 Dark Pillar Cards */}
+          <div style={{
+            display: 'flex',
+            gap: 14,
+            alignItems: 'stretch',
+            flex: 1,
+            minHeight: 0,
+          }}>
+            {pillarsBase.map((p) => {
+              const isRetail = p.highlighted;
+              return (
+                <div key={p.id} style={{
+                  background: isRetail ? darkSlide.retailBg : darkSlide.cardBg,
+                  borderRadius: 14,
+                  padding: '22px 18px 20px',
+                  flex: '1 1 0',
+                  minWidth: 0,
+                  position: 'relative',
+                  border: isRetail ? darkSlide.retailBorder : darkSlide.cardBorder,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}>
+                  {/* Dex badge on Nexus */}
+                  {p.id === 'nexus' && (
+                    <div style={{
+                      position: 'absolute',
+                      top: -8,
+                      right: 10,
+                      background: `linear-gradient(135deg, ${deck.gold}, ${deck.goldLight})`,
+                      color: '#0A0908',
+                      fontSize: 9,
+                      fontWeight: 800,
+                      padding: '2px 8px',
+                      borderRadius: 8,
+                      fontFamily: 'DM Sans, sans-serif',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      lineHeight: '16px',
+                    }}>
+                      Dex Inside
+                    </div>
+                  )}
+
+                  {/* Gold gradient icon circle */}
+                  <div style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: '50%',
+                    background: `linear-gradient(135deg, ${deck.gold}, ${deck.goldLight})`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 14px',
+                    flexShrink: 0,
+                  }}>
+                    {Icons[p.icon] && Icons[p.icon]('#0A0908', 20)}
+                  </div>
+
+                  {/* Title */}
+                  <div style={{
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: 15,
+                    fontWeight: 700,
+                    color: isRetail ? deck.goldLight : darkSlide.textLight,
+                    textAlign: 'center',
+                    marginBottom: 14,
+                    lineHeight: 1.2,
+                  }}>
+                    {p.name}
+                  </div>
+
+                  {/* Features */}
+                  <div style={{ flex: 1 }}>
+                    {p.features.map((f, i) => (
+                      <div key={i} style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 7,
+                        marginBottom: 5,
+                        lineHeight: 1.35,
+                      }}>
+                        <span style={{
+                          color: isRetail ? deck.goldLight : deck.gold,
+                          fontWeight: 700,
+                          fontSize: 13,
+                          flexShrink: 0,
+                          lineHeight: 1.35,
+                        }}>
+                          {'\u2713'}
+                        </span>
+                        <span style={{
+                          fontFamily: 'DM Sans, sans-serif',
+                          fontSize: 12.5,
+                          color: isRetail ? 'rgba(255,225,150,0.85)' : darkSlide.textMuted,
+                          lineHeight: 1.35,
+                        }}>
+                          {f}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Intelligence Bar — dark with gold gradient */}
+          <div style={{ marginTop: 16 }}>
+            <IntelBar
+              label="Intelligence"
+              sublabel="Powered by Dex"
+              labelIcon={Icons.brain(deck.gold, 16)}
+              highlightItem="Dutchie Agent"
+              highlightColor={deck.goldLight}
+              barBg={darkSlide.barBg}
+              textColor="rgba(240,237,232,0.75)"
+              gradient={`linear-gradient(to right, ${deck.gold}88, ${deck.goldLight}, ${deck.goldBright}, ${deck.goldLight}, ${deck.gold}88)`}
+            />
+          </div>
+        </div>
+      </SlideFrame>
+      <SlideCaption t={t}>
+        What if the deck matched the premium dark brand direction? Near-black background, gold accents,
+        dark amber Retail highlight. Same hierarchy, dramatically different feel.
+      </SlideCaption>
+    </div>
+  );
+}
+
+
+// ============================================================================
+// SLIDE 6: Recommended Final Version
+// ============================================================================
+function Slide6({ t }) {
+  const sixPillarsRec = [
+    ...pillarsBase,
+    {
+      id: 'dex', name: 'Dex', icon: 'intelligence',
+      features: ['Agentic Commerce', 'Voice AI', 'Smart Summaries', 'Sales Assistant', 'Consumer Sentiment'],
+    },
+  ];
+
+  // Features that should show the AI sparkle marker
+  const aiFeatures = new Set([
+    'AI Command Center', 'Pricing Insights', 'Loyalty Score',
+    'Marketing Automation', 'Dynamic Segments',
+    'Dynamic Pricing', 'Discount Engine',
+    'Brand Intelligence', 'Sponsored Placement',
+  ]);
+
+  return (
+    <div>
+      <SlideHeader number={6} title="Recommended Final Version" t={t} />
+      <SlideFrame style={{ background: deck.forestGreen }}>
+        <div style={{ padding: '44px 44px 36px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: 6 }}>
+            <div style={{
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11,
+              fontWeight: 700,
+              color: deck.checkGreen,
+              textTransform: 'uppercase',
+              letterSpacing: '0.18em',
+              marginBottom: 6,
+            }}>
+              Dutchie
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: 10 }}>
+            <DutchieLogo color={deck.checkGreen} size={34} />
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <h3 style={{
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontSize: 23,
+              fontWeight: 400,
+              fontStyle: 'italic',
+              color: deck.cream,
+              margin: 0,
+              lineHeight: 1.3,
+            }}>
+              The Complete Dutchie Platform
+            </h3>
+          </div>
+
+          {/* 6 Cards: 5 original + Dex */}
+          <div style={{
+            display: 'flex',
+            gap: 12,
+            alignItems: 'stretch',
+            flex: 1,
+            minHeight: 0,
+          }}>
+            {sixPillarsRec.map((p) => {
+              const isDex = p.id === 'dex';
+              return (
+                <PillarCard
+                  key={p.id}
+                  name={p.name}
+                  icon={p.icon}
+                  features={p.features}
+                  highlighted={p.highlighted}
+                  cardBg={isDex ? '#B8860B' : undefined}
+                  textColor={isDex ? '#FFFFFF' : undefined}
+                  checkColor={isDex ? '#FFF8E1' : undefined}
+                  iconBg={isDex ? 'rgba(255,255,255,0.2)' : undefined}
+                  iconColor={isDex ? '#FFFFFF' : undefined}
+                  badge={isDex ? 'NEW' : undefined}
+                  badgeBg={isDex ? '#1C1917' : undefined}
+                  badgeColor={isDex ? deck.goldBright : undefined}
+                  featureDecorator={!isDex && !p.highlighted ? (f) => {
+                    if (aiFeatures.has(f)) {
+                      return (
+                        <span>
+                          <span style={{ color: deck.checkGreen }}>{'\u2713'}</span>
+                          <span style={{ color: deck.goldLight, fontSize: 10, marginLeft: 2 }}>{'\u2726'}</span>
+                        </span>
+                      );
+                    }
+                    return '\u2713';
+                  } : undefined}
+                  minH={0}
+                  style={{ flex: '1 1 0' }}
+                />
+              );
+            })}
+          </div>
+
+          {/* Intelligence Bar with "Powered by Dex" */}
+          <div style={{ marginTop: 14 }}>
+            <IntelBar
+              label="Intelligence"
+              sublabel="Powered by Dex"
+              labelIcon={Icons.brain('rgba(255,255,255,0.6)', 16)}
+              highlightItem="Dutchie Agent"
+              highlightColor={deck.goldLight}
+            />
+          </div>
+        </div>
+      </SlideFrame>
+      <SlideCaption t={t}>
+        Our recommendation: keep the iconic forest green, add Dex as a warm gold 6th pillar,
+        brand the Intelligence layer as "Powered by Dex," and mark AI-relevant features with a sparkle indicator.
+      </SlideCaption>
+    </div>
+  );
+}
+
+
+// ============================================================================
+// Summary: What Changed Card
+// ============================================================================
+function WhatChangedSummary({ t }) {
+  const changes = [
+    {
+      num: '1',
+      title: 'Added Dex as a 6th product pillar',
+      desc: 'Intelligence is no longer hidden in a bottom bar. Dex stands alongside E-Commerce, Retail, and the rest as a first-class product with its own distinct gold card.',
+    },
+    {
+      num: '2',
+      title: 'Branded the Intelligence layer',
+      desc: 'The rainbow gradient Intelligence bar now reads "Powered by Dex," giving the AI capabilities a clear identity and connecting them to the new pillar.',
+    },
+    {
+      num: '3',
+      title: 'AI indicators on existing features',
+      desc: 'Existing AI-relevant features across all pillars get a subtle sparkle marker, showing that intelligence runs through the entire platform, not just one product.',
+    },
+  ];
 
   return (
     <div style={{
-      background: bg,
-      borderRadius: 20,
-      padding: `${36 * scale}px ${32 * scale}px ${28 * scale}px`,
-      ...containerStyle,
+      maxWidth: 920,
+      margin: '80px auto 0',
+      background: t.cardBg,
+      border: `1px solid ${t.border}`,
+      borderRadius: 16,
+      padding: '36px 40px',
     }}>
-      {topBar && <div style={{ marginBottom: 20 * scale }}>{topBar}</div>}
-      {title && (
-        <h3 style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 22 * scale, fontWeight: 700,
-          color: tc, margin: 0, textAlign: 'center', marginBottom: 6 * scale,
-        }}>
-          {title}
-        </h3>
-      )}
-      {subtitle && (
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 13 * scale, color: 'rgba(255,255,255,0.6)',
-          margin: 0, textAlign: 'center', marginBottom: 28 * scale,
-        }}>
-          {subtitle}
-        </p>
-      )}
-      <div style={{
-        display: 'flex', gap: 14 * scale, alignItems: 'stretch',
+      <h3 style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 20,
+        fontWeight: 700,
+        color: t.text,
+        margin: '0 0 8px 0',
+        textAlign: 'center',
       }}>
-        {pillars.map((p, i) => {
-          const overrides = cardOverrides[p.id] || {};
-          return (
-            <DeckPillarCard
-              key={p.id}
-              pillar={p}
-              highlighted={overrides.highlighted !== undefined ? overrides.highlighted : p.highlighted}
-              customBg={overrides.bg}
-              customTextColor={overrides.textColor}
-              customCheckColor={overrides.checkColor}
-              iconColor={overrides.iconColor}
-              badge={overrides.badge}
-              scale={scale}
-              style={overrides.style || {}}
-            />
-          );
-        })}
-      </div>
-      <IntelligenceBar scale={scale} {...intelligenceBarProps} />
-      {bottomNote && <div style={{ marginTop: 16 * scale }}>{bottomNote}</div>}
-    </div>
-  );
-}
-
-// ============================================================================
-// Dutchie Leaf Logo (simplified SVG)
-// ============================================================================
-function DutchieLogo({ color = '#40916C', size = 24 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c2-3 3-6.5 3-10S14 2 12 2z"
-        fill={color} opacity="0.7"
-      />
-      <path
-        d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10c2-3 3-6.5 3-10S14 2 12 2z"
-        fill={color} opacity="0.5"
-      />
-      <path
-        d="M12 4c0 5.5-2 10-5 14 1.5.7 3.2 1 5 1 5.5 0 10-4.5 10-10 0-3-1.3-5.6-3.4-7.4C16.6 3 14.4 4 12 4z"
-        fill={color} opacity="0.3"
-      />
-    </svg>
-  );
-}
-
-// ============================================================================
-// Connection Line SVG for Section 2
-// ============================================================================
-function ConnectionLines({ scale = 1 }) {
-  return (
-    <svg
-      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
-      viewBox="0 0 1000 600"
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#FFD700" stopOpacity="0" />
-          <stop offset="30%" stopColor="#FFD700" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#FFD700" stopOpacity="0.3" />
-        </linearGradient>
-      </defs>
-      {/* Lines from bottom center (Dex) to each pillar card */}
-      {[100, 280, 500, 720, 900].map((x, i) => (
-        <line
-          key={i}
-          x1="500" y1="520" x2={x} y2="200"
-          stroke="url(#lineGrad)"
-          strokeWidth="1.5"
-          strokeDasharray="6 4"
-          opacity="0.5"
-        />
-      ))}
-      {/* Pulse circle at Dex */}
-      <circle cx="500" cy="540" r="20" fill="none" stroke="#FFD700" strokeWidth="1" opacity="0.4">
-        <animate attributeName="r" from="15" to="30" dur="2s" repeatCount="indefinite" />
-        <animate attributeName="opacity" from="0.5" to="0" dur="2s" repeatCount="indefinite" />
-      </circle>
-    </svg>
-  );
-}
-
-// ============================================================================
-// SECTION 1: The Current Deck
-// ============================================================================
-function Section1CurrentDeck({ t }) {
-  return (
-    <div>
-      <SectionTitle t={t} subtitle="A faithful recreation of the Dutchie product hierarchy as shown in the current sales deck. Deep forest green background, cream cards, the Retail pillar highlighted in burgundy, and the Intelligence capability bar along the bottom.">
-        Section 1: The Current Deck
-      </SectionTitle>
+        What Changed: Current to Recommended
+      </h3>
+      <p style={{
+        fontFamily: 'DM Sans, sans-serif',
+        fontSize: 14,
+        color: t.textMuted,
+        margin: '0 0 28px 0',
+        textAlign: 'center',
+        lineHeight: 1.5,
+      }}>
+        Three key changes from the current sales deck to our recommended version
+      </p>
 
       <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-        padding: 32, marginBottom: 32,
+        display: 'flex',
+        gap: 20,
       }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
-        }}>
-          <DutchieLogo color={deckColors.checkGreen} size={28} />
-          <span style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600,
-            color: t.textMuted, letterSpacing: '0.04em', textTransform: 'uppercase',
+        {changes.map((c) => (
+          <div key={c.num} style={{
+            flex: '1 1 0',
+            position: 'relative',
+            padding: '20px 20px 18px',
+            background: `${t.accentGold}08`,
+            border: `1px solid ${t.border}`,
+            borderRadius: 12,
           }}>
-            Dutchie Sales Deck -- Product Hierarchy
-          </span>
-        </div>
-
-        <DeckHierarchy
-          title="The Industry Standard for a Reason"
-          subtitle="Powering 6,000+ dispensaries with the most complete cannabis technology platform"
-        />
-      </div>
-
-      <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16,
-      }}>
-        <div style={{
-          background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12, padding: 20,
-        }}>
-          <div style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 700,
-            color: t.accentGold, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em',
-          }}>
-            Design Elements
-          </div>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {[
-              'Deep forest green (#1B4332) background',
-              'Cream (#F5F0E8) card backgrounds',
-              'Rounded corners (16px) on all cards',
-              'Circular green icon badges per pillar',
-              'Checkmark bullet points for features',
-            ].map((item, i) => (
-              <li key={i} style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-                marginBottom: 4, paddingLeft: 12, position: 'relative',
-              }}>
-                <span style={{ position: 'absolute', left: 0, color: t.accentGreen }}>-</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div style={{
-          background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12, padding: 20,
-        }}>
-          <div style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 700,
-            color: t.accentGold, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em',
-          }}>
-            Retail Highlight
-          </div>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {[
-              'Burgundy background (#5C2434)',
-              'White/light text instead of dark',
-              'Gold checkmarks instead of green',
-              'Signals "this is the core product"',
-              'Intentional contrast draws eye center',
-            ].map((item, i) => (
-              <li key={i} style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-                marginBottom: 4, paddingLeft: 12, position: 'relative',
-              }}>
-                <span style={{ position: 'absolute', left: 0, color: t.accentGreen }}>-</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div style={{
-          background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12, padding: 20,
-        }}>
-          <div style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 700,
-            color: t.accentGold, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em',
-          }}>
-            Intelligence Bar
-          </div>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {[
-              'Rainbow gradient strip above the bar',
-              '7 capability tags in flex layout',
-              '"Dutchie Agent" sits alongside AI features',
-              'Positioned below -- a platform layer',
-              'Reads as "powers everything above"',
-            ].map((item, i) => (
-              <li key={i} style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-                marginBottom: 4, paddingLeft: 12, position: 'relative',
-              }}>
-                <span style={{ position: 'absolute', left: 0, color: t.accentGreen }}>-</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// SECTION 2: Where Dex Lives
-// ============================================================================
-function Section2WhereDexLives({ t }) {
-  return (
-    <div>
-      <SectionTitle t={t} subtitle="The same hierarchy slide, but now showing where the proposed Dex agent fits. Dex is not a new product -- it is the conversational face of the Intelligence layer, powering AI capabilities across every pillar.">
-        Section 2: Where Dex Lives
-      </SectionTitle>
-
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-        padding: 32, marginBottom: 32,
-      }}>
-        <div style={{ position: 'relative' }}>
-          <DeckHierarchy
-            title="The Industry Standard -- Now with Dex"
-            subtitle="Dex is the conversational interface to the Intelligence layer"
-            intelligenceBarProps={{
-              highlightItem: 'Dutchie Agent',
-              label: 'Intelligence -- Powered by Dex',
-            }}
-            cardOverrides={{
-              nexus: {
-                badge: 'Dex Inside',
-              },
-            }}
-          />
-          <ConnectionLines />
-        </div>
-      </div>
-
-      {/* Explanation cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
-        <div style={{
-          background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12, padding: 24,
-        }}>
-          <div style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 15, fontWeight: 700,
-            color: t.text, marginBottom: 12,
-          }}>
-            What Dex Powers
-          </div>
-          {[
-            { label: 'Agentic Commerce', desc: 'Dex handles customer queries, recommends products, processes returns' },
-            { label: 'Voice AI', desc: 'Dex\'s voice interface for hands-free dispensary operations' },
-            { label: 'AI Sales Assistant', desc: 'Dex helps budtenders with product knowledge and upsell suggestions' },
-            { label: 'Intelligent Summaries', desc: 'Dex synthesizes data from across the platform into actionable insights' },
-          ].map((item, i) => (
-            <div key={i} style={{
-              display: 'flex', gap: 12, marginBottom: 12, alignItems: 'flex-start',
-            }}>
-              <div style={{
-                width: 8, height: 8, borderRadius: '50%', background: t.accentGold,
-                flexShrink: 0, marginTop: 6,
-              }} />
-              <div>
-                <span style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 700,
-                  color: t.text,
-                }}>
-                  {item.label}
-                </span>
-                <span style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-                  marginLeft: 6,
-                }}>
-                  -- {item.desc}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{
-          background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12, padding: 24,
-        }}>
-          <div style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 15, fontWeight: 700,
-            color: t.text, marginBottom: 12,
-          }}>
-            How Dex Connects to Each Pillar
-          </div>
-          {[
-            { pillar: 'E-Commerce', connection: 'Dex handles storefront chat, product Q&A, order status' },
-            { pillar: 'Loyalty + Marketing', connection: 'Dex personalizes outreach, triggers campaigns, manages segments' },
-            { pillar: 'Retail', connection: 'Dex assists at register, manages pricing queries, compliance checks' },
-            { pillar: 'Nexus', connection: 'Dex IS Nexus\'s interface -- the command center\'s voice' },
-            { pillar: 'Connect', connection: 'Dex surfaces brand insights, negotiates pricing, manages catalog' },
-          ].map((item, i) => (
-            <div key={i} style={{
-              display: 'flex', gap: 12, marginBottom: 10, alignItems: 'flex-start',
-            }}>
-              <div style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 700,
-                color: deckColors.forestGreenLight, background: 'rgba(45,106,79,0.1)',
-                padding: '2px 8px', borderRadius: 6, flexShrink: 0, marginTop: 1,
-              }}>
-                {item.pillar}
-              </div>
-              <span style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-              }}>
-                {item.connection}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={{
-        background: `linear-gradient(135deg, ${deckColors.forestGreen}, ${deckColors.forestGreenDark})`,
-        borderRadius: 12, padding: 24, textAlign: 'center',
-      }}>
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 20, fontWeight: 700,
-          color: '#FFFFFF', margin: 0, marginBottom: 8,
-        }}>
-          "Dex isn't a new product -- it's the face of the Intelligence layer"
-        </p>
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 14, color: 'rgba(255,255,255,0.6)',
-          margin: 0,
-        }}>
-          Every capability in the Intelligence bar gets a name, a voice, and a personality
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// SECTION 3: Three Evolution Paths
-// ============================================================================
-function Section3EvolutionPaths({ t }) {
-  const [activeVersion, setActiveVersion] = useState('A');
-
-  // Version A: Intelligence becomes a 6th pillar
-  const versionAPillars = [
-    ...pillarsData,
-    {
-      id: 'intelligence',
-      name: 'Intelligence',
-      icon: 'nexus',
-      features: ['Dex Agent', 'Voice AI', 'Agentic Commerce', 'AI Sales Assistant', 'Consumer Sentiment'],
-      highlighted: false,
-    },
-  ];
-
-  // Version B: Nexus absorbs intelligence
-  const versionBPillars = pillarsData.map(p => {
-    if (p.id === 'nexus') {
-      return {
-        ...p,
-        name: 'Nexus -- AI Command Center & Intelligence',
-        features: ['Dex Agent', 'AI Command Center', 'Pricing Insights', 'Voice AI', 'Agentic Commerce', 'Consumer Sentiment', 'Brand Leaderboard'],
-      };
-    }
-    return p;
-  });
-
-  // Version C: Platform flip (intelligence on top, pillars below)
-  // Handled with custom layout
-
-  const versions = {
-    A: {
-      title: 'Version A: "Intelligence Elevated"',
-      desc: 'Intelligence moves from a bottom bar to a full 6th pillar, sitting alongside E-Commerce, Retail, and the rest. The other pillars get "AI-powered" badges. Intelligence is now a peer, not a layer.',
-    },
-    B: {
-      title: 'Version B: "Nexus Absorbs Intelligence"',
-      desc: 'Nexus grows larger, absorbing all Intelligence capabilities. The Intelligence bar disappears. Dex becomes a feature inside Nexus. The 5-pillar structure stays intact, but Nexus is clearly the AI brain.',
-    },
-    C: {
-      title: 'Version C: "The Platform Flip"',
-      desc: 'Intelligence moves to the TOP of the hierarchy. Products sit below, powered by the AI platform. This is the most dramatic repositioning -- AI becomes the foundation, not a feature.',
-    },
-  };
-
-  return (
-    <div>
-      <SectionTitle t={t} subtitle="Three different visions of how the product hierarchy slide could evolve as AI becomes more central to Dutchie's value proposition. Each version uses the same forest green + cream visual language.">
-        Section 3: Three Evolution Paths
-      </SectionTitle>
-
-      {/* Version Tabs */}
-      <div style={{
-        display: 'flex', gap: 8, marginBottom: 24, justifyContent: 'center',
-      }}>
-        {['A', 'B', 'C'].map(v => (
-          <button
-            key={v}
-            onClick={() => setActiveVersion(v)}
-            style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600,
-              background: activeVersion === v ? t.accentGold : t.cardBg,
-              color: activeVersion === v ? '#0A0908' : t.textMuted,
-              border: `1px solid ${activeVersion === v ? t.accentGold : t.border}`,
-              borderRadius: 10, padding: '10px 24px', cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-          >
-            Version {v}
-          </button>
-        ))}
-      </div>
-
-      {/* Version Description */}
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12,
-        padding: 20, marginBottom: 24, textAlign: 'center',
-      }}>
-        <div style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 17, fontWeight: 700,
-          color: t.text, marginBottom: 8,
-        }}>
-          {versions[activeVersion].title}
-        </div>
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 14, color: t.textMuted,
-          margin: 0, maxWidth: 600, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6,
-        }}>
-          {versions[activeVersion].desc}
-        </p>
-      </div>
-
-      {/* Version A Render */}
-      {activeVersion === 'A' && (
-        <div style={{
-          background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-          padding: 32,
-        }}>
-          <DeckHierarchy
-            pillars={versionAPillars}
-            title="Intelligence Elevated"
-            subtitle="AI is no longer just a layer -- it's a product pillar"
-            intelligenceBarProps={{
-              items: ['Orchestration', 'Data Pipeline', 'Model Training', 'Platform APIs'],
-              label: 'Platform Infrastructure',
-            }}
-            cardOverrides={{
-              ecommerce: { badge: 'AI-Powered' },
-              loyalty: { badge: 'AI-Powered' },
-              retail: { badge: 'AI-Powered' },
-              nexus: { badge: 'AI-Powered' },
-              connect: { badge: 'AI-Powered' },
-              intelligence: {
-                highlighted: true,
-                bg: '#2D2066',
-                textColor: '#FFFFFF',
-                checkColor: '#A78BFA',
-                iconColor: '#A78BFA',
-                badge: 'NEW',
-              },
-            }}
-            scale={0.9}
-          />
-          <div style={{
-            marginTop: 20, textAlign: 'center',
-            fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-            fontStyle: 'italic',
-          }}>
-            Intelligence gets its own card. Every other pillar gets an "AI-Powered" badge. The platform bar shifts to infrastructure.
-          </div>
-        </div>
-      )}
-
-      {/* Version B Render */}
-      {activeVersion === 'B' && (
-        <div style={{
-          background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-          padding: 32,
-        }}>
-          <DeckHierarchy
-            pillars={versionBPillars}
-            title="Nexus Absorbs Intelligence"
-            subtitle="The AI brain consolidates -- Nexus becomes the intelligence hub"
-            intelligenceBarProps={{
-              items: [],
-              label: '',
-              style: { display: 'none' },
-            }}
-            cardOverrides={{
-              nexus: {
-                highlighted: true,
-                bg: '#1a1050',
-                textColor: '#FFFFFF',
-                checkColor: '#A78BFA',
-                iconColor: '#A78BFA',
-                badge: 'AI BRAIN',
-                style: { flex: 1.6 },
-              },
-              retail: {
-                highlighted: true,
-              },
-            }}
-          />
-          <div style={{
-            marginTop: 16, background: 'rgba(45,106,79,0.08)', borderRadius: 10,
-            padding: 16, textAlign: 'center',
-          }}>
-            <span style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-              fontStyle: 'italic',
-            }}>
-              The Intelligence bar is gone. Its capabilities now live inside Nexus. Dex is the "face" of Nexus -- the agent users interact with.
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Version C Render */}
-      {activeVersion === 'C' && (
-        <div style={{
-          background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-          padding: 32,
-        }}>
-          <div style={{
-            background: deckColors.forestGreen,
-            borderRadius: 20,
-            padding: '36px 32px 28px',
-          }}>
-            <h3 style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 22, fontWeight: 700,
-              color: '#FFFFFF', margin: 0, textAlign: 'center', marginBottom: 6,
-            }}>
-              The Platform Flip
-            </h3>
-            <p style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.6)',
-              margin: 0, textAlign: 'center', marginBottom: 20,
-            }}>
-              Everything is AI-powered. Intelligence is the foundation.
-            </p>
-
-            {/* Intelligence at TOP */}
+            {/* Number badge */}
             <div style={{
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: 14,
-              padding: '20px 24px',
-              marginBottom: 20,
-              border: '1px solid rgba(255,215,0,0.2)',
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              background: `linear-gradient(135deg, ${t.accentGold}, ${t.accentGoldLight})`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 14,
+              fontWeight: 800,
+              color: '#FFFFFF',
+              marginBottom: 14,
             }}>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14,
-              }}>
-                {PillarIcons.dex('#FFD700', 36)}
-                <div>
-                  <div style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 20, fontWeight: 700,
-                    color: '#FFD700',
-                  }}>
-                    Dex Intelligence Platform
-                  </div>
-                  <div style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 12, color: 'rgba(255,255,255,0.6)',
-                  }}>
-                    The AI layer that powers every product
-                  </div>
-                </div>
-              </div>
-              <div style={{
-                height: 3,
-                background: `linear-gradient(to right, ${deckColors.gradientStart}, ${deckColors.gradientMid1}, ${deckColors.gradientMid2}, ${deckColors.gradientMid3}, ${deckColors.gradientEnd})`,
-                borderRadius: 2, marginBottom: 14,
-              }} />
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 10px' }}>
-                {intelligenceItems.map((item, i) => (
-                  <span key={i} style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 12,
-                    color: 'rgba(255,255,255,0.8)',
-                    background: 'rgba(255,255,255,0.06)',
-                    padding: '4px 10px', borderRadius: 8,
-                  }}>
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Arrow down */}
-            <div style={{ textAlign: 'center', marginBottom: 12 }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 4v16M6 14l6 6 6-6" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <div style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.4)',
-                textTransform: 'uppercase', letterSpacing: '0.1em',
-              }}>
-                Powers
-              </div>
-            </div>
-
-            {/* Products below */}
-            <div style={{ display: 'flex', gap: 14, alignItems: 'stretch' }}>
-              {pillarsData.map((p) => (
-                <DeckPillarCard
-                  key={p.id}
-                  pillar={p}
-                  highlighted={p.highlighted}
-                  scale={0.85}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div style={{
-            marginTop: 16, textAlign: 'center',
-            fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-            fontStyle: 'italic',
-          }}>
-            The most dramatic shift. Intelligence moves from the bottom to the top. Products are "powered by" the AI platform, not the other way around.
-          </div>
-        </div>
-      )}
-
-      {/* Comparison Matrix */}
-      <div style={{
-        marginTop: 32, background: t.cardBg, border: `1px solid ${t.border}`,
-        borderRadius: 12, padding: 24,
-      }}>
-        <div style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 15, fontWeight: 700,
-          color: t.text, marginBottom: 16,
-        }}>
-          Evolution Path Comparison
-        </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{
-            width: '100%', borderCollapse: 'collapse', fontFamily: 'DM Sans, sans-serif',
-          }}>
-            <thead>
-              <tr>
-                {['Dimension', 'Version A', 'Version B', 'Version C'].map((h, i) => (
-                  <th key={i} style={{
-                    textAlign: 'left', padding: '10px 14px', fontSize: 12,
-                    color: t.textFaint, fontWeight: 600, borderBottom: `1px solid ${t.border}`,
-                    textTransform: 'uppercase', letterSpacing: '0.06em',
-                  }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['Disruption level', 'Low -- additive', 'Medium -- restructure', 'High -- repositioning'],
-                ['Pillar count', '6 (adds Intelligence)', '5 (Nexus grows)', '5 (same, reordered)'],
-                ['Intelligence bar', 'Becomes platform infra', 'Disappears into Nexus', 'Moves to top as hero'],
-                ['Dex positioning', 'Inside Intelligence pillar', 'Feature of Nexus', 'Platform-level identity'],
-                ['Sales motion change', 'Minimal -- "we added AI"', 'Moderate -- "Nexus evolved"', 'Major -- "AI-first platform"'],
-                ['Best for', 'Near-term (Q1-Q2)', 'Mid-term (Q3-Q4)', 'Long-term vision (2027+)'],
-              ].map((row, i) => (
-                <tr key={i}>
-                  {row.map((cell, j) => (
-                    <td key={j} style={{
-                      padding: '10px 14px', fontSize: 13,
-                      color: j === 0 ? t.text : t.textMuted,
-                      fontWeight: j === 0 ? 600 : 400,
-                      borderBottom: `1px solid ${t.border}`,
-                    }}>
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// SECTION 4: Design Language Exploration
-// ============================================================================
-function Section4DesignLanguage({ t }) {
-  return (
-    <div>
-      <SectionTitle t={t} subtitle="Exploring how the sales deck's visual language could extend to AI-specific marketing. Three explorations: current palette applied to AI products, a darker premium theme, and an expanded Intelligence bar.">
-        Section 4: Design Language Exploration
-      </SectionTitle>
-
-      {/* Exploration 1: Current Palette Applied to AI Products */}
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-        padding: 32, marginBottom: 32,
-      }}>
-        <div style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 17, fontWeight: 700,
-          color: t.text, marginBottom: 6,
-        }}>
-          Exploration 1: Current Palette Applied to AI Products
-        </div>
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 14, color: t.textMuted,
-          marginBottom: 24,
-        }}>
-          Using the existing sales deck color language to style the AI-centric products.
-        </p>
-
-        <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-          {/* Nexus in green accent style */}
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 600,
-              color: t.textFaint, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em',
-            }}>
-              Nexus -- Green Accent Style
-            </div>
-            <DeckPillarCard
-              pillar={{
-                id: 'nexus',
-                name: 'Nexus',
-                icon: 'nexus',
-                features: ['AI Command Center', 'Pricing Insights', 'Loyalty Score', 'Inventory Alerts', 'Brand Leaderboard'],
-              }}
-              customBg={deckColors.forestGreenLight}
-              customTextColor="#FFFFFF"
-              customCheckColor="#A8D8B9"
-              iconColor="#A8D8B9"
-            />
-          </div>
-
-          {/* Dex/Agent in burgundy highlight style */}
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 600,
-              color: t.textFaint, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em',
-            }}>
-              Dex / Dutchie Agent -- Burgundy Highlight
-            </div>
-            <DeckPillarCard
-              pillar={{
-                id: 'dex',
-                name: 'Dex',
-                icon: 'nexus',
-                features: ['Agentic Commerce', 'Voice AI', 'Intelligent Summaries', 'AI Sales Assistant', 'Consumer Sentiment'],
-              }}
-              highlighted
-            />
-          </div>
-
-          {/* Connect in standard cream */}
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 600,
-              color: t.textFaint, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em',
-            }}>
-              Connect -- Standard Cream Card
-            </div>
-            <DeckPillarCard
-              pillar={pillarsData[4]}
-            />
-          </div>
-        </div>
-
-        <div style={{
-          background: 'rgba(45,106,79,0.08)', borderRadius: 10, padding: 14,
-          fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-          textAlign: 'center',
-        }}>
-          The current palette handles AI products naturally. Green accent for Nexus feels authoritative. Burgundy for Dex signals "special" -- the highlighted product. Cream for Connect keeps it grounded and approachable.
-        </div>
-      </div>
-
-      {/* Exploration 2: What if the deck went darker? */}
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-        padding: 32, marginBottom: 32,
-      }}>
-        <div style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 17, fontWeight: 700,
-          color: t.text, marginBottom: 6,
-        }}>
-          Exploration 2: What If the Deck Went Darker?
-        </div>
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 14, color: t.textMuted,
-          marginBottom: 24,
-        }}>
-          Same hierarchy, but with the premium dark theme from the design study. Gold accents replace green.
-        </p>
-
-        <DeckHierarchy
-          pillars={pillarsData}
-          title="The Industry Standard for a Reason"
-          subtitle="Powering 6,000+ dispensaries with the most complete cannabis technology platform"
-          deckBg="#0A0908"
-          titleColor="#F0EDE8"
-          cardOverrides={{
-            ecommerce: {
-              bg: '#1A1816', textColor: '#F0EDE8',
-              checkColor: '#D4A03A', iconColor: '#D4A03A',
-            },
-            loyalty: {
-              bg: '#1A1816', textColor: '#F0EDE8',
-              checkColor: '#D4A03A', iconColor: '#D4A03A',
-            },
-            retail: {
-              highlighted: true, bg: '#3D1A0A', textColor: '#F0EDE8',
-              checkColor: '#FFC02A', iconColor: '#FFC02A',
-            },
-            nexus: {
-              bg: '#1A1816', textColor: '#F0EDE8',
-              checkColor: '#D4A03A', iconColor: '#D4A03A',
-            },
-            connect: {
-              bg: '#1A1816', textColor: '#F0EDE8',
-              checkColor: '#D4A03A', iconColor: '#D4A03A',
-            },
-          }}
-          intelligenceBarProps={{
-            customBg: 'rgba(212,160,58,0.08)',
-            customTextColor: '#D4A03A',
-            gradientColors: 'linear-gradient(to right, #D4A03A, #FFC02A, #FFD666, #D4A03A)',
-          }}
-        />
-
-        <div style={{ display: 'flex', gap: 16, marginTop: 20 }}>
-          <div style={{
-            flex: 1, background: 'rgba(212,160,58,0.06)', borderRadius: 10, padding: 14,
-          }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 700,
-              color: t.accentGold, marginBottom: 6,
-            }}>
-              What changes
-            </div>
-            <p style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted, margin: 0,
-            }}>
-              Dark backgrounds feel more premium, tech-forward, and sophisticated. Gold accents replace green, shifting the mood from "earthy cannabis" to "premium technology platform." The Retail highlight uses warm amber instead of burgundy.
-            </p>
-          </div>
-          <div style={{
-            flex: 1, background: 'rgba(212,160,58,0.06)', borderRadius: 10, padding: 14,
-          }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 700,
-              color: t.accentGold, marginBottom: 6,
-            }}>
-              The perception shift
-            </div>
-            <p style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted, margin: 0,
-            }}>
-              This version reads less "cannabis industry leader" and more "enterprise intelligence platform." It would resonate with enterprise buyers and multi-state operators who care about sophistication. The AI story becomes more natural in this visual context.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Exploration 3: Bigger Intelligence Bar */}
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-        padding: 32,
-      }}>
-        <div style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 17, fontWeight: 700,
-          color: t.text, marginBottom: 6,
-        }}>
-          Exploration 3: What If the Intelligence Bar Was Bigger?
-        </div>
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 14, color: t.textMuted,
-          marginBottom: 24,
-        }}>
-          Expanding the Intelligence bar from a small footer to the hero of the slide. This version sells "AI-first."
-        </p>
-
-        <div style={{
-          background: deckColors.forestGreen, borderRadius: 20, padding: '36px 32px 28px',
-        }}>
-          <h3 style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 20, fontWeight: 700,
-            color: '#FFFFFF', margin: 0, textAlign: 'center', marginBottom: 24,
-          }}>
-            The Industry Standard -- Now AI-First
-          </h3>
-
-          {/* Compact product row */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: 24, alignItems: 'stretch' }}>
-            {pillarsData.map(p => (
-              <div key={p.id} style={{
-                flex: 1, background: p.highlighted ? deckColors.burgundy : deckColors.cream,
-                borderRadius: 12, padding: '14px 12px',
-              }}>
-                <div style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 700,
-                  color: p.highlighted ? '#FFFFFF' : deckColors.textDark,
-                  marginBottom: 6,
-                }}>
-                  {p.name}
-                </div>
-                {p.features.slice(0, 3).map((f, i) => (
-                  <div key={i} style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 11,
-                    color: p.highlighted ? 'rgba(255,255,255,0.7)' : 'rgba(26,26,24,0.6)',
-                    marginBottom: 2,
-                  }}>
-                    {f}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          {/* Huge Intelligence Section */}
-          <div style={{
-            background: 'rgba(255,255,255,0.06)',
-            borderRadius: 16,
-            padding: '28px 24px',
-            border: '1px solid rgba(255,215,0,0.15)',
-          }}>
-            <div style={{
-              height: 4,
-              background: `linear-gradient(to right, ${deckColors.gradientStart}, ${deckColors.gradientMid1}, ${deckColors.gradientMid2}, ${deckColors.gradientMid3}, ${deckColors.gradientEnd})`,
-              borderRadius: 2, marginBottom: 20,
-            }} />
-
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20,
-            }}>
-              {PillarIcons.dex('#FFD700', 44)}
-              <div>
-                <div style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 24, fontWeight: 700,
-                  color: '#FFD700', letterSpacing: '-0.01em',
-                }}>
-                  Intelligence
-                </div>
-                <div style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 14,
-                  color: 'rgba(255,255,255,0.6)',
-                }}>
-                  AI-powered intelligence woven into every product
-                </div>
-              </div>
-            </div>
-
-            <div style={{
-              display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12,
-            }}>
-              {[
-                { name: 'Agentic Commerce', desc: 'Autonomous AI-driven transactions' },
-                { name: 'Voice AI', desc: 'Natural language for every workflow' },
-                { name: 'Intelligent Summaries', desc: 'Data distilled into decisions' },
-                { name: 'AI Sales Assistant', desc: 'Budtender copilot at the register' },
-                { name: 'Consumer Sentiment', desc: 'Real-time market pulse analysis' },
-                { name: 'Intelligence Everywhere', desc: 'AI embedded in every screen' },
-                { name: 'Dutchie Agent', desc: 'Your AI-powered team member' },
-                { name: 'Predictive Analytics', desc: 'Tomorrow\'s insights today' },
-              ].map((item, i) => (
-                <div key={i} style={{
-                  background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: 12,
-                }}>
-                  <div style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 600,
-                    color: 'rgba(255,255,255,0.85)', marginBottom: 4,
-                  }}>
-                    {item.name}
-                  </div>
-                  <div style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 11,
-                    color: 'rgba(255,255,255,0.45)',
-                  }}>
-                    {item.desc}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div style={{
-          marginTop: 16, textAlign: 'center',
-          fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-          fontStyle: 'italic',
-        }}>
-          The Intelligence section now takes up roughly 60% of the slide. Products are summarized above. This version says: "AI is the headline."
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// SECTION 5: The Naming Overlay
-// ============================================================================
-function Section5NamingOverlay({ t }) {
-  const [activeScenario, setActiveScenario] = useState('A');
-
-  // Scenario A: Keep current names, add Dex
-  const scenarioAPillars = pillarsData.map(p => ({ ...p }));
-
-  // Scenario B: Rename for AI era
-  const scenarioBPillars = [
-    { ...pillarsData[0], name: 'Dutchie Commerce' },
-    { ...pillarsData[1], name: 'Dutchie Engage' },
-    { ...pillarsData[2], name: 'Dutchie POS' },
-    { ...pillarsData[3] },
-    { ...pillarsData[4] },
-  ];
-
-  // Scenario C: Dex-centric
-  const scenarioCPillars = pillarsData.map(p => ({ ...p }));
-
-  const scenarios = {
-    A: {
-      title: 'Scenario A: Keep Current Names, Add Dex',
-      tagline: 'Minimal change, maximum compatibility with existing sales motion',
-      pillars: scenarioAPillars,
-      deckTitle: 'The Industry Standard for a Reason',
-      deckSubtitle: 'Now with Dex Intelligence across every product',
-      intBarLabel: 'Dex Intelligence',
-      intBarHighlight: 'Dutchie Agent',
-      cardOverrides: {},
-    },
-    B: {
-      title: 'Scenario B: Rename for the AI Era',
-      tagline: 'Product names modernized for a platform-first positioning',
-      pillars: scenarioBPillars,
-      deckTitle: 'The Dutchie Platform',
-      deckSubtitle: 'Powering the future of cannabis commerce',
-      intBarLabel: 'Powered by Dex',
-      intBarHighlight: null,
-      cardOverrides: {
-        ecommerce: { badge: 'Renamed' },
-        loyalty: { badge: 'Renamed' },
-        retail: { badge: 'Renamed' },
-      },
-    },
-    C: {
-      title: 'Scenario C: The Dex-Centric Deck',
-      tagline: 'Dex becomes the hero. Products become where Dex shows up.',
-      pillars: scenarioCPillars,
-      deckTitle: 'Introducing Dex -- Intelligence Across Every Product',
-      deckSubtitle: 'Meet Dex: your AI-powered dispensary intelligence agent',
-      intBarLabel: 'Dex Capabilities',
-      intBarHighlight: null,
-      cardOverrides: {},
-    },
-  };
-
-  const s = scenarios[activeScenario];
-
-  return (
-    <div>
-      <SectionTitle t={t} subtitle="The same sales deck hierarchy slide with different naming strategies applied. Each scenario shows how the deck reads with varying degrees of AI branding integration.">
-        Section 5: The Naming Overlay
-      </SectionTitle>
-
-      {/* Scenario Tabs */}
-      <div style={{
-        display: 'flex', gap: 8, marginBottom: 24, justifyContent: 'center',
-      }}>
-        {['A', 'B', 'C'].map(v => (
-          <button
-            key={v}
-            onClick={() => setActiveScenario(v)}
-            style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600,
-              background: activeScenario === v ? t.accentGold : t.cardBg,
-              color: activeScenario === v ? '#0A0908' : t.textMuted,
-              border: `1px solid ${activeScenario === v ? t.accentGold : t.border}`,
-              borderRadius: 10, padding: '10px 24px', cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-          >
-            Scenario {v}
-          </button>
-        ))}
-      </div>
-
-      {/* Scenario Description */}
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12,
-        padding: 20, marginBottom: 24, textAlign: 'center',
-      }}>
-        <div style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 17, fontWeight: 700,
-          color: t.text, marginBottom: 8,
-        }}>
-          {s.title}
-        </div>
-        <p style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 14, color: t.textMuted,
-          margin: 0,
-        }}>
-          {s.tagline}
-        </p>
-      </div>
-
-      {/* Deck Render */}
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-        padding: 32, marginBottom: 24,
-      }}>
-        {activeScenario === 'C' ? (
-          /* Scenario C: Dex-centric with top bar */
-          <div style={{
-            background: deckColors.forestGreen, borderRadius: 20,
-            padding: '36px 32px 28px',
-          }}>
-            {/* Dex hero bar at top */}
-            <div style={{
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: 14, padding: '16px 20px',
-              marginBottom: 20, display: 'flex', alignItems: 'center', gap: 16,
-              border: '1px solid rgba(255,215,0,0.2)',
-            }}>
-              {PillarIcons.dex('#FFD700', 40)}
-              <div style={{ flex: 1 }}>
-                <div style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 18, fontWeight: 700,
-                  color: '#FFD700', marginBottom: 4,
-                }}>
-                  Dex
-                </div>
-                <div style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 12,
-                  color: 'rgba(255,255,255,0.6)',
-                }}>
-                  Intelligence across every product
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', maxWidth: 400 }}>
-                {intelligenceItems.slice(0, 5).map((item, i) => (
-                  <span key={i} style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 10,
-                    color: '#FFD700', background: 'rgba(255,215,0,0.1)',
-                    padding: '3px 8px', borderRadius: 6,
-                  }}>
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <h3 style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 22, fontWeight: 700,
-              color: '#FFFFFF', margin: 0, textAlign: 'center', marginBottom: 6,
-            }}>
-              {s.deckTitle}
-            </h3>
-            <p style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.6)',
-              margin: 0, textAlign: 'center', marginBottom: 28,
-            }}>
-              {s.deckSubtitle}
-            </p>
-            <div style={{ display: 'flex', gap: 14, alignItems: 'stretch' }}>
-              {s.pillars.map(p => (
-                <DeckPillarCard
-                  key={p.id}
-                  pillar={p}
-                  highlighted={p.highlighted}
-                  badge={s.cardOverrides[p.id]?.badge}
-                />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <DeckHierarchy
-            pillars={s.pillars}
-            title={s.deckTitle}
-            subtitle={s.deckSubtitle}
-            intelligenceBarProps={{
-              label: s.intBarLabel,
-              highlightItem: s.intBarHighlight,
-            }}
-            cardOverrides={s.cardOverrides}
-          />
-        )}
-      </div>
-
-      {/* Name Change Details */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16,
-      }}>
-        {[
-          {
-            scenario: 'A',
-            changes: [
-              { from: 'E-Commerce', to: 'E-Commerce', changed: false },
-              { from: 'Loyalty + Marketing', to: 'Loyalty + Marketing', changed: false },
-              { from: 'Retail', to: 'Retail', changed: false },
-              { from: 'Nexus', to: 'Nexus', changed: false },
-              { from: 'Connect', to: 'Connect', changed: false },
-              { from: 'Intelligence', to: 'Dex Intelligence', changed: true },
-            ],
-          },
-          {
-            scenario: 'B',
-            changes: [
-              { from: 'E-Commerce', to: 'Dutchie Commerce', changed: true },
-              { from: 'Loyalty + Marketing', to: 'Dutchie Engage', changed: true },
-              { from: 'Retail', to: 'Dutchie POS', changed: true },
-              { from: 'Nexus', to: 'Nexus', changed: false },
-              { from: 'Connect', to: 'Connect', changed: false },
-              { from: 'Intelligence', to: 'Powered by Dex', changed: true },
-            ],
-          },
-          {
-            scenario: 'C',
-            changes: [
-              { from: 'E-Commerce', to: 'E-Commerce', changed: false },
-              { from: 'Loyalty + Marketing', to: 'Loyalty + Marketing', changed: false },
-              { from: 'Retail', to: 'Retail', changed: false },
-              { from: 'Nexus', to: 'Nexus', changed: false },
-              { from: 'Connect', to: 'Connect', changed: false },
-              { from: 'Headline', to: 'Introducing Dex', changed: true },
-            ],
-          },
-        ].map((group, gi) => (
-          <div key={gi} style={{
-            background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12, padding: 20,
-          }}>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 700,
-              color: t.text, marginBottom: 12,
-            }}>
-              Scenario {group.scenario} Changes
-            </div>
-            {group.changes.map((c, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8,
-              }}>
-                <span style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 12,
-                  color: t.textFaint, minWidth: 100,
-                  textDecoration: c.changed ? 'line-through' : 'none',
-                }}>
-                  {c.from}
-                </span>
-                <span style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 12,
-                  color: t.textFaint,
-                }}>
-                  {c.changed ? '\u2192' : '='}
-                </span>
-                <span style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 600,
-                  color: c.changed ? t.accentGold : t.textMuted,
-                }}>
-                  {c.to}
-                </span>
-              </div>
-            ))}
-            <div style={{
-              marginTop: 10, padding: '6px 10px', borderRadius: 8,
-              background: 'rgba(212,160,58,0.06)',
-              fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: t.textMuted,
-            }}>
-              {gi === 0 && 'Only the Intelligence bar gets a name. Everything else stays.'}
-              {gi === 1 && '4 name changes total. Products get "Dutchie" prefix for cohesion.'}
-              {gi === 2 && 'Zero product renames. The headline does all the work.'}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// SECTION 6: Slide Recommendations
-// ============================================================================
-function Section6Recommendations({ t }) {
-  return (
-    <div>
-      <SectionTitle t={t} subtitle="A concise recommendation based on the analysis of evolution paths and naming scenarios. The goal: elevate AI in the sales story with minimal disruption to the existing motion.">
-        Section 6: Slide Recommendations
-      </SectionTitle>
-
-      {/* Recommendation Card */}
-      <div style={{
-        background: `linear-gradient(135deg, ${t.cardBg}, ${t.bg})`,
-        border: `2px solid ${t.accentGold}`,
-        borderRadius: 16, padding: 36, marginBottom: 32,
-      }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
-        }}>
-          <div style={{
-            width: 48, height: 48, borderRadius: '50%',
-            background: `linear-gradient(135deg, ${t.accentGold}, ${t.accentGoldLight})`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M9 12l2 2 4-4" stroke="#0A0908" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx="12" cy="12" r="10" stroke="#0A0908" strokeWidth="2" />
-            </svg>
-          </div>
-          <div>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 700,
-              color: t.accentGold, textTransform: 'uppercase', letterSpacing: '0.1em',
-            }}>
-              Recommended Approach
+              {c.num}
             </div>
             <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 22, fontWeight: 700,
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 15,
+              fontWeight: 700,
               color: t.text,
+              marginBottom: 8,
+              lineHeight: 1.3,
             }}>
-              Version A + Scenario A
-            </div>
-          </div>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 28 }}>
-          <div>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 700,
-              color: t.text, marginBottom: 8,
-            }}>
-              Evolution: "Intelligence Elevated"
+              {c.title}
             </div>
             <p style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-              margin: 0, lineHeight: 1.6,
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: 13,
+              color: t.textMuted,
+              margin: 0,
+              lineHeight: 1.55,
             }}>
-              Intelligence moves from a bottom bar to a 6th product pillar. It sits alongside E-Commerce, Retail, and the rest. Every existing pillar gets an "AI-Powered" badge. This is additive, not disruptive. The existing sales story stays intact while AI gets a clear seat at the table.
+              {c.desc}
             </p>
           </div>
-          <div>
-            <div style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 700,
-              color: t.text, marginBottom: 8,
-            }}>
-              Naming: "Keep Names, Add Dex"
-            </div>
-            <p style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-              margin: 0, lineHeight: 1.6,
-            }}>
-              E-Commerce stays E-Commerce. Retail stays Retail. No relearning required for the sales team, no confusing existing customers. The only new name is "Dex" -- appearing in the Intelligence pillar and as a badge across other products. One new name, maximum impact.
-            </p>
-          </div>
-        </div>
-
-        <div style={{
-          background: `rgba(212,160,58,0.08)`, borderRadius: 12, padding: 20,
-          marginBottom: 24, borderLeft: `3px solid ${t.accentGold}`,
-        }}>
-          <div style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 700,
-            color: t.accentGold, marginBottom: 8,
-          }}>
-            Why This Combination
-          </div>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {[
-              'Least disruptive to the existing sales motion -- reps can learn the new version in minutes',
-              'Clearly elevates AI from a "feature bar" to a "product pillar" -- signals investment and commitment',
-              '"AI-Powered" badges on existing pillars tell the story without changing the product names',
-              'Dex gets introduced as the Intelligence pillar\'s star feature, not a jarring rebrand',
-              'Compatible with further evolution -- if Version B or C becomes right later, the path is natural',
-            ].map((item, i) => (
-              <li key={i} style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textMuted,
-                marginBottom: 6, paddingLeft: 16, position: 'relative', lineHeight: 1.5,
-              }}>
-                <span style={{
-                  position: 'absolute', left: 0, color: t.accentGreen, fontWeight: 700,
-                }}>
-                  &#10003;
-                </span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div style={{
-          background: t.cardBg, borderRadius: 12, padding: 20,
-          border: `1px solid ${t.border}`, textAlign: 'center',
-        }}>
-          <div style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 600,
-            color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em',
-            marginBottom: 10,
-          }}>
-            The One-Slide Pitch
-          </div>
-          <div style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 20, fontWeight: 700,
-            color: t.text, lineHeight: 1.4,
-          }}>
-            "Dutchie is the industry standard.{' '}
-            <span style={{ color: t.accentGold }}>
-              Now with Dex
-            </span>{' '}
-            -- AI intelligence across every product."
-          </div>
-        </div>
-      </div>
-
-      {/* Recommended Final Slide Mockup */}
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-        padding: 32, marginBottom: 32,
-      }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
-        }}>
-          <DutchieLogo color={deckColors.checkGreen} size={28} />
-          <span style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600,
-            color: t.textMuted, letterSpacing: '0.04em', textTransform: 'uppercase',
-          }}>
-            Recommended Final Slide
-          </span>
-        </div>
-
-        <DeckHierarchy
-          pillars={[
-            ...pillarsData,
-            {
-              id: 'intelligence',
-              name: 'Intelligence',
-              icon: 'nexus',
-              features: ['Dex Agent', 'Voice AI', 'Agentic Commerce', 'AI Sales Assistant', 'Consumer Sentiment'],
-            },
-          ]}
-          title="The Industry Standard for a Reason"
-          subtitle="Powering 6,000+ dispensaries -- now with Dex AI intelligence across every product"
-          intelligenceBarProps={{
-            items: ['Platform APIs', 'Data Pipeline', 'Model Training', 'Orchestration Engine'],
-            label: 'Platform Infrastructure',
-          }}
-          cardOverrides={{
-            ecommerce: { badge: 'AI-Powered' },
-            loyalty: { badge: 'AI-Powered' },
-            retail: { badge: 'AI-Powered' },
-            nexus: { badge: 'AI-Powered' },
-            connect: { badge: 'AI-Powered' },
-            intelligence: {
-              highlighted: true,
-              bg: '#2D2066',
-              textColor: '#FFFFFF',
-              checkColor: '#A78BFA',
-              iconColor: '#A78BFA',
-              badge: 'NEW',
-            },
-          }}
-          scale={0.95}
-        />
-      </div>
-
-      {/* Implementation Timeline */}
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12,
-        padding: 24, marginBottom: 32,
-      }}>
-        <div style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 15, fontWeight: 700,
-          color: t.text, marginBottom: 16,
-        }}>
-          Rollout Timeline
-        </div>
-        <div style={{ display: 'flex', gap: 16 }}>
-          {[
-            {
-              phase: 'Phase 1 (Now)',
-              title: 'Add Dex to deck',
-              items: [
-                'Add Intelligence as 6th pillar',
-                'Add AI-Powered badges',
-                'Update subtitle to mention Dex',
-                'Keep all existing names',
-              ],
-            },
-            {
-              phase: 'Phase 2 (Q2)',
-              title: 'Deepen the story',
-              items: [
-                'Add Dex demo video link to slide',
-                'Create Dex-specific follow-up slides',
-                'Develop "Dex in action" case studies',
-                'Train sales team on AI narrative',
-              ],
-            },
-            {
-              phase: 'Phase 3 (Q3-Q4)',
-              title: 'Evaluate & evolve',
-              items: [
-                'Measure deck engagement metrics',
-                'Consider Version B if Nexus grows',
-                'Evaluate name changes (Scenario B)',
-                'Plan 2027 deck refresh',
-              ],
-            },
-          ].map((phase, i) => (
-            <div key={i} style={{
-              flex: 1, background: `rgba(212,160,58,${0.04 + i * 0.02})`,
-              borderRadius: 10, padding: 16,
-            }}>
-              <div style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 11, fontWeight: 700,
-                color: t.accentGold, textTransform: 'uppercase', letterSpacing: '0.06em',
-                marginBottom: 6,
-              }}>
-                {phase.phase}
-              </div>
-              <div style={{
-                fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 700,
-                color: t.text, marginBottom: 10,
-              }}>
-                {phase.title}
-              </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {phase.items.map((item, j) => (
-                  <li key={j} style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 12, color: t.textMuted,
-                    marginBottom: 4, paddingLeft: 14, position: 'relative',
-                  }}>
-                    <span style={{
-                      position: 'absolute', left: 0, color: t.accentGreen, fontSize: 10,
-                    }}>
-                      &#9679;
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Risk Matrix */}
-      <div style={{
-        background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 12,
-        padding: 24,
-      }}>
-        <div style={{
-          fontFamily: 'DM Sans, sans-serif', fontSize: 15, fontWeight: 700,
-          color: t.text, marginBottom: 16,
-        }}>
-          Decision Matrix: Why Version A + Scenario A Wins
-        </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{
-            width: '100%', borderCollapse: 'collapse', fontFamily: 'DM Sans, sans-serif',
-          }}>
-            <thead>
-              <tr>
-                {['Criterion', 'Weight', 'V.A + S.A (Rec.)', 'V.B + S.B', 'V.C + S.C'].map((h, i) => (
-                  <th key={i} style={{
-                    textAlign: 'left', padding: '10px 14px', fontSize: 12,
-                    color: t.textFaint, fontWeight: 600, borderBottom: `1px solid ${t.border}`,
-                    textTransform: 'uppercase', letterSpacing: '0.06em',
-                  }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['Sales team adoption', 'High', '9/10', '6/10', '4/10'],
-                ['Customer confusion risk', 'High', 'Low', 'Medium', 'High'],
-                ['AI story clarity', 'Medium', '8/10', '9/10', '10/10'],
-                ['Implementation speed', 'Medium', '< 1 week', '2-4 weeks', '6-8 weeks'],
-                ['Future flexibility', 'Low', 'High', 'Medium', 'Low'],
-                ['Brand consistency', 'Medium', 'Very high', 'Medium', 'Low'],
-              ].map((row, i) => (
-                <tr key={i}>
-                  {row.map((cell, j) => (
-                    <td key={j} style={{
-                      padding: '10px 14px', fontSize: 13,
-                      color: j === 0 ? t.text : (j === 2 ? t.accentGreen : t.textMuted),
-                      fontWeight: j === 0 || j === 2 ? 600 : 400,
-                      borderBottom: `1px solid ${t.border}`,
-                    }}>
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        ))}
       </div>
     </div>
   );
 }
 
+
 // ============================================================================
-// MAIN COMPONENT: SalesDeckIntegration
+// MAIN EXPORT
 // ============================================================================
 export function SalesDeckIntegration({ theme = 'dark' }) {
   const t = themes[theme];
 
   return (
     <div style={{
+      fontFamily: 'DM Sans, sans-serif',
       background: t.bg,
       minHeight: '100vh',
-      fontFamily: 'DM Sans, sans-serif',
+      padding: '60px 32px 80px',
       color: t.text,
     }}>
-      {/* Google Fonts Link */}
-      <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-      />
-
+      {/* Page Title */}
       <div style={{
-        maxWidth: 1200,
-        margin: '0 auto',
-        padding: '60px 40px 80px',
+        maxWidth: 920,
+        margin: '0 auto 20px',
+        textAlign: 'center',
       }}>
-        {/* Page Header */}
-        <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 10,
-            background: `rgba(212,160,58,0.08)`, borderRadius: 20,
-            padding: '6px 16px', marginBottom: 20,
-          }}>
-            <DutchieLogo color={t.accentGold} size={18} />
-            <span style={{
-              fontFamily: 'DM Sans, sans-serif', fontSize: 12, fontWeight: 600,
-              color: t.accentGold, textTransform: 'uppercase', letterSpacing: '0.08em',
-            }}>
-              Sales Deck Integration Study
-            </span>
-          </div>
-          <h1 style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 44, fontWeight: 700,
-            color: t.text, margin: 0, letterSpacing: '-0.03em', lineHeight: 1.15,
-          }}>
-            From Current Deck to<br />
-            <span style={{ color: t.accentGold }}>AI-Powered Future</span>
-          </h1>
-          <p style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 17, color: t.textMuted,
-            marginTop: 16, lineHeight: 1.6, maxWidth: 680, marginLeft: 'auto', marginRight: 'auto',
-          }}>
-            Mapping the Dutchie product hierarchy from the current sales deck, exploring where
-            Dex and AI intelligence fit, and recommending how the deck should evolve.
-          </p>
-        </div>
-
-        {/* Table of Contents */}
         <div style={{
-          background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 14,
-          padding: 28, marginBottom: 64,
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 11,
+          fontWeight: 700,
+          color: t.accentGold,
+          textTransform: 'uppercase',
+          letterSpacing: '0.14em',
+          marginBottom: 12,
         }}>
-          <div style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 13, fontWeight: 700,
-            color: t.textFaint, textTransform: 'uppercase', letterSpacing: '0.08em',
-            marginBottom: 16,
-          }}>
-            Sections in This Study
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-            {[
-              { num: '01', title: 'The Current Deck', desc: 'Faithful recreation of the product hierarchy slide' },
-              { num: '02', title: 'Where Dex Lives', desc: 'Mapping the agent to the existing hierarchy' },
-              { num: '03', title: 'Three Evolution Paths', desc: 'How the hierarchy could restructure for AI' },
-              { num: '04', title: 'Design Language', desc: 'Visual explorations of the deck\'s look and feel' },
-              { num: '05', title: 'The Naming Overlay', desc: 'Different naming strategies applied to the deck' },
-              { num: '06', title: 'Slide Recommendations', desc: 'The recommended approach with final mockup' },
-            ].map((section, i) => (
-              <div key={i} style={{
-                display: 'flex', gap: 12, alignItems: 'flex-start',
-              }}>
-                <span style={{
-                  fontFamily: 'DM Sans, sans-serif', fontSize: 20, fontWeight: 700,
-                  color: t.accentGold, opacity: 0.4, flexShrink: 0, minWidth: 28,
-                }}>
-                  {section.num}
-                </span>
-                <div>
-                  <div style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 14, fontWeight: 600,
-                    color: t.text, marginBottom: 2,
-                  }}>
-                    {section.title}
-                  </div>
-                  <div style={{
-                    fontFamily: 'DM Sans, sans-serif', fontSize: 12, color: t.textFaint,
-                  }}>
-                    {section.desc}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          Brand Study
         </div>
-
-        {/* SECTION 1 */}
-        <Section1CurrentDeck t={t} />
-        <SectionDivider t={t} />
-
-        {/* SECTION 2 */}
-        <Section2WhereDexLives t={t} />
-        <SectionDivider t={t} />
-
-        {/* SECTION 3 */}
-        <Section3EvolutionPaths t={t} />
-        <SectionDivider t={t} />
-
-        {/* SECTION 4 */}
-        <Section4DesignLanguage t={t} />
-        <SectionDivider t={t} />
-
-        {/* SECTION 5 */}
-        <Section5NamingOverlay t={t} />
-        <SectionDivider t={t} />
-
-        {/* SECTION 6 */}
-        <Section6Recommendations t={t} />
-
-        {/* Footer */}
-        <div style={{
-          marginTop: 80, paddingTop: 32,
-          borderTop: `1px solid ${t.border}`, textAlign: 'center',
+        <h1 style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 38,
+          fontWeight: 700,
+          color: t.text,
+          margin: 0,
+          letterSpacing: '-0.03em',
+          lineHeight: 1.15,
         }}>
-          <p style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 13, color: t.textFaint,
-          }}>
-            Sales Deck Integration Study -- Dutchie AI Brand & Naming Initiative
-          </p>
-          <p style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: 11, color: t.textFaint,
-            opacity: 0.5, marginTop: 4,
-          }}>
-            Based on current sales deck hierarchy as of Q1 2026
-          </p>
-        </div>
+          Sales Deck Integration
+        </h1>
+        <p style={{
+          fontFamily: 'DM Sans, sans-serif',
+          fontSize: 16,
+          color: t.textMuted,
+          marginTop: 14,
+          lineHeight: 1.6,
+          maxWidth: 600,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}>
+          Exploring how Dex and AI capabilities integrate into the Dutchie sales deck's
+          product hierarchy, from minimal changes to a full rethink.
+        </p>
       </div>
+
+      {/* Divider */}
+      <div style={{
+        maxWidth: 920,
+        margin: '48px auto',
+        height: 1,
+        background: `linear-gradient(to right, transparent, ${t.border}, transparent)`,
+      }} />
+
+      {/* Slide 1 */}
+      <Slide1 t={t} />
+
+      <div style={{ height: 72 }} />
+
+      {/* Slide 2 */}
+      <Slide2 t={t} />
+
+      <div style={{ height: 72 }} />
+
+      {/* Slide 3 */}
+      <Slide3 t={t} />
+
+      <div style={{ height: 72 }} />
+
+      {/* Slide 4 */}
+      <Slide4 t={t} />
+
+      <div style={{ height: 72 }} />
+
+      {/* Slide 5 */}
+      <Slide5 t={t} />
+
+      <div style={{ height: 72 }} />
+
+      {/* Slide 6 */}
+      <Slide6 t={t} />
+
+      {/* Summary */}
+      <WhatChangedSummary t={t} />
+
+      {/* Footer spacer */}
+      <div style={{ height: 40 }} />
     </div>
   );
 }
-
-export default SalesDeckIntegration;
