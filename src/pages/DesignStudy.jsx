@@ -19,6 +19,7 @@ import { InformationHierarchyStudy } from './InformationHierarchyStudy';
 import { CondensedStudySummary } from './CondensedStudySummary';
 import { CompetitivePMMResearch } from './CompetitivePMMResearch';
 import { DesignInspirationStudy } from './DesignInspirationStudy';
+import { BrandShowcase } from './BrandShowcase';
 
 /* ─── Theme Definitions ─── */
 const themes = {
@@ -185,6 +186,7 @@ function Swatch({ color, name, hex, theme = 'dark' }) {
 /* ─── Section Nav ─── */
 const SECTIONS = [
   // ── Top-level summaries & new research ──
+  { id: 'brand', label: 'Brand', group: 'top' },
   { id: 'decisions', label: 'Decisions', group: 'top' },
   { id: 'comp-pmm', label: 'Comp PMM', group: 'top' },
   { id: 'design-inspo', label: 'Design Inspo', group: 'top' },
@@ -1821,6 +1823,13 @@ export default function DesignStudy() {
       <SectionNav active={activeSection} theme={theme} setTheme={setTheme} />
 
       <div style={container}>
+        {/* ═══ BRAND SHOWCASE (TOP) ═══ */}
+        <Section id="brand">
+          <BrandShowcase theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
         {/* ═══ CONDENSED DECISIONS (TOP) ═══ */}
         <Section id="decisions">
           <CondensedStudySummary theme={theme} />
