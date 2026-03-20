@@ -18,9 +18,9 @@ const themes = {
 };
 
 const productColors = {
-  dex: { primary: '#D4A03A', light: '#FFC02A', lighter: '#FFD666', glow: 'rgba(212,160,58,0.3)' },
-  nexus: { primary: '#1A7A5A', light: '#2A9A6A', lighter: '#3ABA7A', glow: 'rgba(26,122,90,0.3)' },
-  connect: { primary: '#0891B2', light: '#06B6D4', lighter: '#22D3EE', glow: 'rgba(8,145,178,0.3)' },
+  dex: { primary: '#06B6D4', light: '#22D3EE', lighter: '#67E8F9', glow: 'rgba(6,182,212,0.3)' },
+  nexus: { primary: '#D4A03A', light: '#FFC02A', lighter: '#FFD666', glow: 'rgba(212,160,58,0.3)' },
+  connect: { primary: '#7C3AED', light: '#8B5CF6', lighter: '#A78BFA', glow: 'rgba(124,58,237,0.3)' },
   ecommerce: { primary: '#00C27C', light: '#34D399', lighter: '#6EE7B7', glow: 'rgba(0,194,124,0.3)' },
   loyalty: { primary: '#D97706', light: '#F59E0B', lighter: '#FCD34D', glow: 'rgba(217,119,6,0.3)' },
   retail: { primary: '#059669', light: '#10B981', lighter: '#34D399', glow: 'rgba(5,150,105,0.3)' },
@@ -35,16 +35,22 @@ function DexIcon({ size = 48 }) {
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id={gId} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#D4A03A" />
-          <stop offset="50%" stopColor="#FFC02A" />
-          <stop offset="100%" stopColor="#FFD666" />
+          <stop offset="0%" stopColor={productColors.dex.primary} />
+          <stop offset="50%" stopColor={productColors.dex.light} />
+          <stop offset="100%" stopColor={productColors.dex.lighter} />
         </linearGradient>
       </defs>
-      <path
-        d="M50 95 A45 45 0 0 1 5 50 A27.8 27.8 0 0 1 32.8 22.2 A17.2 17.2 0 0 1 50 39.4 A10.6 10.6 0 0 1 39.4 50 A6.6 6.6 0 0 1 46 56.6 A4 4 0 0 1 50 52.6 A2.5 2.5 0 0 1 47.5 50"
-        stroke={`url(#${gId})`} strokeWidth="3" strokeLinecap="round" fill="none"
-      />
-      <circle cx="48" cy="50" r="2" fill={`url(#${gId})`} />
+      {/* AI brain / neural eye — stylized eye with circuit pupil */}
+      <ellipse cx="50" cy="50" rx="38" ry="24" stroke={`url(#${gId})`} strokeWidth="2.5" fill="none" />
+      <ellipse cx="50" cy="50" rx="22" ry="22" stroke={`url(#${gId})`} strokeWidth="2" fill="none" opacity="0.6" />
+      <circle cx="50" cy="50" r="10" fill={`url(#${gId})`} opacity="0.15" />
+      <circle cx="50" cy="50" r="5" fill={`url(#${gId})`} opacity="0.5" />
+      <circle cx="50" cy="50" r="2" fill={productColors.dex.lighter} />
+      {/* Neural rays */}
+      <line x1="60" y1="50" x2="74" y2="50" stroke={productColors.dex.light} strokeWidth="1.5" opacity="0.4" strokeLinecap="round" />
+      <line x1="26" y1="50" x2="40" y2="50" stroke={productColors.dex.light} strokeWidth="1.5" opacity="0.4" strokeLinecap="round" />
+      <line x1="56" y1="40" x2="66" y2="32" stroke={productColors.dex.light} strokeWidth="1.5" opacity="0.3" strokeLinecap="round" />
+      <line x1="44" y1="60" x2="34" y2="68" stroke={productColors.dex.light} strokeWidth="1.5" opacity="0.3" strokeLinecap="round" />
     </svg>
   );
 }
@@ -55,25 +61,18 @@ function NexusIcon({ size = 48 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id={gId} x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={productColors.nexus.primary} />
-          <stop offset="50%" stopColor={productColors.nexus.light} />
-          <stop offset="100%" stopColor={productColors.nexus.lighter} />
+        <linearGradient id={gId} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#D4A03A" />
+          <stop offset="50%" stopColor="#FFC02A" />
+          <stop offset="100%" stopColor="#FFD666" />
         </linearGradient>
       </defs>
-      {/* Central hexagon */}
-      <polygon points="50,18 72,32 72,60 50,74 28,60 28,32" stroke={`url(#${gId})`} strokeWidth="2.5" fill="none" strokeLinejoin="round" />
-      {/* Top-right hexagon */}
-      <polygon points="72,8 88,18 88,38 72,48 56,38 56,18" stroke={`url(#${gId})`} strokeWidth="2" fill="none" strokeLinejoin="round" opacity="0.7" />
-      {/* Bottom-left hexagon */}
-      <polygon points="28,52 44,62 44,82 28,92 12,82 12,62" stroke={`url(#${gId})`} strokeWidth="2" fill="none" strokeLinejoin="round" opacity="0.7" />
-      {/* Connection nodes */}
-      <circle cx="50" cy="46" r="3" fill={productColors.nexus.light} />
-      <circle cx="72" cy="33" r="2.5" fill={productColors.nexus.light} opacity="0.7" />
-      <circle cx="28" cy="67" r="2.5" fill={productColors.nexus.light} opacity="0.7" />
-      {/* Neural connection lines */}
-      <line x1="52" y1="44" x2="70" y2="35" stroke={productColors.nexus.light} strokeWidth="1.5" opacity="0.4" />
-      <line x1="48" y1="48" x2="30" y2="65" stroke={productColors.nexus.light} strokeWidth="1.5" opacity="0.4" />
+      {/* Golden Fibonacci spiral — THE Nexus icon */}
+      <path
+        d="M50 95 A45 45 0 0 1 5 50 A27.8 27.8 0 0 1 32.8 22.2 A17.2 17.2 0 0 1 50 39.4 A10.6 10.6 0 0 1 39.4 50 A6.6 6.6 0 0 1 46 56.6 A4 4 0 0 1 50 52.6 A2.5 2.5 0 0 1 47.5 50"
+        stroke={`url(#${gId})`} strokeWidth="3" strokeLinecap="round" fill="none"
+      />
+      <circle cx="48" cy="50" r="2" fill={`url(#${gId})`} />
     </svg>
   );
 }

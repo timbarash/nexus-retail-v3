@@ -221,38 +221,56 @@ function SectionNav({ active, theme = 'dark', setTheme }) {
       position: 'sticky', top: 0, zIndex: 50,
       background: t.navBg, backdropFilter: 'blur(12px)',
       borderBottom: `1px solid ${t.border}`,
-      display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4, padding: '12px 16px',
+      display: 'flex', alignItems: 'center', padding: '10px 16px', gap: 0,
     }}>
-      {SECTIONS.map((s, i) => {
-        const prevGroup = i > 0 ? SECTIONS[i - 1].group : null;
-        const showSep = prevGroup && prevGroup !== s.group;
-        return (
-          <React.Fragment key={s.id}>
-            {showSep && <span style={{ width: 1, height: 20, background: t.border, margin: '0 4px' }} />}
-            <a
-              href={`#${s.id}`}
-              onClick={e => { e.preventDefault(); document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth' }); }}
-              style={{
-                padding: '6px 16px', borderRadius: 20, fontSize: 13, fontWeight: 500,
-                color: active === s.id ? t.text : t.textFaint,
-                background: active === s.id ? `rgba(212,160,58,0.12)` : 'transparent',
-                border: active === s.id ? '1px solid rgba(212,160,58,0.2)' : '1px solid transparent',
-                textDecoration: 'none', transition: 'all 0.2s',
-              }}
-            >
-              {s.label}
-            </a>
-          </React.Fragment>
-        );
-      })}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 3,
+        overflowX: 'auto', flex: 1,
+        scrollbarWidth: 'none', msOverflowStyle: 'none',
+      }}>
+        {SECTIONS.map((s, i) => {
+          const prevGroup = i > 0 ? SECTIONS[i - 1].group : null;
+          const showSep = prevGroup && prevGroup !== s.group;
+          const isActive = active === s.id;
+          const groupLabels = { top: 'Overview', deck: 'Deck', brand: 'Brand' };
+          return (
+            <React.Fragment key={s.id}>
+              {showSep && (
+                <span style={{
+                  display: 'flex', alignItems: 'center', gap: 4, margin: '0 6px', flexShrink: 0,
+                }}>
+                  <span style={{ width: 1, height: 16, background: t.border }} />
+                  <span style={{ fontSize: 9, fontWeight: 600, color: t.textFaint, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                    {groupLabels[s.group] || ''}
+                  </span>
+                </span>
+              )}
+              <a
+                href={`#${s.id}`}
+                onClick={e => { e.preventDefault(); document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth' }); }}
+                style={{
+                  padding: '5px 12px', borderRadius: 16, fontSize: 12, fontWeight: 500,
+                  color: isActive ? t.text : t.textFaint,
+                  background: isActive ? `rgba(212,160,58,0.12)` : 'transparent',
+                  border: isActive ? '1px solid rgba(212,160,58,0.2)' : '1px solid transparent',
+                  textDecoration: 'none', transition: 'all 0.2s',
+                  whiteSpace: 'nowrap', flexShrink: 0,
+                }}
+              >
+                {s.label}
+              </a>
+            </React.Fragment>
+          );
+        })}
+      </div>
       {setTheme && (
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           style={{
-            marginLeft: 12,
-            padding: '6px 14px',
-            borderRadius: 20,
-            fontSize: 14,
+            marginLeft: 8, flexShrink: 0,
+            padding: '5px 12px',
+            borderRadius: 16,
+            fontSize: 13,
             fontWeight: 500,
             cursor: 'pointer',
             border: `1px solid ${t.border}`,
@@ -260,13 +278,13 @@ function SectionNav({ active, theme = 'dark', setTheme }) {
             color: t.text,
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 5,
             transition: 'all 0.2s',
           }}
           title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
           {theme === 'dark' ? '\u2600' : '\u263E'}
-          <span style={{ fontSize: 11 }}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+          <span style={{ fontSize: 10 }}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
         </button>
       )}
     </nav>
