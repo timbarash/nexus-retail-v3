@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import NexusIcon from '../components/NexusIcon';
 import { NexusDeepSection } from '../components/NexusDeepSection';
 import { ColorTypographySection } from './ColorTypographySection';
@@ -16,6 +16,9 @@ import { CompetitorDeckPatterns } from './CompetitorDeckPatterns';
 import { FirstPrinciplesDeck } from './FirstPrinciplesDeck';
 import { SalesStoryDeck } from './SalesStoryDeck';
 import { InformationHierarchyStudy } from './InformationHierarchyStudy';
+import { CondensedStudySummary } from './CondensedStudySummary';
+import { CompetitivePMMResearch } from './CompetitivePMMResearch';
+import { DesignInspirationStudy } from './DesignInspirationStudy';
 
 /* ─── Theme Definitions ─── */
 const themes = {
@@ -181,26 +184,32 @@ function Swatch({ color, name, hex, theme = 'dark' }) {
 
 /* ─── Section Nav ─── */
 const SECTIONS = [
-  { id: 'summary', label: 'Summary' },
-  { id: 'hero', label: 'Intro' },
-  { id: 'nexus', label: 'Nexus' },
-  { id: 'dex', label: 'Dex' },
-  { id: 'connect', label: 'Connect' },
-  { id: 'colors', label: 'Colors' },
-  { id: 'family', label: 'Family' },
-  { id: 'hierarchy', label: 'Hierarchy' },
-  { id: 'dnames', label: 'D-Names' },
-  { id: 'styles', label: 'Styles' },
-  { id: 'positioning', label: 'Positioning' },
-  { id: 'naming', label: 'Naming' },
-  { id: 'b2c-b2b', label: 'B2C vs B2B' },
-  { id: 'sales-deck', label: 'Sales Deck' },
-  { id: 'deck-structures', label: 'Structures' },
-  { id: 'competitors', label: 'Comp Intel' },
-  { id: 'first-principles', label: '1st Principles' },
-  { id: 'sales-story', label: 'Sales Story' },
-  { id: 'info-hierarchy', label: 'Info Design' },
-  { id: 'pmm', label: 'PMM Strategy' },
+  // ── Top-level summaries & new research ──
+  { id: 'decisions', label: 'Decisions', group: 'top' },
+  { id: 'comp-pmm', label: 'Comp PMM', group: 'top' },
+  { id: 'design-inspo', label: 'Design Inspo', group: 'top' },
+  { id: 'summary', label: 'Exec Summary', group: 'top' },
+  // ── Deck & Sales deep dives ──
+  { id: 'first-principles', label: '1st Principles', group: 'deck' },
+  { id: 'sales-story', label: 'Sales Story', group: 'deck' },
+  { id: 'info-hierarchy', label: 'Info Design', group: 'deck' },
+  { id: 'sales-deck', label: 'Sales Deck', group: 'deck' },
+  { id: 'deck-structures', label: 'Structures', group: 'deck' },
+  { id: 'competitors', label: 'Comp Intel', group: 'deck' },
+  // ── Brand & Product deep dives ──
+  { id: 'hero', label: 'Intro', group: 'brand' },
+  { id: 'nexus', label: 'Nexus', group: 'brand' },
+  { id: 'dex', label: 'Dex', group: 'brand' },
+  { id: 'connect', label: 'Connect', group: 'brand' },
+  { id: 'colors', label: 'Colors', group: 'brand' },
+  { id: 'family', label: 'Family', group: 'brand' },
+  { id: 'hierarchy', label: 'Hierarchy', group: 'brand' },
+  { id: 'dnames', label: 'D-Names', group: 'brand' },
+  { id: 'styles', label: 'Styles', group: 'brand' },
+  { id: 'positioning', label: 'Positioning', group: 'brand' },
+  { id: 'naming', label: 'Naming', group: 'brand' },
+  { id: 'b2c-b2b', label: 'B2C vs B2B', group: 'brand' },
+  { id: 'pmm', label: 'PMM Strategy', group: 'brand' },
 ];
 
 function SectionNav({ active, theme = 'dark', setTheme }) {
@@ -212,22 +221,28 @@ function SectionNav({ active, theme = 'dark', setTheme }) {
       borderBottom: `1px solid ${t.border}`,
       display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4, padding: '12px 16px',
     }}>
-      {SECTIONS.map(s => (
-        <a
-          key={s.id}
-          href={`#${s.id}`}
-          onClick={e => { e.preventDefault(); document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth' }); }}
-          style={{
-            padding: '6px 16px', borderRadius: 20, fontSize: 13, fontWeight: 500,
-            color: active === s.id ? t.text : t.textFaint,
-            background: active === s.id ? `rgba(212,160,58,0.12)` : 'transparent',
-            border: active === s.id ? '1px solid rgba(212,160,58,0.2)' : '1px solid transparent',
-            textDecoration: 'none', transition: 'all 0.2s',
-          }}
-        >
-          {s.label}
-        </a>
-      ))}
+      {SECTIONS.map((s, i) => {
+        const prevGroup = i > 0 ? SECTIONS[i - 1].group : null;
+        const showSep = prevGroup && prevGroup !== s.group;
+        return (
+          <React.Fragment key={s.id}>
+            {showSep && <span style={{ width: 1, height: 20, background: t.border, margin: '0 4px' }} />}
+            <a
+              href={`#${s.id}`}
+              onClick={e => { e.preventDefault(); document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth' }); }}
+              style={{
+                padding: '6px 16px', borderRadius: 20, fontSize: 13, fontWeight: 500,
+                color: active === s.id ? t.text : t.textFaint,
+                background: active === s.id ? `rgba(212,160,58,0.12)` : 'transparent',
+                border: active === s.id ? '1px solid rgba(212,160,58,0.2)' : '1px solid transparent',
+                textDecoration: 'none', transition: 'all 0.2s',
+              }}
+            >
+              {s.label}
+            </a>
+          </React.Fragment>
+        );
+      })}
       {setTheme && (
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -1806,12 +1821,79 @@ export default function DesignStudy() {
       <SectionNav active={activeSection} theme={theme} setTheme={setTheme} />
 
       <div style={container}>
+        {/* ═══ CONDENSED DECISIONS (TOP) ═══ */}
+        <Section id="decisions">
+          <CondensedStudySummary theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ COMPETITIVE PMM RESEARCH ═══ */}
+        <Section id="comp-pmm">
+          <CompetitivePMMResearch theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ DESIGN INSPIRATION STUDY ═══ */}
+        <Section id="design-inspo">
+          <DesignInspirationStudy theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
         {/* ═══ EXECUTIVE SUMMARY ═══ */}
         <Section id="summary">
           <ExecutiveSummary theme={theme} />
         </Section>
 
         <div style={divider} />
+
+        {/* ═══════ DECK & SALES DEEP DIVES ═══════ */}
+
+        {/* ═══ FIRST PRINCIPLES DECK ═══ */}
+        <Section id="first-principles">
+          <FirstPrinciplesDeck theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ SALES STORY DECK ═══ */}
+        <Section id="sales-story">
+          <SalesStoryDeck theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ INFORMATION HIERARCHY STUDY ═══ */}
+        <Section id="info-hierarchy">
+          <InformationHierarchyStudy theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ SALES DECK INTEGRATION ═══ */}
+        <Section id="sales-deck">
+          <SalesDeckIntegration theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ DECK STRUCTURE EXPLORATION ═══ */}
+        <Section id="deck-structures">
+          <DeckStructureExploration theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══ COMPETITOR DECK PATTERNS ═══ */}
+        <Section id="competitors">
+          <CompetitorDeckPatterns theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
+        {/* ═══════ BRAND & PRODUCT DEEP DIVES ═══════ */}
 
         {/* ═══ HERO ═══ */}
         <Section id="hero">
@@ -2277,48 +2359,6 @@ export default function DesignStudy() {
         {/* ═══ DEX B2C vs B2B ═══ */}
         <Section id="b2c-b2b">
           <DexB2CvsB2BSection theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ SALES DECK INTEGRATION ═══ */}
-        <Section id="sales-deck">
-          <SalesDeckIntegration theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ DECK STRUCTURE EXPLORATION ═══ */}
-        <Section id="deck-structures">
-          <DeckStructureExploration theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ COMPETITOR DECK PATTERNS ═══ */}
-        <Section id="competitors">
-          <CompetitorDeckPatterns theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ FIRST PRINCIPLES DECK ═══ */}
-        <Section id="first-principles">
-          <FirstPrinciplesDeck theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ SALES STORY DECK ═══ */}
-        <Section id="sales-story">
-          <SalesStoryDeck theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ INFORMATION HIERARCHY STUDY ═══ */}
-        <Section id="info-hierarchy">
-          <InformationHierarchyStudy theme={theme} />
         </Section>
 
         <div style={divider} />
