@@ -19,7 +19,7 @@ import { InformationHierarchyStudy } from './InformationHierarchyStudy';
 import { CondensedStudySummary } from './CondensedStudySummary';
 import { CompetitivePMMResearch } from './CompetitivePMMResearch';
 import { DesignInspirationStudy } from './DesignInspirationStudy';
-// BrandShowcase removed from top — kept as file for reference
+import { DexLogoExploration } from './DexLogoExploration';
 
 /* ─── Theme Definitions ─── */
 const themes = {
@@ -186,6 +186,7 @@ function Swatch({ color, name, hex, theme = 'dark' }) {
 /* ─── Section Nav ─── */
 const SECTIONS = [
   // ── Top-level summaries & new research ──
+  { id: 'dex-logos', label: 'Dex Logos', group: 'top' },
   { id: 'decisions', label: 'Decisions', group: 'top' },
   { id: 'comp-pmm', label: 'Comp PMM', group: 'top' },
   { id: 'design-inspo', label: 'Design Inspo', group: 'top' },
@@ -1840,6 +1841,13 @@ export default function DesignStudy() {
       <SectionNav active={activeSection} theme={theme} setTheme={setTheme} />
 
       <div style={container}>
+        {/* ═══ DEX LOGO EXPLORATION ═══ */}
+        <Section id="dex-logos">
+          <DexLogoExploration theme={theme} />
+        </Section>
+
+        <div style={divider} />
+
         {/* ═══ CONDENSED DECISIONS (TOP) ═══ */}
         <Section id="decisions">
           <CondensedStudySummary theme={theme} />
