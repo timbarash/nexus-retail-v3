@@ -3,19 +3,15 @@ import NexusIcon from '../components/NexusIcon';
 import { NexusDeepSection } from '../components/NexusDeepSection';
 import { ColorTypographySection } from './ColorTypographySection';
 import { ProductHierarchySection } from './ProductHierarchySection';
-import { DNameExplorationSection } from './DNameExplorationSection';
-import { VisualStylesSection } from './VisualStylesSection';
+// DNameExplorationSection and VisualStylesSection removed — available in files if needed
 import { PositioningDeepDive } from './PositioningDeepDive';
 import { SuiteNamingDeepDive } from './SuiteNamingDeepDive';
-import { ExecutiveSummary } from './ExecutiveSummary';
-import { DexB2CvsB2BSection } from './DexB2CvsB2BSection';
-import { SalesDeckIntegration } from './SalesDeckIntegration';
+// ExecutiveSummary, DexB2CvsB2BSection, SalesDeckIntegration removed — available in files
 import { HierarchyPMMAnalysis } from './HierarchyPMMAnalysis';
-import { DeckStructureExploration } from './DeckStructureExploration';
-import { CompetitorDeckPatterns } from './CompetitorDeckPatterns';
+// DeckStructureExploration, CompetitorDeckPatterns removed — available in files
 import { FirstPrinciplesDeck } from './FirstPrinciplesDeck';
 import { SalesStoryDeck } from './SalesStoryDeck';
-import { InformationHierarchyStudy } from './InformationHierarchyStudy';
+// InformationHierarchyStudy removed — available in file
 import { CondensedStudySummary } from './CondensedStudySummary';
 import { CompetitivePMMResearch } from './CompetitivePMMResearch';
 import { DesignInspirationStudy } from './DesignInspirationStudy';
@@ -185,32 +181,23 @@ function Swatch({ color, name, hex, theme = 'dark' }) {
 
 /* ─── Section Nav ─── */
 const SECTIONS = [
-  // ── Top-level summaries & new research ──
-  { id: 'dex-logos', label: 'Dex Logos', group: 'top' },
+  // ── Top: key findings & new research ──
   { id: 'decisions', label: 'Decisions', group: 'top' },
   { id: 'comp-pmm', label: 'Comp PMM', group: 'top' },
   { id: 'design-inspo', label: 'Design Inspo', group: 'top' },
-  { id: 'summary', label: 'Exec Summary', group: 'top' },
-  // ── Deck & Sales deep dives ──
+  // ── Deck strategy ──
   { id: 'first-principles', label: '1st Principles', group: 'deck' },
   { id: 'sales-story', label: 'Sales Story', group: 'deck' },
-  { id: 'info-hierarchy', label: 'Info Design', group: 'deck' },
-  { id: 'sales-deck', label: 'Sales Deck', group: 'deck' },
-  { id: 'deck-structures', label: 'Structures', group: 'deck' },
-  { id: 'competitors', label: 'Comp Intel', group: 'deck' },
-  // ── Brand & Product deep dives ──
-  { id: 'hero', label: 'Intro', group: 'brand' },
+  // ── Brand deep dives ──
   { id: 'nexus', label: 'Nexus', group: 'brand' },
   { id: 'dex', label: 'Dex', group: 'brand' },
   { id: 'connect', label: 'Connect', group: 'brand' },
   { id: 'colors', label: 'Colors', group: 'brand' },
   { id: 'family', label: 'Family', group: 'brand' },
   { id: 'hierarchy', label: 'Hierarchy', group: 'brand' },
-  { id: 'dnames', label: 'D-Names', group: 'brand' },
-  { id: 'styles', label: 'Styles', group: 'brand' },
   { id: 'positioning', label: 'Positioning', group: 'brand' },
   { id: 'naming', label: 'Naming', group: 'brand' },
-  { id: 'b2c-b2b', label: 'B2C vs B2B', group: 'brand' },
+  { id: 'dex-logos', label: 'Dex Logos', group: 'brand' },
   { id: 'pmm', label: 'PMM Strategy', group: 'brand' },
 ];
 
@@ -1841,13 +1828,6 @@ export default function DesignStudy() {
       <SectionNav active={activeSection} theme={theme} setTheme={setTheme} />
 
       <div style={container}>
-        {/* ═══ DEX LOGO EXPLORATION ═══ */}
-        <Section id="dex-logos">
-          <DexLogoExploration theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
         {/* ═══ CONDENSED DECISIONS (TOP) ═══ */}
         <Section id="decisions">
           <CondensedStudySummary theme={theme} />
@@ -1869,15 +1849,6 @@ export default function DesignStudy() {
 
         <div style={divider} />
 
-        {/* ═══ EXECUTIVE SUMMARY ═══ */}
-        <Section id="summary">
-          <ExecutiveSummary theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══════ DECK & SALES DEEP DIVES ═══════ */}
-
         {/* ═══ FIRST PRINCIPLES DECK ═══ */}
         <Section id="first-principles">
           <FirstPrinciplesDeck theme={theme} />
@@ -1888,78 +1859,6 @@ export default function DesignStudy() {
         {/* ═══ SALES STORY DECK ═══ */}
         <Section id="sales-story">
           <SalesStoryDeck theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ INFORMATION HIERARCHY STUDY ═══ */}
-        <Section id="info-hierarchy">
-          <InformationHierarchyStudy theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ SALES DECK INTEGRATION ═══ */}
-        <Section id="sales-deck">
-          <SalesDeckIntegration theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ DECK STRUCTURE EXPLORATION ═══ */}
-        <Section id="deck-structures">
-          <DeckStructureExploration theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ COMPETITOR DECK PATTERNS ═══ */}
-        <Section id="competitors">
-          <CompetitorDeckPatterns theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══════ BRAND & PRODUCT DEEP DIVES ═══════ */}
-
-        {/* ═══ HERO ═══ */}
-        <Section id="hero">
-          <div style={{ textAlign: 'center', paddingTop: 40 }}>
-            <p style={{ fontSize: 13, fontWeight: 500, color: t.accentGold, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 16 }}>
-              Dutchie AI
-            </p>
-            <h1 style={{ fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 24, color: t.text }}>
-              Brand Identity Study
-            </h1>
-            <p style={{ fontSize: 18, color: t.textMuted, maxWidth: 540, margin: '0 auto 56px', lineHeight: 1.6 }}>
-              Visual identity system for three product brands — the platform, the intelligence, and the network.
-            </p>
-
-            {/* Product preview cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, maxWidth: 720, margin: '0 auto' }}>
-              {[
-                { id: 'nexus', label: 'Nexus', sub: 'The Platform', icon: <NexusIcon size={32} />, accent: '#D4A03A' },
-                { id: 'dex', label: 'Dex', sub: 'The Agent', icon: <DexSpiral size={32} />, accent: '#FFC02A' },
-                { id: 'connect', label: 'Connect', sub: 'The Network', icon: <ConnectIcon size={32} />, accent: '#00C27C' },
-              ].map(p => (
-                <button
-                  key={p.id}
-                  onClick={() => document.getElementById(p.id)?.scrollIntoView({ behavior: 'smooth' })}
-                  style={{
-                    background: t.cardBg, border: `1px solid ${t.border}`, borderRadius: 16,
-                    padding: 24, cursor: 'pointer', textAlign: 'center',
-                    transition: 'all 0.25s', boxShadow: cardShadow,
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = p.accent; e.currentTarget.style.boxShadow = `0 4px 24px ${p.accent}15`; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.boxShadow = cardShadow; }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>{p.icon}</div>
-                  <div style={{ fontSize: 18, fontWeight: 600, color: t.text, marginBottom: 4 }}>{p.label}</div>
-                  <div style={{ fontSize: 13, color: t.textFaint }}>{p.sub}</div>
-                </button>
-              ))}
-            </div>
-          </div>
         </Section>
 
         <div style={divider} />
@@ -2355,20 +2254,6 @@ export default function DesignStudy() {
 
         <div style={divider} />
 
-        {/* ═══ D-NAME EXPLORATION ═══ */}
-        <Section id="dnames">
-          <DNameExplorationSection theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
-        {/* ═══ VISUAL STYLES ═══ */}
-        <Section id="styles">
-          <VisualStylesSection theme={theme} />
-        </Section>
-
-        <div style={divider} />
-
         {/* ═══ POSITIONING DEEP DIVE ═══ */}
         <Section id="positioning">
           <PositioningDeepDive theme={theme} />
@@ -2383,9 +2268,9 @@ export default function DesignStudy() {
 
         <div style={divider} />
 
-        {/* ═══ DEX B2C vs B2B ═══ */}
-        <Section id="b2c-b2b">
-          <DexB2CvsB2BSection theme={theme} />
+        {/* ═══ DEX LOGO EXPLORATION ═══ */}
+        <Section id="dex-logos">
+          <DexLogoExploration theme={theme} />
         </Section>
 
         <div style={divider} />
